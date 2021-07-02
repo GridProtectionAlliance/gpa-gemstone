@@ -82,7 +82,7 @@ export function SelectTable<T>(props: ISelectTableProps<T>) {
     }, [selected])
 
     function handleClick(
-        d: { col: keyof T|null; row: T; data: any },
+        d: { colKey: keyof T|null; row: T; data: any },
         event: React.MouseEvent < HTMLTableHeaderCellElement, MouseEvent >,
     ) {
         const sIndex = selected.findIndex(item => item === d.row[props.KeyField]);
@@ -97,12 +97,12 @@ export function SelectTable<T>(props: ISelectTableProps<T>) {
 	}
 	
     function handleSort(
-        d: { col: keyof T; ascending: boolean },
+        d: { colKey: keyof T; ascending: boolean },
     ) {
-        if (d.col === sortKey)
+        if (d.colKey === sortKey)
             setAscending(!ascending);
         else 
-            setSortKey(d.col);
+            setSortKey(d.colKey);
     }
 
     const tableProps: TableProps<T> = {

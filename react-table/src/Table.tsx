@@ -35,10 +35,10 @@ interface Column<T> {
 export interface TableProps<T> {
   cols: Column<T>[];
   data: T[];
-  onClick: (data: { col: keyof T|null; row: T; data: T[keyof T]|null, index: number }, event: any) => void;
+  onClick: (data: { colKey: keyof T|null; row: T; data: T[keyof T]|null, index: number }, event: any) => void;
   sortKey: (keyof T|null);
   ascending: boolean;
-  onSort(data: { col: keyof T|null; ascending: boolean }): void;
+  onSort(data: { colKey: keyof T|null; ascending: boolean }): void;
   tableClass?: string;
   tableStyle?: React.CSSProperties;
   theadStyle?: React.CSSProperties;
@@ -58,10 +58,10 @@ export default function Table<T> (props: TableProps<T>){
     );
 
   function handleSort(
-    data: { col: keyof T|null; ascending: boolean },
+    data: { colKey: keyof T|null; ascending: boolean },
     event: React.MouseEvent<HTMLTableHeaderCellElement, MouseEvent>,
   ) {
-    if (data.col !== null)
+    if (data.colKey !== null)
       props.onSort(data);
   }
 }
@@ -72,7 +72,7 @@ function Rows<T>(props: {
   RowStyle: React.CSSProperties | undefined, 
   BodyStyle: React.CSSProperties | undefined,
   BodyClass: string | undefined,
-  Click :( data: { col: keyof T|null, row: T, data: T[keyof T] | null, index: number },e : React.MouseEvent<HTMLTableHeaderCellElement, MouseEvent>) => void,
+  Click :( data: { colKey: keyof T|null, row: T, data: T[keyof T] | null, index: number },e : React.MouseEvent<HTMLTableHeaderCellElement, MouseEvent>) => void,
   Selected: ((data: T) => boolean) | undefined,
 })
 {
@@ -112,7 +112,7 @@ function Cell<T>(props: {
   Object: T, 
   RowIndex: number,  
   Content: ((item: T, key: keyof T|null, style: React.CSSProperties, index: number) => React.ReactNode) | undefined ,
-  Click :( data: { col: keyof T|null, row: T, data: T[keyof T] | null, index: number },e: React.MouseEvent<HTMLTableHeaderCellElement, MouseEvent>) => void
+  Click :( data: { colKey: keyof T|null, row: T, data: T[keyof T] | null, index: number },e: React.MouseEvent<HTMLTableHeaderCellElement, MouseEvent>) => void
 }){
   const css: React.CSSProperties = (props.Style !== undefined)  ? { ...props.Style } : {};
 
@@ -123,7 +123,7 @@ function Cell<T>(props: {
 return (
   <td
     style={css}
-    onClick={(e) => props.Click({col: props.DataKey, row: props.Object, data: getFieldValue(), index: props.RowIndex }, e)}
+    onClick={(e) => props.Click({colKey: props.DataKey, row: props.Object, data: getFieldValue(), index: props.RowIndex }, e)}
   >
     {getFieldContent()}
   </td>
@@ -138,10 +138,10 @@ function Header<T>(props: {
   SortKey: keyof T | null, 
   Ascending: boolean, 
 
-  Click: (data: { col: keyof T|null; ascending: boolean }, event: React.MouseEvent<HTMLTableHeaderCellElement, MouseEvent>) => void
+  Click: (data: { colKey: keyof T|null; ascending: boolean }, event: React.MouseEvent<HTMLTableHeaderCellElement, MouseEvent>) => void
 }){
 
-  return (<thead className={props.Class} style={props.Style}><tr>{props.Cols.map((col,index) => <HeaderCell<T> key={index} HeaderStyle={col.headerStyle} DataKey={col.key} Click={(e) => props.Click({col: col.key, ascending: props.Ascending},e)} Label={col.label} SortKey={props.SortKey} Ascending={props.Ascending} />)}</tr></thead>)
+  return (<thead className={props.Class} style={props.Style}><tr>{props.Cols.map((col,index) => <HeaderCell<T> key={index} HeaderStyle={col.headerStyle} DataKey={col.key} Click={(e) => props.Click({colKey: col.key, ascending: props.Ascending},e)} Label={col.label} SortKey={props.SortKey} Ascending={props.Ascending} />)}</tr></thead>)
 
 }
 function HeaderCell<T> (props: {HeaderStyle: React.CSSProperties | undefined, DataKey: keyof T | null, Click: (e: any) => void, Label: string, SortKey: keyof T | null, Ascending: boolean}){
