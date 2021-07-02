@@ -36,7 +36,7 @@ export interface TableProps<T> {
   cols: Column<T>[];
   data: T[];
   onClick: (data: { col: keyof T|null; row: T; data: T[keyof T]|null, index: number }, event: any) => void;
-  sortField: (keyof T|null);
+  sortKey: (keyof T|null);
   ascending: boolean;
   onSort(data: { col: keyof T|null; ascending: boolean }): void;
   tableClass?: string;
@@ -52,7 +52,7 @@ export interface TableProps<T> {
 export default function Table<T> (props: TableProps<T>){
     return (
       <table className={props.tableClass !== undefined ? props.tableClass : ''} style={props.tableStyle}>
-          <Header<T> Class={props.theadClass} Style={props.theadStyle} Cols={props.cols} SortField={props.sortField} Ascending={props.ascending} Click={(d,e) => handleSort(d,e)}/>
+          <Header<T> Class={props.theadClass} Style={props.theadStyle} Cols={props.cols} SortKey={props.sortKey} Ascending={props.ascending} Click={(d,e) => handleSort(d,e)}/>
           <Rows<T> Data={props.data} Cols={props.cols} RowStyle={props.rowStyle} BodyStyle={props.tbodyStyle} BodyClass={props.tbodyClass} Click={(data,e) => props.onClick(data, e)} Selected={props.selected}/>
       </table>
     );
@@ -135,16 +135,16 @@ function Header<T>(props: {
   Class: string | undefined,
   Style: React.CSSProperties | undefined,
   Cols: Column<T>[], 
-  SortField: keyof T | null, 
+  SortKey: keyof T | null, 
   Ascending: boolean, 
 
   Click: (data: { col: keyof T|null; ascending: boolean }, event: React.MouseEvent<HTMLTableHeaderCellElement, MouseEvent>) => void
 }){
 
-  return (<thead className={props.Class} style={props.Style}><tr>{props.Cols.map((col,index) => <HeaderCell<T> key={index} HeaderStyle={col.headerStyle} DataKey={col.key} Click={(e) => props.Click({col: col.key, ascending: props.Ascending},e)} Label={col.label} SortField={props.SortField} Ascending={props.Ascending} />)}</tr></thead>)
+  return (<thead className={props.Class} style={props.Style}><tr>{props.Cols.map((col,index) => <HeaderCell<T> key={index} HeaderStyle={col.headerStyle} DataKey={col.key} Click={(e) => props.Click({col: col.key, ascending: props.Ascending},e)} Label={col.label} SortKey={props.SortKey} Ascending={props.Ascending} />)}</tr></thead>)
 
 }
-function HeaderCell<T> (props: {HeaderStyle: React.CSSProperties | undefined, DataKey: keyof T | null, Click: (e: any) => void, Label: string, SortField: keyof T | null, Ascending: boolean}){
+function HeaderCell<T> (props: {HeaderStyle: React.CSSProperties | undefined, DataKey: keyof T | null, Click: (e: any) => void, Label: string, SortKey: keyof T | null, Ascending: boolean}){
   const style: React.CSSProperties = (props.HeaderStyle !== undefined) ? props.HeaderStyle : {};
 
   if (style.cursor === undefined && props.DataKey !== null){
@@ -161,7 +161,7 @@ return (
     onClick={(e) => props.Click(e)}
   >
     
-    <RenderAngleIcon<T> SortField={props.SortField} Key={props.DataKey} Ascending={props.Ascending} />
+    <RenderAngleIcon<T> SortKey={props.SortKey} Key={props.DataKey} Ascending={props.Ascending} />
     <div style={{marginLeft: 10}}>{props.Label}</div>
   </th>
   );
@@ -169,7 +169,7 @@ return (
 
 
 function RenderAngleIcon<T>(props:{
-  SortField: keyof T |null, 
+  SortKey: keyof T |null, 
   Key: keyof T | null, 
   Ascending: boolean
 }) {
@@ -179,10 +179,10 @@ function RenderAngleIcon<T>(props:{
       style={{ position: 'absolute', top: 10, transform: (props.Ascending ?'rotate(0deg)' : 'rotate(180deg)') }}>{ '^'}</div>
   );
 
-  if (props.SortField === null)
+  if (props.SortKey === null)
     return null;
 
-  if (props.SortField !== props.Key)
+  if (props.SortKey !== props.Key)
     return null;
 
   return <AngleIcon ascending={props.Ascending} />
