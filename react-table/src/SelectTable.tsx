@@ -29,9 +29,10 @@ export interface ISelectTableProps<T> {
     cols: {
         key: keyof T|null;
         label: string;
+        field?: keyof T;
         headerStyle?: React.CSSProperties;
         rowStyle?: React.CSSProperties;
-        content?(item: T, key: keyof T|null, style: React.CSSProperties): React.ReactNode;
+        content?(item: T, key: keyof T|null, field: keyof T|undefined, style: React.CSSProperties): React.ReactNode;
     }[];
     data: T[];
     sortKey: keyof T;
@@ -74,7 +75,13 @@ export function SelectTable<T>(props: ISelectTableProps<T>) {
     }, [data]);
 
     React.useEffect(() => {
-        setData((lst) => (_.orderBy(lst, [sortKey], [(ascending ? "asc" : "desc")])))
+        const sortColumn = props.cols.filter(col => col.key === sortKey)[0];
+
+        if (sortColumn === undefined || sortColumn.field === undefined)
+            return;
+
+        const sortField: keyof T = sortColumn.field;
+        setData((lst) => (_.orderBy(lst, [sortField], [(ascending ? "asc" : "desc")])))
     }, [ascending, sortKey]);
 
     React.useEffect(() => {
@@ -107,7 +114,7 @@ export function SelectTable<T>(props: ISelectTableProps<T>) {
 
     const tableProps: TableProps<T> = {
         cols: [
-            { key: props.KeyField, label: '', headerStyle: { width: '4em' }, rowStyle: { width: '4em' }, content: (item: T, key: keyof T, style: React.CSSProperties) => {
+            { key: props.KeyField, label: '', headerStyle: { width: '4em' }, rowStyle: { width: '4em' }, content: (item: T, key: keyof T, field: keyof T|undefined, style: React.CSSProperties) => {
                 const index = selected.findIndex(i => i === item[props.KeyField])
                 if ( index > -1)
                     return <div style={{ marginTop: '16px', textAlign: 'center' }}><i className="fa fa-check-square-o fa-3x" aria-hidden="true"></i></div>
