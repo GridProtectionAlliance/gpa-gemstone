@@ -27,15 +27,15 @@ import Table, {TableProps} from './Table';
 
 export interface ISelectTableProps<T> {
     cols: {
-        key: keyof T|null;
+        key: string;
         label: string;
         field?: keyof T;
         headerStyle?: React.CSSProperties;
         rowStyle?: React.CSSProperties;
-        content?(item: T, key: keyof T|null, field: keyof T|undefined, style: React.CSSProperties): React.ReactNode;
+        content?(item: T, key: string, field: keyof T|undefined, style: React.CSSProperties): React.ReactNode;
     }[];
     data: T[];
-    sortKey: keyof T;
+    sortKey: string;
     ascending: boolean;
     tableClass?: string;
     tableStyle?: React.CSSProperties;
@@ -55,7 +55,7 @@ export function SelectTable<T>(props: ISelectTableProps<T>) {
     const [data, setData] = React.useState<T[]>(props.data);
     const [selected, setSelected] = React.useState<any[]>([]);
 
-    const [sortKey, setSortKey] = React.useState<keyof T>(props.sortKey);
+    const [sortKey, setSortKey] = React.useState<string>(props.sortKey);
     const [ascending, setAscending] = React.useState<boolean>(props.ascending);
 
     React.useEffect(() => {
@@ -89,7 +89,7 @@ export function SelectTable<T>(props: ISelectTableProps<T>) {
     }, [selected])
 
     function handleClick(
-        d: { colKey: keyof T|null; row: T; data: any },
+        d: { colKey: string; row: T; data: any },
         event: React.MouseEvent < HTMLTableHeaderCellElement, MouseEvent >,
     ) {
         const sIndex = selected.findIndex(item => item === d.row[props.KeyField]);
@@ -104,7 +104,7 @@ export function SelectTable<T>(props: ISelectTableProps<T>) {
     }
 
     function handleSort(
-        d: { colKey: keyof T; ascending: boolean },
+        d: { colKey: string; ascending: boolean },
     ) {
         if (d.colKey === sortKey)
             setAscending(!ascending);
@@ -114,7 +114,7 @@ export function SelectTable<T>(props: ISelectTableProps<T>) {
 
     const tableProps: TableProps<T> = {
         cols: [
-            { key: props.KeyField, label: '', headerStyle: { width: '4em' }, rowStyle: { width: '4em' }, content: (item: T, key: keyof T, field: keyof T|undefined, style: React.CSSProperties) => {
+            { key: 'gemstone-checkbox', field: props.KeyField, label: '', headerStyle: { width: '4em' }, rowStyle: { width: '4em' }, content: (item: T, key: string, field: keyof T|undefined, style: React.CSSProperties) => {
                 const index = selected.findIndex(i => i === item[props.KeyField])
                 if ( index > -1)
                     return <div style={{ marginTop: '16px', textAlign: 'center' }}><i className="fa fa-check-square-o fa-3x" aria-hidden="true"></i></div>

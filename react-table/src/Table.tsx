@@ -25,21 +25,21 @@ import * as React from 'react';
 import {CreateGuid} from '@gpa-gemstone/helper-functions';
 
 interface Column<T> {
-  key: (keyof T|null);
+  key: string;
   label: string;
   field?: keyof T;
   headerStyle?: React.CSSProperties;
   rowStyle?: React.CSSProperties;
-  content?(item: T, key: keyof T|null, field: keyof T|undefined, style: React.CSSProperties, index: number): React.ReactNode;
+  content?(item: T, key: string, field: keyof T|undefined, style: React.CSSProperties, index: number): React.ReactNode;
 }
 
 export interface TableProps<T> {
   cols: Column<T>[];
   data: T[];
-  onClick: (data: { colKey: keyof T|null; colField?: keyof T; row: T; data: T[keyof T]|null, index: number }, event: any) => void;
-  sortKey: (keyof T|null);
+  onClick: (data: { colKey: string; colField?: keyof T; row: T; data: T[keyof T]|null, index: number }, event: any) => void;
+  sortKey: string;
   ascending: boolean;
-  onSort(data: { colKey: keyof T|null; colField?: keyof T; ascending: boolean }): void;
+  onSort(data: { colKey: string; colField?: keyof T; ascending: boolean }): void;
   tableClass?: string;
   tableStyle?: React.CSSProperties;
   theadStyle?: React.CSSProperties;
@@ -59,7 +59,7 @@ export default function Table<T> (props: TableProps<T>) {
   );
 
   function handleSort(
-    data: { colKey: keyof T|null; colField?: keyof T; ascending: boolean },
+    data: { colKey: string; colField?: keyof T; ascending: boolean },
     event: React.MouseEvent<HTMLTableHeaderCellElement, MouseEvent>,
   ) {
     if (data.colKey !== null)
@@ -73,13 +73,13 @@ function Rows<T>(props: {
   RowStyle?: React.CSSProperties,
   BodyStyle?: React.CSSProperties,
   BodyClass?: string,
-  Click :( data: { colKey: keyof T|null, colField?: keyof T, row: T, data: T[keyof T] | null, index: number },e : React.MouseEvent<HTMLTableHeaderCellElement, MouseEvent>) => void,
+  Click :( data: { colKey: string, colField?: keyof T, row: T, data: T[keyof T] | null, index: number },e : React.MouseEvent<HTMLTableHeaderCellElement, MouseEvent>) => void,
   Selected?: ((data: T) => boolean),
 }) {
   if (props.Data.length === 0) return null;
   const rows = props.Data.map((item, rowIndex) => {
     const cells = props.Cols.map((colData) => {
-      return <Cell<T> key={CreateGuid()} Style={colData.rowStyle} DataKey={colData.key} DataField={colData.field} Object={item} RowIndex={rowIndex} Content={colData.content} Click={(data,e) => props.Click(data,e)} />
+      return <Cell<T> key={colData.key} Style={colData.rowStyle} DataKey={colData.key} DataField={colData.field} Object={item} RowIndex={rowIndex} Content={colData.content} Click={(data,e) => props.Click(data,e)} />
     });
 
     const style: React.CSSProperties = (props.RowStyle !== undefined) ? { ...props.RowStyle } : {};
@@ -104,12 +104,12 @@ function Rows<T>(props: {
 
 function Cell<T>(props: {
   Style?: React.CSSProperties,
-  DataKey: keyof T | null,
+  DataKey: string,
   DataField?: keyof T,
   Object: T,
   RowIndex: number,
-  Content?: ((item: T, key: keyof T|null, field: keyof T|undefined, style: React.CSSProperties, index: number) => React.ReactNode),
-  Click :( data: { colKey: keyof T|null, colField?: keyof T, row: T, data: T[keyof T] | null, index: number },e: React.MouseEvent<HTMLTableHeaderCellElement, MouseEvent>) => void
+  Content?: ((item: T, key: string, field: keyof T|undefined, style: React.CSSProperties, index: number) => React.ReactNode),
+  Click :( data: { colKey: string, colField?: keyof T, row: T, data: T[keyof T] | null, index: number },e: React.MouseEvent<HTMLTableHeaderCellElement, MouseEvent>) => void
 }) {
   const css: React.CSSProperties = (props.Style !== undefined) ? { ...props.Style } : {};
 
@@ -131,17 +131,17 @@ function Header<T>(props: {
   Class?: string,
   Style?: React.CSSProperties,
   Cols: Column<T>[],
-  SortKey: keyof T | null,
+  SortKey: string,
   Ascending: boolean,
 
-  Click: (data: { colKey: keyof T|null; colField?: keyof T; ascending: boolean }, event: React.MouseEvent<HTMLTableHeaderCellElement, MouseEvent>) => void
+  Click: (data: { colKey: string; colField?: keyof T; ascending: boolean }, event: React.MouseEvent<HTMLTableHeaderCellElement, MouseEvent>) => void
 }) {
 
-  return (<thead className={props.Class} style={props.Style}><tr>{props.Cols.map((col,index) => <HeaderCell<T> key={index} HeaderStyle={col.headerStyle} DataKey={col.key} Click={(e) => props.Click({colKey: col.key, colField: col.field, ascending: props.Ascending},e)} Label={col.label} SortKey={props.SortKey} Ascending={props.Ascending} />)}</tr></thead>)
+  return (<thead className={props.Class} style={props.Style}><tr>{props.Cols.map((col) => <HeaderCell<T> key={col.key} HeaderStyle={col.headerStyle} DataKey={col.key} Click={(e) => props.Click({colKey: col.key, colField: col.field, ascending: props.Ascending},e)} Label={col.label} SortKey={props.SortKey} Ascending={props.Ascending} />)}</tr></thead>)
 
 }
 
-function HeaderCell<T> (props: {HeaderStyle?: React.CSSProperties, DataKey: keyof T | null, Click: (e: any) => void, Label: string, SortKey: keyof T | null, Ascending: boolean}) {
+function HeaderCell<T> (props: {HeaderStyle?: React.CSSProperties, DataKey: string, Click: (e: any) => void, Label: string, SortKey: string, Ascending: boolean}) {
   const style: React.CSSProperties = (props.HeaderStyle !== undefined) ? props.HeaderStyle : {};
 
   if (style.cursor === undefined && props.DataKey !== null) {
@@ -165,8 +165,8 @@ function HeaderCell<T> (props: {HeaderStyle?: React.CSSProperties, DataKey: keyo
 }
 
 function RenderAngleIcon<T>(props:{
-  SortKey: keyof T |null,
-  Key: keyof T | null,
+  SortKey: string,
+  Key: string,
   Ascending: boolean
 }) {
 
