@@ -69,11 +69,11 @@ export default function Table<T> (props: TableProps<T>) {
 function Rows<T>(props: {
   Data: T[],
   Cols: Column<T>[],
-  RowStyle: React.CSSProperties | undefined,
-  BodyStyle: React.CSSProperties | undefined,
-  BodyClass: string | undefined,
+  RowStyle?: React.CSSProperties,
+  BodyStyle?: React.CSSProperties,
+  BodyClass?: string,
   Click :( data: { colKey: keyof T|null, row: T, data: T[keyof T] | null, index: number },e : React.MouseEvent<HTMLTableHeaderCellElement, MouseEvent>) => void,
-  Selected: ((data: T) => boolean) | undefined,
+  Selected?: ((data: T) => boolean),
 }) {
   if (props.Data.length === 0) return null;
   const rows = props.Data.map((item, rowIndex) => {
@@ -102,7 +102,7 @@ function Rows<T>(props: {
 }
 
 function Cell<T>(props: {
-  Style: React.CSSProperties | undefined,
+  Style?: React.CSSProperties,
   DataKey: keyof T | null,
   Object: T,
   RowIndex: number,
@@ -126,8 +126,8 @@ function Cell<T>(props: {
 }
 
 function Header<T>(props: {
-  Class: string | undefined,
-  Style: React.CSSProperties | undefined,
+  Class?: string,
+  Style?: React.CSSProperties,
   Cols: Column<T>[],
   SortKey: keyof T | null,
   Ascending: boolean,
@@ -139,7 +139,7 @@ function Header<T>(props: {
 
 }
 
-function HeaderCell<T> (props: {HeaderStyle: React.CSSProperties | undefined, DataKey: keyof T | null, Click: (e: any) => void, Label: string, SortKey: keyof T | null, Ascending: boolean}) {
+function HeaderCell<T> (props: {HeaderStyle?: React.CSSProperties, DataKey: keyof T | null, Click: (e: any) => void, Label: string, SortKey: keyof T | null, Ascending: boolean}) {
   const style: React.CSSProperties = (props.HeaderStyle !== undefined) ? props.HeaderStyle : {};
 
   if (style.cursor === undefined && props.DataKey !== null) {
