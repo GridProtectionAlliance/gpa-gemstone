@@ -26,44 +26,44 @@ import * as _ from 'lodash';
 import Table, {TableProps} from './Table';
 
 export interface ISelectTableProps<T> {
-	cols: {
-		key: keyof T|null;
-		label: string;
-		headerStyle?: React.CSSProperties;
-		rowStyle?: React.CSSProperties;
-		content?(item: T, key: keyof T|null, style: React.CSSProperties): React.ReactNode;
-	  }[];
-	data: T[];
-	sortKey: keyof T;
-	ascending: boolean;
-	tableClass?: string;
-	tableStyle?: React.CSSProperties;
-	theadStyle?: React.CSSProperties;
-	theadClass?: string;
-	tbodyStyle?: React.CSSProperties;
-	tbodyClass?: string;
-	rowStyle?: React.CSSProperties;
+    cols: {
+        key: keyof T|null;
+        label: string;
+        headerStyle?: React.CSSProperties;
+        rowStyle?: React.CSSProperties;
+        content?(item: T, key: keyof T|null, style: React.CSSProperties): React.ReactNode;
+    }[];
+    data: T[];
+    sortKey: keyof T;
+    ascending: boolean;
+    tableClass?: string;
+    tableStyle?: React.CSSProperties;
+    theadStyle?: React.CSSProperties;
+    theadClass?: string;
+    tbodyStyle?: React.CSSProperties;
+    tbodyClass?: string;
+    rowStyle?: React.CSSProperties;
     onSelection: (selected: T[]) => void;
     KeyField: keyof T;
-	selectAllCounter?: number;
+    selectAllCounter?: number;
 }
 
 export function SelectTable<T>(props: ISelectTableProps<T>) {
-	const didMountRef = React.useRef(false);
-	
+    const didMountRef = React.useRef(false);
+
     const [data, setData] = React.useState<T[]>(props.data);
     const [selected, setSelected] = React.useState<any[]>([]);
 
     const [sortKey, setSortKey] = React.useState<keyof T>(props.sortKey);
     const [ascending, setAscending] = React.useState<boolean>(props.ascending);
 
-	React.useEffect(() => {
-		if (didMountRef.current)
-			selectAll();
-		else
-			didMountRef.current = true;
-	},[props.selectAllCounter]);
-	
+    React.useEffect(() => {
+        if (didMountRef.current)
+            selectAll();
+        else
+            didMountRef.current = true;
+    }, [props.selectAllCounter]);
+
     React.useEffect(() => {
         if (props.data.length !== data.length)
             setData(props.data);
@@ -92,27 +92,27 @@ export function SelectTable<T>(props: ISelectTableProps<T>) {
             setSelected((od) => od.filter(item => item !== d.row[props.KeyField]));
     }
 
-	function selectAll() {
-		setSelected((d) => {if (d.length === data.length) return []; else return data.map(row => row[props.KeyField]); });
-	}
-	
+    function selectAll() {
+        setSelected((d) => {if (d.length === data.length) return []; else return data.map(row => row[props.KeyField]); });
+    }
+
     function handleSort(
         d: { colKey: keyof T; ascending: boolean },
     ) {
         if (d.colKey === sortKey)
             setAscending(!ascending);
-        else 
+        else
             setSortKey(d.colKey);
     }
 
     const tableProps: TableProps<T> = {
         cols: [
             { key: props.KeyField, label: '', headerStyle: { width: '4em' }, rowStyle: { width: '4em' }, content: (item: T, key: keyof T, style: React.CSSProperties) => {
-			const index = selected.findIndex(i => i === item[props.KeyField])
-			if ( index > -1)
-				return <div style={{ marginTop: '16px', textAlign: 'center' }}><i className="fa fa-check-square-o fa-3x" aria-hidden="true"></i></div>
-			return null
-				}},
+                const index = selected.findIndex(i => i === item[props.KeyField])
+                if ( index > -1)
+                    return <div style={{ marginTop: '16px', textAlign: 'center' }}><i className="fa fa-check-square-o fa-3x" aria-hidden="true"></i></div>
+                return null
+            }},
             ...props.cols
         ],
         data,
@@ -131,6 +131,4 @@ export function SelectTable<T>(props: ISelectTableProps<T>) {
     };
 
     return <Table {...tableProps} />;
-
 }
-
