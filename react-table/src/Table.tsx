@@ -77,7 +77,7 @@ function Rows<T>(props: {
 }) {
   if (props.Data.length === 0) return null;
   const rows = props.Data.map((item, rowIndex) => {
-    const cells = props.Cols.map((colData, colIndex) => {
+    const cells = props.Cols.map((colData) => {
       return <Cell<T> key={CreateGuid()} Style={colData.rowStyle} DataKey={colData.key} Object={item} RowIndex={rowIndex} Content={colData.content} Click={(data,e) => props.Click(data,e)} />
     });
 
