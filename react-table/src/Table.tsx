@@ -90,7 +90,7 @@ function Rows<T>(props: {
       style.backgroundColor = 'yellow';
 
     return (
-      <tr style={props.RowStyle} key={CreateGuid()}>
+      <tr style={style} key={CreateGuid()}>
         {cells}
       </tr>
     );
