@@ -13,7 +13,7 @@
 //  Unless agreed to in writing, the subject software distributed under the License is distributed on an
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
 //  License for the specific language governing permissions and limitations.
-//  
+//
 //  https://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid
 //
 //  Code Modification History:
@@ -28,5 +28,7 @@ import {GetTextWidth} from './GetTextWidth';
 import {GetTextHeight} from './GetTextHeight';
 import {GetNodeSize} from './GetNodeSize';
 import { RandomColor } from './RandomColor';
+import { IsNumber } from './IsNumber';
+import { IsInteger } from './IsInteger';
 
-export {CreateGuid, GetTextWidth, GetNodeSize, RandomColor, GetTextHeight}
+export {CreateGuid, GetTextWidth, GetNodeSize, RandomColor, GetTextHeight, IsNumber, IsInteger}

@@ -165,6 +165,7 @@ export default class GenericSlice<T extends U> {
                 });
                 builder.addCase(dBAction.fulfilled, (state: WritableDraft<IState<T>>) => {
                     state.Status = 'changed';
+										state.SearchStatus = 'changed';
                     state.Error = null;
                 });
 
