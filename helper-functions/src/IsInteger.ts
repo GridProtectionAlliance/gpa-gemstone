@@ -23,7 +23,8 @@
 
 /**
  * IsInteger checks if value passed through is an integer, returning a true or false
- * @param value: value is the input passed through the IsInteger function
+ * @param value is the input passed through the IsInteger function
+ * @returns Function will return true if value is an integer, false otherwise
  */
 function IsInteger(value: any): boolean {
   const regex = /^-?[0-9]+$/;
