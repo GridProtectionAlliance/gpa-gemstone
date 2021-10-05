@@ -24,7 +24,8 @@
 // ******************************************************************************************************
 
 /**
- * This function generates a GUID 
+ * This function generates a GUID
+ * @returns Unique GUID
  */
 function CreateGuid() {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
