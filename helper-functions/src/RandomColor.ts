@@ -23,6 +23,7 @@
 
 /**
  * This function returns a random color 
+ * @returns Random color
  */
 function RandomColor(){
     return '#' + Math.random().toString(16).substr(2, 6).toUpperCase();
