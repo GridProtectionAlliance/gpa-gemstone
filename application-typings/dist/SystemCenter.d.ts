@@ -42,7 +42,7 @@ declare namespace SystemCenter {
         }
         interface LSCVSAccount {
             ID: number;
-            AccountID: number;
+            AccountID: string;
             CustomerID: number;
         }
         interface LocationDrawing {
