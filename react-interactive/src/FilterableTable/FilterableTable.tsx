@@ -35,7 +35,8 @@ interface IOptions { Value: string | number, Label: string }
 
 interface IFilterableCollumn<T> extends Column<T> { 
     Type?: Search.FieldType, 
-    Enum?: IOptions[] 
+    Enum?: IOptions[],
+    ExpandedLabel?: string
 }
 
 interface IProps<T> extends TableProps<T> {
@@ -70,6 +71,7 @@ export default function FilterableTable<T>(props: IProps<T>) {
                         Field={c.field}
                         Type={c.Type}
                         Options={c.Enum}
+                        ExpandedLabel={c.ExpandedLabel}
                     />
                 }))}
                 data={props.data}
@@ -99,7 +101,8 @@ interface IHeaderProps<T> {
     Filter: Search.IFilter<T>[],
     SetFilter: (flt: Search.IFilter<T>[]) => void,
     Field: string | number | symbol | undefined,
-    Options?: IOptions[]
+    Options?: IOptions[],
+    ExpandedLabel?: string
 }
 
 function Header<T>(props: IHeaderProps<T>) {
@@ -130,14 +133,23 @@ function Header<T>(props: IHeaderProps<T>) {
                 >
                     <table className="table" style={{ margin: 0 }}>
                         <tbody>
+                            {((props.ExpandedLabel !== null) && (props.ExpandedLabel !== "") && (props.ExpandedLabel !== undefined)) ? 
+                                <tr>
+                                    <th colSpan={props.Type === 'boolean' ? 2 : 1}>
+                                        <label>{props.ExpandedLabel}</label>
+                                    </th>
+                                </tr>
+                            : null} 
                             {props.Type === 'boolean' ? <BooleanFilter
                                 SetFilter={props.SetFilter}
                                 Filter={props.Filter}
-                                FieldName={props.Field?.toString() ?? ''} /> : null}
+                                FieldName={props.Field?.toString() ?? ''}
+                            /> : null}
                             {props.Type === 'string' ? <TextFilter
                                 SetFilter={props.SetFilter}
                                 Filter={props.Filter}
-                                FieldName={props.Field?.toString() ?? ''} /> : null}
+                                FieldName={props.Field?.toString() ?? ''}
+                            /> : null}
                             {props.Type === 'enum' && props.Options !== undefined ? <EnumFilter
                                 FieldName={props.Field?.toString() ?? ''}
                                 Filter={props.Filter}
