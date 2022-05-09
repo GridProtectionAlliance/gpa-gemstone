@@ -36,10 +36,11 @@ function Legend(props: IProps) {
   const context = React.useContext(GraphContext)
   const w = (props.location === 'bottom'? props.graphWidth : props.width);
   const h = (props.location === 'right'? props.graphHeight : props.height);
+  const position = (props.location === 'bottom'? 'absolute' : 'relative')
     return (
-      <div style={{ height: h, width: w, position: 'relative', float:(props.location as any) ,display: 'flex', flexWrap: 'wrap' }}>
+      <div style={{ height: h, width: w, position: position, float:(props.location as any) ,display: 'flex', flexWrap: 'wrap', bottom: 0 }}>
         {[...context.Data.values()].map((series, index) => (series.legend !== undefined ?
-              <div key={index}>
+              <div key={index} style={{width:(props.location === 'bottom' ? w/3: w)}}>
                   {series.legend}
           </div> : null))}
       </div>)
