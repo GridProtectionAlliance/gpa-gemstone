@@ -300,7 +300,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
     return (
        <GraphContext.Provider value={GetContext()}>
            <div style={{ height: props.height, width: props.width, position: 'relative' }}>
-               <div style={{ height: SVGHeight, width: SVGWidth, position: 'relative' }}
+               <div style={{ height: SVGHeight, width: SVGWidth, position: 'absolute' }}
                    onWheel={handleMouseWheel} onMouseMove={handleMouseMove} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} onMouseLeave={handleMouseOut} onMouseEnter={handleMouseIn} >
                    <svg ref={SVGref} width={SVGWidth} height={SVGHeight} style={SvgStyle} viewBox={`0 0 ${SVGWidth} ${SVGHeight}`}>
                       {props.showBorder !== undefined && props.showBorder ? < path stroke='black' d={`M ${offsetLeft} ${offsetTop} H ${SVGWidth- offsetRight} V ${SVGWidth - offsetBottom} H ${offsetLeft} Z`} /> : null}

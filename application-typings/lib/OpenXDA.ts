@@ -104,6 +104,7 @@ namespace OpenXDA {
         export interface DataOperation { ID: number, AssemblyName: string, TypeName: string, LoadOrder: number }
         export interface DataReader { ID: number, FilePattern: string, AssemblyName: string, TypeName: string, LoadOrder: number }
 
+		export interface RemoteXDAInstance { ID: number, Name: string, Address: string, Frequency: string, UserAccountID: string}
     }
 }
 export default OpenXDA;

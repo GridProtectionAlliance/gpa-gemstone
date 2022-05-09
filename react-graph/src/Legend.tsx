@@ -37,7 +37,7 @@ function Legend(props: IProps) {
   const w = (props.location === 'bottom'? props.graphWidth : props.width);
   const h = (props.location === 'right'? props.graphHeight : props.height);
     return (
-      <div style={{ height: h, width: w, position: 'relative', display: 'flex', flexWrap: 'wrap' }}>
+      <div style={{ height: h, width: w, position: 'relative', float:(props.location as any) ,display: 'flex', flexWrap: 'wrap' }}>
         {[...context.Data.values()].map((series, index) => (series.legend !== undefined ?
               <div key={index}>
                   {series.legend}
