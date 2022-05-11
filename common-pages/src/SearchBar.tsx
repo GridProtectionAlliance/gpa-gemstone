@@ -24,7 +24,7 @@
 
 import * as React from 'react';
 import { GenericSlice, SearchBar as GenericSearchBar, Search } from '@gpa-gemstone/react-interactive';
-import { OpenXDA, SystemCenter } from '@gpa-gemstone/application-typings';
+import { OpenXDA, SystemCenter, Application } from '@gpa-gemstone/application-typings';
 import { useDispatch, useSelector } from 'react-redux';
 import _ = require('lodash');
 
@@ -194,6 +194,43 @@ export namespace DefaultSearch {
         }, []);
         
         return <GenericSearchBar<OpenXDA.Types.AssetGroup> 
+            CollumnList={[...defaultSearchcols, ...addlFieldCols]}
+            SetFilter={(flds) => dispatch(props.Slice.DBSearch({ filter: flds, sortField, ascending }))} 
+            Direction={'left'} 
+            defaultCollumn={standardSearch} 
+            Width={'50%'} 
+            Label={'Search'}
+            ShowLoading={searchStatus === 'loading'} 
+            ResultNote={searchStatus === 'error' ? 'Could not complete Search' : 'Found ' + data.length + ' Asset Group(s)'}
+            GetEnum={props.GetEnum}
+        >
+            {props.children}
+        </GenericSearchBar>
+    }
+
+    /** This Implements a standard User Search */
+    export function User (props: IProps<Application.Types.iUserAccount>) {
+
+        const standardSearch: Search.IField<Application.Types.iUserAccount> = { label: 'Username', key: 'Name', type: 'string', isPivotField: false };
+        const [addlFieldCols, setAddlFieldCols] = React.useState<Search.IField<Application.Types.iUserAccount>[]>([]);
+
+        const dispatch = useDispatch();
+        const searchStatus = useSelector(props.Slice.SearchStatus)
+        const sortField = useSelector(props.Slice.SortField)
+        const ascending = useSelector(props.Slice.Ascending)
+        const data: Application.Types.iUserAccount[] = useSelector(props.Slice.SearchResults);
+
+        const defaultSearchcols: Search.IField<Application.Types.iUserAccount>[] = [
+            { label: 'Username', key: 'Name', type: 'string', isPivotField: false },
+            { label: 'Email', key: 'Email', type: 'string', isPivotField: false },
+            { label: 'Account Locked', key: 'LockedOut', type: 'boolean', isPivotField: false },     
+        ];
+
+        React.useEffect(() => {
+          return props.GetAddlFields(setAddlFieldCols);
+        }, []);
+        
+        return <GenericSearchBar<Application.Types.iUserAccount> 
             CollumnList={[...defaultSearchcols, ...addlFieldCols]}
             SetFilter={(flds) => dispatch(props.Slice.DBSearch({ filter: flds, sortField, ascending }))} 
             Direction={'left'} 

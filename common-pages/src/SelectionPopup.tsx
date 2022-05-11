@@ -26,7 +26,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { GenericSlice, Modal, SearchBar, Search} from "@gpa-gemstone/react-interactive";
 import _ = require("lodash");
 import { CrossMark } from "@gpa-gemstone/gpa-symbols";
-import { OpenXDA, SystemCenter } from "@gpa-gemstone/application-typings";
+import { Application, OpenXDA, SystemCenter } from "@gpa-gemstone/application-typings";
 import SelectPopup from "./StandardSelectPopup";
 import {DefaultSearch} from './SearchBar';
 
@@ -69,5 +69,10 @@ export namespace DefaultSelects {
     /** This Implements a standard Asset Group Selection Modal */
     export function AssetGroup (props: IProps<OpenXDA.Types.AssetGroup>) {
         return <SelectPopup<OpenXDA.Types.AssetGroup>{...props} Searchbar={(children) => <DefaultSearch.AssetGroup Slice={props.Slice} GetAddlFields={props.GetAddlFields} GetEnum={props.GetEnum}>{children}</DefaultSearch.AssetGroup>}></SelectPopup>
+    }
+
+    /** This Implements a standard Asset Group Selection Modal */
+    export function User (props: IProps<Application.Types.iUserAccount>) {
+        return <SelectPopup<Application.Types.iUserAccount>{...props} Searchbar={(children) => <DefaultSearch.User Slice={props.Slice} GetAddlFields={props.GetAddlFields} GetEnum={props.GetEnum}>{children}</DefaultSearch.User>}></SelectPopup>
     }
 }
