@@ -70,4 +70,9 @@ export namespace DefaultSelects {
     export function AssetGroup (props: IProps<OpenXDA.Types.AssetGroup>) {
         return <SelectPopup<OpenXDA.Types.AssetGroup>{...props} Searchbar={(children) => <DefaultSearch.AssetGroup Slice={props.Slice} GetAddlFields={props.GetAddlFields} GetEnum={props.GetEnum}>{children}</DefaultSearch.AssetGroup>}></SelectPopup>
     }
+
+    /** This Implements a standard Asset Group Selection Modal */
+    export function Customer (props: IProps<OpenXDA.Types.Customer>) {
+        return <SelectPopup<OpenXDA.Types.Customer>{...props} Searchbar={(children) => <DefaultSearch.Customer Slice={props.Slice} GetAddlFields={props.GetAddlFields} GetEnum={props.GetEnum}>{children}</DefaultSearch.Customer>}></SelectPopup>
+    }
 }
