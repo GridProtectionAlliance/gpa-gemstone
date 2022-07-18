@@ -28,8 +28,9 @@ export default class TimePicker<T> extends React.Component<
     Field: keyof T;
     Setter: (record: T) => void;
     Label?: string;
-    Disabled?: boolean
+    Disabled?: boolean;
     Feedback?: string;
+    Step?: number;
     Valid: (field: keyof T) => boolean;
     },
   {},
@@ -38,10 +39,12 @@ export default class TimePicker<T> extends React.Component<
   render() {
     return (
       <div className="form-group">
-        <label>{this.props.Label == null ? this.props.Field : this.props.Label}</label>
+        {(this.props.Label !== "") ?
+        <label>{this.props.Label == null ? this.props.Field : this.props.Label}</label> : null}
         <input
           className={this.props.Valid(this.props.Field) ? 'form-control' : 'form-control is-invalid'}
           type="time"
+          step={this.props.Step === null ? 60 : this.props.Step}
           onChange={(evt) => {
             const record: T = { ...this.props.Record };
             if (evt.target.value !== '') record[this.props.Field] = evt.target.value as any;

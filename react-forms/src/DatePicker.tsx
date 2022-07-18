@@ -22,6 +22,7 @@
 // ******************************************************************************************************
 
 import * as React from 'react';
+import * as moment from 'moment';
 
 export default class DatePicker<T> extends React.Component<
   { Record: T;
@@ -30,6 +31,7 @@ export default class DatePicker<T> extends React.Component<
     Label?: string;
     Disabled?: boolean;
     Feedback?: string;
+    Format?: string;
     Valid: (field: keyof T) => boolean; },
   {},
   {}
@@ -37,19 +39,26 @@ export default class DatePicker<T> extends React.Component<
   render() {
     return (
       <div className="form-group">
-        <label>{this.props.Label == null ? this.props.Field : this.props.Label}</label>
+        {(this.props.Label !== "") ?
+        <label>{this.props.Label == null ? this.props.Field : this.props.Label}</label> : null}
         <input
           className={this.props.Valid(this.props.Field) ? 'form-control' : 'form-control is-invalid'}
           type="date"
           onChange={(evt) => {
             const record: T = { ...this.props.Record };
-            if (evt.target.value !== '') record[this.props.Field] = evt.target.value as any;
+            if (evt.target.value !== '') {
+              if (this.props.Format === null) record[this.props.Field] = evt.target.value as any;
+              else record[this.props.Field] = moment(evt.target.value).format(this.props.Format) as any;
+            }
             else record[this.props.Field] = null as any;
 
             this.props.Setter(record);
           }}
           value={
-            this.props.Record[this.props.Field] == null ? '' : (this.props.Record[this.props.Field] as any).toString()
+            this.props.Record[this.props.Field] == null ? '' : 
+             this.props.Format == null ? 
+              (this.props.Record[this.props.Field] as any).toString() :
+              moment(this.props.Record[this.props.Field] as any).format("YYYY-MM-DD")
           }
           disabled={this.props.Disabled == null ? false : this.props.Disabled}
         />
