@@ -50,9 +50,10 @@ export default function Select<T>(props: IProps<T>) {
 	  
   return (
     <div className="form-group">
-	<label>{props.Label == null ? props.Field : props.Label} 
+    {(props.Label !== "") ?
+	  <label>{props.Label === null ? props.Field : props.Label} 
      {props.Help !== undefined? <div style={{ width: 20, height: 20, borderRadius: '50%', display: 'inline-block', background: '#0D6EFD', marginLeft: 10, textAlign: 'center', fontWeight: 'bold' }} onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)}> ? </div> : null}
-		</label>
+		</label> : null }
 		{props.Help !== undefined? 
 			<HelperMessage Show={showHelp} Target={guid}>
 				{props.Help}

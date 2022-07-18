@@ -1,7 +1,7 @@
 // ******************************************************************************************************
-//  IsNumber.tsx - Gbtc
+//  PQI.ts - Gbtc
 //
-//  Copyright © 2021, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2022, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -16,19 +16,21 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  01/07/2021 - Billy Ernest
+//  07/18/2022 - C. Lackner
 //       Generated original version of source code.
 //
 // ******************************************************************************************************
+namespace PQI {
+    export namespace Types {
+       // Types
 
-/**
- * This function checks if any value is a number, returning true or false
- * @param value: value is the input passed through the IsNumber function
- * @returns Function will return true if value is an integer, false otherwise
- */
-function IsNumber(value: any): boolean {
-  const regex = /^-?[0-9]+(\.[0-9]+)?$/;
-  return value.toString().match(regex) != null;
+       // Tables
+       export interface Facility { Name: string, Voltage: string, UtilitySupplyVoltage: string, Path: string }; 
+       export interface Equipment { Facility: string, Area: string, SectionTitle: string, SectionRank: number, ComponentModel: string, Manufacturer: string, Series: string, ComponentType: string }
+    }
+    
+    export namespace Lists{
+    }
 }
 
-export {IsNumber};
+export default PQI;

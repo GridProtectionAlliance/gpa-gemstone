@@ -1,7 +1,7 @@
 # Call the script with the path to the project directory as an argument:
 #     .\build-panel.ps1 "C:\Projects\gpa-gemstone\"
 # Uncomment the following line to hardcode the project directory for testing
-#$projectDir = "D:\Projects\gpa-gemstone\"
+$projectDir = "D:\Projects\gpa-gemstone\"
 
 param(
     [string]$projectDir
@@ -38,6 +38,7 @@ function LoadPackage($package) {
     }
     if ($inDep) {
       $nDep ++
+      $line=$line.Trim(",")
       $item =$line.Split(":")
       if ($DependencyHash.ContainsKey($item[0].Trim())) {
         if ($DependencyHash[$item[0].Trim()] -ne $item[1].Trim()) {
@@ -50,7 +51,7 @@ function LoadPackage($package) {
         echo "$p is specified as a Dependency here but as a DevDependency in another package"
       }
       else{
-        $DependencyHash[$item[0].Trim()] = $item[1].Trim()
+        $DependencyHash[$item[0].Trim()] = $item[1].Trim().Trim(",")
       }
     }
     
@@ -69,6 +70,7 @@ foreach($line in Get-Content ".\$package\package.json") {
       $inDep= $false
     }
     if ($inDep) {
+      $line=$line.Trim(",")
       $item =$line.Split(":")
       if ($DevDependencyHash.ContainsKey($item[0].Trim())) {
         if ($DevDependencyHash[$item[0].Trim()] -ne $item[1].Trim().Trim(",")) {

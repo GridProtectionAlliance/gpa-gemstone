@@ -120,7 +120,7 @@ export default function DateRangePicker<T>(props: {
 
   React.useEffect(() => {
       // only if InputStart is a valid ToString
-      if (StartInput.match('^([0-9][0-9][0-9][0-9])-([0-9][0-9])-([0-2][0-9])') != null)
+      if (StartInput.match('^([0-9][0-9][0-9][0-9])-([0-1][0-9])-([0-3][0-9])') != null)
         setTstart(ToDate(StartInput));
       else
         setTstart(null)
@@ -133,7 +133,7 @@ export default function DateRangePicker<T>(props: {
 
   React.useEffect(() => {
       // only if EndInput is a valid ToString
-      if (EndInput.match('^([0-9][0-9][0-9][0-9])-([0-9][0-9])-([0-2][0-9])') != null)
+      if (EndInput.match('^([0-9][0-9][0-9][0-9])-([0-1][0-9])-([0-3][0-9])') != null)
         setTend(ToDate(EndInput));
       else
         setTend(null)

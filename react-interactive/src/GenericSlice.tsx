@@ -44,7 +44,7 @@ export interface IState<T extends U> {
     Data: T[],
     SortField: keyof T,
     Ascending: boolean,
-    ParentID: (number | null ),
+    ParentID: (number | null | string ),
     SearchResults: T[],
     Filter: Search.IFilter<T>[]
 }
@@ -53,7 +53,7 @@ export default class GenericSlice<T extends U> {
     Name: string = "";
     APIPath: string = "";
     Slice: ( Slice<IState<T>> );
-    Fetch: (AsyncThunk<any, void | number, {}>);
+    Fetch: (AsyncThunk<any, void | number | string, {}>);
     DBAction: (AsyncThunk<any, { verb: 'POST' | 'DELETE' | 'PATCH', record: T }, {}> );
     DBSearch: (AsyncThunk<any, { filter: Search.IFilter<T>[], sortField?: keyof T, ascending?: boolean }, {}> );
     Sort: (AsyncThunk<any, {SortField: keyof T, Ascending: boolean}, {}>);
@@ -79,7 +79,7 @@ export default class GenericSlice<T extends U> {
         this.fetchHandle = null;
         this.searchHandle = null;
 
-        const fetch = createAsyncThunk(`${name}/Fetch${name}`, async (parentID:number | void, { signal, getState }) => {
+        const fetch = createAsyncThunk(`${name}/Fetch${name}`, async (parentID:number | void | string, { signal, getState }) => {
 
             const state = (getState() as any)[name] as IState<T>;
             if (this.fetchHandle != null && this.fetchHandle.abort != null)
@@ -176,14 +176,14 @@ export default class GenericSlice<T extends U> {
                     state.Error = null;
                     state.Data = JSON.parse(action.payload.toString()) as Draft<T[]>;
                 });
-                builder.addCase(fetch.pending, (state: WritableDraft<IState<T>>, action: PayloadAction<undefined, string,  {arg: number | void, requestId: string},never>) => {
+                builder.addCase(fetch.pending, (state: WritableDraft<IState<T>>, action: PayloadAction<undefined, string,  {arg: number | string | void, requestId: string},never>) => {
                     if (state.ParentID !== (action.meta.arg == null? null : action.meta.arg))
                         state.SearchStatus = 'changed';
                     state.ParentID = (action.meta.arg == null? null : action.meta.arg);
                     state.Status = 'loading';
                     state.ActiveFetchID.push(action.meta.requestId);
                 });
-                builder.addCase(fetch.rejected, (state: WritableDraft<IState<T>>, action: PayloadAction<unknown, string,  {arg: number | void, requestId: string},SerializedError>) => {
+                builder.addCase(fetch.rejected, (state: WritableDraft<IState<T>>, action: PayloadAction<unknown, string,  {arg: number | string | void, requestId: string},SerializedError>) => {
                     state.ActiveFetchID = state.ActiveFetchID.filter(id => id !== action.meta.requestId);
                     if (state.ActiveFetchID.length > 0)
                         return;
@@ -278,7 +278,7 @@ export default class GenericSlice<T extends U> {
 
 
 
-    private GetRecords(ascending: (boolean | undefined), sortField: keyof T, parentID: number | void,): JQuery.jqXHR<T[]> {
+    private GetRecords(ascending: (boolean | undefined), sortField: keyof T, parentID: number | void | string,): JQuery.jqXHR<T[]> {
         return $.ajax({
             type: "GET",
             url: `${this.APIPath}${(parentID != null ? '/' + parentID : '')}/${sortField}/${ascending? '1' : '0'}`,
@@ -306,7 +306,7 @@ export default class GenericSlice<T extends U> {
         });
     }
 
-    private Search(filter: Search.IFilter<T>[], ascending: (boolean | undefined), sortField: keyof T, parentID?: number): JQuery.jqXHR<string> {
+    private Search(filter: Search.IFilter<T>[], ascending: (boolean | undefined), sortField: keyof T, parentID?: number | string): JQuery.jqXHR<string> {
         return $.ajax({
             type: 'POST',
             url: `${this.APIPath}/${parentID != null ? `${parentID}/` : ''}SearchableList`,
@@ -325,7 +325,7 @@ export default class GenericSlice<T extends U> {
     public Status = (state: any) => state[this.Name].Status as Application.Types.Status;
     public SortField = (state: any) => state[this.Name].SortField as keyof T;
     public Ascending = (state: any) => state[this.Name].Ascending as boolean;
-    public ParentID = (state: any) => state[this.Name].ParentID as number;
+    public ParentID = (state: any) => state[this.Name].ParentID as number | string;
 
     public SearchResults = (state: any) => state[this.Name].SearchResults as T[];
     public SearchStatus = (state: any) => state[this.Name].SearchStatus as Application.Types.Status;

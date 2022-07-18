@@ -26,5 +26,6 @@ import SOETools from './SOETools';
 import SystemCenter from './SystemCenter';
 import Application from './Application';
 import OpenXDA from './OpenXDA';
+import PQI from './PQI';
 
-export { PqDiff, SOETools, OpenHistorian, SystemCenter, Application, OpenXDA}
+export { PqDiff, SOETools, OpenHistorian, SystemCenter, Application, OpenXDA, PQI}

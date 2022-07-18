@@ -26,6 +26,7 @@
  * @param font: Determines font of given text
  * @param fontSize: Determines size of given font
  * @param word: Text to measure
+ * @returns Height of text
  */
 function GetTextHeight(font: string, fontSize: string, word: string): number {
 

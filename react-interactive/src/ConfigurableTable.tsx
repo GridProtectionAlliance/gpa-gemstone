@@ -71,7 +71,7 @@ export default function ConfigurableTable<T>(props: IProps<T>) {
                 onClick={props.onClick}
                 sortKey={props.sortKey}
                 ascending={props.ascending}
-                onSort={(d) => { if (d.colKey === 'SettingsCog') setShowSettings(true); else props.onSort(d); }}
+                onSort={(d,evt) => { if (d.colKey === 'SettingsCog') setShowSettings(true); else props.onSort(d, evt); }}
                 tableClass={props.tableClass}
                 tableStyle={props.tableStyle}
                 theadStyle={props.theadStyle}

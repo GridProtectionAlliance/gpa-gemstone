@@ -152,7 +152,7 @@ export default function SearchBar<T> (props: IProps<T>)  {
                       <tr><th>Column</th><th>Operator</th><th>Search Text</th><th>Edit</th><th>Remove</th></tr>
                   </thead>
                   <tbody>
-                      {filters.map((f, i) => <tr key={i}><td>{f.FieldName === props.CollumnList[0].key ? props.CollumnList[0].label : f.FieldName}</td><td>{f.Operator}</td><td>{f.SearchText}</td><td><button type='button' className="btn btn-sm" onClick={(e) => editFilter(i)}><span>{Pencil}</span></button></td><td><button type='button' className="btn btn-sm" onClick={(e) => deleteFilter(f)}><span>{TrashCan}</span></button></td></tr>)}
+                      {filters.map((f, i) => <FilterRow Filter={f} Edit={() => editFilter(i)} Delete={() => deleteFilter(f)} key={i} Collumns={props.CollumnList}/> )}
                   </tbody>
               </table>
           </div>
@@ -365,4 +365,26 @@ function FilterCreator<T>(props: IPropsFilterCreator<T> ) {
             </>
         );
     }
+}
+
+interface IFilterRowProps<T> {
+    Filter: Search.IFilter<T>, 
+    Edit: () => void,
+    Delete: () => void,
+    Collumns: Search.IField<T>[]
+}
+function FilterRow<T>(props: IFilterRowProps<T>) {
+    
+    const column = props.Collumns.find(c => c.key === props.Filter.FieldName);
+    return <tr>
+        <td>{column === undefined ? props.Filter.FieldName : column.label }</td>
+        <td>{props.Filter.Operator}</td>
+        <td>{props.Filter.SearchText}</td>
+        <td>
+            <button type='button' className="btn btn-sm" onClick={(e) => props.Edit()}><span>{Pencil}</span></button>
+        </td>
+        <td>
+            <button type='button' className="btn btn-sm" onClick={(e) => props.Delete()}><span>{TrashCan}</span></button>
+        </td>
+    </tr>;
 }

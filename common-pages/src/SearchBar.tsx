@@ -246,4 +246,41 @@ export namespace DefaultSearch {
     }
 
 
+    /** This Implements a standard Customer Search */
+    export function Customer (props: IProps<OpenXDA.Types.Customer>) {
+
+        const defaultSearchcols: Search.IField<OpenXDA.Types.Customer>[] = [
+            { label: 'Account Name', key: 'CustomerKey', type: 'string', isPivotField: false },
+            { label: 'Name', key: 'Name', type: 'string', isPivotField: false },
+            { label: 'Phone', key: 'Phone', type: 'string', isPivotField: false },
+            { label: 'Description', key: 'Description', type: 'string', isPivotField: false },
+        ];
+
+        const standardSearch: Search.IField<OpenXDA.Types.Customer> = defaultSearchcols[0];
+        const [addlFieldCols, setAddlFieldCols] = React.useState<Search.IField<OpenXDA.Types.Customer>[]>([]);
+        
+        const dispatch = useDispatch();
+        const searchStatus = useSelector(props.Slice.SearchStatus)
+        const sortField = useSelector(props.Slice.SortField)
+        const ascending = useSelector(props.Slice.Ascending)
+        const data: OpenXDA.Types.Customer[] = useSelector(props.Slice.SearchResults);
+
+        React.useEffect(() => {
+          return props.GetAddlFields(setAddlFieldCols);
+        }, []);
+        
+        return <GenericSearchBar<OpenXDA.Types.Customer> 
+            CollumnList={[...defaultSearchcols, ...addlFieldCols]}
+            SetFilter={(flds) => dispatch(props.Slice.DBSearch({ filter: flds, sortField, ascending }))} 
+            Direction={'left'} 
+            defaultCollumn={standardSearch} 
+            Width={'50%'} 
+            Label={'Search'}
+            ShowLoading={searchStatus === 'loading'} 
+            ResultNote={searchStatus === 'error' ? 'Could not complete Search' : 'Found ' + data.length + ' Customer(s)'}
+            GetEnum={props.GetEnum}
+        >
+            {props.children}
+        </GenericSearchBar>
+    }
 }

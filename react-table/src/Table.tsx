@@ -52,7 +52,7 @@ export interface TableProps<T> {
      * Boolen to indicate whether the sort is ascending or descending
      */
     ascending: boolean;
-    onSort(data: { colKey: string; colField?: keyof T; ascending: boolean }): void;
+    onSort(data: { colKey: string; colField?: keyof T; ascending: boolean }, event: any): void;
     tableClass?: string;
     tableStyle?: React.CSSProperties;
     theadStyle?: React.CSSProperties;
@@ -62,6 +62,11 @@ export interface TableProps<T> {
     selected?(data: T): boolean;
     rowStyle?: React.CSSProperties;
     keySelector?: (data: T) => string;
+    /**
+     * Optional Element to display in the last row of the Table
+     * use this for displaying warnings when the Table content gets cut off
+     */
+    lastRow?: string|React.ReactNode;
 }
 
 export default function Table<T>(props: TableProps<T>) {
@@ -70,6 +75,9 @@ export default function Table<T>(props: TableProps<T>) {
         <table className={props.tableClass !== undefined ? props.tableClass : ''} style={props.tableStyle}>
             <Header<T> Class={props.theadClass} Style={props.theadStyle} Cols={props.cols} SortKey={props.sortKey} Ascending={props.ascending} Click={(d, e) => handleSort(d, e)} />
             <Rows<T> Data={props.data} Cols={props.cols} RowStyle={props.rowStyle} BodyStyle={props.tbodyStyle} BodyClass={props.tbodyClass} Click={(data, e) => (props.onClick === undefined? null : props.onClick(data, e))} Selected={props.selected} KeySelector={props.keySelector} />
+            {props.lastRow !== undefined? <tr style={(props.rowStyle !== undefined) ? { ...props.rowStyle } : {}} key={-1}>
+                {props.lastRow}
+            </tr> : null}
         </table>
     );
 
@@ -78,7 +86,7 @@ export default function Table<T>(props: TableProps<T>) {
         event: React.MouseEvent<HTMLTableHeaderCellElement, MouseEvent>,
     ) {
         if (data.colKey !== null)
-            props.onSort(data);
+            props.onSort(data,event);
     }
 }
 

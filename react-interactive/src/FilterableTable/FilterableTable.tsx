@@ -29,7 +29,7 @@ import { TextFilter } from './TextFilter';
 import { EnumFilter } from './EnumFilter';
 import { NumberFilter } from './NumberFilter';
 import { DateFilter, TimeFilter } from './DateTimeFilters';
-
+import { CreateGuid} from '@gpa-gemstone/helper-functions';
 
 interface IOptions { Value: string | number, Label: string }
 
@@ -50,6 +50,7 @@ interface IProps<T> extends TableProps<T> {
  */
 export default function FilterableTable<T>(props: IProps<T>) {
     const [filters, setFilters] = React.useState<Search.IFilter<T>[]>((props.DefaultFilter === undefined ? [] : props.DefaultFilter));
+    const [guid, setGuid] = React.useState<string>(CreateGuid());
 
     function updateFilters(flts: Search.IFilter<T>[], fld: string | number | symbol| undefined) {
         setFilters((fls) => {
@@ -72,13 +73,19 @@ export default function FilterableTable<T>(props: IProps<T>) {
                         Type={c.Type}
                         Options={c.Enum}
                         ExpandedLabel={c.ExpandedLabel}
+                        Guid={guid}
                     />
                 }))}
                 data={props.data}
                 onClick={props.onClick}
                 sortKey={props.sortKey}
                 ascending={props.ascending}
-                onSort={props.onSort}
+                onSort={(d,evt) => {
+                    // make sure we do not sort when clicking on the filter
+                    const $div = evt.target.closest(`div[data-tableid="${guid}"]`);
+                    if ($div === null)
+                        props.onSort(d,evt);
+                }}
                 tableClass={props.tableClass}
                 tableStyle={props.tableStyle}
                 theadStyle={props.theadStyle}
@@ -102,7 +109,8 @@ interface IHeaderProps<T> {
     SetFilter: (flt: Search.IFilter<T>[]) => void,
     Field: string | number | symbol | undefined,
     Options?: IOptions[],
-    ExpandedLabel?: string
+    ExpandedLabel?: string,
+    Guid: string,
 }
 
 function Header<T>(props: IHeaderProps<T>) {
@@ -122,16 +130,17 @@ function Header<T>(props: IHeaderProps<T>) {
                         maxHeight: window.innerHeight * 0.50,
                         overflowY: 'auto',
                         padding: '10 5',
-                        display: show ? 'block' : 'none',
+                        display: show ? 'block' : 'none', 
                         position: 'absolute',
                         backgroundColor: '#fff',
                         boxShadow: '0px 8px 16px 0px rgba(0,0,0,0.2)',
                         zIndex: 401,
                         minWidth: 'calc(100% - 50px)',
                         marginLeft: -25
-                    }} onClick={(evt) => { evt.preventDefault(); evt.stopPropagation(); }}
+                    }} data-tableid={props.Guid}
                 >
-                    <table className="table" style={{ margin: 0 }}>
+                    {/*onClick={(evt) => { evt.preventDefault(); evt.stopPropagation(); }}*/}
+                    <table style={{ margin: 0 }}>
                         <tbody>
                             {((props.ExpandedLabel !== null) && (props.ExpandedLabel !== "") && (props.ExpandedLabel !== undefined)) ? 
                                 <tr>

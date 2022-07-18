@@ -104,7 +104,7 @@ export function DateFilter<T>(props: IProps<T>) {
     }, [operator, date, secondDate])
 
     return <>
-        <tr onClick={(evt) => { evt.preventDefault(); }}>
+        <tr>
             <td>
                 <select className='form-control' value={operator} onChange={(evt) => {
                     const value = evt.target.value as FilterTypes;
@@ -116,7 +116,7 @@ export function DateFilter<T>(props: IProps<T>) {
                 </select>
             </td>
         </tr>
-        <tr onClick={(evt) => { evt.preventDefault(); }}>
+        <tr>
             <td>
                 <input type={'date'} className='form-control' value={date} onChange={(evt) => {
                     const value = evt.target.value as string;
@@ -125,12 +125,12 @@ export function DateFilter<T>(props: IProps<T>) {
             </td>
         </tr>
         {operator === 'between' ? <>
-            <tr onClick={(evt) => { evt.preventDefault(); }}>
+            <tr>
                 <td>
                    and
                 </td>
             </tr>
-            <tr onClick={(evt) => { evt.preventDefault(); }}>
+            <tr>
                 <td>
                     <input type={'date'} className='form-control' value={secondDate} onChange={(evt) => {
                         const value = evt.target.value as string;

@@ -63,7 +63,7 @@ namespace OpenXDA {
 		    export interface NoteTag { ID: number, Name: NoteTagName }
         export interface Company { ID: number, CompanyTypeID: number, CompanyID: string, Name: string, Description: string }
         export interface CompanyMeter { ID: number, CompanyID: number, MeterID: number, DisplayName: string, Enabled: boolean }
-        export interface Customer { ID: number, CustomerKey: string, Name: string, Phone: string, Description: string }
+        export interface Customer { ID: number, CustomerKey: string, Name: string, Phone: string, Description: string, LSCVS: boolean, PQIFacilityID: number   }
 
         // Assets
         export interface Asset { ID: number, VoltageKV: number, AssetKey: string, Description: string, AssetName: string, AssetType: AssetTypeName, Spare:boolean, Channels: Array<Channel> }
