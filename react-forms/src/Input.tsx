@@ -43,34 +43,44 @@ interface IProps<T> {
 export default function Input<T>(props: IProps<T>) {
 	const [guid, setGuid] = React.useState<string>("");
 	const [showHelp, setShowHelp] = React.useState<boolean>(false);
+	const [heldVal, setHeldVal] = React.useState<string>('');
 	
 	 React.useEffect(() => {
 		setGuid(CreateGuid());
 	  }, []);
+	
+    React.useEffect(() => {
+      setHeldVal(props.Record[props.Field] == null ? '' : (props.Record[props.Field] as any).toString());
+     }, [props.Record[props.Field]]);
 
 	function valueChange(evt: any) {
-    if (props.Type === 'number')
-      props.Setter({ ...props.Record, [props.Field]: evt.target.value !== '' ? parseFloat(evt.target.value) : null })
+    if (props.Type === 'number') {
+      if (parseFloat(heldVal) != parseFloat(evt.target.value))
+        props.Setter({ ...props.Record, [props.Field]: evt.target.value !== '' ? parseFloat(evt.target.value) : null });
+      else
+        setHeldVal(evt.target.value);
+    }
     else
       props.Setter({ ...props.Record, [props.Field]: evt.target.value !== '' ? evt.target.value : null })
     }
     
   return (
     <div className="form-group">
-		<label>{props.Label == null ? props.Field : props.Label} 
+    {(props.Label !== "") ?
+		<label>{props.Label === null ? props.Field : props.Label} 
 		{props.Help !== undefined? <div style={{ width: 20, height: 20, borderRadius: '50%', display: 'inline-block', background: '#0D6EFD', marginLeft: 10, textAlign: 'center', fontWeight: 'bold' }} onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)}> ? </div> : null}
-		</label>
+		</label> : null}
 		{props.Help !== undefined? 
 			<HelperMessage Show={showHelp} Target={guid}>
 				{props.Help}
 			</HelperMessage>
 		: null}
       <input
-		data-help={guid}
+		    data-help={guid}
         type={props.Type === undefined ? 'text' : props.Type}
         className={props.Valid(props.Field) ? 'form-control' : 'form-control is-invalid'}
         onChange={(evt) => valueChange(evt)}
-        value={props.Record[props.Field] == null ? '' : (props.Record[props.Field] as any).toString()}
+        value={heldVal}
         disabled={props.Disabled == null ? false : props.Disabled}
       />
       <div className="invalid-feedback">
