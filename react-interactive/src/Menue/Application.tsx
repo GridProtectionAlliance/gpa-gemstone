@@ -31,6 +31,7 @@ import ServerErrorIcon from '../ServerErrorIcon';
 import styled from "styled-components";
 import { SVGIcons } from "@gpa-gemstone/gpa-symbols";
 import { Application } from '@gpa-gemstone/application-typings';
+import Content from "./Content";
 
 interface IProps {
     HomePath: string,
@@ -103,7 +104,7 @@ const Applications: React.FunctionComponent<IProps> = (props) => {
     function CreateRoute(element: React.ReactElement) {
         if (element.props.RequiredRoles !== undefined && element.props.RequiredRoles.filter((r: Application.Types.SecurityRoleName) => GetContext().userRoles.findIndex(i => i === r) > -1).length === 0)
             return <Route path={`${props.HomePath}${element.props.Name}`} element={<ServerErrorIcon Show={true} Label={'You are not authorized to view this page'} />} />;
-        return <Route path={`${props.HomePath}${element.props.Name}`} element={element.props.children} />
+        return <Route path={`${props.HomePath}${element.props.Name}`} element={<Content>{element.props.children}</Content>} />
     }
 
     return <React.Suspense fallback={<LoadingScreen Show={true} />}>
