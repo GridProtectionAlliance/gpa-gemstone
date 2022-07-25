@@ -29,18 +29,23 @@ interface IProps {
   width: number,
   location: 'bottom'|'right',
   graphHeight: number,
-  graphWidth: number,
+  graphWidth: number
 }
 
 function Legend(props: IProps) {
   const context = React.useContext(GraphContext)
   const w = (props.location === 'bottom'? props.graphWidth : props.width);
   const h = (props.location === 'right'? props.graphHeight : props.height);
-  const position = (props.location === 'bottom'? 'absolute' : 'relative')
+  const itemHeight = 25;
+  const itemsWhenBottom = 3;
+  const scroll = Math.ceil(context.Data.size / (props.location === 'bottom' ? itemsWhenBottom : 1)) * itemHeight > h;
+  const position = (props.location === 'bottom'? 'absolute' : 'relative');
+  const scrollBarSpace = (scroll === undefined || !scroll ? 0 : 6)
     return (
-      <div style={{ height: h, width: w, position, float:(props.location as any) ,display: 'flex', flexWrap: 'wrap', bottom: 0 }}>
+      <div style={{ height: h, width: w, position, float:(props.location as any) ,display: 'flex', flexWrap: 'wrap', bottom: 0, 
+        overflowY: (scroll === undefined || !scroll ? 'visible' : 'scroll'), overflowX: (scroll === undefined || !scroll ? 'visible' : 'hidden')}}>
         {[...context.Data.values()].map((series, index) => (series.legend !== undefined ?
-              <div key={index} style={{width:(props.location === 'bottom' ? w/3: w)}}>
+              <div key={index} style={{width:(props.location === 'bottom' ? w/itemsWhenBottom - scrollBarSpace : w-itemsWhenBottom*scrollBarSpace), height: itemHeight}}>
                   {series.legend}
           </div> : null))}
       </div>)
