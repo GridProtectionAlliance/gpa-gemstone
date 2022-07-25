@@ -61,12 +61,16 @@ function Line(props: IProps) {
    }, [props, data, enabled])
 
    React.useEffect(() => {
-       if (props.data.length === 0 || isNaN(context.XHover) || data === null)
-           setHighlight([NaN, NaN]);
-       else {
-           const point = data.GetPoint(context.XHover);
-           if(point != null)
+      if (props.data.length === 0 || isNaN(context.XHover) || data === null)
+         setHighlight([NaN, NaN]);
+      else {
+         try {
+            const point = data.GetPoint(context.XHover);
+            if(point != null)
                setHighlight(point);
+         } catch {
+            setHighlight([NaN, NaN]);
+         }
        }
 
    }, [data, context.XHover])
