@@ -36,6 +36,7 @@ export default function DateRangePicker<T>(props: {
   Disabled?: boolean;
   Feedback?: string;
   Format?: string;
+  Type?: ('datetime-local' | 'date');
 }) {
   // Range box vars, need a secondary var to avoid looping react hooks
   const [formRange, setFormRange] = React.useState<Duration>('Custom');
@@ -90,13 +91,13 @@ export default function DateRangePicker<T>(props: {
     return <div className="col">
       <input
         className={"form-control" + (props.Valid(props.FromField, props.ToField) ? '' : ' is-invalid')}
-        type="date"
+        type={props.Type === undefined ? 'date' : props.Type}
         onChange={(evt) => {
           RecordSetter(evt.target.value, field);
         }}
         value={
           props.Record[field] === null ? '' :
-            moment(props.Record[field] as any).format("YYYY-MM-DD")
+             moment(props.Record[field] as any).format("YYYY-MM-DD" + (props.Type === undefined || props.Type === 'date' ? "" : "Thh:mm"))
         }
         disabled={props.Disabled === null ? false : props.Disabled}
       />
