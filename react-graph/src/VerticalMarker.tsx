@@ -63,7 +63,7 @@ function VerticalMarker(props: IProps) {
             onRelease: (_) => setSelected(false),
             onPlotLeave: (_) => setSelected(false)
         } as IHandlers)
-    }, [props.width, props.Value, context.XScale])
+    }, [props.width, props.Value])
 
    React.useEffect(() => {
       setValue(props.Value);
@@ -90,12 +90,13 @@ function VerticalMarker(props: IProps) {
        const y1 = (props.start === undefined? context.YDomain[0] : props.start);
        const y2 = (props.end === undefined? context.YDomain[1] : props.end);
 
-       return `M ${props.Value * context.XScale + context.XOffset} ${y1 * context.YScale + context.YOffset} L ${props.Value * context.XScale + context.XOffset} ${y2 * context.YScale + context.YOffset}`;
+       return `M ${context.XTransformation(props.Value)} ${context.YTransformation(y1)} L ${context.XTransformation(props.Value)} ${context.YTransformation(y2)}`;
    }
 
    function onClick(x: number, _: number) {
-       const d = Math.abs(props.width / context.XScale);
-        if (Math.abs(x - props.Value) < d)
+       let xP = context.XTransformation(props.Value);
+       let xT = context.XTransformation(x);
+        if (xT <= xP + (props.width/2) && xT >= xP - (props.width/2))
           setSelected(true);
    }
 

@@ -1,4 +1,4 @@
-﻿// ******************************************************************************************************
+﻿﻿// ******************************************************************************************************
 //  ValueAxis.tsx - Gbtc
 //
 //  Copyright © 2021, Grid Protection Alliance.  All Rights Reserved.
@@ -33,9 +33,11 @@ interface IProps {
   offsetTop: number,
   offsetBottom: number,
   offsetLeft: number,
+  offsetRight: number,
   height: number,
   witdh: number,
-  useFactor: boolean
+  useFactor: boolean,
+  showGrid?: boolean,
   label?: string,
 
 }
@@ -179,8 +181,9 @@ function ValueAxis(props: IProps) {
     return (<g>
       <path stroke='black' style={{ strokeWidth: 1, transition: 'd 0.5s' }} d={`M ${props.offsetLeft} ${props.height - props.offsetBottom + 8} V ${props.offsetTop}`} />
       <path stroke='black' style={{ strokeWidth: 1, transition: 'd 0.5s' }} d={`M ${props.offsetLeft - 8} ${props.offsetTop} h ${8}`} />
-      {tick.map((l, i) => <path key={i} stroke='black' style={{ strokeWidth: 1, transition: 'd 1s' }} d={`M ${props.offsetLeft - 6} ${l * context.YScale + context.YOffset} h ${6}`} />)}
-      {tick.map((l, i) => <text fill={'black'} key={i} style={{ fontSize: '1em', textAnchor: 'end', transition: 'x 0.5s, y 0.5s' }} dominantBaseline={'middle'} x={props.offsetLeft - 8} y={l * context.YScale + context.YOffset}>{(l * factor).toFixed(nDigits)}</text>)}
+      {tick.map((l, i) => <path key={i} stroke='lightgrey' strokeOpacity={props.showGrid? '0.8':'0.0'} style={{ strokeWidth: 1, transition: 'd 0.5s' }} d={`M ${props.offsetLeft} ${context.YTransformation(l)} h ${props.witdh - props.offsetLeft - props.offsetRight}`} />)}
+      {tick.map((l, i) => <path key={i} stroke='black' style={{ strokeWidth: 1, transition: 'd 1s' }} d={`M ${props.offsetLeft - 6} ${context.YTransformation(l)} h ${6}`} />)}
+      {tick.map((l, i) => <text fill={'black'} key={i} style={{ fontSize: '1em', textAnchor: 'end', transition: 'x 0.5s, y 0.5s' }} dominantBaseline={'middle'} x={props.offsetLeft - 8} y={context.YTransformation(l)}>{(l * factor).toFixed(nDigits)}</text>)}
 
       {props.label !== undefined ? <text fill={'black'} style={{ fontSize: ftSizeLabel + 'em', textAnchor: 'middle'}} dominantBaseline={'text-bottom'}
       transform={`rotate(-90,${props.offsetLeft - hAxis - 4},${(props.offsetTop  - props.offsetBottom + props.height)/ 2.0})`} x={props.offsetLeft - hAxis - 4} y={(props.offsetTop  - props.offsetBottom + props.height)/ 2.0}>{props.label}</text> : null}

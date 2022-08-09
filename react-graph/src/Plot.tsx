@@ -28,6 +28,7 @@ import {IGraphContext, IDataSeries, GraphContext, IHandlers} from './GraphContex
 import {CreateGuid} from '@gpa-gemstone/helper-functions';
 import {cloneDeep, toString} from 'lodash';
 import TimeAxis from './TimeAxis';
+import LogAxis from './LogAxis'; 
 import ValueAxis from './ValueAxis';
 import Legend from './Legend';
 import LineWithThreshold from './LineWithThreshold';
@@ -41,6 +42,8 @@ export interface IProps {
     height: number,
     width: number,
 
+    showGrid?: boolean,
+    XAxisType?: 'time' | 'log',
     zoom?: boolean,
     pan?: boolean,
     Tmin?: number,
@@ -143,6 +146,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
         return;
 
       const scale = (SVGWidth - offsetLeft - offsetRight) / dT;
+      
       setTscale(scale);
       setToffset(offsetLeft - tDomain[0] * scale );
     }, [tDomain, offsetLeft, offsetRight]);
@@ -154,11 +158,36 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
       const scale = (SVGHeight - offsetTop - offsetBottom) / (dY === 0? 0.00001 : dY);
       setYscale(-scale);
       setYoffset(SVGHeight - offsetBottom +(yDomain[0] - (dY ===0? 0.000005 : 0)) * scale);
-
     }, [yDomain, offsetTop, offsetBottom]);
+
+    // transforms from pixels into x value. result passed into onClick function 
+    function XInverseTransform(x: number): number {
+      let xT = (x - tOffset) / tScale;
+      if (props.XAxisType === 'log')
+        xT = (x - (offsetLeft - Math.log10(tDomain[0]) * ((SVGWidth - offsetLeft - offsetRight) / Math.abs(Math.log10(tDomain[1]) - Math.log10(tDomain[0]))))) / ((SVGWidth - offsetLeft - offsetRight) / Math.abs(Math.log10(tDomain[1]) - Math.log10(tDomain[0])));
+      return xT;
+    }
+
+    // transforms from pixels into y value. result passed into onClick function
+    function YInverseTransform(y: number): number {
+      return (y - yOffset) / yScale;
+    }
 
     function Reset(): void {
         setTdomain(props.defaultTdomain);
+    }
+
+    // new X transformation function as defined in GraphContext
+    function XTransformation(position: number): number {
+      let xT = position * tScale + tOffset;
+      if (props.XAxisType === 'log')
+        xT = (Math.log10(position) * ((SVGWidth - offsetLeft - offsetRight) / Math.abs(Math.ceil(Math.log10(tDomain[1])) - Math.floor(Math.log10(tDomain[0]))))) + (offsetLeft - Math.floor(Math.log10(tDomain[0])) * ((SVGWidth - offsetLeft - offsetRight) / Math.abs(Math.ceil(Math.log10(tDomain[1])) - Math.floor(Math.log10(tDomain[0])))))
+      return xT;
+    }
+
+    // new Y transformation function as defined in GraphContext
+    function YTransformation(position: number): number {
+      return position * yScale + yOffset;
     }
 
     function AddData(d: IDataSeries): string {
@@ -202,15 +231,13 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
     function GetContext(): IGraphContext {
       return {
           XDomain: tDomain,
-          XScale: tScale,
-          XOffset: tOffset,
-          XHover: mouseIn? (mousePosition[0] - tOffset) / tScale : NaN,
-          YHover: mouseIn? (mousePosition[1] - yOffset) / yScale : NaN,
+          XHover: mouseIn? setXHover(mousePosition[0]) : NaN,
+          YHover: mouseIn? YTransformation(mousePosition[1]) : NaN,
           YDomain: yDomain,
-          YScale: yScale,
-          YOffset: yOffset,
           CurrentMode: selectedMode,
           Data: data,
+          XTransformation,
+          YTransformation,
           AddData,
           RemoveData,
           UpdateData,
@@ -219,6 +246,15 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
           RemoveSelect,
           UpdateSelect
       } as IGraphContext
+    }
+
+    function setXHover(x: number): number {
+      let hov;
+      if (props.XAxisType === 'log')
+        hov = Math.pow(10, XInverseTransform(x));
+      else
+        hov = XTransformation(x);
+      return hov;
     }
 
     function handleMouseWheel(evt: any) {
@@ -230,7 +266,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
               return;
 
           evt.stopPropagation();
-		      evt.preventDefault();
+		      evt.preventDefault({ passive: false });
 
           let multiplier = 1.25;
 
@@ -245,7 +281,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
           else if (mousePosition[0] > (SVGWidth - offsetRight))
               t0 = t1 - multiplier * (t1 - t0);
           else {
-              const tcenter = (mousePosition[0] - tOffset) / tScale;
+              const tcenter = mousePosition[0] * tScale + tOffset;
               t0 = tcenter - (tcenter - t0) * multiplier;
               t1 = tcenter + (t1 - tcenter) * multiplier;
           }
@@ -262,13 +298,21 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
       pt.y = evt.clientY;
       const ptTransform = pt.matrixTransform(SVGref.current!.getScreenCTM().inverse());
 
+      let dX;
         // Compute delta before getting new Mousposition
-        const dX = mousePosition[0] - ptTransform.x;
+        {props.XAxisType === 'time' || props.XAxisType === undefined ?
+         dX = mousePosition[0] - ptTransform.x :
+         dX = Math.log10(mousePosition[0]) - ptTransform.x
+        }
 
-        setMousePosition([ptTransform.x, ptTransform.y]);
+      setMousePosition([ptTransform.x, ptTransform.y])
 
         if (mouseMode === 'pan') {
-            const dT = dX / tScale;
+            let dT;
+            { props.XAxisType === 'time' || props.XAxisType === undefined ?
+              dT = dX / tScale :
+              dT = dX / ((SVGWidth - offsetLeft - offsetRight) / Math.abs(Math.ceil(Math.log10(tDomain[1])) - Math.floor(Math.log10(tDomain[0]))))
+            }
             setTdomain([tDomain[0] + dT, tDomain[1] + dT]);
         }
     }
@@ -289,7 +333,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
         if (selectedMode === 'select' && props.onSelect !== undefined)
           props.onSelect((ptTransform.x - tOffset)/ tScale)
         if (handlers.size > 0 && selectedMode === 'select')
-          handlers.forEach((v) => (v.onClick !== undefined? v.onClick((ptTransform.x - tOffset)/ tScale, (ptTransform.y - yOffset)/ yScale) : null));
+          handlers.forEach((v) => (v.onClick !== undefined? v.onClick(XInverseTransform(ptTransform.x), YInverseTransform(ptTransform.y)) : null));
 
     }
 
@@ -301,15 +345,15 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
                 return;
             }
 
-            const t0 = (Math.min(mousePosition[0], mouseClick[0]) - tOffset) / tScale;
-            const t1 = (Math.max(mousePosition[0], mouseClick[0]) - tOffset) / tScale;
+            const t0 = Math.min(mousePosition[0], mouseClick[0]) * tScale + tOffset;
+            const t1 = Math.max(mousePosition[0], mouseClick[0]) * tScale + tOffset;
 
             setTdomain((curr) => (Math.min(curr[1], t1) - Math.max(curr[0], t0)) > 10? [Math.max(curr[0], t0), Math.min(curr[1], t1)] : [curr[0],curr[1]]);
         }
         setMouseMode('none');
 
         if (handlers.size > 0 && selectedMode === 'select')
-          handlers.forEach((v) => (v.onRelease !== undefined? v.onRelease((mousePosition[0] - tOffset)/ tScale, (mousePosition[1] - yOffset)/ yScale) : null));
+          handlers.forEach((v) => (v.onRelease !== undefined? v.onRelease(mousePosition[0] * tScale + tOffset, mousePosition[1] * yScale + yOffset) : null));
 
     }
 
@@ -319,7 +363,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
             setMouseMode('none');
 
         if (handlers.size > 0 && selectedMode === 'select')
-          handlers.forEach((v) => (v.onPlotLeave !== undefined? v.onPlotLeave((mousePosition[0] - tOffset)/ tScale, (mousePosition[1] - yOffset)/ yScale) : null));
+          handlers.forEach((v) => (v.onPlotLeave !== undefined? v.onPlotLeave(mousePosition[0] * tScale + tOffset, mousePosition[1] * yScale + yOffset) : null));
   
     }
 
@@ -327,68 +371,69 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
         setMouseIn(true);
     }
 
-
     return (
-       <GraphContext.Provider value={GetContext()}>
-           <div style={{ height: props.height, width: props.width, position: 'relative' }}>
-               <div style={{ height: SVGHeight, width: SVGWidth, position: 'absolute' }}
-                   onWheel={handleMouseWheel} onMouseMove={handleMouseMove} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} onMouseLeave={handleMouseOut} onMouseEnter={handleMouseIn} >
-                   <svg ref={SVGref} width={SVGWidth} height={SVGHeight} style={SvgStyle} viewBox={`0 0 ${SVGWidth} ${SVGHeight}`}>
-                      {props.showBorder !== undefined && props.showBorder ? < path stroke='black' d={`M ${offsetLeft} ${offsetTop} H ${SVGWidth- offsetRight} V ${SVGWidth - offsetBottom} H ${offsetLeft} Z`} /> : null}
-                      <TimeAxis label={props.Tlabel} offsetBottom={offsetBottom} offsetLeft={offsetLeft} offsetRight={offsetRight} width={SVGWidth} height={SVGHeight} setHeight={setHeightXLabel} heightAxis={heightXLabel}/>
-                      <ValueAxis label={props.Ylabel} offsetTop={offsetTop} offsetLeft={offsetLeft} offsetBottom={offsetBottom}
-                        witdh={SVGWidth} height={SVGHeight} setWidthAxis={setHeightYLabel} setHeightFactor={setHeightYFactor}
-                        hAxis={heightYLabel} hFactor={heightYFactor} useFactor={props.useMetricFactors === undefined? true: props.useMetricFactors}/>
-                       <defs>
-                           <clipPath id={"cp-" + guid}>
-                               <path stroke={'none'} fill={'none'} d={` M ${offsetLeft},${offsetTop - 5} H  ${SVGWidth - offsetRight + 5} V ${SVGHeight - offsetBottom} H ${offsetLeft} Z`} />
-                           </clipPath>
-                       </defs>
+      <GraphContext.Provider value={GetContext()}>
+          <div style={{ height: props.height, width: props.width, position: 'relative' }}>
+              <div style={{ height: SVGHeight, width: SVGWidth, position: 'absolute' }}
+                  onWheel={handleMouseWheel} onMouseMove={handleMouseMove} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} onMouseLeave={handleMouseOut} onMouseEnter={handleMouseIn} >
+                  <svg ref={SVGref} width={SVGWidth} height={SVGHeight} style={SvgStyle} viewBox={`0 0 ${SVGWidth} ${SVGHeight}`}>
+                     {props.showBorder !== undefined && props.showBorder ? < path stroke='black' d={`M ${offsetLeft} ${offsetTop} H ${SVGWidth- offsetRight} V ${SVGWidth - offsetBottom} H ${offsetLeft} Z`} /> : null}
+                     { props.XAxisType === 'time' || props.XAxisType === undefined ?
+                     <TimeAxis label={props.Tlabel} offsetBottom={offsetBottom} offsetLeft={offsetLeft} offsetRight={offsetRight} width={SVGWidth} height={SVGHeight} setHeight={setHeightXLabel} heightAxis={heightXLabel}/> :
+                     <LogAxis offsetTop={offsetTop} showGrid={props.showGrid} label={props.Tlabel} offsetBottom={offsetBottom} offsetLeft={offsetLeft} offsetRight={offsetRight} width={SVGWidth} height={SVGHeight} setHeight={setHeightXLabel} heightAxis={heightXLabel}/> }
+                     <ValueAxis offsetRight={offsetRight} showGrid={props.showGrid} label={props.Ylabel} offsetTop={offsetTop} offsetLeft={offsetLeft} offsetBottom={offsetBottom}
+                       witdh={SVGWidth} height={SVGHeight} setWidthAxis={setHeightYLabel} setHeightFactor={setHeightYFactor}
+                       hAxis={heightYLabel} hFactor={heightYFactor} useFactor={props.useMetricFactors === undefined? true: props.useMetricFactors}/>
+                      <defs>
+                          <clipPath id={"cp-" + guid}>
+                              <path stroke={'none'} fill={'none'} d={` M ${offsetLeft},${offsetTop - 5} H  ${SVGWidth - offsetRight + 5} V ${SVGHeight - offsetBottom} H ${offsetLeft} Z`} />
+                          </clipPath>
+                      </defs>
 
-                       <g clipPath={'url(#cp-' + guid + ')' }>
-                          {React.Children.map(props.children, (element) => {
-                                    if (!React.isValidElement(element))
-                                        return null;
-                                    if ((element as React.ReactElement<any>).type === Line || (element as React.ReactElement<any>).type === LineWithThreshold ||
-                                    (element as React.ReactElement<any>).type === HorizontalMarker || (element as React.ReactElement<any>).type === VerticalMarker
-                                     )
-                                        return element;
-                                    return null;
-                                })}
-                          {props.showMouse === undefined || props.showMouse ?
-                               <path stroke='black' style={{ strokeWidth: 2, opacity: mouseIn? 0.8: 0.0 }} d={`M ${mousePosition[0]} ${offsetTop} V ${SVGHeight - offsetBottom}`} />
-                               : null}
-                           {(props.zoom === undefined || props.zoom) && mouseMode === 'zoom' ?
-                               <rect fillOpacity={0.8} fill={'black'} x={Math.min(mouseClick[0], mousePosition[0])} y={offsetTop} width={Math.abs(mouseClick[0] - mousePosition[0])} height={SVGHeight - offsetTop - offsetBottom} />
-                               : null}
-                       </g>
-                        <InteractiveButtons showPan={(props.pan === undefined || props.pan)}
-                         showZoom={props.zoom === undefined || props.zoom}
-                         showReset={!(props.pan !== undefined && props.zoom !== undefined && !props.zoom && !props.pan)}
-                         showSelect={props.onSelect !== undefined || handlers.size > 0}
-                         showDownload={props.onDataInspect !== undefined}
-                         currentSelection={selectedMode}
-                         setSelection={(s) => {
-                           if (s === "reset") Reset();
-                           else if (s === "download") props.onDataInspect!(tDomain);
-                           else setSelectedMode(s as ('zoom'|'pan'|'select'))}}
-                         x={SVGWidth - offsetRight - 12}
-                         y={22} > 
+                      <g clipPath={'url(#cp-' + guid + ')' }>
                          {React.Children.map(props.children, (element) => {
-                                    if (!React.isValidElement(element))
-                                        return null;
-                                    if ((element as React.ReactElement<any>).type === Button)
-                                        return element;
-                                    return null;
-                                })}
-                         </InteractiveButtons>
+                                   if (!React.isValidElement(element))
+                                       return null;
+                                   if ((element as React.ReactElement<any>).type === Line || (element as React.ReactElement<any>).type === LineWithThreshold ||
+                                   (element as React.ReactElement<any>).type === HorizontalMarker || (element as React.ReactElement<any>).type === VerticalMarker
+                                    )
+                                       return element;
+                                   return null;
+                               })}
+                         {props.showMouse === undefined || props.showMouse ?
+                              <path stroke='black' style={{ strokeWidth: 2, opacity: mouseIn? 0.8: 0.0 }} d={`M ${mousePosition[0]} ${offsetTop} V ${SVGHeight - offsetBottom}`} />
+                              : null}
+                          {(props.zoom === undefined || props.zoom) && mouseMode === 'zoom' ?
+                              <rect fillOpacity={0.8} fill={'black'} x={Math.min(mouseClick[0], mousePosition[0])} y={offsetTop} width={Math.abs(mouseClick[0] - mousePosition[0])} height={SVGHeight - offsetTop - offsetBottom} />
+                              : null}
+                      </g>
+                       <InteractiveButtons showPan={(props.pan === undefined || props.pan)}
+                        showZoom={props.zoom === undefined || props.zoom}
+                        showReset={!(props.pan !== undefined && props.zoom !== undefined && !props.zoom && !props.pan)}
+                        showSelect={props.onSelect !== undefined || handlers.size > 0}
+                        showDownload={props.onDataInspect !== undefined}
+                        currentSelection={selectedMode}
+                        setSelection={(s) => {
+                          if (s === "reset") Reset();
+                          else if (s === "download") props.onDataInspect!(tDomain);
+                          else setSelectedMode(s as ('zoom'|'pan'|'select'))}}
+                        x={SVGWidth - offsetRight - 12}
+                        y={22} > 
+                        {React.Children.map(props.children, (element) => {
+                                   if (!React.isValidElement(element))
+                                       return null;
+                                   if ((element as React.ReactElement<any>).type === Button)
+                                       return element;
+                                   return null;
+                               })} 
+                        </InteractiveButtons>
 
-                   </svg>
-               </div>
-             {props.legend  !== undefined && props.legend !== 'hidden' ? <Legend location={props.legend} height={props.legendHeight !== undefined? props.legendHeight : 50} width={props.legendWidth !== undefined? props.legendWidth : 100} graphWidth={SVGWidth} graphHeight={SVGHeight} /> : null}
-            </div>
-       </GraphContext.Provider>
-   )
+                  </svg>
+              </div>
+            {props.legend  !== undefined && props.legend !== 'hidden' ? <Legend location={props.legend} height={props.legendHeight !== undefined? props.legendHeight : 50} width={props.legendWidth !== undefined? props.legendWidth : 100} graphWidth={SVGWidth} graphHeight={SVGHeight} /> : null}
+           </div>
+      </GraphContext.Provider>
+  )
 
 }
 

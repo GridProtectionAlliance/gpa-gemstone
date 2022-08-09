@@ -24,17 +24,15 @@ import * as React from 'react';
 
 export interface IGraphContext {
   XDomain: [number, number],
-  XScale: number,
-  XOffset: number,
   XHover: number,
 
   YHover: number,
   YDomain: [number, number],
-  YScale: number,
-  YOffset: number,
 
   CurrentMode: 'zoom'|'pan'|'select',
   Data: Map<string, IDataSeries>,
+  XTransformation: (position: number) => number,
+  YTransformation: (position: number) => number,
   AddData: ((d: IDataSeries) => string),
   RemoveData: (key: string) => void,
   UpdateData: (key: string, d: IDataSeries) => void,
@@ -42,21 +40,21 @@ export interface IGraphContext {
   RegisterSelect: (handlers: IHandlers) => string,
   RemoveSelect: (key: string) => void,
   UpdateSelect: (key: string, handlers: IHandlers) => void
+
 };
 
 export const GraphContext = React.createContext({
   XDomain: [0, 0],
-  XScale: 0,
-  XOffset: 0,
   XHover: NaN,
-  
+
   YHover: NaN,
   YDomain: [0, 0],
-  YScale: 0,
-  YOffset: 0,
   CurrentMode: 'select',
 
+
   Data: new Map<string, IDataSeries>(),
+  XTransformation: (_: number) => 0,
+  YTransformation: (_: number) => 0,
   AddData: ((_: IDataSeries) => ""),
   RemoveData: (_: string) => undefined,
   UpdateData: (_) => undefined,

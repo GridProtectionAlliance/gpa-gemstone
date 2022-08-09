@@ -138,8 +138,8 @@ function LineWithThreshold(props: IProps) {
        if (data == null)
         return ""
      result = result + data!.GetFullData().map((pt, _) => {
-           const x = pt[0] * context.XScale + context.XOffset;
-           const y = pt[1] * context.YScale + context.YOffset;
+           const x = context.XTransformation(pt[0]);
+           const y = context.YTransformation(pt[1]);
 
            return `${x},${y}`
        }).join(" L ")
@@ -152,11 +152,11 @@ function LineWithThreshold(props: IProps) {
        enabled?
        <g>
            <path d={generateData()} style={{ fill: 'none', strokeWidth: 3, stroke: props.color, transition: 'd 0.5s' }} strokeDasharray={props.lineStyle === ':'? '10,5' : 'none'} />
-           {data != null? data.GetFullData().map((pt, i) => <circle key={i} r={3} cx={pt[0] * context.XScale + context.XOffset} cy={pt[1] * context.YScale + context.YOffset} fill={props.color} stroke={'black'} style={{ opacity: 0.8, transition: 'cx 0.5s,cy 0.5s' }} />) : null}
+           {data != null? data.GetFullData().map((pt, i) => <circle key={i} r={3} cx={context.XTransformation(pt[0])} cy={context.YTransformation(pt[1])} fill={props.color} stroke={'black'} style={{ opacity: 0.8, transition: 'cx 0.5s,cy 0.5s' }} />) : null}
            {props.highlightHover && !isNaN(highlight[0]) && !isNaN(highlight[1])?
-          <circle r={5} cx={highlight[0] * context.XScale + context.XOffset} cy={highlight[1] * context.YScale + context.YOffset} fill={props.color} stroke={'black'} style={{ opacity: 0.8, transition: 'cx 0.5s,cy 0.5s' }} /> : null}
+          <circle r={5} cx={context.XTransformation(highlight[0])} cy={context.YTransformation(highlight[1])} fill={props.color} stroke={'black'} style={{ opacity: 0.8, transition: 'cx 0.5s,cy 0.5s' }} /> : null}
           {props.threshHolds.map((t,i) => <path key={i}
-             d={`M ${context.XDomain[0]*context.XScale + context.XOffset},${t.Value*context.YScale + context.YOffset} H ${context.XDomain[1]*context.XScale + context.XOffset}`}
+             d={`M ${context.XTransformation(context.XDomain[0])},${context.YTransformation(t.Value)} H ${context.XTransformation(context.XDomain[1])}`}
              style={{ fill: 'none', strokeWidth: 3, stroke: t.Color, transition: 'd 0.5s' }} strokeDasharray={'10,5'} />)}
        </g > : null
    );
