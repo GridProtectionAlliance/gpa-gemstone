@@ -87,11 +87,11 @@ const InteractiveButtons: React.FunctionComponent<IProps> = (props) => {
     }
     if (props.showReset) {
       symbolNames.push('reset' as ButtonType);
-      symbols.push(<Button onClick={() => {setExpand(false) }}>{House}</Button>)
+      symbols.push(<Button onClick={() => {setExpand(false); props.setSelection('reset'); }}>{House}</Button>)
     }
     if (props.showDownload) {
       symbolNames.push('download' as ButtonType);
-      symbols.push(<Button onClick={() => {setExpand(false) }}>{InputNumbers}</Button>)
+      symbols.push(<Button onClick={() => {setExpand(false); props.setSelection('download');}}>{InputNumbers}</Button>)
     }
 
     return (

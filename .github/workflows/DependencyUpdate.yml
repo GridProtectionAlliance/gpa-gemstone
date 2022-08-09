@@ -34,34 +34,41 @@ jobs:
       - name: Lint_CommonPages
         run: |
           cd $GITHUB_WORKSPACE/common-pages/
+          npm install
           npm run lint
 
       - name: Lint_GPASymbols
         run: |
           cd $GITHUB_WORKSPACE/gpa-symbols/
+          npm install
           npm run lint
 
       - name: Lint_HelperFunctions
         run: |
           cd $GITHUB_WORKSPACE/helper-functions/
+          npm install
           npm run lint
 
       - name: Lint_ReactForms
         run: |
           cd $GITHUB_WORKSPACE/react-forms/
+          npm install
           npm run lint
 
       - name: Lint_ReactGraph
         run: |
           cd $GITHUB_WORKSPACE/react-graph/
+          npm install
           npm run lint
 
       - name: Lint_ReactInteractive
         run: |
           cd $GITHUB_WORKSPACE/react-interactive/
+          npm install
           npm run lint
 
       - name: Lint_ReactTable
         run: |
           cd $GITHUB_WORKSPACE/react-table/
+          npm install
           npm run lint

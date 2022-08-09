@@ -41,7 +41,7 @@ function VerticalMarker(props: IProps) {
   */
   const context = React.useContext(GraphContext)
   const [value, setValue] = React.useState<number>(props.Value);
-  const [ isSelected, setSelected] = React.useState<boolean>(false);
+  const [isSelected, setSelected] = React.useState<boolean>(false);
   const [guid, setGuid] = React.useState<string>("");
 
   React.useEffect(() => {
@@ -86,11 +86,11 @@ function VerticalMarker(props: IProps) {
         setValue(context.XHover);
    }, [context.XHover])
 
-   function generateData() {
+   function generateData(v: number) {
        const y1 = (props.start === undefined? context.YDomain[0] : props.start);
        const y2 = (props.end === undefined? context.YDomain[1] : props.end);
-
-       return `M ${context.XTransformation(props.Value)} ${context.YTransformation(y1)} L ${context.XTransformation(props.Value)} ${context.YTransformation(y2)}`;
+       
+       return `M ${context.XTransformation(v)} ${context.YTransformation(y1)} L ${context.XTransformation(v)} ${context.YTransformation(y2)}`;
    }
 
    function onClick(x: number, _: number) {
@@ -103,10 +103,16 @@ function VerticalMarker(props: IProps) {
    return (
        
        <g>
-          <path d={generateData()} 
-           style={{ fill: 'none', strokeWidth: props.width, stroke: props.color, cursor: (props.setValue !== undefined && true)? 'grab' : 'auto' }}
+          <path d={generateData(props.Value)} 
+           style={{ fill: 'none', strokeWidth: props.width, stroke: props.color }}
            strokeDasharray={props.lineStyle === ':'? '10,5' : 'none'} 
            />
+           {props.setValue !== undefined && props.Value !== value?
+           <path d={generateData(value)} 
+           style={{ fill: 'none', strokeWidth: props.width, stroke: props.color, opacity: 0.5}}
+           strokeDasharray={props.lineStyle === ':'? '10,5' : 'none'} 
+           />
+           : null}
         </g>
    );
 }

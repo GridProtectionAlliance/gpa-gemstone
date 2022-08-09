@@ -22,6 +22,7 @@
 // ******************************************************************************************************
 
 import * as React from 'react';
+import * as moment from 'moment';
 
 type Duration =   ('Custom' | '1 Day' | '7 Days' | '30 Days' | '90 Days' | '180 Days' | '365 Days')
 
@@ -30,60 +31,25 @@ export default function DateRangePicker<T>(props: {
   FromField: keyof T;
   ToField: keyof T;
   Setter: (record: T) => void;
-  Disabled?: boolean;
   Label: string;
-  Valid?: boolean;
+  Valid: (fieldFrom: keyof T, fieldTo: keyof T) => boolean;
+  Disabled?: boolean;
+  Feedback?: string;
+  Format?: string;
+  Type?: ('datetime-local' | 'date');
 }) {
+  // Range box vars, need a secondary var to avoid looping react hooks
+  const [formRange, setFormRange] = React.useState<Duration>('Custom');
   const [range, setRange] = React.useState<Duration>('Custom');
 
-  const [Tstart, setTstart] = React.useState<Date|null>(ToDate(props.Record[props.FromField]));
-  const [Tend, setTend] = React.useState<Date|null>(ToDate(props.Record[props.ToField]));
-
-  const [StartInput, setStartInput] = React.useState<string>(Tstart != null? ToString(Tstart) : '');
-  const [EndInput, setEndInput] = React.useState<string>(Tend != null? ToString(Tend) : '');
-
   React.useEffect(() => {
-      const propsStart = ToDate(props.Record[props.FromField]);
-      const propsEnd = ToDate(props.Record[props.ToField]);
-
-      if (propsStart == null || Tstart == null) {
-    		if (!(propsStart == null && Tstart == null ))
-               setTstart(propsStart);
-  	   }
-      else if (propsStart.getTime() !== Tstart.getTime())
-        setTstart(propsStart);
-
-      if (propsEnd == null || Tend == null) {
-			     if (!(propsEnd == null && Tend == null ))
-				       setTstart(propsEnd);
-     }
-      else if (propsEnd.getTime() !== Tend.getTime())
-        setTend(propsEnd);
-
+    setRange(ToRange(moment(props.Record[props.ToField]).diff(props.Record[props.FromField], 'days')));
   },[props.Record]);
 
   React.useEffect(() => {
-      const days = (Tstart != null && Tend != null? Math.round((Tend.getTime() - Tstart.getTime()) / (1000 * 60 * 60 * 24)) : 0)
-      if (ToRange(days) !== range)
-        setRange(ToRange(days));
-      UpdateTime();
-  },[Tstart, Tend]);
-
-  React.useEffect(() => {
-
-    const days = GetDays(range);
-      if (days > 0) {
-		if (Tstart != null)
-			setTend(new Date(Tstart.valueOf() + 1000*24*60*60*days))
-		else if (Tend != null)
-      setTstart(new Date(Tend.valueOf() - 1000*24*60*60*days))
-    else {
-			setTstart(new Date(new Date().valueOf() - 1000*24*60*60*days))
-      setTend(new Date())
-    }
-
-	  }
-  }, [range]);
+    setRange(formRange);
+    RecordSetter(moment(props.Record[props.FromField]).add(GetDays(formRange), 'days').toString(), props.ToField);
+  }, [formRange]);
 
   function GetDays(val: Duration) {
     if (val === '1 Day')
@@ -101,64 +67,6 @@ export default function DateRangePicker<T>(props: {
     return 0;
   }
 
-  function ToDate(str: any) {
-      if (str === null)
-        return null;
-
-      const dt = new Date(str);
-
-      if (isNaN(dt.getTime()))
-        return null;
-
-      return dt;
-  }
-
-  React.useEffect(() => {
-    if (Tstart != null)
-          setStartInput(ToString(Tstart));
-  }, [Tstart])
-
-  React.useEffect(() => {
-      // only if InputStart is a valid ToString
-      if (StartInput.match('^([0-9][0-9][0-9][0-9])-([0-1][0-9])-([0-3][0-9])') != null)
-        setTstart(ToDate(StartInput));
-      else
-        setTstart(null)
-  }, [StartInput]);
-
-  React.useEffect(() => {
-    if (Tend != null)
-          setEndInput(ToString(Tend));
-  }, [Tend])
-
-  React.useEffect(() => {
-      // only if EndInput is a valid ToString
-      if (EndInput.match('^([0-9][0-9][0-9][0-9])-([0-1][0-9])-([0-3][0-9])') != null)
-        setTend(ToDate(EndInput));
-      else
-        setTend(null)
-  }, [EndInput]);
-
-  function UpdateTime() {
-
-    const to = (Tend !== null? ToString(Tend) : '')
-
-    const from = (Tstart !== null? ToString(Tstart) : '')
-
-    const record: T = {
-      ...props.Record,
-      [props.ToField]: to,
-      [props.FromField]: from,
-    };
-    props.Setter(record);
-
-  }
-
-  function ToString(dt: Date) {
-     return   `${dt.getUTCFullYear()}-${(dt.getUTCMonth() + 1).toString()
-         .padStart(2, '0')}-${dt.getUTCDate().toString().padStart(2, '0')}`
-  }
-
   function ToRange(days: number) {
     if (days === 1) return ('1 Day');
     else if (days === 7) return('7 Days');
@@ -169,17 +77,44 @@ export default function DateRangePicker<T>(props: {
     else return('Custom');
   }
 
-  let startValid = (Tstart !== null) && (!isNaN(Tstart.getTime()));
-  let endValid = (Tend !== null) && (!isNaN(Tend.getTime())) && (!startValid || ((Tstart !== null) && (Tstart.getTime() < Tend.getTime())));
+  function RecordSetter(val : string, field: keyof T) {
+    const record: T = { ...props.Record };
+    if (val !== '') {
+      if (props.Format === null) record[field] = val as any;
+      else record[field] = moment(val).format(props.Format) as any;
+    }
+    else record[field] = null as any;
+    props.Setter(record);
+  }
 
-  startValid = (props.Valid === undefined? startValid : props.Valid);
-  endValid = (props.Valid === undefined? endValid : props.Valid);
+  function dateBox(field: keyof T): any {
+    return <div className="col">
+      <input
+        className={"form-control" + (props.Valid(props.FromField, props.ToField) ? '' : ' is-invalid')}
+        type={props.Type === undefined ? 'date' : props.Type}
+        onChange={(evt) => {
+          RecordSetter(evt.target.value, field);
+        }}
+        value={
+          props.Record[field] === null ? '' :
+             moment(props.Record[field] as any).format("YYYY-MM-DD" + (props.Type === undefined || props.Type === 'date' ? "" : "Thh:mm"))
+        }
+        disabled={props.Disabled === null ? false : props.Disabled}
+      />
+      {field !== props.FromField ? null :
+      <div className="invalid-feedback">
+        {props.Feedback === undefined ? 'From and to dates required, and from must be before to.' : props.Feedback}
+      </div>}
+    </div>
+  }
+
+
   return (
     <div className="form-group">
-      <label>{props.Label}</label>
+      {props.Label === "" ? null : <label>{props.Label}</label>}
       <div className="row">
         <div className="col">
-          <select className="form-control" value={range} onChange={(evt) => setRange(evt.target.value as Duration)}>
+          <select className="form-control" value={range} onChange={(evt) => setFormRange(evt.target.value as Duration)}>
             <option value="Custom">Custom</option>
             <option value="1 Day">1 Day</option>
             <option value="7 Days">7 Days</option>
@@ -189,24 +124,8 @@ export default function DateRangePicker<T>(props: {
             <option value="365 Days">365 Days</option>
           </select>
         </div>
-        <div className="col">
-          <input
-            className={"form-control" + (startValid? '' : ' is-invalid')}
-            type="date"
-            onChange={(evt) => { setStartInput(evt.target.value as string) }}
-            value={StartInput}
-            disabled={props.Disabled == null ? false : props.Disabled}
-          />
-        </div>
-        <div className="col">
-          <input
-            className={"form-control" + (endValid? '' : ' is-invalid')}
-            type="date"
-            onChange={(evt) => {setEndInput(evt.target.value as string) }}
-            value={EndInput}
-            disabled={props.Disabled == null ? false : props.Disabled}
-          />
-        </div>
+        {dateBox(props.FromField)}
+        {dateBox(props.ToField)}
       </div>
     </div>
   );

@@ -64,7 +64,7 @@ export default class DatePicker<T> extends React.Component<
         />
         <div className="invalid-feedback">
         {this.props.Feedback == null ? this.props.Field + ' is a required field.' : this.props.Feedback}
-      </div>
+        </div>
       </div>
     );
   }

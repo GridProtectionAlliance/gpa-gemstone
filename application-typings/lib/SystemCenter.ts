@@ -48,6 +48,9 @@ namespace SystemCenter {
         export interface DetailedMeter { ID: number, AssetKey: string, Name: string, Location: string, MappedAssets: number, Make: string, Model: string }
         export interface DetailedLocation { ID: number, LocationKey: string, Name: string, Description: string, Alias: string, ShortName: string, Longitude: number, Latitude: number, Meters: number, Assets: number }
 		export interface LSCVSAccount { ID: number, AccountID: string, CustomerID: number }
+	
+		export interface PQApplications { ID: number, Name: string, Url: string, Image: string, CategoryID: number, SortOrder: number }
+		export interface ApplicationCategory { ID: number, Name: string, SortOrder: number }
 	}
 }
 
