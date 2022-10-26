@@ -50,18 +50,30 @@ export default function ConfigurableTable<T>(props: IProps<T>) {
     React.useEffect(() => {
         if (props.cols.length !== colEnabled.length)
             setColEnabled(props.cols.map(d => props.defaultColumns.findIndex(v => v === d.key) > -1 || (props.requiredColumns !== undefined && props.requiredColumns.findIndex(v => v === d.key) > -1)));
-    }, [props.cols])
+    }, [props.cols]);
 
     React.useEffect(() => {
         setColKeys(props.cols.map(d => d.key))
     }, [props.cols]);
 
+
     React.useEffect(() => {
-        setCollumns(props.cols.filter((c, i) => colEnabled[i]));
+        setCollumns(props.cols.filter((c, i) => localStorage.getItem(JSON.stringify(i)) !== null || i === 0));
     }, [colEnabled]);
 
-    function changeCollums(index: number) {
+    function checkLocal(index: number) {
+        if (localStorage.getItem(JSON.stringify(index)) === null)
+            return false;
+        else
+            return true;
+    }
+
+    function changeCollums(index: number, key: string) {
         setColEnabled((d) => d.map((c, i) => (i === index ? !c : c)));
+        if (localStorage.getItem(JSON.stringify(index)) === null)
+            localStorage.setItem(JSON.stringify(index), key);
+        else
+            localStorage.removeItem(JSON.stringify(index));
     }
     return (
         <>
@@ -90,6 +102,7 @@ export default function ConfigurableTable<T>(props: IProps<T>) {
                             props.cols.map(d => props.defaultColumns.findIndex(v => v === d.key) > -1 ||
                                 (props.requiredColumns !== undefined && props.requiredColumns.findIndex(v => v === d.key) > -1)
                             ));
+                    
                 }
                 }
                 ConfirmText={'Reset Defaults'}>
@@ -97,7 +110,7 @@ export default function ConfigurableTable<T>(props: IProps<T>) {
                     <form>
                         <ul style={{ listStyleType: 'none', padding: 0, width: '100%', position: 'relative', float: 'left' }}>
                             {colKeys.map((k, i) => (props.requiredColumns === undefined || props.requiredColumns.findIndex(v => v === k) === -1 ?
-                                <li key={k}><label><input type="checkbox" onChange={() => changeCollums(i)} checked={colEnabled[i]} /> {k} </label></li> : null)
+                                <li key={k}><label><input type="checkbox" onChange={() => changeCollums(i, k)} checked={checkLocal(i)} /> {k} </label></li> : null)
                             )}
                         </ul>
                     </form>
