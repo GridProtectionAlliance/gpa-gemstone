@@ -174,7 +174,7 @@ export namespace DefaultSearch {
     /** This Implements a standard AssetGroup Search */
     export function AssetGroup (props: IProps<OpenXDA.Types.AssetGroup>) {
 
-        const standardSearch: Search.IField<OpenXDA.Types.AssetGroup> = { label: 'Name', key: 'AssetName', type: 'string', isPivotField: false };
+        const standardSearch: Search.IField<OpenXDA.Types.AssetGroup> = { label: 'Name', key: 'Name', type: 'string', isPivotField: false };
         const [addlFieldCols, setAddlFieldCols] = React.useState<Search.IField<OpenXDA.Types.AssetGroup>[]>([]);
 
         const dispatch = useDispatch<Dispatch<any>>();
