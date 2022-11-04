@@ -107,7 +107,12 @@ export default function SelectPopup<T extends U>(props: IProps<T>) {
                                 dispatch(props.Slice.Sort({SortField: d.colField as keyof T, Ascending: true}));
                             }
                         }}
-                        onClick={(d) => setSelectedData([...selectedData.filter(item => item.ID !== d.row.ID), d.row])}
+                        onClick={(d) => {
+                            if (props.Type === undefined || props.Type === 'single')
+                                setSelectedData([d.row])
+                            else
+                                setSelectedData((s) => [...s.filter(item => item.ID !== d.row.ID), d.row])
+                        }}
                         theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
                         tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: '400px', width: '100%' }}
                         rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
