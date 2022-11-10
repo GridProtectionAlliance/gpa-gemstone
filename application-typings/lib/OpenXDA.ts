@@ -77,7 +77,7 @@ namespace OpenXDA {
         }
         export interface CapBankRelay extends Asset { OnVoltageThreshhold: number;  CapBankNumber: number }
         export interface Line extends Asset { MaxFaultDistance: number, MinFaultDistance: number, Detail: LineDetail }
-        export interface LineSegment extends Asset { R0: number, X0: number, R1: number, X1: number, ThermalRating: number, Length: number, IsEnd: boolean }
+        export interface LineSegment extends Asset { R0: number, X0: number, R1: number, X1: number, ThermalRating: number, Length: number, IsEnd: boolean, fromBus?: string, ToBus?: string }
         export interface Transformer extends Asset { R0: number, X0: number, R1: number, X1: number, ThermalRating: number, PrimaryVoltageKV: number, SecondaryVoltageKV: number, Tap: number, TertiaryVoltageKV: number, SecondaryWinding: number, PrimaryWinding: number, TertiaryWinding: number }
         export interface LineDetail { R0: number, X0: number, R1: number, X1: number, ThermalRating: number, Length: number }
         export interface DER extends Asset { FullRatedOutputCurrent: number; VoltageLevel: 'Low' | 'Medium' }
