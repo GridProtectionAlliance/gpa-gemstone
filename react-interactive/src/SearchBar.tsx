@@ -66,11 +66,10 @@ export default function SearchBar<T> (props: IProps<T>)  {
   
   // Handling filter storage between sessions if a storageID exists
   React.useEffect(() => {
-    if (props.StorageID !== undefined && localStorage.hasOwnProperty(props.StorageID)) {
-      const storedFilters = JSON.parse(localStorage.getItem(props.StorageID) as string);
+    if (props.StorageID !== undefined) {
+      const storedFilters = JSON.parse(localStorage.getItem(props.StorageID) as string) ?? [];
       setFilters(storedFilters);
       props.SetFilter(storedFilters);
-      isFirstRender.current = false;
     }
   }, []);
 
@@ -97,8 +96,9 @@ export default function SearchBar<T> (props: IProps<T>)  {
   React.useEffect(() => {
     if (searchFilter !== null)
       props.SetFilter([...filters, searchFilter]);
-    if (searchFilter === null && !(isFirstRender && props.StorageID !== undefined)) // We need to skip the first render call or we will get a race condition with the props.setFilter in the blank useEffect
+    if (searchFilter === null && !(isFirstRender.current && props.StorageID !== undefined)) // We need to skip the first render call or we will get a race condition with the props.setFilter in the blank useEffect
       props.SetFilter(filters);
+    isFirstRender.current = false;
   }, [searchFilter])
 
   function deleteFilter(f: Search.IFilter<T>) {
