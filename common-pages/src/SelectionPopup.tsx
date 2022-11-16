@@ -43,7 +43,10 @@ interface IProps<T extends U> {
     GetEnum: (setOptions: (options: IOptions[]) => void, field: Search.IField<T>) => () => void,
     GetAddlFields: (setAddlFields: (cols: Search.IField<T>[]) => void) => () => void,
     AddlFilters?: Search.IFilter<T>[],
-    MinSelection?: number
+    MinSelection?: number,
+    children?: React.ReactNode,
+    ChildrenSectionTitle?: string,
+    StorageID?: string
 }
 
 
@@ -54,31 +57,31 @@ export namespace DefaultSelects {
 
     /** This Implements a standard Meter Selection Modal */
     export function Meter (props: IProps<SystemCenter.Types.DetailedMeter>) {
-        return <SelectPopup<SystemCenter.Types.DetailedMeter>{...props} Searchbar={(children) => <DefaultSearch.Meter Slice={props.Slice} GetAddlFields={props.GetAddlFields} GetEnum={props.GetEnum} AddlFilters={props.AddlFilters}>{children}</DefaultSearch.Meter>}></SelectPopup>
+        return <SelectPopup<SystemCenter.Types.DetailedMeter>{...props} Searchbar={(children) => <DefaultSearch.Meter Slice={props.Slice} GetAddlFields={props.GetAddlFields} GetEnum={props.GetEnum} StorageID={props.StorageID} AddlFilters={props.AddlFilters}>{children}</DefaultSearch.Meter>}> {props.children} </SelectPopup>
     }
 
     /** This Implements a standard Substation Selection Modal */
     export function Location (props: IProps<SystemCenter.Types.DetailedLocation>) {
-        return <SelectPopup<SystemCenter.Types.DetailedLocation>{...props} Searchbar={(children) => <DefaultSearch.Location Slice={props.Slice} GetAddlFields={props.GetAddlFields} GetEnum={props.GetEnum} AddlFilters={props.AddlFilters}>{children}</DefaultSearch.Location>}></SelectPopup>
+        return <SelectPopup<SystemCenter.Types.DetailedLocation>{...props} Searchbar={(children) => <DefaultSearch.Location Slice={props.Slice} GetAddlFields={props.GetAddlFields} GetEnum={props.GetEnum} StorageID={props.StorageID} AddlFilters={props.AddlFilters}>{children}</DefaultSearch.Location>}> {props.children} </SelectPopup>
     }
 
     /** This Implements a standard Transmission Asset Selection Modal */
     export function Asset (props: IProps<SystemCenter.Types.DetailedAsset>) {
-        return <SelectPopup<SystemCenter.Types.DetailedAsset>{...props} Searchbar={(children) => <DefaultSearch.Asset Slice={props.Slice} GetAddlFields={props.GetAddlFields} GetEnum={props.GetEnum} AddlFilters={props.AddlFilters}>{children}</DefaultSearch.Asset>}></SelectPopup>
+        return <SelectPopup<SystemCenter.Types.DetailedAsset>{...props} Searchbar={(children) => <DefaultSearch.Asset Slice={props.Slice} GetAddlFields={props.GetAddlFields} GetEnum={props.GetEnum} StorageID={props.StorageID} AddlFilters={props.AddlFilters}>{children}</DefaultSearch.Asset>}> {props.children} </SelectPopup>
     }
 
     /** This Implements a standard Asset Group Selection Modal */
     export function AssetGroup (props: IProps<OpenXDA.Types.AssetGroup>) {
-        return <SelectPopup<OpenXDA.Types.AssetGroup>{...props} Searchbar={(children) => <DefaultSearch.AssetGroup Slice={props.Slice} GetAddlFields={props.GetAddlFields} GetEnum={props.GetEnum} AddlFilters={props.AddlFilters}>{children}</DefaultSearch.AssetGroup>}></SelectPopup>
+        return <SelectPopup<OpenXDA.Types.AssetGroup>{...props} Searchbar={(children) => <DefaultSearch.AssetGroup Slice={props.Slice} GetAddlFields={props.GetAddlFields} GetEnum={props.GetEnum} StorageID={props.StorageID} AddlFilters={props.AddlFilters}>{children}</DefaultSearch.AssetGroup>}> {props.children} </SelectPopup>
     }
 
     /** This Implements a standard User Selection Modal */
     export function User (props: IProps<Application.Types.iUserAccount>) {
-        return <SelectPopup<Application.Types.iUserAccount>{...props} Searchbar={(children) => <DefaultSearch.User Slice={props.Slice} GetAddlFields={props.GetAddlFields} GetEnum={props.GetEnum} AddlFilters={props.AddlFilters}>{children}</DefaultSearch.User>}></SelectPopup>
+        return <SelectPopup<Application.Types.iUserAccount>{...props} Searchbar={(children) => <DefaultSearch.User Slice={props.Slice} GetAddlFields={props.GetAddlFields} GetEnum={props.GetEnum} StorageID={props.StorageID} AddlFilters={props.AddlFilters}>{children}</DefaultSearch.User>}> {props.children} </SelectPopup>
     }
     /** This Implements a standard Customer Selection Modal */
     export function Customer (props: IProps<OpenXDA.Types.Customer>) {
-        return <SelectPopup<OpenXDA.Types.Customer>{...props} Searchbar={(children) => <DefaultSearch.Customer Slice={props.Slice} GetAddlFields={props.GetAddlFields} GetEnum={props.GetEnum} AddlFilters={props.AddlFilters}>{children}</DefaultSearch.Customer>}></SelectPopup>
+        return <SelectPopup<OpenXDA.Types.Customer>{...props} Searchbar={(children) => <DefaultSearch.Customer Slice={props.Slice} GetAddlFields={props.GetAddlFields} GetEnum={props.GetEnum} StorageID={props.StorageID} AddlFilters={props.AddlFilters}>{children}</DefaultSearch.Customer>}> {props.children} </SelectPopup>
         
     }
 }

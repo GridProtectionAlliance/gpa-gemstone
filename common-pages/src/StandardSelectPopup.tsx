@@ -39,7 +39,9 @@ interface IProps<T extends U> {
     Type?: 'single'|'multiple',
     Columns: Column<T>[],
     Title: string,
-    MinSelection?: number
+    MinSelection?: number,
+    ChildrenSectionTitle?: string,
+    children?: React.ReactNode
 }
 
 
@@ -64,6 +66,28 @@ export default function SelectPopup<T extends U>(props: IProps<T>) {
         setSelectedData(_.uniqBy((updatedData as T[]), (d) => d.ID));
     }
 
+    function FormatChildren() {
+        let valid: boolean = false;
+        React.Children.toArray(props.children).forEach((child: any)=> {
+            if(React.isValidElement(child)) {
+                valid = true;
+            }
+        });
+        return (valid ?
+            <li className="nav-item" style={{ width: '30%', paddingRight: 10 }}>
+                <fieldset className="border" style={{ padding: '10px', height: '100%' }}>
+                    <legend className="w-auto" style={{ fontSize: 'large' }}>{ props.ChildrenSectionTitle ?? "Others:"}</legend>
+                    <form>
+                        {React.Children.map(props.children, (e) => {
+                            if (React.isValidElement(e)) return e;
+                            return null;
+                        })}
+                    </form>
+                </fieldset>
+            </li>
+            : null);
+    }
+
     return (<>
         <Modal Show={props.Show} Title={props.Title} ShowX={true} Size={'xlg'} CallBack={(conf) => props.OnClose(selectedData, conf)} 
         DisableConfirm={props.MinSelection !== undefined && selectedData.length < props.MinSelection} 
@@ -73,20 +97,22 @@ export default function SelectPopup<T extends U>(props: IProps<T>) {
             <div className="row">
                 <div className="col">
                    {props.Searchbar(
-                    props.Type === 'multiple'? <li className="nav-item" style={{ width: '20%', paddingRight: 10 }}>
-                            <fieldset className="border" style={{ padding: '10px', height: '100%' }}>
-                                <legend className="w-auto" style={{ fontSize: 'large' }}>Quick Selects:</legend>
-                                <form>
-                                    <div className="form-group">
-                                        <div className="btn btn-primary" onClick={(event) => { event.preventDefault(); AddCurrentList(); }}>Add Current List to Selection</div>
-                                    </div>
-                                    <div className="form-group">
-                                        <div className="btn btn-danger" onClick={(event) => { event.preventDefault(); setSelectedData([]) }}>Remove All</div>
-                                    </div>
-                                </form>
-                            </fieldset>
-                        </li>: null
-                   )}
+                    <>
+                        {props.Type === 'multiple'? <li className="nav-item" style={{ width: '20%', paddingRight: 10 }}>
+                                <fieldset className="border" style={{ padding: '10px', height: '100%' }}>
+                                    <legend className="w-auto" style={{ fontSize: 'large' }}>Quick Selects:</legend>
+                                    <form>
+                                        <div className="form-group">
+                                            <div className="btn btn-primary" onClick={(event) => { event.preventDefault(); AddCurrentList(); }}>Add Current List to Selection</div>
+                                        </div>
+                                        <div className="form-group">
+                                            <div className="btn btn-danger" onClick={(event) => { event.preventDefault(); setSelectedData([]) }}>Remove All</div>
+                                        </div>
+                                    </form>
+                                </fieldset>
+                            </li>: null}
+                        {FormatChildren()}
+                    </>)}
                 </div>
             </div>
             <div className="row">

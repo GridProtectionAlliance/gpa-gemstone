@@ -39,7 +39,8 @@ interface IProps<T extends U> {
     /** Function that Grabs any additional Filters that shoudl be available (such as Addl Fields) */
     GetAddlFields: (setAddlFields: (cols: Search.IField<T>[]) => void) => () => void,
     children: React.ReactNode,
-    AddlFilters?: Search.IFilter<T>[]
+    AddlFilters?: Search.IFilter<T>[],
+    StorageID?: string
 }
 
 interface IOptions {Value: string, Label: string}
@@ -83,6 +84,7 @@ export namespace DefaultSearch {
             ShowLoading={searchStatus === 'loading'}
             ResultNote={searchStatus === 'error' ? 'Could not complete Search' : 'Found ' + data.length + ' Meter(s)'}
             GetEnum={props.GetEnum}
+            StorageID={props.StorageID}
         >
             {props.children}
         </GenericSearchBar>
@@ -124,6 +126,7 @@ export namespace DefaultSearch {
             ShowLoading={searchStatus === 'loading'} 
             ResultNote={searchStatus === 'error' ? 'Could not complete Search' : 'Found ' + data.length + '  Substation(s)'}
             GetEnum={props.GetEnum}
+            StorageID={props.StorageID}
         >
             {props.children}
         </GenericSearchBar>
@@ -166,6 +169,7 @@ export namespace DefaultSearch {
             ShowLoading={searchStatus === 'loading'} 
             ResultNote={searchStatus === 'error' ? 'Could not complete Search' : 'Found ' + data.length + ' Transmission Asset(s)'}
             GetEnum={props.GetEnum}
+            StorageID={props.StorageID}
         >
             {props.children}
         </GenericSearchBar>
@@ -205,6 +209,7 @@ export namespace DefaultSearch {
             ShowLoading={searchStatus === 'loading'} 
             ResultNote={searchStatus === 'error' ? 'Could not complete Search' : 'Found ' + data.length + ' Asset Group(s)'}
             GetEnum={props.GetEnum}
+            StorageID={props.StorageID}
         >
             {props.children}
         </GenericSearchBar>
@@ -242,6 +247,7 @@ export namespace DefaultSearch {
             ShowLoading={searchStatus === 'loading'} 
             ResultNote={searchStatus === 'error' ? 'Could not complete Search' : 'Found ' + data.length + ' Asset Group(s)'}
             GetEnum={props.GetEnum}
+            StorageID={props.StorageID}
         >
             {props.children}
         </GenericSearchBar>
@@ -281,6 +287,7 @@ export namespace DefaultSearch {
             ShowLoading={searchStatus === 'loading'} 
             ResultNote={searchStatus === 'error' ? 'Could not complete Search' : 'Found ' + data.length + ' Customer(s)'}
             GetEnum={props.GetEnum}
+            StorageID={props.StorageID}
         >
             {props.children}
         </GenericSearchBar>

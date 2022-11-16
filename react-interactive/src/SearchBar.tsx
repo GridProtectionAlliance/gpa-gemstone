@@ -36,7 +36,8 @@ interface IProps<T> {
     children: React.ReactNode,
     GetEnum?: EnumSetter<T>,
     ShowLoading?: boolean,
-	  ResultNote?: string
+	  ResultNote?: string,
+    StorageID?: string
   }
 
 interface IOptions {Value: string, Label: string}
@@ -61,6 +62,23 @@ export default function SearchBar<T> (props: IProps<T>)  {
   const [search, setSearch] = React.useState<string>("");
   const [searchFilter, setSearchFilter] = React.useState<Search.IFilter<T>|null>(null);
 
+  const isFirstRender = React.useRef(true);
+  
+  // Handling filter storage between sessions if a storageID exists
+  React.useEffect(() => {
+    if (props.StorageID !== undefined && localStorage.hasOwnProperty(props.StorageID)) {
+      const storedFilters = JSON.parse(localStorage.getItem(props.StorageID) as string);
+      setFilters(storedFilters);
+      props.SetFilter(storedFilters);
+      isFirstRender.current = false;
+    }
+  }, []);
+
+  React.useEffect(() => {
+    if (props.StorageID !== undefined)
+      localStorage.setItem(props.StorageID, JSON.stringify(filters));
+  }, [filters]);
+
   // Update SearchFilter if there are any Character and only do it every 500ms to avoid hammering the server while typing
   React.useEffect(() => {
       let handle: any = null;
@@ -79,7 +97,7 @@ export default function SearchBar<T> (props: IProps<T>)  {
   React.useEffect(() => {
     if (searchFilter !== null)
       props.SetFilter([...filters, searchFilter]);
-    if (searchFilter === null)
+    if (searchFilter === null && !(isFirstRender && props.StorageID !== undefined)) // We need to skip the first render call or we will get a race condition with the props.setFilter in the blank useEffect
       props.SetFilter(filters);
   }, [searchFilter])
 
