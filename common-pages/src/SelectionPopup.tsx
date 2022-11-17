@@ -45,7 +45,6 @@ interface IProps<T extends U> {
     AddlFilters?: Search.IFilter<T>[],
     MinSelection?: number,
     children?: React.ReactNode,
-    ChildrenSectionTitle?: string,
     StorageID?: string
 }
 

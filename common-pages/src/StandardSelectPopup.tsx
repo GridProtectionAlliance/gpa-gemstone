@@ -40,7 +40,6 @@ interface IProps<T extends U> {
     Columns: Column<T>[],
     Title: string,
     MinSelection?: number,
-    ChildrenSectionTitle?: string,
     children?: React.ReactNode
 }
 
@@ -66,28 +65,6 @@ export default function SelectPopup<T extends U>(props: IProps<T>) {
         setSelectedData(_.uniqBy((updatedData as T[]), (d) => d.ID));
     }
 
-    function FormatChildren() {
-        let valid: boolean = false;
-        React.Children.toArray(props.children).forEach((child: any)=> {
-            if(React.isValidElement(child)) {
-                valid = true;
-            }
-        });
-        return (valid ?
-            <li className="nav-item" style={{ width: '30%', paddingRight: 10 }}>
-                <fieldset className="border" style={{ padding: '10px', height: '100%' }}>
-                    <legend className="w-auto" style={{ fontSize: 'large' }}>{ props.ChildrenSectionTitle ?? "Others:"}</legend>
-                    <form>
-                        {React.Children.map(props.children, (e) => {
-                            if (React.isValidElement(e)) return e;
-                            return null;
-                        })}
-                    </form>
-                </fieldset>
-            </li>
-            : null);
-    }
-
     return (<>
         <Modal Show={props.Show} Title={props.Title} ShowX={true} Size={'xlg'} CallBack={(conf) => props.OnClose(selectedData, conf)} 
         DisableConfirm={props.MinSelection !== undefined && selectedData.length < props.MinSelection} 
@@ -111,7 +88,10 @@ export default function SelectPopup<T extends U>(props: IProps<T>) {
                                     </form>
                                 </fieldset>
                             </li>: null}
-                        {FormatChildren()}
+                        {React.Children.map(props.children, (e) => {
+                            if (React.isValidElement(e)) return e;
+                            return null;
+                        })}
                     </>)}
                 </div>
             </div>
