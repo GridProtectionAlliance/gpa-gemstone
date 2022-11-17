@@ -115,7 +115,7 @@ export default function ConfigurableTable<T>(props: IProps<T>) {
                 >
                 <CollumnSelection requiredColumns={props.requiredColumns} colKeys={colKeys} onChange={changeCollums} isChecked={checkLocal}/>
             </Modal>
-            : <Portal node={document && document.getElementById(props.settingsPortal)}>
+            : (showSettings? <Portal node={document && document.getElementById(props.settingsPortal)}>
                 <div className="card">
                     <div className="card-header">
                         <h4 className="modal-title">Table Columns</h4>
@@ -138,7 +138,7 @@ export default function ConfigurableTable<T>(props: IProps<T>) {
                         </button>
                     </div>
                 </div>
-            </Portal>}
+            </Portal> : null)}
         </>
     );
 
