@@ -24,6 +24,7 @@ import * as React from 'react';
 import Modal from './Modal';
 import styled from "styled-components";
 import { GetNodeSize, CreateGuid } from '@gpa-gemstone/helper-functions'
+import { Portal } from 'react-portal';
 
 interface IProps {
     Show: boolean,
@@ -181,9 +182,11 @@ const ToolTip: React.FunctionComponent<IProps> = (props) => {
   const theme = (props.Theme === undefined? 'dark' : props.Theme);
 
     return (
+      <Portal>
       <WrapperDiv Show={props.Show} Theme={theme} Top={top} Left={left} id={guid} Location={props.Position === undefined? 'top' : props.Position} Zindex={zIndex}>
         {props.children}
       </WrapperDiv>
+      </Portal>
     )
 }
 

@@ -23,6 +23,7 @@
 import * as React from 'react';
 import ToolTip from './ToolTip';
 import {CreateGuid} from '@gpa-gemstone/helper-functions';
+import { Portal } from 'react-portal';
 
 interface IProps {
     Title: string,
@@ -75,6 +76,7 @@ const Modal: React.FunctionComponent<IProps> = (props) => {
 
     return (
         <>
+        <Portal>
         <div className={"modal" + (props.Show ? " show" : '')} style={props.Show ? {display: 'block', zIndex: 9990} : {}}>
             <div className={"modal-dialog" + (props.Size === undefined? '' : props.Size === 'xlg'? '' :(" modal-"  + props.Size))} style={props.Size === 'xlg'? {maxWidth: window.innerWidth - 100} : {}}>
                 <div className="modal-content">
@@ -123,6 +125,7 @@ const Modal: React.FunctionComponent<IProps> = (props) => {
                 backgroundColor: '#ffffff',
                 zIndex: 9980,
                 }}></div> : null}
+            </Portal>
          </>
     )
 }
