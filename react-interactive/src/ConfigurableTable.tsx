@@ -24,6 +24,7 @@ import * as React from 'react';
 import Modal from './Modal';
 import Table, { TableProps, Column } from '@gpa-gemstone/react-table';
 import { SVGIcons } from '@gpa-gemstone/gpa-symbols';
+import {Portal} from 'react-portal';
 
 interface IProps<T> extends TableProps<T> {
     /**
@@ -34,6 +35,10 @@ interface IProps<T> extends TableProps<T> {
      * List of Column Keys that are always shown.
      */
     requiredColumns?: string[],
+    /** 
+     * ID of the Portal used for tunneling Collumn settings
+     */
+    settingsPortal?: string
 }
 
 /**
@@ -94,6 +99,7 @@ export default function ConfigurableTable<T>(props: IProps<T>) {
                 rowStyle={props.rowStyle}
                 keySelector={props.keySelector}
             />
+            {props.settingsPortal == undefined?
             <Modal Title={'Table Columns'} Show={showSettings} ShowX={true} ShowCancel={false}
                 CallBack={(conf: boolean) => {
                     setShowSettings(false);
@@ -102,21 +108,89 @@ export default function ConfigurableTable<T>(props: IProps<T>) {
                             props.cols.map(d => props.defaultColumns.findIndex(v => v === d.key) > -1 ||
                                 (props.requiredColumns !== undefined && props.requiredColumns.findIndex(v => v === d.key) > -1)
                             ));
-                    
+                    }
                 }
-                }
-                ConfirmText={'Reset Defaults'}>
-                <div>
-                    <form>
-                        <ul style={{ listStyleType: 'none', padding: 0, width: '100%', position: 'relative', float: 'left' }}>
-                            {colKeys.map((k, i) => (props.requiredColumns === undefined || props.requiredColumns.findIndex(v => v === k) === -1 ?
-                                <li key={k}><label><input type="checkbox" onChange={() => changeCollums(i, k)} checked={checkLocal(i)} /> {k} </label></li> : null)
-                            )}
-                        </ul>
-                    </form>
-                </div>
+                ConfirmText={'Reset Defaults'}
+                ConfirmBtnClass={'btn-primary float-left'}
+                >
+                <CollumnSelection requiredColumns={props.requiredColumns} colKeys={colKeys} onChange={changeCollums} isChecked={checkLocal}/>
             </Modal>
+            : <Portal node={document && document.getElementById(props.settingsPortal)}>
+                <div className="card">
+                    <div className="card-header">
+                        <h4 className="modal-title">Table Columns</h4>
+                        <button type="button" className="close" onClick={() => setShowSettings(false) }>&times;</button>
+                    </div>
+                    <div className="card-body" style={{ maxHeight: 'calc(100% - 210px)', overflowY: 'auto' }}>
+                        <CollumnSelection requiredColumns={props.requiredColumns} colKeys={colKeys} onChange={changeCollums} isChecked={checkLocal}/>
+                    </div>
+                    <div className="card-footer">
+                    <button type="button"
+                        className={'btn btn-primary float-left'}
+                        onClick={() => {
+                            setShowSettings(false);
+                            setColEnabled(
+                                props.cols.map(d => props.defaultColumns.findIndex(v => v === d.key) > -1 ||
+                                    (props.requiredColumns !== undefined && props.requiredColumns.findIndex(v => v === d.key) > -1)
+                                ));
+                        }}>
+                            Reset Defaults
+                        </button>
+                    </div>
+                </div>
+            </Portal>}
         </>
     );
 
+}
+
+
+interface IColSelectionProps {
+    requiredColumns?: string[],
+    colKeys: string[],
+    onChange: (index: number, key: string) => void,
+    isChecked: (index: number) => boolean
+ }
+
+const CollumnSelection = (props: IColSelectionProps) => {
+
+    function createCollumns(colIndex: number){
+
+        let j = 0;
+        const result: JSX.Element[] = [];
+        props.colKeys.forEach((k,i) => {
+            if (props.requiredColumns === undefined || props.requiredColumns.findIndex(v => v === k) > -1)
+                return;
+            if (j%3 === colIndex)
+                result.push(<li key={k}><label><input type="checkbox" onChange={() => props.onChange(i, k)} checked={props.isChecked(i)} /> {k} </label></li>)
+            j = j + 1;
+        })
+        return result;
+    }
+
+    return <>
+        <div className='col'>
+            <div className='row-sm'>
+                <form>
+                    <ul style={{ listStyleType: 'none', padding: 0, width: '100%', position: 'relative', float: 'left' }}>
+                        {createCollumns(0)}
+                    </ul>
+                </form>
+            </div>
+            <div className='row-sm'>
+                <form>
+                    <ul style={{ listStyleType: 'none', padding: 0, width: '100%', position: 'relative', float: 'left' }}>
+                        {createCollumns(1)}
+                    </ul>
+                </form>
+            </div>
+            <div className='row-sm'>
+                <form>
+                    <ul style={{ listStyleType: 'none', padding: 0, width: '100%', position: 'relative', float: 'left' }}>
+                        {createCollumns(2)}
+                    </ul>
+                </form>
+            </div>
+        </div>
+     </>
 }
