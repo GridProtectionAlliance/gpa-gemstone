@@ -75,7 +75,6 @@ const Modal: React.FunctionComponent<IProps> = (props) => {
     const showCxnToolTip = (props.CancelShowToolTip !== undefined && props.CancelShowToolTip) && hover === 'cancel';
 
     return (
-        <>
         <Portal>
         <div className={"modal" + (props.Show ? " show" : '')} style={props.Show ? {display: 'block', zIndex: 9990} : {}}>
             <div className={"modal-dialog" + (props.Size === undefined? '' : props.Size === 'xlg'? '' :(" modal-"  + props.Size))} style={props.Size === 'xlg'? {maxWidth: window.innerWidth - 100} : {}}>
@@ -126,7 +125,6 @@ const Modal: React.FunctionComponent<IProps> = (props) => {
                 zIndex: 9980,
                 }}></div> : null}
             </Portal>
-         </>
     )
 }
 
