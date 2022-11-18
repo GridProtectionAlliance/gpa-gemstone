@@ -154,43 +154,31 @@ interface IColSelectionProps {
 
 const CollumnSelection = (props: IColSelectionProps) => {
 
-    function createCollumns(colIndex: number){
-
+    function createCollumns(){
         let j = 0;
-        const result: JSX.Element[] = [];
+        const set: JSX.Element[][] = [[],[],[]];
+
         props.colKeys.forEach((k,i) => {
             if (props.requiredColumns === undefined || props.requiredColumns.findIndex(v => v === k) > -1)
                 return;
-            if (j%3 === colIndex)
-                result.push(<li key={k}><label><input type="checkbox" onChange={() => props.onChange(i, k)} checked={props.isChecked(i)} /> {k} </label></li>)
+            set[j%3].push(<li key={k}><label><input type="checkbox" onChange={() => props.onChange(i, k)} checked={props.isChecked(i)} /> {k} </label></li>);
             j = j + 1;
         })
-        return result;
+
+        return set.map(c => (
+            <div className='col-sm'>
+                <form>
+                    <ul style={{ listStyleType: 'none', padding: 0, width: '100%', position: 'relative', float: 'left' }}>
+                        {c}
+                    </ul>
+                </form>
+            </div>
+        ));
     }
 
     return <>
-        <div className='col'>
-            <div className='row-sm'>
-                <form>
-                    <ul style={{ listStyleType: 'none', padding: 0, width: '100%', position: 'relative', float: 'left' }}>
-                        {createCollumns(0)}
-                    </ul>
-                </form>
-            </div>
-            <div className='row-sm'>
-                <form>
-                    <ul style={{ listStyleType: 'none', padding: 0, width: '100%', position: 'relative', float: 'left' }}>
-                        {createCollumns(1)}
-                    </ul>
-                </form>
-            </div>
-            <div className='row-sm'>
-                <form>
-                    <ul style={{ listStyleType: 'none', padding: 0, width: '100%', position: 'relative', float: 'left' }}>
-                        {createCollumns(2)}
-                    </ul>
-                </form>
-            </div>
+        <div className='row'>          
+            {createCollumns()}
         </div>
      </>
 }
