@@ -116,7 +116,7 @@ export default function SelectPopup<T extends U>(props: IProps<T>) {
                         theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
                         tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: '400px', width: '100%' }}
                         rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                        selected={props.Type === undefined || props.Type === 'single' ? (item) => selectedData.findIndex(d => d.ID === item.ID) > -1 : (item) => false}
+                        selected={(item) => selectedData.findIndex(d => d.ID === item.ID) > -1 }
                     />
                 </div>
                 {props.Type === 'multiple' ? <div className="col" style={{ width: '40%' }}>
