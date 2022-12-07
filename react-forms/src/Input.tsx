@@ -61,13 +61,19 @@ export default function Input<T>(props: IProps<T>) {
     setInternal(true);
     if (props.Type === 'number') {
       if (IsNumber(value)) {
-        props.Setter({ ...props.Record, [props.Field]: value !== '' ? parseFloat(value) : null });
-        setHeldVal(value);
+          props.Setter({ ...props.Record, [props.Field]: value !== '' && value.toString().indexOf('.') === -1 ? parseFloat(value) : null });
+          if (value.toString().indexOf('.') === -1)
+              setHeldVal(value);
+          else
+              setHeldVal('');
       }
     }
     else {
-      props.Setter({ ...props.Record, [props.Field]: value !== '' ? value : null });
-      setHeldVal(value);
+        props.Setter({ ...props.Record, [props.Field]: value !== '' && value.toString().indexOf('.') === -1 ? value : null });
+        if (value.toString().indexOf('.') === -1)
+            setHeldVal(value);
+        else
+            setHeldVal('');
     }
   }
     
