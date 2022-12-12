@@ -25,7 +25,7 @@
 
 import * as React from 'react';
 import HelperMessage from './HelperMessage';
-import { CreateGuid, IsNumber } from '@gpa-gemstone/helper-functions'
+import { CreateGuid, IsInteger, IsNumber } from '@gpa-gemstone/helper-functions'
 
 interface IProps<T> {
   Record: T;
@@ -35,7 +35,7 @@ interface IProps<T> {
   Label?: string;
   Feedback?: string;
   Disabled?: boolean;
-  Type?: 'number' | 'text' | 'password' | 'email' | 'color';
+  Type?: 'number' | 'text' | 'password' | 'email' | 'color' | 'integer';
   Help?: string|JSX.Element;
 }
 
@@ -58,22 +58,24 @@ export default function Input<T>(props: IProps<T>) {
      }, [props.Record[props.Field]]);
 
 	function valueChange(value: string) {
-    setInternal(true);
+        setInternal(true);
+
     if (props.Type === 'number') {
       if (IsNumber(value)) {
-          props.Setter({ ...props.Record, [props.Field]: value !== '' && value.toString().indexOf('.') === -1 ? parseFloat(value) : null });
-          if (value.toString().indexOf('.') === -1)
-              setHeldVal(value);
-          else
-              setHeldVal('');
-      }
+          props.Setter({ ...props.Record, [props.Field]: value !== '' ? parseFloat(value) : null });
+          setHeldVal(value);
+        }
+      
+    }
+    else if (props.Type === 'integer') {
+        if (IsInteger(value)) {
+            props.Setter({ ...props.Record, [props.Field]: value !== '' ? parseFloat(value) : null });
+            setHeldVal(value);
+        }
     }
     else {
-        props.Setter({ ...props.Record, [props.Field]: value !== '' && value.toString().indexOf('.') === -1 ? value : null });
-        if (value.toString().indexOf('.') === -1)
-            setHeldVal(value);
-        else
-            setHeldVal('');
+        props.Setter({ ...props.Record, [props.Field]: value !== '' ? value : null });
+        setHeldVal(value);
     }
   }
     
