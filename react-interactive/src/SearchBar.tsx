@@ -223,7 +223,6 @@ export default function SearchBar<T> (props: IProps<T>)  {
 interface IPropsFilterCreator<T> { Filter: Search.IFilter<T>, Setter: (filter: React.SetStateAction<Search.IFilter<T>>) => void, Field: Search.IField<T>|undefined, Enum?: EnumSetter<T> }
 
 function FilterCreator<T>(props: IPropsFilterCreator<T> ) {
-
 	const [options, setOptions] = React.useState<IOptions[]>([]);
 
 	React.useEffect(() => {
@@ -375,7 +374,7 @@ function FilterCreator<T>(props: IPropsFilterCreator<T> ) {
                                 props.Setter(prevSetter => ({ ...prevSetter, SearchText: text }));
                             }
 
-                        }} value={props.Filter.SearchText.indexOf(vli.Value) >= 0 ? 'on' : 'off'} checked={props.Filter.SearchText.indexOf(vli.Value) >= 0 ? true : false} />
+                        }} value={props.Filter.SearchText.indexOf(vli.Value) >= 0 ? 'on' : 'off'} checked={props.Filter.SearchText.slice(1,-1).split(',').indexOf(vli.Value) >= 0} />
                         <label className="form-check-label" >{vli.Label}</label>
 
                     </div></li>)}
