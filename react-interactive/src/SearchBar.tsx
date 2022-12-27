@@ -342,7 +342,9 @@ function FilterCreator<T>(props: IPropsFilterCreator<T> ) {
       </div>
     }
     else {
-
+        const stripParenthesisAndSplit = (str : string) => {
+            return (str.match(/^\(.*\)$/) != null ? str.slice(1,-1) : str).split(',');
+        };
         return (
             <>
                 <label>Column type is enumerable. Select from below.</label>
@@ -360,21 +362,22 @@ function FilterCreator<T>(props: IPropsFilterCreator<T> ) {
                     {options.map((vli,index) => <li key={index} ><div className="form-check">
                         <input type="checkbox" className="form-check-input" style={{ zIndex: 1 }} onChange={(evt) => {
                             if (evt.target.checked) {
-                                let list = props.Filter.SearchText.replace('(', '').replace(')', '').split(',');
+                                ;
+                                let list = stripParenthesisAndSplit(props.Filter.SearchText)
                                 list = list.filter(x => x !== "")
                                 list.push(vli.Value)
                                 const text = `(${list.join(',')})`;
                                 props.Setter(prevSetter => ({ ...prevSetter, SearchText: text }));
                             }
                             else {
-                                let list = props.Filter.SearchText.replace('(', '').replace(')', '').split(',');
+                                let list = stripParenthesisAndSplit(props.Filter.SearchText);
                                 list = list.filter(x => x !== "")
                                 list = list.filter(x => x !== vli.Value)
                                 const text = `(${list.join(',')})`;
                                 props.Setter(prevSetter => ({ ...prevSetter, SearchText: text }));
                             }
 
-                        }} value={props.Filter.SearchText.indexOf(vli.Value) >= 0 ? 'on' : 'off'} checked={props.Filter.SearchText.slice(1,-1).split(',').indexOf(vli.Value) >= 0} />
+                        }} value={props.Filter.SearchText.indexOf(vli.Value) >= 0 ? 'on' : 'off'} checked={stripParenthesisAndSplit(props.Filter.SearchText).indexOf(vli.Value) >= 0} />
                         <label className="form-check-label" >{vli.Label}</label>
 
                     </div></li>)}
