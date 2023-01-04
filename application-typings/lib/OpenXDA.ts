@@ -59,8 +59,8 @@ namespace OpenXDA {
         export interface Channel { ID: number, Meter: string, Asset: string, MeasurementType: string, MeasurementCharacteristic: string, Phase: string, Name: string, Adder: number, Multiplier: number, SamplesPerHour: number, PerUnitValue: number, HarmonicGroup: number, Description: string, Enabled: boolean, Series: Series[], ConnectionPriority: number }
         export interface Series { ID: number, ChannelID: number, SeriesType: string, SourceIndexes: string }
         export interface Note { ID: number, NoteTypeID: number, ReferenceTableID: number, Note: string, UserAccount?: string, Timestamp: string, NoteApplicationID: number, NoteTagID : number }
-		    export interface NoteApplication { ID: number, Name: NoteApplicationName }
-		    export interface NoteTag { ID: number, Name: NoteTagName }
+        export interface NoteApplication { ID: number, Name: NoteApplicationName }
+        export interface NoteTag { ID: number, Name: NoteTagName }
         export interface Company { ID: number, CompanyTypeID: number, CompanyID: string, Name: string, Description: string }
         export interface CompanyMeter { ID: number, CompanyID: number, MeterID: number, DisplayName: string, Enabled: boolean }
         export interface Customer { ID: number, CustomerKey: string, Name: string, Phone: string, Description: string, LSCVS: boolean, PQIFacilityID: number   }
@@ -77,7 +77,8 @@ namespace OpenXDA {
         }
         export interface CapBankRelay extends Asset { OnVoltageThreshhold: number;  CapBankNumber: number }
         export interface Line extends Asset { MaxFaultDistance: number, MinFaultDistance: number, Detail: LineDetail }
-        export interface LineSegment extends Asset { R0: number, X0: number, R1: number, X1: number, ThermalRating: number, Length: number, IsEnd: boolean, fromBus?: string, ToBus?: string }
+        export interface LineSegment extends Asset { R0: number, X0: number, R1: number, X1: number, ThermalRating: number, Length: number, IsEnd: boolean, fromBus?: string, ToBus?: string }      
+        export interface LineSegmentConnections {ID: number, ParentSegment: number, ChildSegment: number}
         export interface Transformer extends Asset { R0: number, X0: number, R1: number, X1: number, ThermalRating: number, PrimaryVoltageKV: number, SecondaryVoltageKV: number, Tap: number, TertiaryVoltageKV: number, SecondaryWinding: number, PrimaryWinding: number, TertiaryWinding: number }
         export interface LineDetail { R0: number, X0: number, R1: number, X1: number, ThermalRating: number, Length: number }
         export interface DER extends Asset { FullRatedOutputCurrent: number; VoltageLevel: 'Low' | 'Medium' }
