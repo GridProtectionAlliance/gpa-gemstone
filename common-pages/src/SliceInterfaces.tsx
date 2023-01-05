@@ -28,15 +28,15 @@ type DBAction = 'POST' | 'DELETE' | 'PATCH';
 export type UserValidation = 'Resolving' | 'Valid' | 'Invalid' | 'Unknown';
 
 export interface IGenericSlice<T> {
-  Fetch: (AsyncThunk<any, void | number, {}>),
-	DBAction: (AsyncThunk<any, { verb: DBAction, record: T }, {}> ),
-  Sort: ActionCreatorWithPayload<{ SortField: keyof T, Ascending: boolean}, string>,
+  Fetch: (AsyncThunk<any, void | number | string, {}>),
+  DBAction: (AsyncThunk<any, { verb: DBAction, record: T }, {}>),
+  Sort: AsyncThunk<any, { SortField: keyof T, Ascending: boolean }, {}>,
 
-	Data: (state: any) => T[],
-	Status: (state: any) => Application.Types.Status,
-	SortField: (state: any) => keyof T,
-	Ascending: (state: any) => boolean,
-	ParentID?: (state: any) => number| null
+  Data: (state: any) => T[],
+  Status: (state: any) => Application.Types.Status,
+  SortField: (state: any) => keyof T,
+  Ascending: (state: any) => boolean,
+  ParentID?: (state: any) => number | string
 }
 
 export interface ISearchableSlice<T> extends IGenericSlice<T> {

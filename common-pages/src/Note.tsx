@@ -54,7 +54,7 @@ function Note(props: IProps)  {
 
   const data: OpenXDA.Types.Note[] = useSelector(props.NoteSlice.Data)
 	const dataStatus: Application.Types.Status =  useSelector(props.NoteSlice.Status)
-	const parentID: number|null|undefined = useSelector((props.NoteSlice.ParentID === undefined? (state: any) => props.ReferenceTableID : props.NoteSlice.ParentID))
+	const parentID: number|string|undefined = useSelector((props.NoteSlice.ParentID === undefined? (state: any) => props.ReferenceTableID : props.NoteSlice.ParentID))
 	const sortField: keyof OpenXDA.Types.Note = useSelector(props.NoteSlice.SortField)
   const ascending: boolean = useSelector(props.NoteSlice.Ascending)
 

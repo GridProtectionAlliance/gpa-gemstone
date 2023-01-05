@@ -41,7 +41,7 @@ export default function GroupItemsWindow(props: IProps) {
 
 	const recordStatus: Application.Types.Status = useSelector(props.ValueListItemSlice.Status);
 	const data: SystemCenter.Types.ValueListItem[] = useSelector(props.ValueListItemSlice.Data);
-	const parentID: number|null = useSelector((props.ValueListItemSlice.ParentID === undefined? (state: any) => -1 : props.ValueListItemSlice.ParentID));
+	const parentID: number|string = useSelector((props.ValueListItemSlice.ParentID === undefined? (state: any) => -1 : props.ValueListItemSlice.ParentID));
   const [sortField, setSortField] = React.useState<keyof SystemCenter.Types.ValueListItem>('Value');
 	const [ascending,setAscending] = React.useState<boolean>(false);
 
