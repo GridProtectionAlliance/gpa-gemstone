@@ -149,8 +149,8 @@ export namespace DefaultSearch {
             { label: 'Name', key: 'AssetName', type: 'string', isPivotField: false },
             { label: 'Voltage (kV)', key: 'VoltageKV', type: 'number', isPivotField: false },
             { label: 'Type', key: 'AssetType', type: 'enum', isPivotField: false },
-            { label: 'Meter', key: 'Meter', type: 'string', isPivotField: false },
-            { label: 'Substation', key: 'Location', type: 'string', isPivotField: false },
+            { label: 'Meter Key', key: 'Meter', type: 'string', isPivotField: false },
+            { label: 'Substation Key', key: 'Location', type: 'string', isPivotField: false },
             { label: 'Number of Meters', key: 'Meters', type: 'integer', isPivotField: false },
             { label: 'Number of Substations', key: 'Locations', type: 'integer', isPivotField: false },
         ];
