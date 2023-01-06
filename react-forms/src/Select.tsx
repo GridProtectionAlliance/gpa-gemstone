@@ -44,10 +44,28 @@ export default function Select<T>(props: IProps<T>) {
 	const [guid, setGuid] = React.useState<string>("");
 	const [showHelp, setShowHelp] = React.useState<boolean>(false);
 	
-	 React.useEffect(() => {
-		setGuid(CreateGuid());
-	  }, []);
+  React.useEffect(() => {
+    setGuid(CreateGuid());
+  }, []);
+
+  React.useEffect(() => {
+    const currentValue: string = GetRecordValue();
+    if (!(props.EmptyOption ?? false) && props.Options.length > 0 && props.Options.findIndex((option) => option.Value === currentValue) === -1)
+      SetRecord(props.Options[0].Value);
+  }, [props.Options]);
+    
 	  
+  function SetRecord(value: string): void {
+    const record: T = { ...props.Record };
+    if (value !== '') record[props.Field] = value as any;
+    else record[props.Field] = null as any;
+    props.Setter(record);
+  };
+
+  function GetRecordValue(): string {
+    return props.Record[props.Field] == null ? '' : (props.Record[props.Field] as any).toString();
+  };
+
   return (
     <div className="form-group">
     {(props.Label !== "") ?
@@ -62,14 +80,8 @@ export default function Select<T>(props: IProps<T>) {
       <select
 		data-help={guid}
         className="form-control"
-        onChange={(evt) => {
-          const record: T = { ...props.Record };
-          if (evt.target.value !== '') record[props.Field] = evt.target.value as any;
-          else record[props.Field] = null as any;
-
-          props.Setter(record);
-        }}
-        value={props.Record[props.Field] == null ? '' : (props.Record[props.Field] as any).toString()}
+        onChange={(evt) => SetRecord(evt.target.value)}
+        value={GetRecordValue()}
         disabled={props.Disabled == null ? false : props.Disabled}
       >
         {props.EmptyOption ? <option value="">{props.EmptyLabel !== undefined? props.EmptyLabel : ''}</option> : null}
