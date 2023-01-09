@@ -23,6 +23,7 @@
 
 import * as React from 'react'
 
+
 interface IProps {
     steps:
     {
@@ -31,22 +32,24 @@ interface IProps {
         id: string | number
     }[],
     activeStep: string | number,
-    height: number,
-    width: number
+    height?: string | number,
+    width?: string | number
 }
 
-function Step(props: IProps) {
+function ProgressBar(props: IProps) {
     let met = false;
+    let metIndex = 0;
     const divs: JSX.Element[] = [];
-    let stepBar: JSX.Element = <div></div>;
 
     /// Styles for overall div
     const stepsStyle: React.CSSProperties = {
-        height: props.height,
+        height: props.height === undefined ? '100%' : props.height,
         minHeight: '210px',
-        width: props.width,
+        width: props.width === undefined ? '100%' : props.width,
+        minWidth: '210px',
         position: 'absolute',
-        justifyContent: 'space-evenly'
+        justifyContent: 'space-evenly',
+
     }
 
     /// Styles for gray bar
@@ -60,47 +63,61 @@ function Step(props: IProps) {
         borderRadius: '10px 0 0 10px'
     }
 
+    /// Styles for past/current circles
+    const activeCircleStyle: React.CSSProperties = {
+        height: '25px',
+        width: '25px',
+        backgroundColor: '#fff',
+        borderRadius: '50%',
+        borderWidth: '2px',
+        borderStyle: 'solid',
+        borderColor: '#5DC177',
+        display: 'inline-block'
+    }
+
+    /// Styles for unactivated circles
+    const inactiveCircleStyle: React.CSSProperties = {
+        height: '25px',
+        width: '25px',
+        backgroundColor: '#fff',
+        borderRadius: '50%',
+        borderWidth: '2px',
+        borderStyle: 'solid',
+        borderColor: '#D3D3D3',
+        display: 'inline-block'
+    }
+
+    const descriptionStyles: React.CSSProperties = {
+        fontSize: '15px',
+        fontStyle: 'italic',
+        color: '#538897',
+        alignContent: 'center',
+        display: 'inline-block'
+    }
+
     /// Create each circle and description
     function getSteps() {
         props.steps.forEach((x) => {
 
-            /// Past steps
-            if (!met && x.id !== props.activeStep) {
-                let div = <div style={{ height: '60px', width: '25px', alignContent: 'center' }}>
-                    <span style={{ height: '25px', width: '25px', backgroundColor: '#fff', borderRadius: '50%', borderWidth: '2px', borderStyle: 'solid', borderColor: '#5DC177', display: 'inline-block' }}></span>
-                    <span style={{ fontSize: '15px', fontStyle: 'italic', color: '#538897', alignContent: 'center', display: 'inline-block' }}>{x.short}</span>
-                </div>
-                divs.push(div);
-            }
-
-            /// Current active step
             if (x.id === props.activeStep) {
                 met = true;
-                let div = <div style={{ height: '60px', width: '25px', alignContent: 'center' }}>
-                    <span className='active_circle' style={{ height: '25px', width: '25px', backgroundColor: '#fff', borderRadius: '50%', borderWidth: '2px', borderStyle: 'solid', borderColor: '#5DC177', display: 'inline-block' }}></span>
-                    <span className='active_name' style={{ fontSize: '15px', fontStyle: 'italic', color: '#538897', alignContent: 'center', display: 'inline-block' }}>{x.long}</span>
-                </div>
-                stepBar = <div style={{ width: (props.steps.indexOf(x) / (props.steps.length - 1)) * props.width, backgroundColor: '#5DC177', maxHeight: '10px', height: '10%', position: 'absolute', top: '50%', borderRadius: '10px 0 0 10px' }}></div>
-                divs.push(div);
+                metIndex = props.steps.indexOf(x);
             }
 
-            /// Future steps
-            if (met && x.id !== props.activeStep) {
-                let div = <div style={{ height: '60px', width: '25px', alignContent: 'center' }}>
-                    <span style={{ height: '25px', width: '25px', backgroundColor: '#fff', borderRadius: '50%', borderWidth: '2px', borderStyle: 'solid', borderColor: '#D3D3D3', display: 'inline-block' }}></span>
-                    <span style={{ fontSize: '15px', fontStyle: 'italic', color: '#538897', alignContent: 'center', display: 'inline-block' }}>{x.short}</span>
-                </div>
-                divs.push(div);
-            }
+            divs.push(
+                <div style={{ height: '60px', width: '25px', alignContent: 'center' }}><span style={x.id === props.activeStep || !met ? activeCircleStyle : inactiveCircleStyle}></span><span style={descriptionStyles}>{x.id === props.activeStep ? x.long : x.short}</span></div>
+            );
+
+
         });
 
     }
 
     { getSteps() }
     return (
-        <div style={stepsStyle}>
+        <div  id='steps' style={stepsStyle}>
             <div style={stepsContainerStyle}></div>
-            {stepBar}
+            <div style={{ width: ((metIndex / (props.steps.length - 1)) * 100).toString() + '%', backgroundColor: '#5DC177', maxHeight: '10px', height: '10%', position: 'absolute', top: '50%', borderRadius: '10px 0 0 10px' }}></div>
             <div style={{ height: '100px', width: '100%', top: '46%', position: 'absolute', display: 'flex', justifyContent: 'space-between' }}>
                 {divs}
             </div>
@@ -109,4 +126,4 @@ function Step(props: IProps) {
 
 }
 
-export default Step;
+export default ProgressBar;

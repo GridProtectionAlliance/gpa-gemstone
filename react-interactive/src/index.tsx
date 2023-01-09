@@ -37,6 +37,7 @@ import Application from './Menue/Application';
 import Page from './Menue/Page';
 import Section from './Menue/Section';
 import FilterableTable from './FilterableTable/FilterableTable';
+import ProgressBar from './ProgressBar';
 
 export {
   Modal,
@@ -54,5 +55,6 @@ export {
   Application,
   Page,
   Section,
-  FilterableTable
+  FilterableTable,
+  ProgressBar
 };
