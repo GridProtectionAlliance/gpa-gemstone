@@ -21,16 +21,38 @@
 // ******************************************************************************************************
 
 import { LeftArrow, RightArrow, SVGIcons } from '@gpa-gemstone/gpa-symbols';
+import { CreateGuid, GetTextWidth } from '@gpa-gemstone/helper-functions';
+import _ = require('lodash');
 import * as React from 'react';
-import { number } from 'yargs';
+import ToolTip from '../ToolTip';
 import SplitDrawer from './SplitDrawer';
 import SplitSection from './SplitSection';
+
+
+// Temporary Icon until we republish gpa-symbols
+export const CrossMark = <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2" >
+        <path d="M 2.2 23.197 L 0.387 21.384 L 10.356 11.415 L 0.387 1.446 L 2.2 -0.367 L 12.169 9.602 L 22.138 -0.367 L 23.951 1.446 L 13.982 11.415 L 23.951 21.384 L 22.138 23.197 L 12.169 13.228 L 2.2 23.197 Z"/>
+    </svg>
 
 interface IProps {
     style?: any,
     sliderStyle?: any,
 }
 
+
+interface ISection {
+    Width: number,
+    MinWidth: number,
+    MaxWidth: number,
+    Open?: boolean,
+    Index: number,
+    IsDrawer: boolean
+    ShowClosed: boolean,
+    Percentage: number,
+    Label: string,
+    Order: number,
+    GetOverride?: (func: (open: boolean) => void) => void,
+}
 // Props Description:
 // style => style of the encompasing div
 
@@ -38,18 +60,62 @@ const VerticalSplit: React.FunctionComponent<IProps> = (props) => {
     const divRef = React.useRef<any>(null);
 
     const [currentWidth, setCurrentWidth] = React.useState<number>(0);
-    const [sections, setSections] = React.useState<React.ReactElement<any>[]>([]);
-    const [width, setWidth] = React.useState<number[]>([]);
+    const [currentHeight, setCurrentHeight] = React.useState<number>(0);
 
-    const [LeftDrawer, setLeftDrawer] = React.useState<React.ReactElement<any>[]>([]);
-    const [LeftDrawerWidth, setLeftDrawerWidth] = React.useState<number[]>([]);
+    const [sections, setSections] = React.useState<React.ReactElement<any>[]>([]);
+    const [drawer, setDrawer] = React.useState<React.ReactElement<any>[]>([]);
+    const [elements, setElements] = React.useState<ISection[]>([]);
+
+    const [totalPercent, setTotalPercent] = React.useState<number>(100);
+    const [availableWidth, setAvailableWidth] = React.useState<number>(0);
+    const [lblSize, setLblSize] = React.useState<number>(12);
 
     const [activeSlider, setActiveSlider] = React.useState<number>(-1);
     const [sliderOriginal, setSliderOriginal] = React.useState<number>(0);
 
     React.useLayoutEffect(() => {
         setCurrentWidth(divRef.current.offsetWidth ?? 0);
+        setCurrentHeight(divRef.current.offsetHeight ?? 0);
     })
+
+    React.useEffect(() => { 
+        const p = elements.filter(e => !e.IsDrawer || e.Open).reduce((s,e) => s + e.Percentage,0)
+        if (p > 0)
+            setTotalPercent(p);
+        else
+            setTotalPercent(100);
+    }, [elements]);
+
+
+    // comute available width
+    React.useEffect(() => {
+        let drawerMargin = 0;
+        if (drawer.some((d) => d.props.ShowClosed === undefined || d.props.ShowClosed))
+            drawerMargin = 20;
+        
+        drawerMargin = drawerMargin + elements.reduce((s,e) => s + (e.IsDrawer && e.Open? 20 : 0), 0);
+
+        setAvailableWidth(currentWidth - drawerMargin - elements.reduce((s,e) =>  s + ((!e.IsDrawer || e.Open) ? 5 : 0),0) -5);
+    },[currentWidth, elements])
+
+    // Compute Font Size for Drawer Headings based on sum of Drawer Labels
+    React.useEffect(() => {
+
+        let fs = 1.5;
+        let l = drawer.reduce((s,d) => s + (d.props.ShowClosed === undefined || d.props.ShowClosed?  (GetTextWidth('','1rem',d.props.Title) + 30) : 0),0);
+        
+        if (l === 0)
+            return;
+
+        while ((l > currentHeight) && fs > 0.5) {
+            fs = fs - 0.05;
+            l = drawer.reduce((s,d) => s + (d.props.ShowClosed === undefined || d.props.ShowClosed?  (GetTextWidth('','1rem',d.props.Title) + 30) : 0),0);
+        }
+        setLblSize(fs)
+
+    }, [drawer,currentHeight]);
+
+
 
     React.useEffect(() => {
       
@@ -63,7 +129,7 @@ const VerticalSplit: React.FunctionComponent<IProps> = (props) => {
 
         })?.filter(item => item !== null) ?? []);
 
-        setLeftDrawer(React.Children.map(props.children,(child) => {
+        setDrawer(React.Children.map(props.children,(child) => {
             if (!React.isValidElement(child))
                 return null;
             if ((child as React.ReactElement<any>).type === SplitDrawer)
@@ -76,141 +142,240 @@ const VerticalSplit: React.FunctionComponent<IProps> = (props) => {
     }, [props.children])
 
     React.useEffect(() => {
-            setLeftDrawerWidth((w) => {
-                let wupdated: number[] = [...w];
-                
-                if (w.length > LeftDrawer.length)
-                    wupdated = w.slice(undefined,LeftDrawer.length);
-                if (w.length < LeftDrawer.length)
-                    wupdated = [...w,...LeftDrawer.slice(w.length,undefined).map((s) => (s.props as any).open ? (s.props as any).width as number : 0)];
-                
-                return wupdated.map((wupdatedWidth,index) => {
-                    if (wupdatedWidth === 0)
-                        return 0;
-                    if (wupdatedWidth < (LeftDrawer[index].props as any).minWidth)
-                        return (LeftDrawer[index].props as any).minWidth as number
-                    if (wupdatedWidth > (LeftDrawer[index].props as any).maxWidth)
-                        return (LeftDrawer[index].props as any).maxWidth as number
-                    return wupdatedWidth;
-                }) })
-    },[ LeftDrawer ])
+        let updated = [...elements]
+        let hasChanged = false;
+        drawer.forEach((item,index) => {
+            const e = updated.find(uItem => uItem.Index === index && uItem.IsDrawer);
+            const p: ISection = {
+                Width: item.props.Width,
+                MinWidth: item.props.MinWidth,
+                MaxWidth: item.props.MaxWidth,
+                Open: item.props.Open,
+                Index: index,
+                IsDrawer: true,
+                ShowClosed: item.props.ShowClosed,
+                Percentage: item.props.Width,
+                Label: item.props.Title,
+                Order: index - drawer.length,
+                GetOverride: item.props.GetOverride
+            }
+            if (e === undefined) {
+                    hasChanged = true;
+                    updated.push(p);
+                    return;
+                }
+            if (!CompareElements(e,p)) {
+                e.Label = p.Label;
+                e.MaxWidth = p.MaxWidth;
+                e.MinWidth = p.MinWidth;
+                e.Percentage = p.Width;
+                e.ShowClosed = p.ShowClosed;
+                e.GetOverride = p.GetOverride;
+                if (e.Width > p.MaxWidth)
+                    e.Width = p.MaxWidth;
+                if (e.Width < p.MinWidth)
+                    e.Width = p.MinWidth;
+                hasChanged = true;
+            }
+        }); 
+
+        sections.forEach((item,index) => {
+            const e = updated.find(uItem => uItem.Index === index && !uItem.IsDrawer);
+            const p: ISection = {
+                Width: item.props.Width,
+                MinWidth: item.props.MinWidth,
+                MaxWidth: item.props.MaxWidth,
+                Open: undefined,
+                Index: index,
+                IsDrawer: false,
+                ShowClosed: false,
+                Percentage: item.props.Width,
+                Label: '',
+                Order: index
+            }
+            if (e === undefined) {
+                    hasChanged = true;
+                    updated.push(p);
+                    return;
+                }
+            if (!CompareElements(e,p)) {
+                e.MaxWidth = p.MaxWidth;
+                e.MinWidth = p.MinWidth;
+                e.Percentage = p.Width;
+                if (e.Width > p.MaxWidth)
+                    e.Width = p.MaxWidth;
+                if (e.Width < p.MinWidth)
+                    e.Width = p.MinWidth;
+                hasChanged = true;
+            }
+        }); 
+
+        if (updated.some(e => (e.IsDrawer && e.Index >= drawer.length) || (!e.IsDrawer && e.Index >= sections.length))){
+            hasChanged = true;
+            updated = updated.filter(e  => !((e.IsDrawer && e.Index >= drawer.length) || (!e.IsDrawer && e.Index >= sections.length)));
+        }
+        if (hasChanged)
+            setElements(updated)
+
+    },[ drawer, sections ])
 
     React.useEffect(() => {
-        setWidth((w) => {
-            let wupdated: number[] = [...w];
+        elements.forEach((e,i) => {
+            if (e.GetOverride !== undefined)
+                e.GetOverride((open: boolean) => { if (open !== e.Open) ToggleDrawer(e.Index)});
+        })
 
-            if (w.length > sections.length)
-                wupdated = w.slice(undefined,sections.length);
-            if (w.length < sections.length)
-                wupdated = [...w,...sections.slice(w.length,undefined).map((s) => (s.props as any).width as number)];
-            
-            return wupdated.map((wupdatedWidth,index) => {
-                if (wupdatedWidth < (sections[index].props as any).minWidth)
-                    return (sections[index].props as any).minWidth as number
-                if (wupdatedWidth > (sections[index].props as any).maxWidth)
-                    return (sections[index].props as any).maxWidth as number
-                return wupdatedWidth;
-            }) });
-
-    },[ sections ])
+    }, [elements])
+    function CompareElements(one: ISection, two: ISection) {
+        return one.Label === two.Label && one.MaxWidth === two.MaxWidth && one.MinWidth === two.MinWidth && one.Percentage === two.Percentage && one.ShowClosed === two.ShowClosed;
+    }
 
     function CreateSegments() {
         const result: any[] = [];
-        const reduction = (sections.length - 1) * 5 + (LeftDrawer.length > 0 ? 20 : 0) + LeftDrawer.reduce((acc, d,index) => acc + LeftDrawerWidth[index] > 0? 1 : 0,0)*5;
-        const totalPercentage = sections.reduce((acc,child) => acc + child.props.width,0) + LeftDrawer.reduce((acc, d, index) => acc + LeftDrawerWidth[index] > 0?  d.props.width : 0,0);
-        const scaling = (currentWidth - reduction)/totalPercentage;
+      
+        const scaling = availableWidth/totalPercent;
 
-        let hasAddedSection = false;
-        LeftDrawer.forEach((draw, index) => {
-            const w = Math.floor(scaling* LeftDrawerWidth[index])
-            if (hasAddedSection && LeftDrawerWidth[index] > 0)
-                result.push(<VerticalSplitDivider style={props.sliderStyle} onClick={(x) => { setSliderOriginal(x); setActiveSlider(index-1)}} key={'split-'+draw.key} />);
-            if (LeftDrawerWidth[index] > 0)
-            {
-                result.push(<div style={{width: isNaN(w)? 0 : w, float: 'left', minHeight: 1}} key={'sec-'+draw.key}>{draw}</div>);
-                hasAddedSection = true;
-            }
+        let i = 0;
+        _.orderBy(elements,(e) => e.Order).forEach((e,index) => {
+            const w = Math.floor(scaling* e.Width);
+            if (e.IsDrawer && !e.Open)
+                return;
+            if (e.IsDrawer)
+                result.push(<div style={{width: isNaN(w)? 0 : w, float: 'left', minHeight: 1}} key={'draw-'+ drawer[e.Index].key}>{drawer[e.Index]}</div>)
+            else
+                result.push(<div style={{width: isNaN(w)? 0 : w, float: 'left', minHeight: 1}} key={'sec-'+ sections[e.Index].key}>{sections[e.Index]}</div>)
 
+            if (e.IsDrawer)
+                result.push(<DrawerHeader 
+                    title={e.Label} symbol={(e.ShowClosed === undefined || e.ShowClosed)? 'Close' : 'X'} textSize={lblSize}
+                    onClick={() => ToggleDrawer(e.Index)} key={drawer[e.Index].key} showTooltip={false}
+                    />);
+            
+            // need to rescope otherwhise i will be max at time of callback.
+            const scopedI = i*1;
+            result.push(<VerticalSplitDivider style={props.sliderStyle}
+                onClick={(x) => { setSliderOriginal(x); setActiveSlider(scopedI)}}
+                key={'split-' + (e.IsDrawer? drawer[e.Index].key : sections[e.Index].key)} />);
+            
+            i = i+1;
         });
 
-        sections.forEach((sec, index) => {
-            const w = Math.floor(scaling* width[index]);
-            if (hasAddedSection)
-                result.push(<VerticalSplitDivider style={props.sliderStyle} onClick={(x) => { setSliderOriginal(x); setActiveSlider(LeftDrawer.length + index-1)}} key={'split-'+sec.key} />);
-            result.push(<div style={{width: isNaN(w)? 0 : w, float: 'left', minHeight: 1}} key={'sec-'+sec.key}>{sec}</div>)
-            hasAddedSection = true;
-        })
+        if (result.length > 1)
+            result.pop();
 
         return result;
     }
 
     function MouseMove(evt: any)  {
+        
         if (activeSlider < 0)
             return;
 
         // compute ammount moved
         const deltaX = evt.clientX - sliderOriginal;
+        const scale = availableWidth/totalPercent;
+        let deltaP = deltaX /scale;
+
+        if (deltaX < 10 && deltaX > -10)
+            return;
+
         setSliderOriginal(evt.clientX);
-        const reduction = (sections.length - 1) * 5 + (LeftDrawer.length > 0 ? 20 : 0) + LeftDrawer.reduce((acc, d,index) => acc + LeftDrawerWidth[index] > 0? 1 : 0,0)*5;
-       
-        const availableWidth = currentWidth - reduction;
-        const totalPercentage = sections.reduce((acc,child) => acc + child.props.width,0) + LeftDrawer.reduce((acc, d, index) => acc + LeftDrawerWidth[index] > 0?  d.props.width : 0,0);
-        const scale = totalPercentage/availableWidth;
-        const dPercent = deltaX* scale;
+        const currentElements = _.orderBy(elements,(e) => e.Order).filter((e) => !e.IsDrawer || e.Open);
+        const updatedElements = [...elements];
 
-        const isLeftDrawer = activeSlider < LeftDrawer.length;
-        const isRightDrawer = activeSlider < (LeftDrawer.length-1);
+        // ensure we don't go past boundaries...
+        const lowerMinBoundary = currentElements.reduce((s,e,j) => s + (j <= activeSlider? e.MinWidth : 0), 0)
+        const lowerMaxBoundary = currentElements.reduce((s,e,j) => s + (j <= activeSlider? e.MaxWidth : 0), 0)
+        const lowerCurrentValue = currentElements.reduce((s,e,j) => s + (j <= activeSlider? e.Width : 0), 0)
 
-        let indexLeft = (isLeftDrawer? activeSlider : activeSlider - LeftDrawer.length);
-        const indexRight = (isRightDrawer === isLeftDrawer? (indexLeft + 1) : 0);
+        const upperMinBoundary = currentElements.reduce((s,e,j) => s + (j <= activeSlider? 0 : e.MinWidth), 0)
+        const upperMaxBoundary = currentElements.reduce((s,e,j) => s + (j <= activeSlider? 0: e.MaxWidth), 0)
+        const upperCurrentValue = currentElements.reduce((s,e,j) => s + (j <= activeSlider? 0: e.Width), 0)
 
-        while (isLeftDrawer && LeftDrawerWidth[indexLeft] === 0)
-            indexLeft = indexLeft -1;
-            
-        const newLeft = Math.floor((isLeftDrawer? LeftDrawerWidth[indexLeft] : width[indexLeft]) + dPercent);
-        const newRight = Math.floor((isRightDrawer? LeftDrawerWidth[indexRight] : width[indexRight]) - dPercent);
+        if (lowerCurrentValue + deltaP < lowerMinBoundary)
+            deltaP = lowerMinBoundary - lowerCurrentValue;
+        if (lowerCurrentValue + deltaP > lowerMaxBoundary)
+            deltaP = lowerMaxBoundary - lowerCurrentValue;
 
-        const leftMin = (isLeftDrawer? LeftDrawer[indexLeft].props : sections[indexLeft].props).minWidth;
-        const leftMx = (isLeftDrawer? LeftDrawer[indexLeft].props : sections[indexLeft].props).maxWidth;
-        const rightMin = (isRightDrawer? LeftDrawer[indexRight].props : sections[indexRight].props).minWidth;
-        const rightMx = (isRightDrawer? LeftDrawer[indexRight].props : sections[indexRight].props).maxWidth;
+        if (upperCurrentValue - deltaP < upperMinBoundary)
+            deltaP = upperCurrentValue - upperMinBoundary;
+        if (upperCurrentValue - deltaP > upperMaxBoundary)
+            deltaP = upperCurrentValue - upperMaxBoundary;
 
-        let valid = (newLeft > leftMin) && (newLeft < leftMx);
-        valid = valid && (newRight > rightMin) && (newRight < rightMx);
+        let totalChange = deltaP;
+        let i = activeSlider;
 
-        if (!valid)
-           return;
+        while (totalChange !== 0 && i >= 0){
+            const e = updatedElements.find(f => f.Index === currentElements[i].Index && f.IsDrawer === currentElements[i].IsDrawer)
+            i = i - 1;
+            if (e === undefined)  
+                continue;
+            if (e.Width + totalChange < e.MinWidth) {
+                totalChange = totalChange + (e.Width - e.MinWidth);
+                e.Width = e.MinWidth;
+            }
+            else if (e.Width + totalChange > e.MaxWidth) {
+                totalChange = totalChange - (e.MaxWidth - e.Width);
+                e.Width = e.MaxWidth;
+            }
+            else {
+                e.Width = e.Width + totalChange;
+                totalChange = 0;
+            }
+        }
 
-        setLeftDrawerWidth((w) => {
-            const wupdated = [...w];
-            if (isLeftDrawer)
-                wupdated[indexLeft] = newLeft;
-            if (isRightDrawer)
-                wupdated[indexRight] = newRight;
-            return wupdated;
-        });
-        setWidth((w) => {
-            const wupdated = [...w];
-            if (!isLeftDrawer)
-                wupdated[indexLeft] = newLeft;
-            if (!isRightDrawer)
-                wupdated[indexRight] = newRight;
-            return wupdated;
-        });
+        totalChange =  -(deltaP - totalChange);
+        i = activeSlider + 1;
+        while (totalChange !== 0 && i < currentElements.length){
+            const e = updatedElements.find(f => f.Index === currentElements[i].Index && f.IsDrawer === currentElements[i].IsDrawer)
+            i = i  + 1;
+            if (e === undefined)  
+                continue;
+            if (e.Width + totalChange < e.MinWidth) {
+                totalChange = totalChange + (e.Width - e.MinWidth);
+                e.Width = e.MinWidth;
+            }
+            else if  (e.Width + totalChange > e.MaxWidth) {
+                totalChange = totalChange - (e.MaxWidth - e.Width);
+                e.Width = e.MaxWidth;
+            }
+            else {
+                e.Width = e.Width + totalChange;
+                totalChange = 0;
+            }
+        }
+                
+        setElements(updatedElements);
+        
     }
 
-    function ToggleDrawer(index: number, drawerWidth: number) {
-        if (LeftDrawerWidth[index] === 0)
-            setLeftDrawerWidth(s => {const u = [...s]; u[index] = drawerWidth; return u;});
-        else
-            setLeftDrawerWidth(s => {const u = [...s]; u[index] = 0; return u;})
+    function ToggleDrawer(index: number) {
+
+        const elementIndex = elements.findIndex(e => e.Index === index && e.IsDrawer);
+
+        if (elementIndex < 0)
+            return;
+
+        setElements((element) => {
+            const updated = [...element];
+            if (drawer[index].props.OnChange !== undefined)
+                drawer[index].props.OnChange(!updated[elementIndex].Open)
+            updated[elementIndex].Open = !updated[elementIndex].Open;
+            if ( updated[elementIndex].Open)
+                updated[elementIndex].Order = Math.min(...updated.map(item => item.Order)) - 1;
+            return updated;
+        })
     }
 
+    const hasDrawerLabels = elements.some(e => e.IsDrawer && (e.ShowClosed === undefined || e.ShowClosed));
     return (
         <div style={{...props.style}} ref={divRef} onMouseUp={() => setActiveSlider(-1)} onMouseMove={MouseMove} onMouseLeave={() => setActiveSlider(-1)}>
-            {LeftDrawer.length > 0? <div style={{float: 'left', background: '#6c757d', height: '100%', width: 20}}> 
-            {LeftDrawer.map((d,index) => <DrawerHeader height={100.0/LeftDrawer.length} title={d.props.title} open={LeftDrawerWidth[index] > 0} 
-                onClick={() => ToggleDrawer(index,d.props.width as number)} key={d.key}/>)}
+            {hasDrawerLabels? <div style={{float: 'left', background: '#6c757d', height: '100%', width: 20}}> 
+            {elements.map((e) => e.IsDrawer && (e.ShowClosed === undefined || e.ShowClosed)? <DrawerHeader 
+                showTooltip={!e.Open}
+                title={e.Label} symbol={e.Open ? 'Close' : 'Open'} textSize={lblSize}
+                onClick={() => ToggleDrawer(e.Index)} key={drawer[e.Index].key}
+                /> : null)}
             </div> : null} 
             {CreateSegments()}
         </div>
@@ -227,14 +392,35 @@ const VerticalSplitDivider: React.FunctionComponent<IDividerProps> = (props) => 
 
     const style = props.style === undefined? {float: 'left', background: '#6c757d', cursor: 'col-resize'} : props.style;
 
-    return <div style={{width: 5, height: '100%', ...style}} onMouseDown={(evt: any) => props.onClick(evt.clientX)}></div>
+    return <div
+     style={{width: 5, height: '100%', userSelect: 'none', MozUserSelect: 'none', WebkitUserSelect: 'none', ...style}}
+      onMouseDown={(evt: any) => props.onClick(evt.clientX)}
+      ></div>
 }
 
-const DrawerHeader: React.FunctionComponent<{height: number, title: string, onClick: () => void, open: boolean}> = (props) => {
+interface IDrawerHeaderProps {
+    title: string,
+    onClick: () => void,
+    textSize: number,
+    symbol: 'Open'|'Close'|'X',
+    showTooltip: boolean
+}
+const DrawerHeader: React.FunctionComponent<IDrawerHeaderProps> = (props) => {
+    const [hover, setHover] = React.useState<boolean>(false);
+    const [guid, setGuid] = React.useState<string>(CreateGuid());
 
-    return <div style={{float: 'left', background: '#f8f9fa', cursor: 'pointer', width: 20, height: props.height + '%', writingMode: 'vertical-rl', textOrientation: 'upright'}}
-     onMouseDown={(evt: any) => {props.onClick();}}>
-        {props.open? SVGIcons.ArrowBackward : SVGIcons.ArrowForward}
-        <span style={{margin: 'auto'}}>{props.title}</span>
+    return <>
+    <div style={{float: 'left', background: '#f8f9fa', cursor: 'pointer', width: 20}}
+        data-tooltip={guid + '-tooltip'}
+        onMouseDown={(evt: any) => {props.onClick();}}
+         onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
+        {props.symbol === 'Open'? SVGIcons.ArrowForward : null}
+        {props.symbol === 'Close'? SVGIcons.ArrowBackward : null}
+        {props.symbol === 'X'? CrossMark : null}
+        <span style={{margin: 'auto', writingMode: 'vertical-rl', textOrientation: 'sideways', fontSize: props.textSize + 'rem'}}>{props.title}</span>
      </div>
+     {props.showTooltip? <ToolTip Show={hover} Position={'right'} Theme={'dark'} Target={guid + '-tooltip'} Zindex={9999}>
+				{props.title}
+			  </ToolTip>: null}
+     </>
 }

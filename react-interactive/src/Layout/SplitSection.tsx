@@ -26,9 +26,9 @@ import {CreateGuid} from '@gpa-gemstone/helper-functions';
 import { Portal } from 'react-portal';
 
 interface IProps {
-    minWidth: number,
-    maxWidth: number,
-    width: number,
+    MinWidth: number,
+    MaxWidth: number,
+    Width: number,
 }
 
 // Props Description:

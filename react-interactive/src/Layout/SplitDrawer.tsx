@@ -26,11 +26,14 @@ import {CreateGuid} from '@gpa-gemstone/helper-functions';
 import { Portal } from 'react-portal';
 
 interface IProps {
-    minWidth: number,
-    maxWidth: number,
-    width: number,
-    open: boolean,
-    title: string
+    MinWidth: number,
+    MaxWidth: number,
+    Width: number,
+    Open: boolean,
+    Title: string,
+    GetOverride?: (func: (open: boolean) => void) => void,
+    OnChange?: (open: boolean) => void,
+    ShowClosed?: boolean
 }
 
 // Props Description:
