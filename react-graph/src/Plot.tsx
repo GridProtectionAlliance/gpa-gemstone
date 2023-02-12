@@ -57,7 +57,10 @@ export interface IProps {
     legendWidth?: number,
     useMetricFactors?: boolean,
     onSelect?: (t:number) => void,
-    onDataInspect?: (tDomain: [number,number]) => void
+    onDataInspect?: (tDomain: [number,number]) => void,
+    Ymin?: number,
+    Ymax?: number,
+    zoomMode?: 'Time'|'Rect'
 }
 
 const SvgStyle: React.CSSProperties = {
@@ -106,6 +109,24 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
     // Constants
     const SVGHeight = props.height - (props.legend === 'bottom'? (props.legendHeight !== undefined? props.legendHeight : 50) : 0);
     const SVGWidth = props.width - (props.legend === 'right'? (props.legendWidth !== undefined? props.legendWidth : 100) : 0);
+
+    const zoomMode = props.zoomMode === undefined? 'Time' : props.zoomMode;
+
+    // enforce T limits
+    React.useEffect(() => {
+      if (props.Tmin !== undefined && tDomain[0] < props.Tmin)
+        setTdomain((t) => ([props.Tmin ?? 0, t[1]]));
+      if (props.Tmax !== undefined && tDomain[1] > props.Tmax)
+        setTdomain((t) => ([t[0], props.Tmax ?? 0]));
+    }, [tDomain])
+
+    // enforce Y limits
+    React.useEffect(() => {
+      if (props.Ymin !== undefined && yDomain[0] < props.Ymin)
+        setYdomain((y) => ([props.Ymin ?? 0, y[1]]));
+      if (props.Ymax !== undefined && yDomain[1] > props.Ymax)
+        setYdomain((y) => ([y[0], props.Ymax ?? 0]));
+    }, [yDomain])
 
     React.useEffect(() => {
       setTdomain(props.defaultTdomain);
