@@ -38,6 +38,7 @@ interface IProps<T> {
   Type?: 'number' | 'text' | 'password' | 'email' | 'color' | 'integer';
   Help?: string|JSX.Element;
   Style?: React.CSSProperties;
+  AllowNull?: boolean;
 }
 
 
@@ -61,15 +62,16 @@ export default function Input<T>(props: IProps<T>) {
 	function valueChange(value: string) {
         setInternal(true);
 
+    const allowNull = props.AllowNull === undefined? false : props.AllowNull;
     if (props.Type === 'number') {
-      if (IsNumber(value)) {
+      if (IsNumber(value) || (value === '' && allowNull)) {
           props.Setter({ ...props.Record, [props.Field]: value !== '' ? parseFloat(value) : null });
           setHeldVal(value);
         }
       
     }
     else if (props.Type === 'integer') {
-        if (IsInteger(value)) {
+        if (IsInteger(value) || (value === '' && allowNull)) {
             props.Setter({ ...props.Record, [props.Field]: value !== '' ? parseFloat(value) : null });
             setHeldVal(value);
         }
