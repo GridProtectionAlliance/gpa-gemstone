@@ -39,6 +39,7 @@ interface IProps<T> {
   Help?: string|JSX.Element;
   Style?: React.CSSProperties;
   AllowNull?: boolean;
+  Size?: 'small'|'large'
 }
 
 
@@ -83,16 +84,16 @@ export default function Input<T>(props: IProps<T>) {
   }
     
   return (
-    <div className="form-group" style={props.Style}>
-      {(props.Label !== "") ?
-      <label>{props.Label === undefined ? props.Field : props.Label} 
-      {props.Help !== undefined? <div style={{ width: 20, height: 20, borderRadius: '50%', display: 'inline-block', background: '#0D6EFD', marginLeft: 10, textAlign: 'center', fontWeight: 'bold' }} onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)}> ? </div> : null}
-      </label> : null}
-      {props.Help !== undefined? 
-        <HelperMessage Show={showHelp} Target={guid}>
-          {props.Help}
-        </HelperMessage>
-      : null}
+    <div className={"form-control " + (props.Size == 'large'? 'form-control-lg' : '') + (props.Size == 'small'? 'form-control-sm' : '')}  style={props.Style}>
+    {(props.Label !== "") ?
+		<label>{props.Label === undefined ? props.Field : props.Label} 
+		{props.Help !== undefined? <div style={{ width: 20, height: 20, borderRadius: '50%', display: 'inline-block', background: '#0D6EFD', marginLeft: 10, textAlign: 'center', fontWeight: 'bold' }} onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)}> ? </div> : null}
+		</label> : null}
+		{props.Help !== undefined? 
+			<HelperMessage Show={showHelp} Target={guid}>
+				{props.Help}
+			</HelperMessage>
+		: null}
       <input
 		    data-help={guid}
         type={props.Type === undefined ? 'text' : props.Type}
