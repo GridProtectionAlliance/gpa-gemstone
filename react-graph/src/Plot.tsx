@@ -26,7 +26,7 @@ import * as React from 'react';
 import InteractiveButtons from './InteractiveButtons';
 import {IGraphContext, IDataSeries, GraphContext, IHandlers} from './GraphContext';
 import {CreateGuid} from '@gpa-gemstone/helper-functions';
-import {cloneDeep, toString} from 'lodash';
+import {cloneDeep, isEqual} from 'lodash';
 import TimeAxis from './TimeAxis';
 import LogAxis from './LogAxis'; 
 import ValueAxis from './ValueAxis';
@@ -37,8 +37,10 @@ import Button from './Button';
 import HorizontalMarker from './HorizontalMarker';
 import VerticalMarker from './VerticalMarker';
 
+// A ZoomMode of AutoValue means it will zoom on time, and auto Adjust the Value to fit the data.
 export interface IProps {
     defaultTdomain: [number, number],
+    defaultYdomain?: [number,number],
     height: number,
     width: number,
 
@@ -60,7 +62,7 @@ export interface IProps {
     onDataInspect?: (tDomain: [number,number]) => void,
     Ymin?: number,
     Ymax?: number,
-    zoomMode?: 'Time'|'Rect'
+    zoomMode?: 'Time'|'Rect'|'AutoValue'
 }
 
 const SvgStyle: React.CSSProperties = {
@@ -106,11 +108,14 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
     const [heightXLabel, setHeightXLabel] = React.useState<number>(0);
     const [heightYLabel, setHeightYLabel] = React.useState<number>(0);
 
+    // States for Props to avoid change notification on ref change
+    const [defaultTdomain, setDefaultTdomain]= React.useState<[number, number]>(props.defaultTdomain);
+    const [defaultYdomain, setDefaultYdomain] = React.useState<[number,number]| undefined>(props.defaultYdomain);
     // Constants
     const SVGHeight = props.height - (props.legend === 'bottom'? (props.legendHeight !== undefined? props.legendHeight : 50) : 0);
     const SVGWidth = props.width - (props.legend === 'right'? (props.legendWidth !== undefined? props.legendWidth : 100) : 0);
 
-    const zoomMode = props.zoomMode === undefined? 'Time' : props.zoomMode;
+    const zoomMode = props.zoomMode === undefined? 'AutoValue' : props.zoomMode;
 
     // enforce T limits
     React.useEffect(() => {
@@ -129,8 +134,25 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
     }, [yDomain])
 
     React.useEffect(() => {
-      setTdomain(props.defaultTdomain);
+      if (!isEqual(defaultTdomain, props.defaultTdomain))
+        setDefaultTdomain(props.defaultTdomain);
     }, [props.defaultTdomain])
+
+    React.useEffect(() => {
+      if (!isEqual(defaultYdomain, props.defaultYdomain))
+        setDefaultYdomain(props.defaultYdomain);
+    }, [props.defaultYdomain])
+    
+
+    React.useEffect(() => {
+      setTdomain(defaultTdomain);
+    }, [defaultTdomain])
+
+    React.useEffect(() => {
+      if (defaultYdomain !== undefined && zoomMode != 'AutoValue')
+        setYdomain(defaultYdomain)
+    }, [defaultYdomain])
+
     // Adjust top and bottom Offset
     React.useEffect(() => {
       const top = heightYFactor + 10;
@@ -153,24 +175,32 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
 
     // Adjust Y domain
     React.useEffect(() => {
+    if (zoomMode == 'AutoValue') {
      const yMin = Math.min(...[...data.values()].map(series => series.getMin(tDomain)));
      const yMax = Math.max(...[...data.values()].map(series => series.getMax(tDomain)));
      if (!isNaN(yMin) && !isNaN(yMax) && isFinite(yMin) && isFinite(yMax))
          setYdomain([yMin, yMax]);
-
+    }
    }, [tDomain, data]);
 
     // Adjust x axis
     React.useEffect(() => {
-     const dT = tDomain[1] - tDomain[0];
+     let dT = tDomain[1] - tDomain[0];
+     let dTmin = tDomain[0];
+
       if (dT === 0)
         return;
+
+      if (props.XAxisType === 'log') {
+        dT = Math.log10(tDomain[1]) - Math.log10(tDomain[0]);
+        dTmin = Math.log10(tDomain[0]);
+      }
 
       const scale = (SVGWidth - offsetLeft - offsetRight) / dT;
       
       setTscale(scale);
-      setToffset(offsetLeft - tDomain[0] * scale );
-    }, [tDomain, offsetLeft, offsetRight]);
+      setToffset(offsetLeft - dTmin * scale );
+    }, [tDomain, offsetLeft, offsetRight, props.XAxisType]);
 
     // Adjust y axis
     React.useEffect(() => {
@@ -185,7 +215,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
     function XInverseTransform(x: number): number {
       let xT = (x - tOffset) / tScale;
       if (props.XAxisType === 'log')
-        xT = (x - (offsetLeft - Math.log10(tDomain[0]) * ((SVGWidth - offsetLeft - offsetRight) / Math.abs(Math.log10(tDomain[1]) - Math.log10(tDomain[0]))))) / ((SVGWidth - offsetLeft - offsetRight) / Math.abs(Math.log10(tDomain[1]) - Math.log10(tDomain[0])));
+        xT = Math.pow(10, (x - tOffset) / tScale);
       return xT;
     }
 
@@ -195,18 +225,20 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
     }
 
     function Reset(): void {
-        setTdomain(props.defaultTdomain);
+        setTdomain(defaultTdomain);
+        if (defaultYdomain !== undefined && zoomMode != 'AutoValue')
+          setYdomain(defaultYdomain)
     }
 
-    // new X transformation function as defined in GraphContext
+    // new X transformation from x value into Pixels
     function XTransformation(position: number): number {
       let xT = position * tScale + tOffset;
       if (props.XAxisType === 'log')
-        xT = (Math.log10(position) * ((SVGWidth - offsetLeft - offsetRight) / Math.abs(Math.ceil(Math.log10(tDomain[1])) - Math.floor(Math.log10(tDomain[0]))))) + (offsetLeft - Math.floor(Math.log10(tDomain[0])) * ((SVGWidth - offsetLeft - offsetRight) / Math.abs(Math.ceil(Math.log10(tDomain[1])) - Math.floor(Math.log10(tDomain[0])))))
+        xT = Math.log10(position) * tScale + tOffset;
       return xT;
     }
 
-    // new Y transformation function as defined in GraphContext
+    // new Y transformation from y value into Pixels
     function YTransformation(position: number): number {
       return position * yScale + yOffset;
     }
@@ -271,11 +303,10 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
 
     function setXHover(x: number): number {
       let hov;
-      if (props.XAxisType === 'log')
-        hov = Math.pow(10, XInverseTransform(x));
-      else
-        hov = XTransformation(x);
-      return hov;
+      
+        hov = XInverseTransform(x);
+     
+      return XInverseTransform(x);
     }
 
     function handleMouseWheel(evt: any) {
@@ -297,17 +328,36 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
           let t0 = tDomain[0];
           let t1 = tDomain[1];
 
-          if (mousePosition[0] < offsetLeft)
+          if (mousePosition[0] < offsetLeft) {
+            if (props.XAxisType === 'log') 
+              t1 = Math.pow(10,multiplier * (Math.log10(t1) - Math.log10(t0)) + Math.log10(t0));
+            else
               t1 = multiplier * (t1 - t0) + t0;
-          else if (mousePosition[0] > (SVGWidth - offsetRight))
+          }
+              
+          else if (mousePosition[0] > (SVGWidth - offsetRight)) {
+            if (props.XAxisType === 'log') 
+              t0 = Math.pow(10, Math.log10(t1) - multiplier * (Math.log10(t1) - Math.log10(t0)));
+            else
               t0 = t1 - multiplier * (t1 - t0);
+          }
+              
           else {
-              const tcenter = mousePosition[0] * tScale + tOffset;
-              t0 = tcenter - (tcenter - t0) * multiplier;
-              t1 = tcenter + (t1 - tcenter) * multiplier;
+              const tcenter = XTransformation(mousePosition[0]);
+              if (props.XAxisType === 'log') {
+                t0 = tcenter - Math.pow(10, (Math.log10(tcenter) - Math.log10(t0)) * multiplier);
+                t1 = tcenter + Math.pow(10, (Math.log10(t1) - Math.log10(tcenter)) * multiplier);
+              }
+              else {
+                t0 = tcenter - (tcenter - t0) * multiplier;
+                t1 = tcenter + (t1 - tcenter) * multiplier;
+              }
+            
           }
 
-          if ((t1 - t0) > 10)
+          if (props.XAxisType === 'log' && (t1 - t0) > 0.00000000000000001)
+            setTdomain([t0, t1]);
+          else if ((t1 - t0) > 10)
             setTdomain([t0, t1]);
       }
 
@@ -319,21 +369,12 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
       pt.y = evt.clientY;
       const ptTransform = pt.matrixTransform(SVGref.current!.getScreenCTM().inverse());
 
-      let dX;
-        // Compute delta before getting new Mousposition
-        {props.XAxisType === 'time' || props.XAxisType === undefined ?
-         dX = mousePosition[0] - ptTransform.x :
-         dX = Math.log10(mousePosition[0]) - ptTransform.x
-        }
+      let dX = mousePosition[0] - ptTransform.x;
 
       setMousePosition([ptTransform.x, ptTransform.y])
 
         if (mouseMode === 'pan') {
-            let dT;
-            { props.XAxisType === 'time' || props.XAxisType === undefined ?
-              dT = dX / tScale :
-              dT = dX / ((SVGWidth - offsetLeft - offsetRight) / Math.abs(Math.ceil(Math.log10(tDomain[1])) - Math.floor(Math.log10(tDomain[0]))))
-            }
+            const dT = XInverseTransform(mousePosition[0]) - XInverseTransform(ptTransform.X);
             setTdomain([tDomain[0] + dT, tDomain[1] + dT]);
         }
     }
@@ -352,7 +393,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
         if (selectedMode === 'pan' && (props.pan === undefined || props.pan))
             setMouseMode('pan');
         if (selectedMode === 'select' && props.onSelect !== undefined)
-          props.onSelect((ptTransform.x - tOffset)/ tScale)
+          props.onSelect(XInverseTransform(ptTransform.x))
         if (handlers.size > 0 && selectedMode === 'select')
           handlers.forEach((v) => (v.onClick !== undefined? v.onClick(XInverseTransform(ptTransform.x), YInverseTransform(ptTransform.y)) : null));
 
@@ -366,15 +407,19 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
                 return;
             }
 
-            const t0 = Math.min(mousePosition[0], mouseClick[0]) * tScale + tOffset;
-            const t1 = Math.max(mousePosition[0], mouseClick[0]) * tScale + tOffset;
+            const t0 = XInverseTransform(Math.min(mousePosition[0], mouseClick[0]));
+            const t1 = XInverseTransform(Math.max(mousePosition[0], mouseClick[0]));
 
-            setTdomain((curr) => (Math.min(curr[1], t1) - Math.max(curr[0], t0)) > 10? [Math.max(curr[0], t0), Math.min(curr[1], t1)] : [curr[0],curr[1]]);
+            setTdomain((curr) =>  [Math.max(curr[0], t0), Math.min(curr[1], t1)]);
+
+            if (zoomMode === 'Rect') {
+              
+            }
         }
         setMouseMode('none');
 
         if (handlers.size > 0 && selectedMode === 'select')
-          handlers.forEach((v) => (v.onRelease !== undefined? v.onRelease(mousePosition[0] * tScale + tOffset, mousePosition[1] * yScale + yOffset) : null));
+          handlers.forEach((v) => (v.onRelease !== undefined? v.onRelease(XTransformation(mousePosition[0]), YTransformation(mousePosition[1])) : null));
 
     }
 
@@ -384,7 +429,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
             setMouseMode('none');
 
         if (handlers.size > 0 && selectedMode === 'select')
-          handlers.forEach((v) => (v.onPlotLeave !== undefined? v.onPlotLeave(mousePosition[0] * tScale + tOffset, mousePosition[1] * yScale + yOffset) : null));
+          handlers.forEach((v) => (v.onPlotLeave !== undefined? v.onPlotLeave(XTransformation(mousePosition[0]), YTransformation(mousePosition[1])) : null));
   
     }
 
