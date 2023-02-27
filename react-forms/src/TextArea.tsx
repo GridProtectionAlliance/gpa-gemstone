@@ -34,7 +34,7 @@ export default function TextArea<T>(props: {
 }) {
   return (
     <div className="form-group">
-      <label>{props.Label == null ? props.Field : props.Label}</label>
+    {(props.Label !== "") ? <label>{props.Label === undefined ? props.Field : props.Label} </label> : null}
       <textarea
         rows={props.Rows}
         className={props.Valid(props.Field) ? 'form-control' : 'form-control is-invalid'}
