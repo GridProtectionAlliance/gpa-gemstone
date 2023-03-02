@@ -321,40 +321,43 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
           // event.deltaY positive is wheel down or out and negative is wheel up or in
           if (evt.deltaY < 0) multiplier = 0.75;
 
-          let t0 = tDomain[0];
-          let t1 = tDomain[1];
+          let x0 = XTransformation(tDomain[0]);
+          let x1 = XTransformation(tDomain[1]);
 
-          if (mousePosition[0] < offsetLeft) {
-            if (props.XAxisType === 'log') 
-              t1 = Math.pow(10,multiplier * (Math.log10(t1) - Math.log10(t0)) + Math.log10(t0));
-            else
-              t1 = multiplier * (t1 - t0) + t0;
-          }
-              
-          else if (mousePosition[0] > (SVGWidth - offsetRight)) {
-            if (props.XAxisType === 'log') 
-              t0 = Math.pow(10, Math.log10(t1) - multiplier * (Math.log10(t1) - Math.log10(t0)));
-            else
-              t0 = t1 - multiplier * (t1 - t0);
-          }
-              
+          if (mousePosition[0] < offsetLeft) 
+              x1 = multiplier * (x1 - x0) + x0;
+          
+          else if (mousePosition[0] > (SVGWidth - offsetRight)) 
+              x0 = x1 - multiplier * (x1 - x0);
+          
           else {
-              const tcenter = XTransformation(mousePosition[0]);
-              if (props.XAxisType === 'log') {
-                t0 = tcenter - Math.pow(10, (Math.log10(tcenter) - Math.log10(t0)) * multiplier);
-                t1 = tcenter + Math.pow(10, (Math.log10(t1) - Math.log10(tcenter)) * multiplier);
-              }
-              else {
-                t0 = tcenter - (tcenter - t0) * multiplier;
-                t1 = tcenter + (t1 - tcenter) * multiplier;
-              }
-            
+              const Xcenter = mousePosition[0];
+              x0 = Xcenter - (Xcenter - x0) * multiplier;
+              x1 = Xcenter + (x1 - Xcenter) * multiplier;
           }
 
-          if (props.XAxisType === 'log' && (t1 - t0) > 0.00000000000000001)
-            setTdomain([t0, t1]);
-          else if ((t1 - t0) > 10)
-            setTdomain([t0, t1]);
+          if ((x1-x0) > 10)
+            setTdomain([XInverseTransform(x0), XInverseTransform(x1)])
+        
+          if (zoomMode == 'Rect') {
+            let y0 = YTransformation(yDomain[0]);
+            let y1 = YTransformation(yDomain[1]);
+
+            if (mousePosition[1] < offsetTop) 
+                y1 = multiplier * (y1 - y0) + y0;
+            
+            else if (mousePosition[1] > (SVGHeight - offsetBottom)) 
+                y0 = y1 - multiplier * (y1 - y0);
+            
+            else {
+                const Ycenter = mousePosition[1];
+                y0 = Ycenter - (Ycenter - y0) * multiplier;
+                y1 = Ycenter + (y1 - Ycenter) * multiplier;
+            }
+
+            if (Math.abs(y1-y0) > 10)
+              setYdomain([YInverseTransform(y0), YInverseTransform(y1)])
+          }
       }
 
     function handleMouseMove(evt: any) {
@@ -403,14 +406,14 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
                 return;
             }
 
-            const t0 = XInverseTransform(Math.min(mousePosition[0], mouseClick[0]));
-            const t1 = XInverseTransform(Math.max(mousePosition[0], mouseClick[0]));
+            const t0 = Math.min(XInverseTransform(mousePosition[0]), XInverseTransform(mouseClick[0]));
+            const t1 = Math.max(XInverseTransform(mousePosition[0]), XInverseTransform(mouseClick[0]));
 
             setTdomain((curr) =>  [Math.max(curr[0], t0), Math.min(curr[1], t1)]);
 
             if (zoomMode === 'Rect') {
-              const y0 = YInverseTransform(Math.min(mousePosition[1], mouseClick[1]));
-              const y1 = YInverseTransform(Math.max(mousePosition[1], mouseClick[1]));
+              const y0 = Math.min(YInverseTransform(mousePosition[1]), YInverseTransform(mouseClick[1]));
+              const y1 = Math.max(YInverseTransform(mousePosition[1]), YInverseTransform(mouseClick[1]));
               setYdomain((curr) =>  [Math.max(curr[0], y0), Math.min(curr[1], y1)])
             }
         }
