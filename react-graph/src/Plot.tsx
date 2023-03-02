@@ -208,20 +208,20 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
 
       const scale = (SVGHeight - offsetTop - offsetBottom) / (dY === 0? 0.00001 : dY);
       setYscale(-scale);
-      setYoffset(SVGHeight - offsetBottom +(yDomain[0] - (dY ===0? 0.000005 : 0)) * scale);
+      setYoffset(SVGHeight - offsetBottom + yDomain[0] * scale);
     }, [yDomain, offsetTop, offsetBottom]);
 
     // transforms from pixels into x value. result passed into onClick function 
-    function XInverseTransform(x: number): number {
-      let xT = (x - tOffset) / tScale;
+    function XInverseTransform(p: number): number {
+      let xT = (p - tOffset) / tScale;
       if (props.XAxisType === 'log')
-        xT = Math.pow(10, (x - tOffset) / tScale);
+        xT = Math.pow(10, (p - tOffset) / tScale);
       return xT;
     }
 
     // transforms from pixels into y value. result passed into onClick function
-    function YInverseTransform(y: number): number {
-      return (y - yOffset) / yScale;
+    function YInverseTransform(p: number): number {
+      return (p - yOffset) / yScale;
     }
 
     function Reset(): void {
@@ -231,16 +231,16 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
     }
 
     // new X transformation from x value into Pixels
-    function XTransformation(position: number): number {
-      let xT = position * tScale + tOffset;
+    function XTransformation(value: number): number {
+      let xT = value * tScale + tOffset;
       if (props.XAxisType === 'log')
-        xT = Math.log10(position) * tScale + tOffset;
+        xT = Math.log10(value) * tScale + tOffset;
       return xT;
     }
 
     // new Y transformation from y value into Pixels
-    function YTransformation(position: number): number {
-      return position * yScale + yOffset;
+    function YTransformation(value: number): number {
+      return value * yScale + yOffset;
     }
 
     function AddData(d: IDataSeries): string {
@@ -302,10 +302,6 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
     }
 
     function setXHover(x: number): number {
-      let hov;
-      
-        hov = XInverseTransform(x);
-     
       return XInverseTransform(x);
     }
 
@@ -413,7 +409,9 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
             setTdomain((curr) =>  [Math.max(curr[0], t0), Math.min(curr[1], t1)]);
 
             if (zoomMode === 'Rect') {
-              
+              const y0 = YInverseTransform(Math.min(mousePosition[1], mouseClick[1]));
+              const y1 = YInverseTransform(Math.max(mousePosition[1], mouseClick[1]));
+              setYdomain((curr) =>  [Math.max(curr[0], y0), Math.min(curr[1], y1)])
             }
         }
         setMouseMode('none');
@@ -470,7 +468,10 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
                               <path stroke='black' style={{ strokeWidth: 2, opacity: mouseIn? 0.8: 0.0 }} d={`M ${mousePosition[0]} ${offsetTop} V ${SVGHeight - offsetBottom}`} />
                               : null}
                           {(props.zoom === undefined || props.zoom) && mouseMode === 'zoom' ?
-                              <rect fillOpacity={0.8} fill={'black'} x={Math.min(mouseClick[0], mousePosition[0])} y={offsetTop} width={Math.abs(mouseClick[0] - mousePosition[0])} height={SVGHeight - offsetTop - offsetBottom} />
+                              <rect fillOpacity={0.8} fill={'black'} x={Math.min(mouseClick[0], mousePosition[0])}
+                               y={zoomMode == 'Rect'? Math.min(mouseClick[1], mousePosition[1]) : offsetTop} 
+                               width={Math.abs(mouseClick[0] - mousePosition[0])}
+                               height={zoomMode == 'Rect'?  Math.abs(mouseClick[1] - mousePosition[1]) : (SVGHeight - offsetTop - offsetBottom)} />
                               : null}
                       </g>
                        <InteractiveButtons showPan={(props.pan === undefined || props.pan)}
