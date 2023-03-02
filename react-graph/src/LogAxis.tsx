@@ -26,9 +26,7 @@
 
 import * as React from 'react';
 import { GraphContext } from './GraphContext';
-import * as moment from 'moment';
-import { GetTextHeight, GetTextWidth } from '@gpa-gemstone/helper-functions';
-import { cloneDeep, method } from 'lodash';
+import { GetTextHeight } from '@gpa-gemstone/helper-functions';
 
 export interface IProps {
     offsetLeft: number,
@@ -134,8 +132,8 @@ function LogAxis(props: IProps) {
       }
     }
     
-
-    setTick(newTicks);
+    // If first Tick is outside visible move it to zero crossing
+    setTick(newTicks.map(t => Math.min(t,context.XDomain[0])));
     }, [context.XDomain]);
 
     function getDigits(x: number): number {
@@ -149,17 +147,7 @@ function LogAxis(props: IProps) {
       return d;
     }
 
-    function roundUpNearestTen(x: number): number {
-      return Math.ceil(x / 10) * 10;
-    }
-
-    function roundDownNearestTen(x: number): number {
-      return Math.floor(x / 10) * 10;
-    }
-
-
-
-   return (<g>
+    return (<g>
     <path stroke='black' style={{ strokeWidth: 1 }} d={`M ${props.offsetLeft - 8} ${props.height - props.offsetBottom} H ${props.width - props.offsetRight}`}/>
     <path stroke='black' style={{ strokeWidth: 1 }} d={`M ${props.width - props.offsetRight} ${props.height - props.offsetBottom} v ${8}`} />
     {props.showTicks === undefined || props.showTicks ?
