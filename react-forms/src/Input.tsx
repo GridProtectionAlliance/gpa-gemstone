@@ -84,7 +84,7 @@ export default function Input<T>(props: IProps<T>) {
   }
     
   return (
-    <div className={"form-control " + (props.Size == 'large'? 'form-control-lg' : '') + (props.Size == 'small'? 'form-control-sm' : '')}  style={props.Style}>
+    <div className={"form-control " + (props.Size === 'large'? 'form-control-lg' : '') + (props.Size === 'small'? 'form-control-sm' : '')} style={props.Style}>
     {(props.Label !== "") ?
 		<label>{props.Label === undefined ? props.Field : props.Label} 
 		{props.Help !== undefined? <div style={{ width: 20, height: 20, borderRadius: '50%', display: 'inline-block', background: '#0D6EFD', marginLeft: 10, textAlign: 'center', fontWeight: 'bold' }} onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)}> ? </div> : null}
