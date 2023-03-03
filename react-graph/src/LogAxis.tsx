@@ -133,7 +133,7 @@ function LogAxis(props: IProps) {
     }
     
     // If first Tick is outside visible move it to zero crossing
-    setTick(newTicks.map(t => Math.min(t,context.XDomain[0])));
+    setTick(newTicks.map(t => Math.max(t,context.XDomain[0])));
     }, [context.XDomain]);
 
     function getDigits(x: number): number {
