@@ -26,16 +26,10 @@ import * as React from 'react';
 import {IDataSeries, GraphContext, LineStyle} from './GraphContext';
 import * as moment from 'moment';
 import {PointNode} from './PointNode';
-import { GetTextWidth } from '@gpa-gemstone/helper-functions';
+import {GetTextWidth} from '@gpa-gemstone/helper-functions';
+import {IProps as ILineProps} from './Line';
 
-
-export interface IProps {
-    showPoints?: boolean,
-    legend?: string,
-    highlightHover?: boolean,
-    data: [number, number][],
-    color: string,
-    lineStyle: LineStyle,
+export interface IProps extends ILineProps {
     threshHolds: IThreshold[],
 }
 
