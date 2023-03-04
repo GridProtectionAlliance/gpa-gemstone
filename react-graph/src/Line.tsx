@@ -27,6 +27,7 @@ import {IDataSeries, GraphContext, LineStyle} from './GraphContext';
 import * as moment from 'moment';
 import {PointNode} from './PointNode';
 import { GetTextWidth } from '@gpa-gemstone/helper-functions';
+import LineLegend from './LineLegend';
 
 
 export interface IProps {
@@ -45,7 +46,6 @@ function Line(props: IProps) {
   const [guid, setGuid] = React.useState<string>("");
   const [highlight, setHighlight] = React.useState<[number, number]>([NaN,NaN]);
   const [enabled, setEnabled] = React.useState<boolean>(true);
-  const [wLegend, setWLegend] = React.useState<number>(0);
   const [data, setData] = React.useState<PointNode|null>(null);
   const context = React.useContext(GraphContext)
 
@@ -84,19 +84,7 @@ function Line(props: IProps) {
            return;
        context.SetLegend(guid, createLegend());
 
-   }, [highlight, enabled, wLegend]);
-
-   React.useEffect(() => {
-     if (props.legend === undefined)
-      return;
-    if (props.highlightHover === undefined) {
-      setWLegend(GetTextWidth("Segoe UI", '1em', props.legend) + 45);
-      return;
-    }
-    const txt = props.legend + ` (${moment().format('MM/DD/YY hh:mm:ss')}: ${(-99.999999).toPrecision(8)})`
-    setWLegend(GetTextWidth("Segoe UI", '1em', txt) + 45);
-
-   }, [props.legend, props.highlightHover])
+   }, [highlight, enabled]);
 
    React.useEffect(() => {
        const id = context.AddData({
@@ -117,15 +105,11 @@ function Line(props: IProps) {
      if (props.highlightHover && !isNaN(highlight[0]) && !isNaN(highlight[1]))
       txt = txt + ` (${moment.utc(highlight[0]).format('MM/DD/YY hh:mm:ss')}: ${highlight[1].toPrecision(6)})`
 
-       return (
-           <div onClick={() => setEnabled((e) => !e)} style={{ width: wLegend, display: 'flex', alignItems: 'center', marginRight: '20px' }}>
-              {(props.lineStyle === '-' ?
-                <div style={{ width: ' 10px', height: 0, borderTop: '2px solid', borderRight: '10px solid', borderBottom: '2px solid', borderLeft: '10px solid', borderColor: props.color, overflow: 'hidden', marginRight: '5px', opacity: (enabled? 1 : 0.5) }}></div> :
-                <div style={{ width: ' 10px', height: '4px', borderTop: '0px solid', borderRight: '3px solid', borderBottom: '0px solid', borderLeft: '3px solid', borderColor: props.color, overflow: 'hidden', marginRight: '5px', opacity: (enabled? 1 : 0.5) }}></div>
-              )}
-              <label style={{ marginTop: '0.5rem' }}> {txt}</label>
-           </div>
-       );
+       return <LineLegend 
+        label={txt} color={props.color}
+        lineStyle={props.lineStyle}
+        onClick={() => setEnabled((e) => !e)} 
+        opacity={(enabled? 1 : 0.5)}/>;
    }
 
    function generateData() {
@@ -148,7 +132,7 @@ function Line(props: IProps) {
        <g>
            <path d={generateData()} style={{ fill: 'none', strokeWidth: 3, stroke: props.color, transition: 'd 0.5s' }} strokeDasharray={props.lineStyle === ':'? '10,5' : 'none'} />
            {props.showPoints && data != null? data.GetFullData().map((pt, i) => <circle key={i} r={3} cx={context.XTransformation(pt[0])} cy={context.YTransformation(pt[1])} fill={props.color} stroke={'black'} style={{ opacity: 0.8/*, transition: 'cx 0.5s,cy 0.5s'*/ }} />) : null}
-          {props.highlightHover && !isNaN(highlight[0]) && !isNaN(highlight[1])? 
+           {props.highlightHover && !isNaN(highlight[0]) && !isNaN(highlight[1])? 
             <circle r={5} cx={context.XTransformation(highlight[0])} cy={context.YTransformation(highlight[1])} fill={props.color} stroke={'black'} style={{ opacity: 0.8/*, transition: 'cx 0.5s,cy 0.5s'*/ }} /> : null}
        </g > : null
    );
