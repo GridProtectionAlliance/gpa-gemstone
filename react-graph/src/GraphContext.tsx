@@ -31,15 +31,18 @@ export interface IGraphContext {
 
   CurrentMode: 'zoom'|'pan'|'select',
   Data: Map<string, IDataSeries>,
-  XTransformation: (position: number) => number,
-  YTransformation: (position: number) => number,
+  XTransformation: (x: number) => number,
+  YTransformation: (y: number) => number,
   AddData: ((d: IDataSeries) => string),
   RemoveData: (key: string) => void,
   UpdateData: (key: string, d: IDataSeries) => void,
   SetLegend: (key: string, legend: HTMLElement|undefined) => void,
   RegisterSelect: (handlers: IHandlers) => string,
   RemoveSelect: (key: string) => void,
-  UpdateSelect: (key: string, handlers: IHandlers) => void
+  UpdateSelect: (key: string, handlers: IHandlers) => void,
+  UpdateFlag: number,
+  XInverseTransformation: (p: number) => number,
+  YInverseTransformation: (p: number) => number,
 
 };
 
@@ -55,18 +58,22 @@ export const GraphContext = React.createContext({
   Data: new Map<string, IDataSeries>(),
   XTransformation: (_: number) => 0,
   YTransformation: (_: number) => 0,
+  XInverseTransformation: (_: number) => 0,
+  YInverseTransformation: (_: number) => 0,
   AddData: ((_: IDataSeries) => ""),
   RemoveData: (_: string) => undefined,
   UpdateData: (_) => undefined,
   SetLegend: (_) => undefined,
   RegisterSelect: (_) => "",
   RemoveSelect: (_) => undefined,
-  UpdateSelect: (_) => undefined
+  UpdateSelect: (_) => undefined,
+
+  UpdateFlag: 0
 } as IGraphContext);
 
 export interface IDataSeries {
-  getMin: (tDomain: [number, number]) => number,
-  getMax: (tDomain: [number, number]) => number,
+  getMin: (tDomain: [number, number]) => number| undefined,
+  getMax: (tDomain: [number, number]) => number|undefined,
   legend?: HTMLElement,
 };
 

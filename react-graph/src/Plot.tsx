@@ -36,6 +36,8 @@ import Line from './Line';
 import Button from './Button';
 import HorizontalMarker from './HorizontalMarker';
 import VerticalMarker from './VerticalMarker';
+import Circle from './Circle';
+import AggregatingCircles from './AggregatingCircles';
 
 // A ZoomMode of AutoValue means it will zoom on time, and auto Adjust the Value to fit the data.
 export interface IProps {
@@ -111,12 +113,13 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
     // States for Props to avoid change notification on ref change
     const [defaultTdomain, setDefaultTdomain]= React.useState<[number, number]>(props.defaultTdomain);
     const [defaultYdomain, setDefaultYdomain] = React.useState<[number,number]| undefined>(props.defaultYdomain);
+    const [updateFlag, setUpdateFlag] = React.useState<number>(0);
     // Constants
     const SVGHeight = props.height - (props.legend === 'bottom'? (props.legendHeight !== undefined? props.legendHeight : 50) : 0);
     const SVGWidth = props.width - (props.legend === 'right'? (props.legendWidth !== undefined? props.legendWidth : 100) : 0);
 
     const zoomMode = props.zoomMode === undefined? 'AutoValue' : props.zoomMode;
-
+    
     // enforce T limits
     React.useEffect(() => {
       if (props.Tmin !== undefined && tDomain[0] < props.Tmin)
@@ -176,10 +179,10 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
     // Adjust Y domain
     React.useEffect(() => {
     if (zoomMode == 'AutoValue') {
-     const yMin = Math.min(...[...data.values()].map(series => series.getMin(tDomain)));
-     const yMax = Math.max(...[...data.values()].map(series => series.getMax(tDomain)));
-     if (!isNaN(yMin) && !isNaN(yMax) && isFinite(yMin) && isFinite(yMax))
-         setYdomain([yMin, yMax]);
+      const yMin = Math.min(...[...data.values()].map(series => series.getMin(tDomain) ?? Number.MAX_VALUE));
+      const yMax = Math.max(...[...data.values()].map(series => series.getMax(tDomain) ?? Number.MIN_VALUE));
+      if (!isNaN(yMin) && !isNaN(yMax) && isFinite(yMin) && isFinite(yMax))
+          setYdomain([yMin, yMax]);
     }
    }, [tDomain, data]);
 
@@ -211,6 +214,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
       setYoffset(SVGHeight - offsetBottom + yDomain[0] * scale);
     }, [yDomain, offsetTop, offsetBottom]);
 
+    React.useEffect(() => { setUpdateFlag((x) => x+1) }, [tScale,tOffset,yScale,yOffset])
     // transforms from pixels into x value. result passed into onClick function 
     function XInverseTransform(p: number): number {
       let xT = (p - tOffset) / tScale;
@@ -291,13 +295,16 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
           Data: data,
           XTransformation,
           YTransformation,
+          XInverseTransformation: XInverseTransform,
+          YInverseTransformation: YInverseTransform,
           AddData,
           RemoveData,
           UpdateData,
           SetLegend,
           RegisterSelect,
           RemoveSelect,
-          UpdateSelect
+          UpdateSelect,
+          UpdateFlag: updateFlag
       } as IGraphContext
     }
 
@@ -463,6 +470,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
                                        return null;
                                    if ((element as React.ReactElement<any>).type === Line || (element as React.ReactElement<any>).type === LineWithThreshold ||
                                    (element as React.ReactElement<any>).type === HorizontalMarker || (element as React.ReactElement<any>).type === VerticalMarker
+                                   || (element as React.ReactElement<any>).type === Circle || (element as React.ReactElement<any>).type === AggregatingCircles
                                     )
                                        return element;
                                    return null;
