@@ -32,7 +32,8 @@ interface IProps {
     Location: 'left'|'right'|'top'|'bottom',
     GetOverride?: (func: (open: boolean) => void) => void,
     OnChange?: (open: boolean) => void,
-    Target: string
+    Target: string,
+    HideHandle?: boolean
 }
 
 interface IClosedOverlayProps {
@@ -40,8 +41,7 @@ interface IClosedOverlayProps {
     Left: number,
     Top: number,
     Width: number,
-    Height: number
-
+    Height: number,
 }
 /* top-left | top-right | bottom-right | bottom-left */
 const ClosedOverlayDiv = styled.div<IClosedOverlayProps>`
@@ -54,9 +54,8 @@ const ClosedOverlayDiv = styled.div<IClosedOverlayProps>`
     font-size: 13px;
     position: fixed;
     z-index: 999;
-    opacity: 0.6;
     color: #fff;
-    background: #222;
+    background: rgba(34, 2, 0, 0.6);
     top: ${props => props.Location === 'top' ? Math.floor(props.Top) : Math.ceil(props.Top)}px;
     left: ${props => props.Location === 'left' ? Math.floor(props.Left) : Math.floor(props.Left)}px;
     height: ${props => props.Location === 'bottom' ? Math.ceil(props.Height) : Math.floor(props.Height)}px;
@@ -83,14 +82,14 @@ const ClosedOverlayDiv = styled.div<IClosedOverlayProps>`
     transition: opacity 0.3s ease-out;
     z-index: 999;
     color: #fff;
-    background: #222;
+    background: rgba(34, 2, 0, 0.8);
     top: ${props => `${props.Top}px`};
     left: ${props => `${props.Left}px`};
     padding-left: 10px;
     padding-top: 10px;
     padding-bottom: 10px;
     padding-right: 10px;
-    opacity: ${props => props.Open? '0.8' : '0'};
+    opacity: ${props => props.Open? '1.0' : '0'};
     ${props => !props.Open? 'pointer-events: none;' : ''}
   }`
 
@@ -109,9 +108,7 @@ const OverlayDrawer: React.FunctionComponent<IProps> = (props) => {
     const [width, setWidth] = React.useState<number>(0);
     const [height, setHeight] = React.useState<number>(0);
 
-    const [open, setOpen] = React.useState<boolean>(props.Open);
-    const [hover, setHover] = React.useState<boolean>(false);
-    
+    const [open, setOpen] = React.useState<boolean>(props.Open);    
     const [containerWidth, setContainerWidth] = React.useState<number>(0);
     const [containerHeight, setContainerHeight] = React.useState<number>(0);
 
@@ -237,11 +234,11 @@ const OverlayDrawer: React.FunctionComponent<IProps> = (props) => {
     }
 
 return <>
-        {!open? <ClosedOverlayDiv onClick={() => { 
+        {!(props.HideHandle === undefined? false : props.HideHandle)? (!open? <ClosedOverlayDiv onClick={() => { 
             setOpen(true);
                 if (props.OnChange !== undefined)
                     props.OnChange(true);
-        }} Location={props.Location} Height={height} Left={left} Top={top} Width={width}>{props.Title}</ClosedOverlayDiv> : 
+        }} Location={props.Location} Height={height} Left={left} Top={top} Width={width}>{props.Title}</ClosedOverlayDiv>: 
         <ClosedOverlayDiv onClick={() => { 
             setOpen(false);
                 if (props.OnChange !== undefined)
@@ -251,7 +248,8 @@ return <>
          Left={(props.Location === 'top' || props.Location === 'bottom'? containerLeft : containerLeft + (props.Location === 'left'? containerWidth : -(width)))}
          Top={(props.Location === 'left' || props.Location === 'right'? containerTop : containerTop + (props.Location === 'top'? containerHeight : -(height)))}
          Width={(props.Location === 'left' || props.Location === 'right'? width : containerWidth)}
-          >{props.Title}</ClosedOverlayDiv>}
+          >{props.Title}</ClosedOverlayDiv>) : null}
+
         <OpenOverlayDiv Location={props.Location} Left={containerLeft} Top={containerTop} Open={open} ref={divRef} style={{minHeight: height, minWidth: width}}>{props.children}</OpenOverlayDiv>
 
     </>
