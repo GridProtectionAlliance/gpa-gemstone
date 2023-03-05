@@ -107,7 +107,7 @@ function LineWithThreshold(props: IProps) {
      setThresholdLimits([Math.min(...props.threshHolds.map(t => t.Value)),Math.max(...props.threshHolds.map(t => t.Value)) ])
    }, [props.threshHolds]);
 
-   function createLegend(): HTMLElement|undefined {
+   function createLegend():  HTMLElement| React.ReactElement| JSX.Element| undefined {
      if (props.legend === undefined)
        return undefined;
 

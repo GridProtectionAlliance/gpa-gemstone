@@ -96,7 +96,7 @@ function Line(props: IProps) {
        return () => { context.RemoveData(id) }
    }, []);
 
-   function createLegend(): HTMLElement|undefined {
+   function createLegend(): HTMLElement| React.ReactElement| JSX.Element| undefined {
      if (props.legend === undefined)
        return undefined;
 
