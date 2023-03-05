@@ -39,6 +39,10 @@ interface IProps<T> extends TableProps<T> {
      * ID of the Portal used for tunneling Collumn settings
      */
     settingsPortal?: string
+    /**
+     * Callback when Settings modal opens or closes
+     */
+    onSettingsChange?: (open: boolean) => void
 }
 
 /**
@@ -61,6 +65,10 @@ export default function ConfigurableTable<T>(props: IProps<T>) {
         setColKeys(props.cols.map(d => d.key))
     }, [props.cols]);
 
+    React.useEffect(() => {
+        if (props.onSettingsChange !== undefined)
+            props.onSettingsChange(showSettings);
+    }, [showSettings])
 
     React.useEffect(() => {
         setCollumns(props.cols.filter((c, i) => localStorage.getItem(JSON.stringify(i)) !== null || i === 0));
