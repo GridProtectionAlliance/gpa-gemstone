@@ -83,9 +83,10 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
       Actual plot that will handle Axis etc.
     */
     const SVGref = React.useRef<any>(null);
+    const handlers = React.useRef<Map<string,IHandlers>>(new Map<string, IHandlers>());
+    
     const guid = React.useMemo(() => CreateGuid(),[]);
     const [data, setData] = React.useState<Map<string, IDataSeries>>(new Map<string, IDataSeries>());
-    const [handlers, setHandlers] = React.useState<Map<string,IHandlers>>(new Map<string, IHandlers>());
 
     const [tDomain, setTdomain] = React.useState<[number,number]>(props.defaultTdomain);
     const [tOffset, setToffset] = React.useState<number>(0);
@@ -273,16 +274,16 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
 
     function RegisterSelect(handler: IHandlers): string {
       const key = CreateGuid();
-      setHandlers((fld) => { const updated = cloneDeep(fld); updated.set(key,handler); return updated; });
+      handlers.current.set(key,handler)
       return key;
     }
 
     function RemoveSelect(key: string) {
-      setHandlers((fld) => { const updated = cloneDeep(fld); updated.delete(key); return updated;})
+      handlers.current.delete(key)
     }
     
     function UpdateSelect(key: string,handler: IHandlers) {
-      setHandlers((fld) => { const updated = cloneDeep(fld); updated.set(key, handler); return updated; });
+      handlers.current.set(key,handler)
     }
 
     function GetContext(): IGraphContext {
@@ -304,7 +305,9 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
           RegisterSelect,
           RemoveSelect,
           UpdateSelect,
-          UpdateFlag: updateFlag
+          UpdateFlag: updateFlag,
+          SetXDomain: setTdomain,
+          SetYDomain: setYdomain
       } as IGraphContext
     }
 
@@ -400,8 +403,8 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
             setMouseMode('pan');
         if (selectedMode === 'select' && props.onSelect !== undefined)
           props.onSelect(XInverseTransform(ptTransform.x))
-        if (handlers.size > 0 && selectedMode === 'select')
-          handlers.forEach((v) => (v.onClick !== undefined? v.onClick(XInverseTransform(ptTransform.x), YInverseTransform(ptTransform.y)) : null));
+        if (handlers.current.size > 0 && selectedMode === 'select')
+          handlers.current.forEach((v) => (v.onClick !== undefined? v.onClick(XInverseTransform(ptTransform.x), YInverseTransform(ptTransform.y)) : null));
 
     }
 
@@ -426,8 +429,8 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
         }
         setMouseMode('none');
 
-        if (handlers.size > 0 && selectedMode === 'select')
-          handlers.forEach((v) => (v.onRelease !== undefined? v.onRelease(XTransformation(mousePosition[0]), YTransformation(mousePosition[1])) : null));
+        if (handlers.current.size > 0 && selectedMode === 'select')
+          handlers.current.forEach((v) => (v.onRelease !== undefined? v.onRelease(XTransformation(mousePosition[0]), YTransformation(mousePosition[1])) : null));
 
     }
 
@@ -436,8 +439,8 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
         if (mouseMode === 'pan')
             setMouseMode('none');
 
-        if (handlers.size > 0 && selectedMode === 'select')
-          handlers.forEach((v) => (v.onPlotLeave !== undefined? v.onPlotLeave(XTransformation(mousePosition[0]), YTransformation(mousePosition[1])) : null));
+        if (handlers.current.size > 0 && selectedMode === 'select')
+          handlers.current.forEach((v) => (v.onPlotLeave !== undefined? v.onPlotLeave(XTransformation(mousePosition[0]), YTransformation(mousePosition[1])) : null));
   
     }
 
@@ -488,7 +491,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
                        <InteractiveButtons showPan={(props.pan === undefined || props.pan)}
                         showZoom={props.zoom === undefined || props.zoom}
                         showReset={!(props.pan !== undefined && props.zoom !== undefined && !props.zoom && !props.pan)}
-                        showSelect={props.onSelect !== undefined || handlers.size > 0}
+                        showSelect={props.onSelect !== undefined || handlers.current.size > 0}
                         showDownload={props.onDataInspect !== undefined}
                         currentSelection={selectedMode}
                         setSelection={(s) => {

@@ -44,6 +44,8 @@ export interface IGraphContext {
   XInverseTransformation: (p: number) => number,
   YInverseTransformation: (p: number) => number,
 
+  SetXDomain: React.SetStateAction<[number,number]> | ((t: [number,number]) => void),
+  SetYDomain:  React.SetStateAction<[number,number]> | ((t: [number,number]) => void),
 };
 
 export const GraphContext = React.createContext({
@@ -67,7 +69,8 @@ export const GraphContext = React.createContext({
   RegisterSelect: (_) => "",
   RemoveSelect: (_) => undefined,
   UpdateSelect: (_) => undefined,
-
+  SetXDomain: (_) => undefined,
+  SetYDomain: (_) => undefined,
   UpdateFlag: 0
 } as IGraphContext);
 

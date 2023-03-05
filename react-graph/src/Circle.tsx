@@ -24,7 +24,12 @@
 
 import { GetTextHeight, GetTextWidth } from '@gpa-gemstone/helper-functions';
 import * as React from 'react';
-import {IDataSeries, GraphContext, IGraphContext} from './GraphContext';
+import {IDataSeries, GraphContext, IGraphContext, IHandlers} from './GraphContext';
+
+interface IActionFunctions {
+  setTDomain: React.SetStateAction<[number,number]>,
+  setYDomain: React.SetStateAction<[number,number]>
+}
 
 export interface IProps {
   data: [number, number],
@@ -33,7 +38,8 @@ export interface IProps {
   borderColor?: string,
   borderThickness?: number,
   text?: string,
-  opacity?: number
+  opacity?: number,
+  onClick?: (actions: IActionFunctions) => void
 }
 
 interface IContextlessProps{
@@ -88,6 +94,33 @@ export function ContextlessCircle(props: IContextlessProps) {
         
    }, [props.circleProps.text, props.circleProps.radius])
 
+   
+   React.useEffect(() => {
+    if (guid === "" || props.circleProps.onClick === undefined)
+        return;
+
+      props.context.UpdateSelect(guid, {
+          onClick
+      } as IHandlers)
+    }, [props.circleProps.onClick, props.context.UpdateFlag ])
+
+    function onClick(x: number, y: number) {
+      if (props.circleProps.onClick === undefined)
+        return;
+      const xP = props.context.XTransformation(x);
+      const yP = props.context.YTransformation(y);
+      const xC = props.context.XTransformation(props.circleProps.data[0]);
+      const yC = props.context.YTransformation(props.circleProps.data[1]);
+
+      if (xP <= xC + props.circleProps.radius && xP >= xC - props.circleProps.radius &&
+        yP <= yC + props.circleProps.radius && yP >= yC - props.circleProps.radius)
+        props.circleProps.onClick( {
+          setYDomain: props.context.SetYDomain as React.SetStateAction<[number,number]>, 
+          setTDomain: props.context.SetXDomain as React.SetStateAction<[number,number]>
+          });
+
+ }
+ 
    if (!isFinite(props.context.XTransformation(props.circleProps.data[0])) || !isFinite(props.context.YTransformation(props.circleProps.data[1])))
     return null;
    return (
