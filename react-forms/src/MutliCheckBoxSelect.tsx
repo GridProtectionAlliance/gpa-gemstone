@@ -21,15 +21,26 @@
 //
 // ******************************************************************************************************
 
+import { CreateGuid } from '@gpa-gemstone/helper-functions';
 import * as React from 'react';
+import HelperMessage from './HelperMessage';
 
-const MultiSelect = (props: {
+interface IProps {
+  Label?: string;
   Options: { Value: number; Text: string; Selected: boolean }[];
   OnChange: (evt: any, Options: { Value: number; Text: string; Selected: boolean }[]) => void;
-}) => {
+  Help?: string|JSX.Element;
+}
+const MultiSelect = (props: IProps) => {
   const [show, setShow] = React.useState<boolean>(false);
+  const [showHelp, setShowHelp] = React.useState<boolean>(false);
+  const [guid, setGuid] = React.useState<string>("");
   const multiSelect = React.useRef<HTMLDivElement>(null);
 
+  React.useEffect(() => {
+		setGuid(CreateGuid());
+	  }, []);
+    
   function HandleShow(evt: React.MouseEvent<HTMLButtonElement, MouseEvent> | MouseEvent) {
     if (multiSelect.current === null) setShow(!show);
     else if (!(multiSelect.current as HTMLDivElement).contains(evt.target as Node)) setShow(false);
@@ -44,7 +55,20 @@ const MultiSelect = (props: {
   }, []);
 
   return (
-    <div ref={multiSelect} style={{ position: 'relative', display: 'inline-block', width: 'inherit' }}>
+    <div className="form-group">
+    {(props.Label !== "") ?
+		<label>{props.Label === undefined ? 'Select' : props.Label} 
+		{props.Help !== undefined? <div 
+    style={{ width: 20, height: 20, borderRadius: '50%', display: 'inline-block', background: '#0D6EFD', marginLeft: 10, textAlign: 'center', fontWeight: 'bold' }}
+     onMouseEnter={() => setShowHelp(true)} 
+     onMouseLeave={() => setShowHelp(false)}> ? </div> : null}
+		</label> : null}
+    {props.Help !== undefined? 
+			<HelperMessage Show={showHelp} Target={guid}>
+				{props.Help}
+			</HelperMessage>
+		: null}
+    <div ref={multiSelect} style={{ position: 'relative', display: 'block', width: 'inherit' }}>
       <button
         type="button"
         style={{ border: '1px solid #ced4da', padding: '.375rem .75rem', fontSize: '1rem', borderRadius: '.25rem' }}
@@ -102,6 +126,7 @@ const MultiSelect = (props: {
           </tbody>
         </table>
       </div>
+    </div>
     </div>
   );
 };
