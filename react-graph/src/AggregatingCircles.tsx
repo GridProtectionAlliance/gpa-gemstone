@@ -61,7 +61,7 @@ const AggregatingCircles = (props: IProps) => {
 
   function cluster(circles: ICircleProps[]): ICircleProps[] {
 
-    let singleCircles: ICircleProps[] = circles.map(c => ({...c}))
+    const singleCircles: ICircleProps[] = circles.map(c => ({...c}))
     let clusters: ICluster[] = [];
 
     const fctn: IAggregationFunctions  = {
@@ -81,16 +81,15 @@ const AggregatingCircles = (props: IProps) => {
       for (let j = i+1; j < singleCircles.length; j = j+1) {
         if (!props.canAggregate(singleCircles[i],singleCircles[j],fctn))
           continue;
-        let c2 = clusters.findIndex(c => c.Indices.includes(j));
+        const c2 = clusters.findIndex(c => c.Indices.includes(j));
 
-        
         if (c1 < 0 && c2 < 0) {
           clusters.push({ Indices: [i,j], Aggregate: null});
           c1 = clusters.length - 1;
           continue;
         }
 
-        if (c1 == c2)
+        if (c1 === c2)
           continue
         
         if (c1 >= 0 && c2 < 0) {
@@ -152,7 +151,7 @@ const AggregatingCircles = (props: IProps) => {
 
    }
   
-   return [...singleCircles.filter((c,i) => clusters.findIndex(cl => cl.Indices.includes(i)) == -1),
+   return [...singleCircles.filter((c,i) => clusters.findIndex(cl => cl.Indices.includes(i)) === -1),
        ...clusters.map((c) => c.Aggregate as ICircleProps)];
   }
 

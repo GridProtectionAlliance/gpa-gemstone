@@ -153,7 +153,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
     }, [defaultTdomain])
 
     React.useEffect(() => {
-      if (defaultYdomain !== undefined && zoomMode != 'AutoValue')
+      if (defaultYdomain !== undefined && zoomMode !== 'AutoValue')
         setYdomain(defaultYdomain)
     }, [defaultYdomain])
 
@@ -179,7 +179,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
 
     // Adjust Y domain
     React.useEffect(() => {
-    if (zoomMode == 'AutoValue') {
+    if (zoomMode === 'AutoValue') {
       const yMin = Math.min(...[...data.values()].map(series => series.getMin(tDomain) ?? Number.MAX_VALUE));
       const yMax = Math.max(...[...data.values()].map(series => series.getMax(tDomain) ?? Number.MIN_VALUE));
       if (!isNaN(yMin) && !isNaN(yMax) && isFinite(yMin) && isFinite(yMax))
@@ -231,7 +231,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
 
     function Reset(): void {
         setTdomain(defaultTdomain);
-        if (defaultYdomain !== undefined && zoomMode != 'AutoValue')
+        if (defaultYdomain !== undefined && zoomMode !== 'AutoValue')
           setYdomain(defaultYdomain)
     }
 
@@ -351,7 +351,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
           if ((x1-x0) > 10)
             setTdomain([XInverseTransform(x0), XInverseTransform(x1)])
         
-          if (zoomMode == 'Rect') {
+          if (zoomMode === 'Rect') {
             let y0 = YTransformation(yDomain[0]);
             let y1 = YTransformation(yDomain[1]);
 
@@ -380,14 +380,12 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
       pt.y = evt.clientY;
       const ptTransform = pt.matrixTransform(SVGref.current!.getScreenCTM().inverse());
 
-      let dX = mousePosition[0] - ptTransform.x;
-
       setMousePosition([ptTransform.x, ptTransform.y])
 
-        if (mouseMode === 'pan') {
-            const dT = XInverseTransform(mousePosition[0]) - XInverseTransform(ptTransform.X);
-            setTdomain([tDomain[0] + dT, tDomain[1] + dT]);
-        }
+      if (mouseMode === 'pan') {
+          const dT = XInverseTransform(mousePosition[0]) - XInverseTransform(ptTransform.X);
+          setTdomain([tDomain[0] + dT, tDomain[1] + dT]);
+      }
     }
 
     function handleMouseDown(evt: any) {
@@ -486,9 +484,9 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
                               : null}
                           {(props.zoom === undefined || props.zoom) && mouseMode === 'zoom' ?
                               <rect fillOpacity={0.8} fill={'black'} x={Math.min(mouseClick[0], mousePosition[0])}
-                               y={zoomMode == 'Rect'? Math.min(mouseClick[1], mousePosition[1]) : offsetTop} 
+                               y={zoomMode === 'Rect'? Math.min(mouseClick[1], mousePosition[1]) : offsetTop} 
                                width={Math.abs(mouseClick[0] - mousePosition[0])}
-                               height={zoomMode == 'Rect'?  Math.abs(mouseClick[1] - mousePosition[1]) : (SVGHeight - offsetTop - offsetBottom)} />
+                               height={zoomMode === 'Rect'?  Math.abs(mouseClick[1] - mousePosition[1]) : (SVGHeight - offsetTop - offsetBottom)} />
                               : null}
                       </g>
                        <InteractiveButtons showPan={(props.pan === undefined || props.pan)}
