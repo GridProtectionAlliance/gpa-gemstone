@@ -159,7 +159,7 @@ const AggregatingCircles = (props: IProps) => {
 
    return (
        <g>
-          {aggregate.map((c) => <ContextlessCircle circleProps={c} context={context} />)}
+          {aggregate.map((c,i) => <ContextlessCircle key={i.toString() + (c.text === undefined? '': c.text)} circleProps={c} context={context} />)}
        </g>
    );
 }

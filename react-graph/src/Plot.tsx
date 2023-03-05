@@ -455,7 +455,8 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
           <div style={{ height: props.height, width: props.width, position: 'relative' }}>
               <div style={{ height: SVGHeight, width: SVGWidth, position: 'absolute' }}
                   onWheel={handleMouseWheel} onMouseMove={handleMouseMove} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} onMouseLeave={handleMouseOut} onMouseEnter={handleMouseIn} >
-                  <svg ref={SVGref} width={SVGWidth} height={SVGHeight} style={SvgStyle} viewBox={`0 0 ${SVGWidth} ${SVGHeight}`}>
+                  <svg ref={SVGref} width={SVGWidth < 0? 0 : SVGWidth} height={SVGHeight < 0 ? 0 : SVGHeight}
+                   style={SvgStyle} viewBox={`0 0 ${SVGWidth < 0? 0 : SVGWidth} ${SVGHeight < 0 ? 0 : SVGHeight}`}>
                      {props.showBorder !== undefined && props.showBorder ? < path stroke='black' d={`M ${offsetLeft} ${offsetTop} H ${SVGWidth- offsetRight} V ${SVGWidth - offsetBottom} H ${offsetLeft} Z`} /> : null}
                      { props.XAxisType === 'time' || props.XAxisType === undefined ?
                      <TimeAxis label={props.Tlabel} offsetBottom={offsetBottom} offsetLeft={offsetLeft} offsetRight={offsetRight} width={SVGWidth} height={SVGHeight} setHeight={setHeightXLabel} heightAxis={heightXLabel}/> :
