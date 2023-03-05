@@ -21,6 +21,7 @@
 //
 // ******************************************************************************************************
 
+import { has } from 'lodash';
 import * as React from 'react';
 import {GraphContext} from './GraphContext'
 
@@ -39,14 +40,16 @@ function Legend(props: IProps) {
   const itemHeight = 25;
 
   const itemsWhenBottom = 3;
-  const scroll = Math.ceil(context.Data.size / (props.location === 'bottom' ? itemsWhenBottom : 1)) * itemHeight > h;
+  const nLegends = [...context.Data.values()].reduce((s,c) => (c.legend ===undefined? 0 : 1) + s,0)
+  const scroll = Math.ceil(nLegends/ (props.location === 'bottom' ? itemsWhenBottom : 1)) * itemHeight > h;
   const position = (props.location === 'bottom'? 'absolute' : 'relative');
   const scrollBarSpace = (scroll === undefined || !scroll ? 0 : 6)
+
     return (
       <div style={{ height: h, width: w, position, float:(props.location as any) ,display: 'flex', flexWrap: 'wrap', bottom: 0, 
         overflowY: (scroll === undefined || !scroll ? 'visible' : 'scroll'), overflowX: (scroll === undefined || !scroll ? 'visible' : 'hidden')}}>
         {[...context.Data.values()].map((series, index) => (series.legend !== undefined ?
-              <div key={index} style={{width:(props.location === 'bottom' ? w/itemsWhenBottom - scrollBarSpace : w-scrollBarSpace), height: itemHeight}}>
+              <div key={index} style={{width:(props.location === 'bottom' ? w/itemsWhenBottom - scrollBarSpace : w-scrollBarSpace), height: props.location == 'bottom'? itemHeight: Math.max(h/nLegends, itemHeight)}}>
                   {series.legend}
           </div> : null))}
       </div>)

@@ -262,11 +262,13 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
         setData((fld) => { const updated = cloneDeep(fld); updated.delete(d); return updated;})
     }
 
-    function SetLegend(key: string, legend: JSX.Element|undefined): void {
+    function SetLegend(key: string, legend: JSX.Element|undefined|React.ReactElement): void {
         setData((fld) => {
           const updated = cloneDeep(fld);
           const series = updated.get(key);
-          series!.legend = legend;
+          if (series === undefined)
+            return updated;
+          series.legend = legend;
           updated.set(key, series!);
           return updated;
         });

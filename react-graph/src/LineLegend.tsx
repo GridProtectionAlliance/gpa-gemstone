@@ -24,7 +24,7 @@
 
 import * as React from 'react';
 import { LineStyle} from './GraphContext';
-import { GetTextWidth } from '@gpa-gemstone/helper-functions';
+import { GetTextHeight, GetTextWidth } from '@gpa-gemstone/helper-functions';
 
 
 export interface IProps {
@@ -40,7 +40,7 @@ function LineLegend(props: IProps) {
   const [wLegend, setWLegend] = React.useState<number>(0);
   const [hLegend, setHLegend] = React.useState<number>(0);
   const [textSize, setTextSize] = React.useState<number>(1);
- 
+  const [useMultiLine, setUseMultiLine] = React.useState<boolean>(false);
   
   React.useLayoutEffect(() => {
     setWLegend((ref?.current as any)?.offsetWidth ?? 0);
@@ -51,13 +51,22 @@ function LineLegend(props: IProps) {
     let t = 1;
     let w = GetTextWidth("Segoe UI", '1em', props.label);
     let h = GetTextWidth("Segoe UI", '1em', props.label);
+    let useML = false;
 
-    while (t > 0.4 &&  ( w > wLegend - 45 || h > hLegend - 45)) {
+    while (t > 0.4 &&  ( w > wLegend - 45 || h > hLegend)) {
       t = t - 0.05;
       w = GetTextWidth("Segoe UI", t + 'em', props.label);
-      h = GetTextWidth("Segoe UI", t + 'em', props.label);
+      h = GetTextHeight("Segoe UI", t + 'em', props.label);
+      useML = false;
+      // Consider special case when width is limiting but height is available
+      if (w > (wLegend - 45) && h < hLegend) {
+        useML = true;
+        h = GetTextHeightMultiLine("Segoe UI", t + 'em', props.label,wLegend-45);
+        w = wLegend - 45;
+      }
     }
     setTextSize(t);
+    setUseMultiLine(useML)
   }, [props.label, wLegend, hLegend])
 
    return (
@@ -67,9 +76,29 @@ function LineLegend(props: IProps) {
           opacity: props.opacity }}></div> :
          <div style={{ width: ' 10px', height: '4px', borderTop: '0px solid', borderRight: '3px solid', borderBottom: '0px solid', borderLeft: '3px solid', borderColor: props.color, overflow: 'hidden', marginRight: '5px', opacity: props.opacity }}></div>
        )}
-       <label style={{ margin: 'auto', marginLeft: 0, fontSize: textSize + 'em' }}> {props.label}</label>
+       <label style={{ margin: 'auto', marginLeft: 0, fontSize: textSize + 'em', whiteSpace: (useMultiLine? 'normal' : 'nowrap') }}> {props.label}</label>
     </div>
 );
 }
+
+function GetTextHeightMultiLine(font: string, fontSize: string, word: string, width: number): number {
+
+  const text = document.createElement("span");
+  document.body.appendChild(text);
+
+  text.style.font = font;
+  text.style.fontSize = fontSize;
+  text.style.height = 'auto';
+  text.style.width = 'auto';
+  text.style.position = 'absolute';
+  text.style.whiteSpace = 'normal';
+  text.style.width = width + "px";
+  text.innerHTML = word;
+
+  const height = Math.ceil(text.clientHeight);
+  document.body.removeChild(text);
+  return height;
+
+} 
 
 export default LineLegend;
