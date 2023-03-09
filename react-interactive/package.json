@@ -1,6 +1,6 @@
 {
   "name": "@gpa-gemstone/react-interactive",
-  "version": "1.0.75",
+  "version": "1.0.76",
   "description": "Interactive UI Components for GPA products",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -52,8 +52,8 @@
   "dependencies": {
     "@gpa-gemstone/application-typings": "0.0.53",
     "@gpa-gemstone/gpa-symbols": "0.0.23",
-    "@gpa-gemstone/helper-functions": "0.0.17",
-    "@gpa-gemstone/react-forms": "1.1.34",
+    "@gpa-gemstone/helper-functions": "0.0.18",
+    "@gpa-gemstone/react-forms": "1.1.35",
     "@gpa-gemstone/react-table": "1.2.19",
     "@reduxjs/toolkit": "1.8.3",
     "jquery": "^3.6.0",
