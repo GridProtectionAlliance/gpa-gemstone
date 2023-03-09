@@ -40,7 +40,7 @@ function Legend(props: IProps) {
   const itemHeight = 25;
 
   const itemsWhenBottom = 3;
-  const nLegends = [...context.Data.values()].reduce((s,c) => (c.legend ===undefined? 0 : 1) + s,0)
+  const nLegends = [...context.Data.values()].reduce((s,c) => (c.legend ===undefined? 0 : 1) + s)
   const scroll = Math.ceil(nLegends/ (props.location === 'bottom' ? itemsWhenBottom : 1)) * itemHeight > h;
   const position = (props.location === 'bottom'? 'absolute' : 'relative');
   const scrollBarSpace = (scroll === undefined || !scroll ? 0 : 6)
