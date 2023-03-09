@@ -61,7 +61,7 @@ function LineLegend(props: IProps) {
       // Consider special case when width is limiting but height is available
       if (w > (wLegend - 45) && h < hLegend) {
         useML = true;
-        h = GetTextHeightMultiLine("Segoe UI", t + 'em', props.label,wLegend-45);
+        h = GetTextHeight("Segoe UI", t + 'em', props.label,`width: ${wLegend-45}px; whitespace: normal;`);
         w = wLegend - 45;
       }
     }
@@ -80,25 +80,5 @@ function LineLegend(props: IProps) {
     </div>
 );
 }
-
-function GetTextHeightMultiLine(font: string, fontSize: string, word: string, width: number): number {
-
-  const text = document.createElement("span");
-  document.body.appendChild(text);
-
-  text.style.font = font;
-  text.style.fontSize = fontSize;
-  text.style.height = 'auto';
-  text.style.width = 'auto';
-  text.style.position = 'absolute';
-  text.style.whiteSpace = 'normal';
-  text.style.width = width + "px";
-  text.innerHTML = word;
-
-  const height = Math.ceil(text.clientHeight);
-  document.body.removeChild(text);
-  return height;
-
-} 
 
 export default LineLegend;
