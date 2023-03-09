@@ -26,9 +26,10 @@
  * @param font: Determines font of given text
  * @param fontSize: Determines size of given font
  * @param word: Text to measure
+ * @param cssStyle: Optional css style 
  * @returns Width of text
  */
-function GetTextWidth(font: string, fontSize: string, word: string): number {
+function GetTextWidth(font: string, fontSize: string, word: string, cssStyle?: string): number {
 
     const text = document.createElement("span");
     document.body.appendChild(text);
@@ -39,6 +40,10 @@ function GetTextWidth(font: string, fontSize: string, word: string): number {
     text.style.width = 'auto';
     text.style.position = 'absolute';
     text.style.whiteSpace = 'no-wrap';
+
+    if (cssStyle !== undefined)
+        text.style.cssText = cssStyle;
+
     text.innerHTML = word;
 
     const width = Math.ceil(text.clientWidth);
