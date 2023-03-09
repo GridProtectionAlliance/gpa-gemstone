@@ -54,16 +54,20 @@ const MultiSelect = (props: IProps) => {
     };
   }, []);
 
+  const showLabel = props.Label !== "";
+  const showHelpIcon = props.Help !== undefined;
+  const label = props.Label === undefined ? 'Select' : props.Label;
+  
   return (
     <div className="form-group">
-    {(props.Label !== "") ?
-		<label>{props.Label === undefined ? 'Select' : props.Label} 
-		{props.Help !== undefined? <div 
+    {showLabel || showHelpIcon ?
+		<label>{showLabel? label : ''} 
+		{showHelpIcon? <div 
     style={{ width: 20, height: 20, borderRadius: '50%', display: 'inline-block', background: '#0D6EFD', marginLeft: 10, textAlign: 'center', fontWeight: 'bold' }}
      onMouseEnter={() => setShowHelp(true)} 
      onMouseLeave={() => setShowHelp(false)}> ? </div> : null}
 		</label> : null}
-    {props.Help !== undefined? 
+    {showHelpIcon? 
 			<HelperMessage Show={showHelp} Target={guid}>
 				{props.Help}
 			</HelperMessage>

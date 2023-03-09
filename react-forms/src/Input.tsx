@@ -82,14 +82,18 @@ export default function Input<T>(props: IProps<T>) {
         setHeldVal(value);
     }
   }
-    
+  
+  const showLabel = props.Label !== "";
+  const showHelpIcon = props.Help !== undefined;
+  const label = props.Label === undefined ? props.Field : props.Label;
+
   return (
     <div className={"form-control " + (props.Size === 'large'? 'form-control-lg' : '') + (props.Size === 'small'? 'form-control-sm' : '')} style={props.Style}>
-    {(props.Label !== "") ?
-		<label>{props.Label === undefined ? props.Field : props.Label} 
-		{props.Help !== undefined? <div style={{ width: 20, height: 20, borderRadius: '50%', display: 'inline-block', background: '#0D6EFD', marginLeft: 10, textAlign: 'center', fontWeight: 'bold' }} onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)}> ? </div> : null}
+    {showHelpIcon || showLabel ?
+		<label>{showLabel ? label : ''} 
+		{showHelpIcon? <div style={{ width: 20, height: 20, borderRadius: '50%', display: 'inline-block', background: '#0D6EFD', marginLeft: 10, textAlign: 'center', fontWeight: 'bold' }} onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)}> ? </div> : null}
 		</label> : null}
-		{props.Help !== undefined? 
+		{showHelpIcon? 
 			<HelperMessage Show={showHelp} Target={guid}>
 				{props.Help}
 			</HelperMessage>
