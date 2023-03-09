@@ -124,9 +124,9 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
     // enforce T limits
     React.useEffect(() => {
       if (props.Tmin !== undefined && tDomain[0] < props.Tmin)
-        setTdomain((t) => ([props.Tmin ?? 0, t[1]]));
+        setTdomain((t) => ([props.Tmin, t[1]]));
       if (props.Tmax !== undefined && tDomain[1] > props.Tmax)
-        setTdomain((t) => ([t[0], props.Tmax ?? 0]));
+        setTdomain((t) => ([t[0], props.Tmax]));
     }, [tDomain])
 
     // enforce Y limits
