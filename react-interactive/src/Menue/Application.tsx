@@ -42,7 +42,8 @@ interface IProps {
     UserRoles?: Application.Types.SecurityRoleName[]
     AllowCollapsed?: boolean
     NavBarContent?: React.ReactNode,
-    HideSideBar?: boolean
+    HideSideBar?: boolean,
+    UseLegacyNavigation?: boolean
 }
 
 interface INavProps { collapsed: boolean }
@@ -114,50 +115,20 @@ const Applications: React.FunctionComponent<IProps> = (props) => {
 
     return <React.Suspense fallback={<LoadingScreen Show={true} />}>
         <Context.Provider value={GetContext()}>
-        <Router>
+        {props.UseLegacyNavigation === undefined || !props.UseLegacyNavigation? <Router>
             <div style={{ width: window.innerWidth, height: window.innerHeight, position: "absolute" }}>
-                    <nav className="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
-                        {showOpen ? <a style={{ color: '#f8f9fa', marginLeft: 15 }} onClick={() => setCollapsed(false)} >
-                            {SVGIcons.ArrowForward}
-                        </a> : null}
-                        {showClose ? <a style={{ color: '#f8f9fa', marginLeft: 15 }} onClick={() => setCollapsed(true)}>
-                            {SVGIcons.ArrowBackward}
-                        </a> : null}
-                    {props.Logo !== undefined ?
-                        < a className="navbar-brand col-sm-3 col-md-2 mr-0 mr-auto" href={props.HomePath} ><img style={{ maxHeight: 35, margin: -5 }} src={props.Logo} /></a> : null}
-                    <ul className="navbar-nav px-3 ml-auto">
-                        <li className="nav-item text-nowrap">
-                            {props.OnSignOut !== undefined ? <a className="nav-link" onClick={props.OnSignOut} >Sign out</a> : null}
-                        </li>
-                    </ul>
-                    {props.NavBarContent}
-                </nav>
-                    {hideSide? null : <SidebarNav className={"bg-light"} collapsed={collapsed}>
-                        <SidebarDiv>
-                        <ul className="navbar-nav px-3">
-                            {React.Children.map(props.children, (e) => {
-                                if (!React.isValidElement(e))
-                                    return null;
-                                if ((e as React.ReactElement<any>).type === Page)
-                                    return e;
-                                return null
-                            })}
-                        </ul>
-                        {React.Children.map(props.children, (e) => {
-                            if (!React.isValidElement(e))
-                                return null;
-                            if ((e as React.ReactElement<any>).type === Section)
-                                return e;
-                            return null
-                        })}
-                        </SidebarDiv>
-                        {props.Version !== undefined && !collapsed ?
-                            <div style={{ width: '100%', textAlign: 'center', height: 35 }}>
-                                <span>Version {props.Version}</span>
-                                <br />
-                                <span></span>
-                            </div> : null}
-                    </SidebarNav>}
+                    <HeaderContent 
+                        Collapsed={collapsed}
+                        SetCollapsed = {setCollapsed}
+                        HomePath={props.HomePath}
+                        Logo={props.Logo}
+                        OnSignOut={props.OnSignOut}
+                        Version={props.Version}
+                        ShowOpen={showOpen}
+                        ShowClose={showClose}
+                        HideSide={hideSide}
+                        NavBarContent={props.NavBarContent}                
+                    />
                     <MainDiv w={hideSide? 0 : (collapsed ? 50 : 200)}>
                         <Routes>
                             <Route path={`${props.HomePath}`}>
@@ -182,9 +153,88 @@ const Applications: React.FunctionComponent<IProps> = (props) => {
                    
                     </MainDiv>
             </div>
-        </Router>
+        </Router> : 
+        <div style={{ width: window.innerWidth, height: window.innerHeight, position: "absolute" }}>
+        <HeaderContent 
+            Collapsed={collapsed}
+            SetCollapsed = {setCollapsed}
+            HomePath={props.HomePath}
+            Logo={props.Logo}
+            OnSignOut={props.OnSignOut}
+            Version={props.Version}
+            ShowOpen={showOpen}
+            ShowClose={showClose}
+            HideSide={hideSide}
+            NavBarContent={props.NavBarContent}
+        />
+        <MainDiv w={hideSide? 0 : (collapsed ? 50 : 200)}>
+            {props.children}
+        </MainDiv>
+</div>}
         </Context.Provider>
     </React.Suspense>;
 }
 
 export default Applications;
+
+interface IHeaderProps {
+    Collapsed: boolean,
+    SetCollapsed: (c: boolean) => void,
+    HomePath: string,
+    Logo?: string,
+    OnSignOut?: () => void,
+    Version?: string,
+    ShowOpen: boolean,
+    ShowClose: boolean,
+    HideSide: boolean,
+    NavBarContent?: React.ReactNode
+}
+
+const HeaderContent: React.FunctionComponent<IHeaderProps> = (props) => {
+
+    return <>
+    <nav className="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
+                {props.ShowOpen ? <a style={{ color: '#f8f9fa', marginLeft: 15 }} onClick={() => props.SetCollapsed(false)} >
+                    {SVGIcons.ArrowForward}
+                </a> : null}
+                {props.ShowClose ? <a style={{ color: '#f8f9fa', marginLeft: 15 }} onClick={() => props.SetCollapsed(true)}>
+                    {SVGIcons.ArrowBackward}
+                </a> : null}
+            {props.Logo !== undefined ?
+                < a className="navbar-brand col-sm-3 col-md-2 mr-0 mr-auto" href={props.HomePath} ><img style={{ maxHeight: 35, margin: -5 }} src={props.Logo} /></a> : null}
+            <ul className="navbar-nav px-3 ml-auto">
+                <li className="nav-item text-nowrap">
+                    {props.OnSignOut !== undefined ? <a className="nav-link" onClick={props.OnSignOut} >Sign out</a> : null}
+                </li>
+            </ul>
+            {props.NavBarContent}
+        </nav>
+            {props.HideSide? null : <SidebarNav className={"bg-light"} collapsed={props.Collapsed}>
+                <SidebarDiv>
+                <ul className="navbar-nav px-3">
+                    {React.Children.map(props.children, (e) => {
+                        if (!React.isValidElement(e))
+                            return null;
+                        if ((e as React.ReactElement<any>).type === Page)
+                            return e;
+                        return null
+                    })}
+                </ul>
+                {React.Children.map(props.children, (e) => {
+                    if (!React.isValidElement(e))
+                        return null;
+                    if ((e as React.ReactElement<any>).type === Section)
+                        return e;
+                    return null
+                })}
+                </SidebarDiv>
+                {props.Version !== undefined && !props.Collapsed ?
+                    <div style={{ width: '100%', textAlign: 'center', height: 35 }}>
+                        <span>Version {props.Version}</span>
+                        <br />
+                        <span></span>
+                    </div> : null}
+            </SidebarNav>}
+</>
+
+}
