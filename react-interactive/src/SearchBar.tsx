@@ -67,11 +67,12 @@ export default function SearchBar<T> (props: IProps<T>)  {
   // Handling filter storage between sessions if a storageID exists
   React.useEffect(() => {
     if (props.StorageID !== undefined) {
-      const storedFilters = JSON.parse(localStorage.getItem(props.StorageID) as string) ?? [];
-      setFilters(storedFilters);
-      props.SetFilter(storedFilters);
+        const storedFilters = JSON.parse(localStorage.getItem(props.StorageID) as string) ?? [];
+    setFilters(storedFilters);
+    props.SetFilter(storedFilters);
     }
-  }, []);
+    
+  }, [props.StorageID]);
 
   React.useEffect(() => {
     if (props.StorageID !== undefined)
