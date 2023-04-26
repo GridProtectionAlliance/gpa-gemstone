@@ -127,8 +127,10 @@ const Applications: React.FunctionComponent<IProps> = (props) => {
                         ShowOpen={showOpen}
                         ShowClose={showClose}
                         HideSide={hideSide}
-                        NavBarContent={props.NavBarContent}                
-                    />
+                        NavBarContent={props.NavBarContent}        
+                    >
+                        {props.children}
+                    </HeaderContent>
                     <MainDiv w={hideSide? 0 : (collapsed ? 50 : 200)}>
                         <Routes>
                             <Route path={`${props.HomePath}`}>
@@ -166,7 +168,9 @@ const Applications: React.FunctionComponent<IProps> = (props) => {
             ShowClose={showClose}
             HideSide={hideSide}
             NavBarContent={props.NavBarContent}
-        />
+        >
+            {props.children}
+        </HeaderContent>
         <MainDiv w={hideSide? 0 : (collapsed ? 50 : 200)}>
             {props.children}
         </MainDiv>
