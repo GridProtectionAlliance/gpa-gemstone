@@ -50,22 +50,39 @@ interface IProps {
 
 function Note(props: IProps)  {
 	const dispatch = useDispatch<Dispatch<any>>();
-	const standardCollumns =  [
-		{ key: 'Note', field: 'Note', label: 'Note', headerStyle: { width: '50%' }, rowStyle: { width: '50%' } },
-		{ key: 'Timestamp', field: 'Timestamp', label: 'Time', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => moment.utc(item.Timestamp).format("MM/DD/YYYY HH:mm") },
-		{ key: 'UserAccount', field: 'UserAccount', label: 'User', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
+	const standardCollumns: Column<OpenXDA.Types.Note>[] =  [
+		{ 
+			key: 'Note', field: 'Note', label: 'Note', 
+			headerStyle: { width: '50%' }, rowStyle: { width: '50%' } },
+		{ 
+			key: 'Timestamp', field: 'Timestamp', label: 'Time',
+			 headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, 
+			 content: (item:  OpenXDA.Types.Note) => moment.utc(item.Timestamp).format("MM/DD/YYYY HH:mm") },
+		{ 
+			key: 'UserAccount', field: 'UserAccount', label: 'User',
+		 	headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }
+		},
 		{
-			key: 'buttons', label: '', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => <>
+			key: 'buttons',
+			label: '',
+			headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, 
+			content: (item: OpenXDA.Types.Note) => <>
 					{allowEdit? <button className="btn btn-sm" onClick={() => handleEdit(item)}><span> {Pencil} </span></button> : null }
 					{allowRemove? <button className="btn btn-sm" onClick={() => dispatch(props.NoteSlice.DBAction({verb: 'DELETE', record: item}))}>
 					<span> {TrashCan} </span></button> : null }
 			</>
 		}
 	]
-
+	const allowEdit = props.AllowEdit === undefined? true : props.AllowEdit;
+	const allowRemove = props.AllowRemove === undefined? true : props.AllowRemove;
+	const allowAdd = props.AllowAdd === undefined? true : props.AllowAdd;
+	const useFixedApp = props.NoteApplications.length === 1 || props.DefaultApplication !== undefined;
+	const defaultApplication = props.DefaultApplication !== undefined ? props.DefaultApplication : props.NoteApplications[0];
+	const showCard = props.ShowCard === undefined || props.ShowCard;
+	
   	const [showEdit, setEdit] = React.useState<boolean>(false);
 	const [hover, setHover] = React.useState<'add'|'clear'|'none'>('none')
-	const [collumns, setCollumns] = React.useState<Column<OpenXDA.Types.Note>>(standardCollumns)
+	const [collumns, setCollumns] = React.useState<Column<OpenXDA.Types.Note>[]>(standardCollumns)
 
   	const data: OpenXDA.Types.Note[] = useSelector(props.NoteSlice.Data)
 	const dataStatus: Application.Types.Status =  useSelector(props.NoteSlice.Status)
@@ -117,12 +134,7 @@ function Note(props: IProps)  {
 		setCollumns(c);
 	}, [props.NoteTags,props.NoteApplications])
 	
-	const allowEdit = props.AllowEdit === undefined? true : props.AllowEdit;
-	const allowRemove = props.AllowRemove === undefined? true : props.AllowRemove;
-	const allowAdd = props.AllowAdd === undefined? true : props.AllowAdd;
-	const useFixedApp = props.NoteApplications.length === 1 || props.DefaultApplication !== undefined;
-	const defaultApplication = props.DefaultApplication !== undefined ? props.DefaultApplication : props.NoteApplications[0];
-	const showCard = props.ShowCard === undefined || props.ShowCard;
+
 
   function CreateNewNote() {
 		const newNote: OpenXDA.Types.Note = {ID: -1, ReferenceTableID: -1, NoteTagID: -1, NoteTypeID: -1, NoteApplicationID: -1, Timestamp: '', UserAccount: '', Note: '' }
@@ -130,7 +142,7 @@ function Note(props: IProps)  {
 		if (props.ReferenceTableID !== undefined)
 			newNote.ReferenceTableID = props.ReferenceTableID;
 
-	  if (props.NoteApplications.length > 0)
+	  if (defaultApplication != null)
 			newNote.NoteApplicationID = defaultApplication.ID;
 
 		if (props.NoteTypes.length > 0)
@@ -176,7 +188,7 @@ function Note(props: IProps)  {
 	
 
     return (
-				<div className={pshowCard? "card" : ""} style={{ marginBottom: 10, maxHeight: props.MaxHeight, width: '100%'}}>
+				<div className={showCard? "card" : ""} style={{ marginBottom: 10, maxHeight: props.MaxHeight, width: '100%'}}>
 				<LoadingScreen Show={dataStatus === 'loading'}/>
 					<div className={props.ShowCard === undefined || props.ShowCard? "card-header" : ""}>
                 <div className="row">
@@ -249,7 +261,13 @@ function Note(props: IProps)  {
                     ConfirmToolTipContent={
                         <p> {CrossMark} An empty Note can not be saved. </p>
                     }>
-                    <NoteOptions Record={note} Setter={(n) => setNote(n)} NoteTags={props.NoteTags} NoteTypes={props.NoteTypes} NoteApplications={props.NoteApplications}/>
+                    <NoteOptions 
+					 ShowApplications={!useFixedApp}
+					 Record={note} Setter={(n) => setNote(n)}
+					 NoteTags={props.NoteTags}
+					 NoteTypes={props.NoteTypes} 
+					 NoteApplications={props.NoteApplications}
+					 />
                 </Modal>
 						</div>
 						  {allowAdd && showCard?
@@ -293,7 +311,7 @@ function NoteOptions(props: OptionProps) {
 	{showOptions? <div className="col-6">
 		{props.NoteTypes.length > 1? <Select<OpenXDA.Types.Note> Record={props.Record} Field={'NoteTypeID'} Label={'Note for: '} Options={props.NoteTypes.map(r => ({Value: r.ID.toString(), Label: r.Name }))} Setter={(record: OpenXDA.Types.Note) => props.Setter({...record, NoteTypeID: parseInt(record.NoteTypeID.toString(),10)})}/> : null}
 		{props.NoteTags.length > 1? <Select<OpenXDA.Types.Note> Record={props.Record} Field={'NoteTagID'} Label={'Type: '} Options={props.NoteTags.map(r => ({Value: r.ID.toString(), Label: r.Name }))} Setter={(record: OpenXDA.Types.Note) => props.Setter({...record, NoteTagID: parseInt(record.NoteTagID.toString(),10)})}/>: null}
-		{ShowApplication && props.NoteApplications.length > 1? <Select<OpenXDA.Types.Note> Record={props.Record} Field={'NoteApplicationID'} Label={'Application: '} Options={props.NoteApplications.map(r => ({Value: r.ID.toString(), Label: r.Name }))} Setter={(record: OpenXDA.Types.Note) => props.Setter({...record, NoteApplicationID: parseInt(record.NoteApplicationID.toString(),10)})}/>: null}
+		{props.ShowApplications && props.NoteApplications.length > 1? <Select<OpenXDA.Types.Note> Record={props.Record} Field={'NoteApplicationID'} Label={'Application: '} Options={props.NoteApplications.map(r => ({Value: r.ID.toString(), Label: r.Name }))} Setter={(record: OpenXDA.Types.Note) => props.Setter({...record, NoteApplicationID: parseInt(record.NoteApplicationID.toString(),10)})}/>: null}
 	</div> : null }
 	</div>);
 
