@@ -122,6 +122,7 @@ function Note(props: IProps)  {
 	const allowAdd = props.AllowAdd === undefined? true : props.AllowAdd;
 	const useFixedApp = props.NoteApplications.length === 1 || props.DefaultApplication !== undefined;
 	const defaultApplication = props.DefaultApplication !== undefined ? props.DefaultApplication : props.NoteApplications[0];
+	const showCard = props.ShowCard === undefined || props.ShowCard;
 
   function CreateNewNote() {
 		const newNote: OpenXDA.Types.Note = {ID: -1, ReferenceTableID: -1, NoteTagID: -1, NoteTypeID: -1, NoteApplicationID: -1, Timestamp: '', UserAccount: '', Note: '' }
@@ -175,7 +176,7 @@ function Note(props: IProps)  {
 	
 
     return (
-				<div className={props.ShowCard === undefined || props.ShowCard? "card" : ""} style={{ marginBottom: 10, maxHeight: props.MaxHeight, width: '100%'}}>
+				<div className={pshowCard? "card" : ""} style={{ marginBottom: 10, maxHeight: props.MaxHeight, width: '100%'}}>
 				<LoadingScreen Show={dataStatus === 'loading'}/>
 					<div className={props.ShowCard === undefined || props.ShowCard? "card-header" : ""}>
                 <div className="row">
@@ -184,8 +185,30 @@ function Note(props: IProps)  {
                     </div>
                 </div>
             </div>
-						<div className={props.ShowCard === undefined || props.ShowCard? "card-body" : ""} 
+						<div className={showCard? "card-body" : ""} 
 						style={{ maxHeight: props.MaxHeight - 100, overflowY: 'auto', width: '100%' }}>
+						{allowAdd && !showCard?
+						<>
+							<NoteOptions 
+							Record={note} Setter={(n) => setNote(n)} 
+							NoteTags={props.NoteTags} NoteTypes={props.NoteTypes} 
+							NoteApplications={props.NoteApplications}
+							ShowApplications={!useFixedApp}
+							/>
+							
+							<div className="btn-group mr-2">
+							<button className={"btn btn-primary" + (note.Note === null ||note.Note.length === 0 ? ' disabled' : '')} onClick={() => { if (note.Note !== null && note.Note.length > 0) handleAdd(note); }} data-tooltip={"Add"} style={{ cursor: note.Note === null || note.Note.length === 0 ? 'not-allowed' : 'pointer' }} onMouseOver={() => setHover('add')} onMouseOut={() => setHover('none')}>Add Note</button>
+							<ToolTip Show={hover === 'add' && ( note.Note === null || note.Note.length === 0 )} Position={'top'} Theme={'dark'} Target={"Add"}>
+								<p>{CrossMark} A note needs to be entered. </p>
+							</ToolTip>
+						</div>
+						<div className="btn-group mr-2">
+							<button className={"btn btn-default" + (note.Note === null || note.Note.length === 0  ? ' disabled' : '')} onClick={() => setNote((n) => ({...n, Note: ''}))} style={{ cursor: note.Note === null || note.Note.length === 0 ? 'not-allowed' : 'pointer' }} data-tooltip={"Remove"} onMouseOver={() => setHover('clear')} onMouseOut={() => setHover('none')} >Clear</button>
+							<ToolTip Show={hover === 'clear' && (note.Note === null || note.Note.length === 0)} Position={'top'} Theme={'dark'} Target={"Remove"}>
+								<p>{CrossMark} The note field is already empty. </p>
+							</ToolTip>
+						</div>
+						</> : null }
             <div>
 							<Table<OpenXDA.Types.Note>
 										cols={collumns}
@@ -204,12 +227,12 @@ function Note(props: IProps)  {
 										}}
 										onClick={() => { return;}}
 										theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-										tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: window.innerHeight - 300, width: '100%' }}
+										tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: props.MaxHeight - 300, width: '100%' }}
 										rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
 										selected={() => false}
 								/>
             </div>
-						{allowAdd?
+						{allowAdd && showCard?
 							<NoteOptions 
 							Record={note} Setter={(n) => setNote(n)} 
 							NoteTags={props.NoteTags} NoteTypes={props.NoteTypes} 
@@ -229,8 +252,8 @@ function Note(props: IProps)  {
                     <NoteOptions Record={note} Setter={(n) => setNote(n)} NoteTags={props.NoteTags} NoteTypes={props.NoteTypes} NoteApplications={props.NoteApplications}/>
                 </Modal>
 						</div>
-						  {allowAdd?
-								<div className={props.ShowCard === undefined || props.ShowCard? "card-footer" : ""} >
+						  {allowAdd && showCard?
+								<div className={"card-footer"} >
 								<div className="btn-group mr-2">
                     <button className={"btn btn-primary" + (note.Note === null ||note.Note.length === 0 ? ' disabled' : '')} onClick={() => { if (note.Note !== null && note.Note.length > 0) handleAdd(note); }} data-tooltip={"Add"} style={{ cursor: note.Note === null || note.Note.length === 0 ? 'not-allowed' : 'pointer' }} onMouseOver={() => setHover('add')} onMouseOut={() => setHover('none')}>Add Note</button>
                     <ToolTip Show={hover === 'add' && ( note.Note === null || note.Note.length === 0 )} Position={'top'} Theme={'dark'} Target={"Add"}>
@@ -244,7 +267,8 @@ function Note(props: IProps)  {
                     </ToolTip>
                 </div>
             </div>
-						: <div className={props.ShowCard === undefined || props.ShowCard? "card-footer" : ""}> </div>}
+						: null}
+						{!allowAdd && showCard? <div className={props.ShowCard === undefined || props.ShowCard? "card-footer" : ""}> </div> : null}
             </div>
         )
 }
