@@ -79,7 +79,7 @@ function Note(props: IProps)  {
 	const useFixedApp = props.NoteApplications.length === 1 || props.DefaultApplication !== undefined;
 	const defaultApplication = props.DefaultApplication !== undefined ? props.DefaultApplication : props.NoteApplications[0];
 	const showCard = props.ShowCard === undefined || props.ShowCard;
-	
+
   	const [showEdit, setEdit] = React.useState<boolean>(false);
 	const [hover, setHover] = React.useState<'add'|'clear'|'none'>('none')
 	const [collumns, setCollumns] = React.useState<Column<OpenXDA.Types.Note>[]>(standardCollumns)
@@ -304,7 +304,7 @@ function NoteOptions(props: OptionProps) {
 
 	const showOptions = props.NoteTags.length > 1 || props.NoteTypes.length > 1 || props.NoteApplications.length > 1;
 	return (
-	<div className="row">
+	<div className="row" style={{marginRight: 0, marginLeft: 0}}>
 		<div className={showOptions? "col-6" : 'col-12'}>
 			<TextArea<OpenXDA.Types.Note> Record={props.Record} Rows={4} Field={'Note'} Setter={(n) => props.Setter(n)} Valid={() => props.Record.Note != null && props.Record.Note.length > 0} Label={''} />
 		</div>
