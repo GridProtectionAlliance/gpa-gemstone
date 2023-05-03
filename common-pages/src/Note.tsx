@@ -32,16 +32,18 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Dispatch } from '@reduxjs/toolkit';
 
 interface IProps {
-		NoteTypes: OpenXDA.Types.NoteType[],
+	NoteTypes: OpenXDA.Types.NoteType[],
     NoteTags: OpenXDA.Types.NoteTag[],
-		NoteApplications: OpenXDA.Types.NoteApplication[],
-		MaxHeight: number,
-		Title?: string,
-		ReferenceTableID?: number,
-		NoteSlice: IGenericSlice<OpenXDA.Types.Note>
-		AllowEdit?: boolean,
-		AllowRemove?: boolean,
-		AllowAdd?: boolean
+	NoteApplications: OpenXDA.Types.NoteApplication[],
+	MaxHeight: number,
+	Title?: string,
+	ReferenceTableID?: number,
+	NoteSlice: IGenericSlice<OpenXDA.Types.Note>
+	AllowEdit?: boolean,
+	AllowRemove?: boolean,
+	AllowAdd?: boolean,
+	ShowCard?: boolean,
+	DefaultApplication?: OpenXDA.Types.NoteApplication
 }
 
 
@@ -49,21 +51,21 @@ interface IProps {
 function Note(props: IProps)  {
 	const dispatch = useDispatch<Dispatch<any>>();
 
-  const [showEdit, setEdit] = React.useState<boolean>(false);
+  	const [showEdit, setEdit] = React.useState<boolean>(false);
 	const [hover, setHover] = React.useState<'add'|'clear'|'none'>('none')
 
-  const data: OpenXDA.Types.Note[] = useSelector(props.NoteSlice.Data)
+  	const data: OpenXDA.Types.Note[] = useSelector(props.NoteSlice.Data)
 	const dataStatus: Application.Types.Status =  useSelector(props.NoteSlice.Status)
 	const parentID: number|string|undefined = useSelector((props.NoteSlice.ParentID === undefined? (state: any) => props.ReferenceTableID : props.NoteSlice.ParentID))
 	const sortField: keyof OpenXDA.Types.Note = useSelector(props.NoteSlice.SortField)
-  const ascending: boolean = useSelector(props.NoteSlice.Ascending)
+  	const ascending: boolean = useSelector(props.NoteSlice.Ascending)
 
 	const [note, setNote] = React.useState<OpenXDA.Types.Note>(CreateNewNote());
 
-  React.useEffect(() => {
-				if (dataStatus === 'unintiated' || dataStatus === 'changed' || parentID !== props.ReferenceTableID)
-					dispatch(props.NoteSlice.Fetch(props.ReferenceTableID));
-    }, [props.ReferenceTableID, dispatch, dataStatus]);
+	React.useEffect(() => {
+					if (dataStatus === 'unintiated' || dataStatus === 'changed' || parentID !== props.ReferenceTableID)
+						dispatch(props.NoteSlice.Fetch(props.ReferenceTableID));
+		}, [props.ReferenceTableID, dispatch, dataStatus]);
 
 	React.useEffect(() => {
 		if (note.NoteTypeID > 0 || props.NoteTypes.length === 0)
@@ -92,6 +94,8 @@ function Note(props: IProps)  {
 	const allowEdit = props.AllowEdit === undefined? true : props.AllowEdit;
 	const allowRemove = props.AllowRemove === undefined? true : props.AllowRemove;
 	const allowAdd = props.AllowAdd === undefined? true : props.AllowAdd;
+	const useFixedApp = props.NoteApplications.length === 1 || props.DefaultApplication !== undefined;
+	const defaultApplication = props.DefaultApplication !== undefined ? props.DefaultApplication : props.NoteApplications[0];
 
   function CreateNewNote() {
 		const newNote: OpenXDA.Types.Note = {ID: -1, ReferenceTableID: -1, NoteTagID: -1, NoteTypeID: -1, NoteApplicationID: -1, Timestamp: '', UserAccount: '', Note: '' }
@@ -100,7 +104,7 @@ function Note(props: IProps)  {
 			newNote.ReferenceTableID = props.ReferenceTableID;
 
 	  if (props.NoteApplications.length > 0)
-			newNote.NoteApplicationID = props.NoteApplications[0].ID;
+			newNote.NoteApplicationID = defaultApplication.ID;
 
 		if (props.NoteTypes.length > 0)
 			newNote.NoteTypeID = props.NoteTypes[0].ID;
@@ -143,16 +147,17 @@ function Note(props: IProps)  {
 
 
     return (
-				<div className="card" style={{ marginBottom: 10, maxHeight: props.MaxHeight, width: '100%'}}>
+				<div className={props.ShowCard === undefined || props.ShowCard? "card" : ""} style={{ marginBottom: 10, maxHeight: props.MaxHeight, width: '100%'}}>
 				<LoadingScreen Show={dataStatus === 'loading'}/>
-					<div className="card-header">
+					<div className={props.ShowCard === undefined || props.ShowCard? "card-header" : ""}>
                 <div className="row">
                     <div className="col">
                         <h4>{props.Title !== undefined? props.Title : 'Notes:'}</h4>
                     </div>
                 </div>
             </div>
-						<div className="card-body" style={{ maxHeight: props.MaxHeight - 100, overflowY: 'auto', width: '100%' }}>
+						<div className={props.ShowCard === undefined || props.ShowCard? "card-body" : ""} 
+						style={{ maxHeight: props.MaxHeight - 100, overflowY: 'auto', width: '100%' }}>
             <div>
 							<Table<OpenXDA.Types.Note>
 										cols={[
@@ -190,7 +195,12 @@ function Note(props: IProps)  {
 								/>
             </div>
 						{allowAdd?
-							<NoteOptions Record={note} Setter={(n) => setNote(n)} NoteTags={props.NoteTags} NoteTypes={props.NoteTypes} NoteApplications={props.NoteApplications}/>
+							<NoteOptions 
+							Record={note} Setter={(n) => setNote(n)} 
+							NoteTags={props.NoteTags} NoteTypes={props.NoteTypes} 
+							NoteApplications={props.NoteApplications}
+							ShowApplications={!useFixedApp}
+							/>
 						 : null }
 						 <Modal Show={showEdit} Title={'Edit Note'}
                     ShowCancel={true}
@@ -205,7 +215,7 @@ function Note(props: IProps)  {
                 </Modal>
 						</div>
 						  {allowAdd?
-								<div className="card-footer">
+								<div className={props.ShowCard === undefined || props.ShowCard? "card-footer" : ""} >
 								<div className="btn-group mr-2">
                     <button className={"btn btn-primary" + (note.Note === null ||note.Note.length === 0 ? ' disabled' : '')} onClick={() => { if (note.Note !== null && note.Note.length > 0) handleAdd(note); }} data-tooltip={"Add"} style={{ cursor: note.Note === null || note.Note.length === 0 ? 'not-allowed' : 'pointer' }} onMouseOver={() => setHover('add')} onMouseOut={() => setHover('none')}>Add Note</button>
                     <ToolTip Show={hover === 'add' && ( note.Note === null || note.Note.length === 0 )} Position={'top'} Theme={'dark'} Target={"Add"}>
@@ -219,7 +229,7 @@ function Note(props: IProps)  {
                     </ToolTip>
                 </div>
             </div>
-						: <div className="card-footer"> </div>}
+						: <div className={props.ShowCard === undefined || props.ShowCard? "card-footer" : ""}> </div>}
             </div>
         )
 }
@@ -229,7 +239,8 @@ interface OptionProps {
 	Setter: (d: OpenXDA.Types.Note) => void,
 	NoteTypes: OpenXDA.Types.NoteType[],
 	NoteTags: OpenXDA.Types.NoteTag[],
-	NoteApplications: OpenXDA.Types.NoteApplication[]
+	NoteApplications: OpenXDA.Types.NoteApplication[],
+	ShowApplications: boolean,
 }
 
 function NoteOptions(props: OptionProps) {
@@ -243,7 +254,7 @@ function NoteOptions(props: OptionProps) {
 	{showOptions? <div className="col-6">
 		{props.NoteTypes.length > 1? <Select<OpenXDA.Types.Note> Record={props.Record} Field={'NoteTypeID'} Label={'Note for: '} Options={props.NoteTypes.map(r => ({Value: r.ID.toString(), Label: r.Name }))} Setter={(record: OpenXDA.Types.Note) => props.Setter({...record, NoteTypeID: parseInt(record.NoteTypeID.toString(),10)})}/> : null}
 		{props.NoteTags.length > 1? <Select<OpenXDA.Types.Note> Record={props.Record} Field={'NoteTagID'} Label={'Type: '} Options={props.NoteTags.map(r => ({Value: r.ID.toString(), Label: r.Name }))} Setter={(record: OpenXDA.Types.Note) => props.Setter({...record, NoteTagID: parseInt(record.NoteTagID.toString(),10)})}/>: null}
-		{props.NoteApplications.length > 1? <Select<OpenXDA.Types.Note> Record={props.Record} Field={'NoteApplicationID'} Label={'Application: '} Options={props.NoteApplications.map(r => ({Value: r.ID.toString(), Label: r.Name }))} Setter={(record: OpenXDA.Types.Note) => props.Setter({...record, NoteApplicationID: parseInt(record.NoteApplicationID.toString(),10)})}/>: null}
+		{ShowApplication && props.NoteApplications.length > 1? <Select<OpenXDA.Types.Note> Record={props.Record} Field={'NoteApplicationID'} Label={'Application: '} Options={props.NoteApplications.map(r => ({Value: r.ID.toString(), Label: r.Name }))} Setter={(record: OpenXDA.Types.Note) => props.Setter({...record, NoteApplicationID: parseInt(record.NoteApplicationID.toString(),10)})}/>: null}
 	</div> : null }
 	</div>);
 
