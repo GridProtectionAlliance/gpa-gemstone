@@ -22,7 +22,7 @@
 
 import * as React from 'react';
 import { Select, TextArea } from '@gpa-gemstone/react-forms';
-import Table from '@gpa-gemstone/react-table';
+import Table, { Column } from '@gpa-gemstone/react-table';
 import { CrossMark, Pencil, TrashCan } from '@gpa-gemstone/gpa-symbols';
 import { Modal, ToolTip, ServerErrorIcon, LoadingScreen } from '@gpa-gemstone/react-interactive';
 import { Application, OpenXDA } from '@gpa-gemstone/application-typings';
@@ -50,9 +50,22 @@ interface IProps {
 
 function Note(props: IProps)  {
 	const dispatch = useDispatch<Dispatch<any>>();
+	const standardCollumns =  [
+		{ key: 'Note', field: 'Note', label: 'Note', headerStyle: { width: '50%' }, rowStyle: { width: '50%' } },
+		{ key: 'Timestamp', field: 'Timestamp', label: 'Time', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => moment.utc(item.Timestamp).format("MM/DD/YYYY HH:mm") },
+		{ key: 'UserAccount', field: 'UserAccount', label: 'User', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
+		{
+			key: 'buttons', label: '', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => <>
+					{allowEdit? <button className="btn btn-sm" onClick={() => handleEdit(item)}><span> {Pencil} </span></button> : null }
+					{allowRemove? <button className="btn btn-sm" onClick={() => dispatch(props.NoteSlice.DBAction({verb: 'DELETE', record: item}))}>
+					<span> {TrashCan} </span></button> : null }
+			</>
+		}
+	]
 
   	const [showEdit, setEdit] = React.useState<boolean>(false);
 	const [hover, setHover] = React.useState<'add'|'clear'|'none'>('none')
+	const [collumns, setCollumns] = React.useState<Column<OpenXDA.Types.Note>>(standardCollumns)
 
   	const data: OpenXDA.Types.Note[] = useSelector(props.NoteSlice.Data)
 	const dataStatus: Application.Types.Status =  useSelector(props.NoteSlice.Status)
@@ -91,6 +104,19 @@ function Note(props: IProps)  {
 		setNote((n) => ({...n, ReferenceTableID: props.ReferenceTableID !== undefined ? props.ReferenceTableID : -1}));
 	},[props.ReferenceTableID]);
 
+	React.useEffect(() => {
+		const c = standardCollumns;
+		if (props.NoteTags.length > 1)
+			c.push({ key: 'NoteTagID', field: 'NoteTagID', label: 'Type', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' },
+			 content: (n) => props.NoteTags.find(t => t.ID === n.NoteTagID)?.Name }
+			);
+		if (props.NoteApplications.length > 1)
+			c.push({ key: 'NoteApplicationID', field: 'NoteApplicationID', label: 'Application', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' },
+			 content: (n) => props.NoteApplications.find(t => t.ID === n.NoteApplicationID)?.Name }
+			);
+		setCollumns(c);
+	}, [props.NoteTags,props.NoteApplications])
+	
 	const allowEdit = props.AllowEdit === undefined? true : props.AllowEdit;
 	const allowRemove = props.AllowRemove === undefined? true : props.AllowRemove;
 	const allowAdd = props.AllowAdd === undefined? true : props.AllowAdd;
@@ -146,6 +172,8 @@ function Note(props: IProps)  {
 
 
 
+	
+
     return (
 				<div className={props.ShowCard === undefined || props.ShowCard? "card" : ""} style={{ marginBottom: 10, maxHeight: props.MaxHeight, width: '100%'}}>
 				<LoadingScreen Show={dataStatus === 'loading'}/>
@@ -160,20 +188,7 @@ function Note(props: IProps)  {
 						style={{ maxHeight: props.MaxHeight - 100, overflowY: 'auto', width: '100%' }}>
             <div>
 							<Table<OpenXDA.Types.Note>
-										cols={[
-												{ key: 'Note', field: 'Note', label: 'Note', headerStyle: { width: '50%' }, rowStyle: { width: '50%' } },
-												{ key: 'Timestamp', field: 'Timestamp', label: 'Time', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => moment.utc(item.Timestamp).format("MM/DD/YYYY HH:mm") },
-												{ key: 'UserAccount', field: 'UserAccount', label: 'User', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
-												{
-														key: 'buttons', label: '', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, content: (item) => <>
-																{allowEdit? <button className="btn btn-sm" onClick={() => handleEdit(item)}><span> {Pencil} </span></button> : null }
-																{allowRemove? <button className="btn btn-sm" onClick={() => dispatch(props.NoteSlice.DBAction({verb: 'DELETE', record: item}))}>
-																<span> {TrashCan} </span></button> : null }
-														</>
-												},
-
-										]}
-
+										cols={collumns}
 										tableClass="table table-hover"
 										data={data}
 										sortKey={sortField}
