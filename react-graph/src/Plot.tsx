@@ -238,8 +238,11 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
     // new X transformation from x value into Pixels
     function XTransformation(value: number): number {
       let xT = value * tScale + tOffset;
-      if (props.XAxisType === 'log')
-        xT = Math.log10(value) * tScale + tOffset;
+      if (props.XAxisType === 'log') {
+        const v = (value === 0? tDomain[0]*0.01 : value);
+        xT = Math.log10(v) * tScale + tOffset;
+      }
+        
       return xT;
     }
 
