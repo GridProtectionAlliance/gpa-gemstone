@@ -360,12 +360,23 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
       pt.y = evt.clientY;
       const ptTransform = pt.matrixTransform(SVGref.current!.getScreenCTM().inverse());
 
+      if (mouseMode === 'pan') {
+          const dT = xInvTransform(mousePosition[0]) - xInvTransform(ptTransform.x);
+          if (
+            (props.Tmin === undefined || tDomain[0] + dT >  props.Tmin) && 
+            (props.Tmax === undefined || tDomain[1] + dT < props.Tmax))
+            setTdomain([tDomain[0] + dT, tDomain[1] + dT]);
+
+        if (zoomMode == 'Rect') {
+          const dY = yInvTransform(mousePosition[1]) - yInvTransform(ptTransform.y);
+          if (
+            (props.Ymin === undefined || yDomain[0] + dY >  props.Ymin) && 
+            (props.Ymax === undefined || yDomain[1] + dY < props.Ymax))
+            setYdomain([yDomain[0] + dY, yDomain[1] + dY]);
+        }
+      }
       setMousePosition([ptTransform.x, ptTransform.y])
 
-      if (mouseMode === 'pan') {
-          const dT = xInvTransform(mousePosition[0]) - xInvTransform(ptTransform.X);
-          setTdomain([tDomain[0] + dT, tDomain[1] + dT]);
-      }
     }
 
     function handleMouseDown(evt: any) {
