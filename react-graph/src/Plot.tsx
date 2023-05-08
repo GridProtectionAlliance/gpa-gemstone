@@ -24,7 +24,7 @@
 
 import * as React from 'react';
 import InteractiveButtons from './InteractiveButtons';
-import {IGraphContext, IDataSeries, GraphContext, IHandlers} from './GraphContext';
+import {IDataSeries, IHandlers, ContextWrapper} from './GraphContext';
 import {CreateGuid} from '@gpa-gemstone/helper-functions';
 import {cloneDeep, isEqual} from 'lodash';
 import TimeAxis from './TimeAxis';
@@ -216,18 +216,19 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
     }, [yDomain, offsetTop, offsetBottom]);
 
     React.useEffect(() => { setUpdateFlag((x) => x+1) }, [tScale,tOffset,yScale,yOffset])
+
     // transforms from pixels into x value. result passed into onClick function 
-    function XInverseTransform(p: number): number {
+    const xInvTransform = React.useCallback((p: number) =>  {
       let xT = (p - tOffset) / tScale;
       if (props.XAxisType === 'log')
         xT = Math.pow(10, (p - tOffset) / tScale);
       return xT;
-    }
+    },[tOffset,tScale,props.XAxisType]);
 
     // transforms from pixels into y value. result passed into onClick function
-    function YInverseTransform(p: number): number {
+    const yInvTransform = React.useCallback((p: number) =>  {
       return (p - yOffset) / yScale;
-    }
+    },[yOffset,yScale]);
 
     function Reset(): void {
         setTdomain(defaultTdomain);
@@ -236,36 +237,35 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
     }
 
     // new X transformation from x value into Pixels
-    function XTransformation(value: number): number {
+    const xTransform = React.useCallback((value: number) => {
       let xT = value * tScale + tOffset;
       if (props.XAxisType === 'log') {
         const v = (value === 0? tDomain[0]*0.01 : value);
         xT = Math.log10(v) * tScale + tOffset;
       }
-        
       return xT;
-    }
+    }, [tScale,tOffset,props.XAxisType, tDomain])
 
     // new Y transformation from y value into Pixels
-    function YTransformation(value: number): number {
+    const yTransform = React.useCallback((value: number) => {
       return value * yScale + yOffset;
-    }
+    }, [yScale,yOffset]);
 
-    function AddData(d: IDataSeries): string {
+    const addData = React.useCallback((d: IDataSeries) => {
       const key = CreateGuid();
       setData((fld) => { const updated = cloneDeep(fld); updated.set(key, d); return updated; });
       return key;
-    }
+    }, []);
 
-    function UpdateData(key: string, d: IDataSeries): void {
+    const updateData = React.useCallback((key: string, d: IDataSeries) => {
       setData((fld) => { const updated = cloneDeep(fld); updated.set(key, d); return updated; });
-    }
+    }, []);
 
-    function RemoveData(d: string): void {
+    const removeData = React.useCallback((d: string) => {
         setData((fld) => { const updated = cloneDeep(fld); updated.delete(d); return updated;})
-    }
+    },[]);
 
-    function SetLegend(key: string, legend: JSX.Element|undefined|React.ReactElement): void {
+    const setLegend = React.useCallback((key: string, legend?:  HTMLElement| React.ReactElement| JSX.Element) =>  {
         setData((fld) => {
           const updated = cloneDeep(fld);
           const series = updated.get(key);
@@ -275,50 +275,27 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
           updated.set(key, series!);
           return updated;
         });
-    }
+    }, []);
 
-    function RegisterSelect(handler: IHandlers): string {
+    const registerSelect = React.useCallback((handler: IHandlers) => {
       const key = CreateGuid();
       handlers.current.set(key,handler)
       return key;
-    }
+    },[]);
 
-    function RemoveSelect(key: string) {
+    const removeSelect = React.useCallback((key: string) => {
       handlers.current.delete(key)
-    }
+    },[]);
     
-    function UpdateSelect(key: string,handler: IHandlers) {
+    const updateSelect = React.useCallback((key: string,handler: IHandlers) => {
       handlers.current.set(key,handler)
-    }
+    },[]);
 
-    function GetContext(): IGraphContext {
-      return {
-          XDomain: tDomain,
-          XHover: mouseIn? setXHover(mousePosition[0]) : NaN,
-          YHover: mouseIn? YTransformation(mousePosition[1]) : NaN,
-          YDomain: yDomain,
-          CurrentMode: selectedMode,
-          Data: data,
-          XTransformation,
-          YTransformation,
-          XInverseTransformation: XInverseTransform,
-          YInverseTransformation: YInverseTransform,
-          AddData,
-          RemoveData,
-          UpdateData,
-          SetLegend,
-          RegisterSelect,
-          RemoveSelect,
-          UpdateSelect,
-          UpdateFlag: updateFlag,
-          SetXDomain: setTdomain,
-          SetYDomain: setYdomain
-      } as IGraphContext
-    }
-
-    function setXHover(x: number): number {
-      return XInverseTransform(x);
-    }
+    const setSelection = React.useCallback((s) => {
+      if (s === "reset") Reset();
+      else if (s === "download") props.onDataInspect!(tDomain);
+      else setSelectedMode(s as ('zoom'|'pan'|'select'))
+    }, [tDomain]);
 
     function handleMouseWheel(evt: any) {
           if (props.zoom !== undefined && !props.zoom)
@@ -336,8 +313,8 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
           // event.deltaY positive is wheel down or out and negative is wheel up or in
           if (evt.deltaY < 0) multiplier = 0.75;
 
-          let x0 = XTransformation(tDomain[0]);
-          let x1 = XTransformation(tDomain[1]);
+          let x0 = xTransform(tDomain[0]);
+          let x1 = yTransform(tDomain[1]);
 
           if (mousePosition[0] < offsetLeft) 
               x1 = multiplier * (x1 - x0) + x0;
@@ -352,11 +329,11 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
           }
 
           if ((x1-x0) > 10)
-            setTdomain([XInverseTransform(x0), XInverseTransform(x1)])
+            setTdomain([xInvTransform(x0), xInvTransform(x1)])
         
           if (zoomMode === 'Rect') {
-            let y0 = YTransformation(yDomain[0]);
-            let y1 = YTransformation(yDomain[1]);
+            let y0 = yTransform(yDomain[0]);
+            let y1 = yTransform(yDomain[1]);
 
             if (mousePosition[1] < offsetTop) 
                 y1 = multiplier * (y1 - y0) + y0;
@@ -371,7 +348,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
             }
 
             if (Math.abs(y1-y0) > 10)
-              setYdomain([YInverseTransform(y0), YInverseTransform(y1)])
+              setYdomain([yInvTransform(y0), yInvTransform(y1)])
           }
       }
 
@@ -386,7 +363,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
       setMousePosition([ptTransform.x, ptTransform.y])
 
       if (mouseMode === 'pan') {
-          const dT = XInverseTransform(mousePosition[0]) - XInverseTransform(ptTransform.X);
+          const dT = xInvTransform(mousePosition[0]) - xInvTransform(ptTransform.X);
           setTdomain([tDomain[0] + dT, tDomain[1] + dT]);
       }
     }
@@ -405,9 +382,9 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
         if (selectedMode === 'pan' && (props.pan === undefined || props.pan))
             setMouseMode('pan');
         if (selectedMode === 'select' && props.onSelect !== undefined)
-          props.onSelect(XInverseTransform(ptTransform.x))
+          props.onSelect(xInvTransform(ptTransform.x))
         if (handlers.current.size > 0 && selectedMode === 'select')
-          handlers.current.forEach((v) => (v.onClick !== undefined? v.onClick(XInverseTransform(ptTransform.x), YInverseTransform(ptTransform.y)) : null));
+          handlers.current.forEach((v) => (v.onClick !== undefined? v.onClick(xInvTransform(ptTransform.x), yInvTransform(ptTransform.y)) : null));
 
     }
 
@@ -419,21 +396,21 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
                 return;
             }
 
-            const t0 = Math.min(XInverseTransform(mousePosition[0]), XInverseTransform(mouseClick[0]));
-            const t1 = Math.max(XInverseTransform(mousePosition[0]), XInverseTransform(mouseClick[0]));
+            const t0 = Math.min(xInvTransform(mousePosition[0]), xInvTransform(mouseClick[0]));
+            const t1 = Math.max(xInvTransform(mousePosition[0]), xInvTransform(mouseClick[0]));
 
             setTdomain((curr) =>  [Math.max(curr[0], t0), Math.min(curr[1], t1)]);
 
             if (zoomMode === 'Rect') {
-              const y0 = Math.min(YInverseTransform(mousePosition[1]), YInverseTransform(mouseClick[1]));
-              const y1 = Math.max(YInverseTransform(mousePosition[1]), YInverseTransform(mouseClick[1]));
+              const y0 = Math.min(yInvTransform(mousePosition[1]), yInvTransform(mouseClick[1]));
+              const y1 = Math.max(yInvTransform(mousePosition[1]), yInvTransform(mouseClick[1]));
               setYdomain((curr) =>  [Math.max(curr[0], y0), Math.min(curr[1], y1)])
             }
         }
         setMouseMode('none');
 
         if (handlers.current.size > 0 && selectedMode === 'select')
-          handlers.current.forEach((v) => (v.onRelease !== undefined? v.onRelease(XTransformation(mousePosition[0]), YTransformation(mousePosition[1])) : null));
+          handlers.current.forEach((v) => (v.onRelease !== undefined? v.onRelease(xTransform(mousePosition[0]), yTransform(mousePosition[1])) : null));
 
     }
 
@@ -443,7 +420,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
             setMouseMode('none');
 
         if (handlers.current.size > 0 && selectedMode === 'select')
-          handlers.current.forEach((v) => (v.onPlotLeave !== undefined? v.onPlotLeave(XTransformation(mousePosition[0]), YTransformation(mousePosition[1])) : null));
+          handlers.current.forEach((v) => (v.onPlotLeave !== undefined? v.onPlotLeave(xTransform(mousePosition[0]), yTransform(mousePosition[1])) : null));
   
     }
 
@@ -452,7 +429,28 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
     }
 
     return (
-      <GraphContext.Provider value={GetContext()}>
+      <ContextWrapper 
+        XDomain ={tDomain}
+        MousePosition={mousePosition}
+        YDomain={yDomain}
+        CurrentMode={selectedMode}
+        MouseIn={mouseIn}
+        UpdateFlag={updateFlag}
+        Data={data}
+        XTransform={xTransform}
+        YTransform={yTransform}
+        XInvTransform={xInvTransform}
+        YInvTransform={yInvTransform}
+        SetXDomain={setTdomain}
+        SetYDomain={setYdomain}
+        AddData={addData}
+        RemoveData={removeData}
+        UpdateData={updateData}
+        SetLegend={setLegend}
+        RegisterSelect={registerSelect}
+        RemoveSelect={removeSelect}
+        UpdateSelect={updateSelect}
+      >
           <div style={{ height: props.height, width: props.width, position: 'relative' }}>
               <div style={{ height: SVGHeight, width: SVGWidth, position: 'absolute' }}
                   onWheel={handleMouseWheel} onMouseMove={handleMouseMove} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} onMouseLeave={handleMouseOut} onMouseEnter={handleMouseIn} >
@@ -498,10 +496,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
                         showSelect={props.onSelect !== undefined || handlers.current.size > 0}
                         showDownload={props.onDataInspect !== undefined}
                         currentSelection={selectedMode}
-                        setSelection={(s) => {
-                          if (s === "reset") Reset();
-                          else if (s === "download") props.onDataInspect!(tDomain);
-                          else setSelectedMode(s as ('zoom'|'pan'|'select'))}}
+                        setSelection={setSelection}
                         x={SVGWidth - offsetRight - 12}
                         y={22} > 
                         {React.Children.map(props.children, (element) => {
@@ -517,10 +512,9 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
               </div>
             {props.legend  !== undefined && props.legend !== 'hidden' ? <Legend location={props.legend} height={props.legendHeight !== undefined? props.legendHeight : 50} width={props.legendWidth !== undefined? props.legendWidth : 100} graphWidth={SVGWidth} graphHeight={SVGHeight} /> : null}
            </div>
-      </GraphContext.Provider>
+      </ContextWrapper>
   )
 
 }
-
 
 export default Plot;

@@ -22,7 +22,7 @@
 // ******************************************************************************************************
 import * as React from 'react';
 
-export interface IGraphContext {
+export interface IGraphContext extends IHandlerRegistration, IDataRegistration {
   XDomain: [number, number],
   XHover: number,
 
@@ -33,13 +33,7 @@ export interface IGraphContext {
   Data: Map<string, IDataSeries>,
   XTransformation: (x: number) => number,
   YTransformation: (y: number) => number,
-  AddData: ((d: IDataSeries) => string),
-  RemoveData: (key: string) => void,
-  UpdateData: (key: string, d: IDataSeries) => void,
-  SetLegend: (key: string, legend?: HTMLElement| React.ReactElement| JSX.Element) => void,
-  RegisterSelect: (handlers: IHandlers) => string,
-  RemoveSelect: (key: string) => void,
-  UpdateSelect: (key: string, handlers: IHandlers) => void,
+  
   UpdateFlag: number,
   XInverseTransformation: (p: number) => number,
   YInverseTransformation: (p: number) => number,
@@ -86,4 +80,89 @@ export interface IHandlers {
   onClick?: (x:number, y: number) => void,
   onRelease?: (x: number,y: number) => void,
   onPlotLeave?: (x: number, y:number) => void
+}
+
+export interface IDataRegistration {
+  AddData: ((d: IDataSeries) => string),
+  RemoveData: (key: string) => void,
+  UpdateData: (key: string, d: IDataSeries) => void,
+  SetLegend: (key: string, legend?: HTMLElement| React.ReactElement| JSX.Element) => void,
+}
+
+export interface IHandlerRegistration {
+  RegisterSelect: (handlers: IHandlers) => string,
+  RemoveSelect: (key: string) => void,
+  UpdateSelect: (key: string, handlers: IHandlers) => void,
+}
+
+
+interface IContextWrapperProps extends IHandlerRegistration, IDataRegistration {
+  XDomain: [number, number],
+  MousePosition: [number,number],
+  YDomain: [number,number],
+  CurrentMode:  'zoom'|'pan'|'select',
+  MouseIn: boolean,
+  UpdateFlag: number,
+  Data: Map<string, IDataSeries>,
+  XTransform: (x: number) => number,
+  YTransform: (y: number) => number,
+  XInvTransform: (p: number) => number,
+  YInvTransform: (p: number) => number,
+  SetXDomain: (x: [number,number]) => void,
+  SetYDomain: (y: [number, number]) => void,
+}
+
+export const ContextWrapper: React.FC<IContextWrapperProps> = (props) => {
+
+  const context = React.useMemo(GetContext, [
+    props.XDomain,
+    props.MousePosition,
+    props.YDomain,
+    props.CurrentMode,
+    props.MouseIn,
+    props.UpdateFlag,
+    props.Data,
+    props.XTransform,
+    props.XInvTransform,
+    props.YInvTransform,
+    props.YTransform,
+    props.SetXDomain,
+    props.SetYDomain,
+    props.AddData,
+    props.RemoveData,
+    props.UpdateData,
+    props.SetLegend,
+    props.RegisterSelect,
+    props.RemoveSelect,
+    props.UpdateSelect,
+  ]);
+
+  function GetContext(): IGraphContext {
+    return {
+        XDomain: props.XDomain,
+        XHover: props.MouseIn? props.XInvTransform(props.MousePosition[0]) : NaN,
+        YHover: props.MouseIn? props.YInvTransform(props.MousePosition[1]) : NaN,
+        YDomain: props.YDomain,
+        CurrentMode: props.CurrentMode,
+        Data: props.Data,
+        XTransformation: props.XTransform,
+        YTransformation: props.YTransform,
+        XInverseTransformation: props.XInvTransform,
+        YInverseTransformation: props.YInvTransform,
+        AddData: props.AddData,
+        RemoveData: props.RemoveData,
+        UpdateData: props.UpdateData,
+        SetLegend: props.SetLegend,
+        RegisterSelect: props.RegisterSelect,
+        RemoveSelect: props.RemoveSelect,
+        UpdateSelect: props.UpdateSelect,
+        UpdateFlag: props.UpdateFlag,
+        SetXDomain: props.SetXDomain,
+        SetYDomain: props.SetYDomain
+    } as IGraphContext
+  }
+
+  return <GraphContext.Provider value={context}>
+    {props.children}
+  </GraphContext.Provider>
 }

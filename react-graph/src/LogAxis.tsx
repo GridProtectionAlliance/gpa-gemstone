@@ -165,5 +165,5 @@ function LogAxis(props: IProps) {
 }
 
 
-export default LogAxis;
+export default React.memo(LogAxis);
 
