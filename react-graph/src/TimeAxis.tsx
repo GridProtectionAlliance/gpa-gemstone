@@ -372,4 +372,4 @@ function TimeAxis(props: IProps) {
 }
 
 
-export default TimeAxis;
+export default React.memo(TimeAxis);
