@@ -115,12 +115,21 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
     const [defaultTdomain, setDefaultTdomain]= React.useState<[number, number]>(props.defaultTdomain);
     const [defaultYdomain, setDefaultYdomain] = React.useState<[number,number]| undefined>(props.defaultYdomain);
     const [updateFlag, setUpdateFlag] = React.useState<number>(0);
-    // Constants
-    const SVGHeight = props.height - (props.legend === 'bottom'? (props.legendHeight !== undefined? props.legendHeight : 50) : 0);
-    const SVGWidth = props.width - (props.legend === 'right'? (props.legendWidth !== undefined? props.legendWidth : 100) : 0);
 
+    const [svgHeight, setSVGheight] = React.useState<number>(props.height - (props.legend === 'bottom'? (props.legendHeight !== undefined? props.legendHeight : 50) : 0));
+    const [svgWidth, setSVGwidth] = React.useState<number>(props.width - (props.legend === 'right'? (props.legendWidth !== undefined? props.legendWidth : 100) : 0));
+    
     const zoomMode = props.zoomMode === undefined? 'AutoValue' : props.zoomMode;
     
+    //Recompute height and width
+    React.useEffect(() => {
+      setSVGheight(props.height - (props.legend === 'bottom'? (props.legendHeight !== undefined? props.legendHeight : 50) : 0));
+    }, [props.height, props.legend, props.legendHeight])
+
+    React.useEffect(()=>{
+      setSVGwidth(props.width - (props.legend === 'right'? (props.legendWidth !== undefined? props.legendWidth : 100) : 0));
+    }, [props.width, props.legend, props.legendWidth])
+
     // enforce T limits
     React.useEffect(() => {
       if (props.Tmin !== undefined && tDomain[0] < props.Tmin)
@@ -200,20 +209,20 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
         dTmin = Math.log10(tDomain[0]);
       }
 
-      const scale = (SVGWidth - offsetLeft - offsetRight) / dT;
+      const scale = (svgWidth - offsetLeft - offsetRight) / dT;
       
       setTscale(scale);
       setToffset(offsetLeft - dTmin * scale );
-    }, [tDomain, offsetLeft, offsetRight, props.XAxisType]);
+    }, [tDomain, offsetLeft, offsetRight, props.XAxisType,svgWidth]);
 
     // Adjust y axis
     React.useEffect(() => {
       const dY = yDomain[1] - yDomain[0];
 
-      const scale = (SVGHeight - offsetTop - offsetBottom) / (dY === 0? 0.00001 : dY);
+      const scale = (svgHeight - offsetTop - offsetBottom) / (dY === 0? 0.00001 : dY);
       setYscale(-scale);
-      setYoffset(SVGHeight - offsetBottom + yDomain[0] * scale);
-    }, [yDomain, offsetTop, offsetBottom]);
+      setYoffset(svgHeight - offsetBottom + yDomain[0] * scale);
+    }, [yDomain, offsetTop, offsetBottom, svgHeight]);
 
     React.useEffect(() => { setUpdateFlag((x) => x+1) }, [tScale,tOffset,yScale,yOffset])
 
@@ -319,7 +328,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
           if (mousePosition[0] < offsetLeft) 
               x1 = multiplier * (x1 - x0) + x0;
           
-          else if (mousePosition[0] > (SVGWidth - offsetRight)) 
+          else if (mousePosition[0] > (svgWidth - offsetRight)) 
               x0 = x1 - multiplier * (x1 - x0);
           
           else {
@@ -338,7 +347,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
             if (mousePosition[1] < offsetTop) 
                 y1 = multiplier * (y1 - y0) + y0;
             
-            else if (mousePosition[1] > (SVGHeight - offsetBottom)) 
+            else if (mousePosition[1] > (svgHeight - offsetBottom)) 
                 y0 = y1 - multiplier * (y1 - y0);
             
             else {
@@ -463,20 +472,20 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
         UpdateSelect={updateSelect}
       >
           <div style={{ height: props.height, width: props.width, position: 'relative' }}>
-              <div style={{ height: SVGHeight, width: SVGWidth, position: 'absolute' }}
+              <div style={{ height: svgHeight, width: svgWidth, position: 'absolute' }}
                   onWheel={handleMouseWheel} onMouseMove={handleMouseMove} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} onMouseLeave={handleMouseOut} onMouseEnter={handleMouseIn} >
-                  <svg ref={SVGref} width={SVGWidth < 0? 0 : SVGWidth} height={SVGHeight < 0 ? 0 : SVGHeight}
-                   style={SvgStyle} viewBox={`0 0 ${SVGWidth < 0? 0 : SVGWidth} ${SVGHeight < 0 ? 0 : SVGHeight}`}>
-                     {props.showBorder !== undefined && props.showBorder ? < path stroke='black' d={`M ${offsetLeft} ${offsetTop} H ${SVGWidth- offsetRight} V ${SVGWidth - offsetBottom} H ${offsetLeft} Z`} /> : null}
+                  <svg ref={SVGref} width={svgWidth < 0? 0 : svgWidth} height={svgHeight < 0 ? 0 : svgHeight}
+                   style={SvgStyle} viewBox={`0 0 ${svgWidth < 0? 0 : svgWidth} ${svgHeight < 0 ? 0 : svgHeight}`}>
+                     {props.showBorder !== undefined && props.showBorder ? < path stroke='black' d={`M ${offsetLeft} ${offsetTop} H ${svgWidth- offsetRight} V ${svgHeight - offsetBottom} H ${offsetLeft} Z`} /> : null}
                      { props.XAxisType === 'time' || props.XAxisType === undefined ?
-                     <TimeAxis label={props.Tlabel} offsetBottom={offsetBottom} offsetLeft={offsetLeft} offsetRight={offsetRight} width={SVGWidth} height={SVGHeight} setHeight={setHeightXLabel} heightAxis={heightXLabel}/> :
-                     <LogAxis offsetTop={offsetTop} showGrid={props.showGrid} label={props.Tlabel} offsetBottom={offsetBottom} offsetLeft={offsetLeft} offsetRight={offsetRight} width={SVGWidth} height={SVGHeight} setHeight={setHeightXLabel} heightAxis={heightXLabel}/> }
+                     <TimeAxis label={props.Tlabel} offsetBottom={offsetBottom} offsetLeft={offsetLeft} offsetRight={offsetRight} width={svgWidth} height={svgHeight} setHeight={setHeightXLabel} heightAxis={heightXLabel}/> :
+                     <LogAxis offsetTop={offsetTop} showGrid={props.showGrid} label={props.Tlabel} offsetBottom={offsetBottom} offsetLeft={offsetLeft} offsetRight={offsetRight} width={svgWidth} height={svgHeight} setHeight={setHeightXLabel} heightAxis={heightXLabel}/> }
                      <ValueAxis offsetRight={offsetRight} showGrid={props.showGrid} label={props.Ylabel} offsetTop={offsetTop} offsetLeft={offsetLeft} offsetBottom={offsetBottom}
-                       witdh={SVGWidth} height={SVGHeight} setWidthAxis={setHeightYLabel} setHeightFactor={setHeightYFactor}
+                       witdh={svgWidth} height={svgHeight} setWidthAxis={setHeightYLabel} setHeightFactor={setHeightYFactor}
                        hAxis={heightYLabel} hFactor={heightYFactor} useFactor={props.useMetricFactors === undefined? true: props.useMetricFactors}/>
                       <defs>
                           <clipPath id={"cp-" + guid}>
-                              <path stroke={'none'} fill={'none'} d={` M ${offsetLeft},${offsetTop - 5} H  ${SVGWidth - offsetRight + 5} V ${SVGHeight - offsetBottom} H ${offsetLeft} Z`} />
+                              <path stroke={'none'} fill={'none'} d={` M ${offsetLeft},${offsetTop - 5} H  ${svgWidth - offsetRight + 5} V ${svgHeight - offsetBottom} H ${offsetLeft} Z`} />
                           </clipPath>
                       </defs>
 
@@ -492,13 +501,13 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
                                    return null;
                                })}
                          {props.showMouse === undefined || props.showMouse ?
-                              <path stroke='black' style={{ strokeWidth: 2, opacity: mouseIn? 0.8: 0.0 }} d={`M ${mousePosition[0]} ${offsetTop} V ${SVGHeight - offsetBottom}`} />
+                              <path stroke='black' style={{ strokeWidth: 2, opacity: mouseIn? 0.8: 0.0 }} d={`M ${mousePosition[0]} ${offsetTop} V ${svgHeight - offsetBottom}`} />
                               : null}
                           {(props.zoom === undefined || props.zoom) && mouseMode === 'zoom' ?
                               <rect fillOpacity={0.8} fill={'black'} x={Math.min(mouseClick[0], mousePosition[0])}
                                y={zoomMode === 'Rect'? Math.min(mouseClick[1], mousePosition[1]) : offsetTop} 
                                width={Math.abs(mouseClick[0] - mousePosition[0])}
-                               height={zoomMode === 'Rect'?  Math.abs(mouseClick[1] - mousePosition[1]) : (SVGHeight - offsetTop - offsetBottom)} />
+                               height={zoomMode === 'Rect'?  Math.abs(mouseClick[1] - mousePosition[1]) : (svgHeight - offsetTop - offsetBottom)} />
                               : null}
                       </g>
                        <InteractiveButtons showPan={(props.pan === undefined || props.pan)}
@@ -508,7 +517,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
                         showDownload={props.onDataInspect !== undefined}
                         currentSelection={selectedMode}
                         setSelection={setSelection}
-                        x={SVGWidth - offsetRight - 12}
+                        x={svgWidth - offsetRight - 12}
                         y={22} > 
                         {React.Children.map(props.children, (element) => {
                                    if (!React.isValidElement(element))
@@ -521,7 +530,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
 
                   </svg>
               </div>
-            {props.legend  !== undefined && props.legend !== 'hidden' ? <Legend location={props.legend} height={props.legendHeight !== undefined? props.legendHeight : 50} width={props.legendWidth !== undefined? props.legendWidth : 100} graphWidth={SVGWidth} graphHeight={SVGHeight} /> : null}
+            {props.legend  !== undefined && props.legend !== 'hidden' ? <Legend location={props.legend} height={props.legendHeight !== undefined? props.legendHeight : 50} width={props.legendWidth !== undefined? props.legendWidth : 100} graphWidth={svgWidth} graphHeight={svgHeight} /> : null}
            </div>
       </ContextWrapper>
   )
