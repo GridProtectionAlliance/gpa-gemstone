@@ -31,5 +31,6 @@ import { RandomColor } from './RandomColor';
 import { IsNumber } from './IsNumber';
 import { IsInteger } from './IsInteger';
 import { IsCron } from './IsCron';
+import { SpacedColor } from './SpacedColor';
 
-export {CreateGuid, GetTextWidth, GetNodeSize, RandomColor, GetTextHeight, IsNumber, IsInteger, IsCron}
+export {CreateGuid, GetTextWidth, GetNodeSize, RandomColor, GetTextHeight, IsNumber, IsInteger, IsCron, SpacedColor}
