@@ -44,11 +44,11 @@ export default function Clock(props: IProps) {
   }, [props.DateTime])
 
   React.useEffect(() => {
-    const h = parseInt(hour);
-    const m = parseInt(minute);
-    const s = parseInt(second);
+    const h = parseInt(hour, 10);
+    const m = parseInt(minute, 10);
+    const s = parseInt(second, 10);
 
-    if (h != props.DateTime.hour() || m !== props.DateTime.minute() || s !== props.DateTime.second()) {
+    if (h !== props.DateTime.hour() || m !== props.DateTime.minute() || s !== props.DateTime.second()) {
       const d = moment(props.DateTime);
       d.hour(h).minute(m).second(s);
       props.Setter(d);
