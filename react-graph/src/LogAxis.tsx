@@ -98,6 +98,7 @@ function LogAxis(props: IProps) {
     }
     else {
 
+      // needs to scale 
       let scale = 1.0;
       if (dV < 3)
         scale = 0.25;
@@ -130,6 +131,15 @@ function LogAxis(props: IProps) {
             newTicks.push(Math.pow(10, i))
         }
       }
+
+      newTicks = newTicks.filter(t => t >= context.XDomain[0] && t <= context.XDomain[1]);
+
+      //guarantee at least 3 ticks
+      if (newTicks.length < 3) {
+        const c = (Math.log10(context.XDomain[0]) + Math.log10(context.XDomain[1]))*0.5;
+        newTicks = [context.XDomain[0],Math.pow(10,c),context.XDomain[1]];
+      }
+
     }
     
     // If first Tick is outside visible move it to zero crossing
