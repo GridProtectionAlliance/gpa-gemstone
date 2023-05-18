@@ -54,7 +54,7 @@
     "@gpa-gemstone/gpa-symbols": "0.0.24",
     "@gpa-gemstone/helper-functions": "0.0.18",
     "@gpa-gemstone/react-forms": "1.1.35",
-    "@gpa-gemstone/react-table": "1.2.20",
+    "@gpa-gemstone/react-table": "1.2.21",
     "@reduxjs/toolkit": "1.8.3",
     "jquery": "^3.6.0",
     "lodash": "^4.17.21",
