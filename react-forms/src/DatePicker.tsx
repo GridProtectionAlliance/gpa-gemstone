@@ -107,7 +107,7 @@ export default function DateTimePicker<T>(props: IProps<T>) {
       {props.Feedback == null ? props.Field.toString() + ' is a required field.' : props.Feedback}
       </div>
       <DateTimePopup 
-        Setter={(d) => {setPickerRecord(d); if (props.Type=='date') setShowOverlay(false); }}
+        Setter={(d) => {setPickerRecord(d); if (props.Type === 'date') setShowOverlay(false); }}
         Show={showOverlay}
         DateTime={pickerRecord} 
         Valid={props.Valid(props.Field)}

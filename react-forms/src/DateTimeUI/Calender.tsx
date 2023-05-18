@@ -71,14 +71,14 @@ export default function Calender(props: IProps) {
   }, [month, year])
 
   function toNext() {
-    if (mode == 'month' && month === 11) {
+    if (mode === 'month' && month === 11) {
       setMonth(0);
       setYear(y => y +1);
     }
-    else if (mode == 'month') {
+    else if (mode === 'month') {
       setMonth(m => m + 1);
     }
-    else if (mode == 'year') {
+    else if (mode === 'year') {
       setYear(y => y + 1);
     }
     else {
@@ -88,14 +88,14 @@ export default function Calender(props: IProps) {
   }
 
   function toPrev() {
-    if (mode == 'month' && month === 0) {
+    if (mode === 'month' && month === 0) {
       setMonth(11);
       setYear(y => y - 1);
     }
-    else if (mode == 'month') {
+    else if (mode === 'month') {
       setMonth(m => m - 1);
     }
-    else if (mode == 'year') {
+    else if (mode === 'year') {
       setYear(y => y - 1);
     }
     else {
@@ -202,7 +202,7 @@ const DayCell = (props: {date: moment.Moment, onClick: (evt: any) => void, month
   return <td style={{
       width: 20, 
       padding: 5,
-      color: color,
+      color,
       backgroundColor: bg,
       cursor: (!active? 'pointer' : 'default')
     }} 
@@ -228,7 +228,7 @@ const MonthCell = (props: {date: moment.Moment, onClick: (evt: any) => void, mon
   return <td style={{
     width: 54, 
     padding: 5,
-    color: color,
+    color,
     backgroundColor: bg,
     cursor: (!active? 'pointer' : 'default')
   }}
