@@ -1,23 +1,21 @@
 {
   "name": "@gpa-gemstone/application-typings",
-  "version": "0.0.54",
+  "version": "0.0.55",
   "description": "Application typings for GPA products",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "files": [
-    "dist/**/*"
-  ],
-  "scripts": {
+  "files": ["dist/**/*"],
+  "scripts":   {
     "build": "tsc",
     "prepare": "npm run build",
     "version": "npm run format && git add -A src",
     "postversion": "git push && git push --tags"
   },
-  "repository": {
+  "repository":   {
     "type": "git",
     "url": "https://github.com/GridProtectionAlliance/gpa-gemstone.git"
   },
-  "keywords": [
+  "keywords":   [
     "Symbols",
     "Interactive",
     "GSF",
@@ -26,17 +24,9 @@
   ],
   "author": "GridProtectionAlliance",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/GridProtectionAlliance/gpa-gemstone/issues"
-  },
+  "bugs": {"url": "https://github.com/GridProtectionAlliance/gpa-gemstone/issues"},
   "homepage": "https://github.com/GridProtectionAlliance/gpa-gemstone#readme",
-  "devDependencies": {
-    "typescript": "4.4.4"
-  },
-  "dependencies": {
-    "@types/webpack": "^5.28.0"
-  },
-  "publishConfig": {
-    "access": "public"
-  }
+  "devDependencies": {"typescript": "4.4.4"},
+  "dependencies": {"@types/webpack": "^5.28.0"},
+  "publishConfig": {"access": "public"}
 }
