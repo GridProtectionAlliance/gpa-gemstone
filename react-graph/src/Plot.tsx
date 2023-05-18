@@ -448,6 +448,26 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
         setMouseIn(true);
     }
 
+    function updateXDomain(x: [number,number]) {
+      if (x[0] === tDomain[0] && x[1] === tDomain[1])
+        return;
+
+      if (x[0] < x[1])
+        setTdomain(x);
+      else
+        setTdomain([x[1],x[0]]);
+    }
+
+    function updateYDomain(y: [number,number]) {
+      if (y[0] === yDomain[0] && y[1] === yDomain[1])
+        return;
+
+      if (y[0] < y[1])
+        setYdomain(y);
+      else
+        setYdomain([y[1],y[0]]);
+    }
+
     return (
       <ContextWrapper 
         XDomain ={tDomain}
@@ -461,8 +481,8 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
         YTransform={yTransform}
         XInvTransform={xInvTransform}
         YInvTransform={yInvTransform}
-        SetXDomain={setTdomain}
-        SetYDomain={setYdomain}
+        SetXDomain={updateXDomain}
+        SetYDomain={updateYDomain}
         AddData={addData}
         RemoveData={removeData}
         UpdateData={updateData}
