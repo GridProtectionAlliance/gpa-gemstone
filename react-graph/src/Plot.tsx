@@ -121,7 +121,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
     
     const zoomMode = props.zoomMode === undefined? 'AutoValue' : props.zoomMode;
     
-    //Recompute height and width
+    // Recompute height and width
     React.useEffect(() => {
       setSVGheight(props.height - (props.legend === 'bottom'? (props.legendHeight !== undefined? props.legendHeight : 50) : 0));
     }, [props.height, props.legend, props.legendHeight])
