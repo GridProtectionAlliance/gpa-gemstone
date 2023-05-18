@@ -376,7 +376,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
             (props.Tmax === undefined || tDomain[1] + dT < props.Tmax))
             setTdomain([tDomain[0] + dT, tDomain[1] + dT]);
 
-        if (zoomMode == 'Rect') {
+        if (zoomMode === 'Rect') {
           const dY = yInvTransform(mousePosition[1]) - yInvTransform(ptTransform.y);
           if (
             (props.Ymin === undefined || yDomain[0] + dY >  props.Ymin) && 

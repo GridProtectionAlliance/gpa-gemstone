@@ -134,7 +134,7 @@ function LogAxis(props: IProps) {
 
       newTicks = newTicks.filter(t => t >= context.XDomain[0] && t <= context.XDomain[1]);
 
-      //guarantee at least 3 ticks
+      // guarantee at least 3 ticks
       if (newTicks.length < 3) {
         const c = (Math.log10(context.XDomain[0]) + Math.log10(context.XDomain[1]))*0.5;
         newTicks = [context.XDomain[0],Math.pow(10,c),context.XDomain[1]];
