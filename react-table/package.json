@@ -1,13 +1,11 @@
 {
   "name": "@gpa-gemstone/react-table",
-  "version": "1.2.21",
+  "version": "1.2.22",
   "description": "Table for GPA web applications",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
-  "files": [
-    "lib"
-  ],
-  "scripts": {
+  "files": ["lib"],
+  "scripts":   {
     "test": "jest --config jestconfig.json",
     "build": "tsc",
     "format": "prettier --write \"src/**/*.tsx\"",
@@ -18,11 +16,11 @@
     "version": "npm run format && git add -A src",
     "postversion": "git push && git push --tags"
   },
-  "repository": {
+  "repository":   {
     "type": "git",
     "url": "https://github.com/GridProtectionAlliance/gpa-gemstone.git"
   },
-  "keywords": [
+  "keywords":   [
     "React",
     "Table",
     "GSF",
@@ -31,11 +29,9 @@
   ],
   "author": "GridProtectionAlliance",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/GridProtectionAlliance/gpa-gemstone/issues"
-  },
+  "bugs": {"url": "https://github.com/GridProtectionAlliance/gpa-gemstone/issues"},
   "homepage": "https://github.com/GridProtectionAlliance/gpa-gemstone#readme",
-  "devDependencies": {
+  "devDependencies":   {
     "@types/jest": "^27.0.0",
     "jest": "^27.0.6",
     "prettier": "^2.3.2",
@@ -44,15 +40,13 @@
     "tslint-config-prettier": "^1.18.0",
     "typescript": "4.4.4"
   },
-  "dependencies": {
-    "@gpa-gemstone/gpa-symbols": "0.0.24",
-    "@gpa-gemstone/helper-functions": "0.0.18",
+  "dependencies":   {
+    "@gpa-gemstone/gpa-symbols": "0.0.25",
+    "@gpa-gemstone/helper-functions": "0.0.19",
     "@types/lodash": "^4.14.171",
     "@types/react": "^17.0.14",
     "lodash": "^4.17.21",
     "react": "^18.2.0"
   },
-  "publishConfig": {
-    "access": "public"
-  }
+  "publishConfig": {"access": "public"}
 }
