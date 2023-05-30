@@ -65,9 +65,10 @@ export default function Input<T>(props: IProps<T>) {
 
     const allowNull = props.AllowNull === undefined? false : props.AllowNull;
     if (props.Type === 'number') {
-      if (IsNumber(value) || (value === '' && allowNull)) {
-          props.Setter({ ...props.Record, [props.Field]: value !== '' ? parseFloat(value) : null });
-          setHeldVal(value);
+      const v = (value.length > 0 && value[0] === '.'? ("0" + value) : value)
+      if (IsNumber(v) || (v === '' && allowNull)) {
+          props.Setter({ ...props.Record, [props.Field]: v !== '' ? parseFloat(v) : null });
+          setHeldVal(v);
         }
       
     }
