@@ -137,7 +137,7 @@ function Note(props: IProps)  {
 	}, [props.NoteTags,props.NoteApplications])
 	
 	React.useEffect(() => {
-			setNotes(data.filter(n => (props.Filter == undefined? true : props.Filter(n))));
+			setNotes(data.filter(n => (props.Filter === undefined? true : props.Filter(n))));
 	}, [props.Filter, data])
 
 
