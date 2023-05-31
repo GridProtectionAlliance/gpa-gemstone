@@ -43,7 +43,8 @@ interface IProps {
 	AllowRemove?: boolean,
 	AllowAdd?: boolean,
 	ShowCard?: boolean,
-	DefaultApplication?: OpenXDA.Types.NoteApplication
+	DefaultApplication?: OpenXDA.Types.NoteApplication,
+	Filter?: (note: OpenXDA.Types.Note) => boolean
 }
 
 
@@ -91,6 +92,7 @@ function Note(props: IProps)  {
   	const ascending: boolean = useSelector(props.NoteSlice.Ascending)
 
 	const [note, setNote] = React.useState<OpenXDA.Types.Note>(CreateNewNote());
+	const [notes, setNotes] = React.useState<OpenXDA.Types.Note[]>([]);
 
 	React.useEffect(() => {
 					if (dataStatus === 'unintiated' || dataStatus === 'changed' || parentID !== props.ReferenceTableID)
@@ -134,6 +136,12 @@ function Note(props: IProps)  {
 		setCollumns(c);
 	}, [props.NoteTags,props.NoteApplications])
 	
+	React.useEffect(() => {
+		if (props.Filter === undefined)
+			setNotes(data);
+		else
+			setNotes(data.filter(n => props.Filter(n)));
+	}, [props.Filter, data])
 
 
   function CreateNewNote() {
@@ -225,7 +233,7 @@ function Note(props: IProps)  {
 							<Table<OpenXDA.Types.Note>
 										cols={collumns}
 										tableClass="table table-hover"
-										data={data}
+										data={notes}
 										sortKey={sortField}
 										ascending={ascending}
 										onSort={(d) => {
