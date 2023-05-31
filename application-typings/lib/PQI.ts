@@ -25,8 +25,10 @@ namespace PQI {
        // Types
 
        // Tables
-       export interface Facility { Name: string, Voltage: string, UtilitySupplyVoltage: string, Path: string }; 
+       export interface Facility { Name: string, Voltage: string, UtilitySupplyVoltage: string, Path: string, Address: string }; 
        export interface Equipment { Facility: string, Area: string, SectionTitle: string, SectionRank: number, ComponentModel: string, Manufacturer: string, Series: string, ComponentType: string }
+       export interface Address { Path: string, Company: string, Facilities: string, AddressLine1: string, AdressLine2: string, City: string, StateOrProvince: string, PostalCode: string, Country: string, Primary: boolean}
+       export interface Company { Addresses: string, Path: string, Type: string, Name: string, Industry: string }
     }
     
     export namespace Lists{
