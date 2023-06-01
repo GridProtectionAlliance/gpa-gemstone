@@ -65,22 +65,24 @@ export default function ConfigurableTable<T>(props: IProps<T>) {
     const [guid, setGuid] = React.useState<string>(CreateGuid());
     
     React.useEffect(() => {
-        setColKeys(props.cols.map(d => d.key));
         if (props.cols.length !== colEnabled.length) {
             setColEnabled(props.cols.map(d => props.defaultColumns.findIndex(v => v === d.key) > -1 || (props.requiredColumns !== undefined && props.requiredColumns.findIndex(v => v === d.key) > -1) || checkLocal(d.key)));
         } else {
             // We need to redo this set collumn here to capture function changes within collumns
             setCollumns(props.cols.filter((c, i) => colEnabled[i]));
         }
+    }, [props.cols, colEnabled]);
+    
+    React.useEffect(() => {
+        setColKeys(props.cols.map(d => d.key));
     }, [props.cols]);
 
     React.useEffect(() => {
         if (props.onSettingsChange !== undefined)
             props.onSettingsChange(showSettings);
-    }, [showSettings])
+    }, [showSettings]);
 
     React.useEffect(() => {
-        setCollumns(props.cols.filter((c, i) => colEnabled[i]));
         saveLocal();
     }, [colEnabled]);
 
