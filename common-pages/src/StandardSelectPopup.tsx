@@ -137,12 +137,12 @@ export default function SelectPopup<T extends U>(props: IProps<T>) {
                         ascending={ascendingSelected}
                         onSort={(d) => {
                             if (d.colKey === sortKeySelected) {
-                                const ordered = _.orderBy(selectedData, [d.colKey], [(!ascendingSelected ? "asc" : "desc")]);
+                                const ordered = _.orderBy<T[]>(selectedData, [d.colKey], [(!ascendingSelected ? "asc" : "desc")]) as any;
                                 setAscendingSelected(!ascendingSelected);
                                 setSelectedData(ordered);
                             }
                             else {
-                                const ordered = _.orderBy(selectedData, [d.colKey], ["asc"]);
+                                const ordered = _.orderBy(selectedData, [d.colKey], ["asc"]) as any;
                                 setAscendingSelected(!ascendingSelected);
                                 setSelectedData(ordered);
                                 setSortKeySelected(d.colKey);

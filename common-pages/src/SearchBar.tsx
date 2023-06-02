@@ -245,7 +245,7 @@ export namespace DefaultSearch {
             Width={'50%'} 
             Label={'Search'}
             ShowLoading={searchStatus === 'loading'} 
-            ResultNote={searchStatus === 'error' ? 'Could not complete Search' : 'Found ' + data.length + ' Asset Group(s)'}
+            ResultNote={searchStatus === 'error' ? 'Could not complete Search' : 'Found ' + data.length + ' User(s)'}
             GetEnum={props.GetEnum}
             StorageID={props.StorageID}
         >

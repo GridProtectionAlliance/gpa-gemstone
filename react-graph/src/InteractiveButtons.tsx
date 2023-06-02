@@ -22,7 +22,7 @@
 // ******************************************************************************************************
 
 import * as React from 'react';
-import {MagnifyingGlass, House, FourWayArrow, InputNumbers, Flag} from '@gpa-gemstone/gpa-symbols'
+import {MagnifyingGlass, House, Pan, InputNumbers, Point} from '@gpa-gemstone/gpa-symbols'
 import Button from './Button'
 
 interface IProps {
@@ -66,7 +66,7 @@ const InteractiveButtons: React.FunctionComponent<IProps> = (props) => {
             onMouseDown={(evt) => evt.stopPropagation()}
             onMouseUp={(evt) => evt.stopPropagation()} />
           <text fill={'black'} style={{ fontSize: '1em', textAnchor: 'middle', dominantBaseline: 'middle' }} x={props.x} y={props.y}>
-            {props.currentSelection === 'zoom' ? MagnifyingGlass : props.currentSelection === 'pan'? FourWayArrow : Flag}
+            {props.currentSelection === 'zoom' ? MagnifyingGlass : props.currentSelection === 'pan'? Pan : Point}
           </text>
         </g>)
 
@@ -79,11 +79,11 @@ const InteractiveButtons: React.FunctionComponent<IProps> = (props) => {
     }
     if (props.showPan) {
       symbolNames.push('pan' as ButtonType);
-      symbols.push(<Button onClick={() => {props.setSelection('pan'); setExpand(false) }}>{FourWayArrow}</Button>)
+      symbols.push(<Button onClick={() => {props.setSelection('pan'); setExpand(false) }}>{Pan}</Button>)
     }
     if (props.showSelect) {
         symbolNames.push('select' as ButtonType);
-        symbols.push(<Button onClick={() => {props.setSelection('select'); setExpand(false) }}>{Flag}</Button>)
+        symbols.push(<Button onClick={() => {props.setSelection('select'); setExpand(false) }}>{Point}</Button>)
     }
     if (props.showReset) {
       symbolNames.push('reset' as ButtonType);
