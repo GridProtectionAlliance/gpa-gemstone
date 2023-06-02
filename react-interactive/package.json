@@ -1,13 +1,11 @@
 {
   "name": "@gpa-gemstone/react-interactive",
-  "version": "1.0.77",
+  "version": "1.0.80",
   "description": "Interactive UI Components for GPA products",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
-  "files": [
-    "lib/**/*"
-  ],
-  "scripts": {
+  "files": ["lib/**/*"],
+  "scripts":   {
     "test": "jest --config jestconfig.json",
     "build": "tsc",
     "format": "prettier --write \"src/**/*.tsx\"",
@@ -18,11 +16,11 @@
     "version": "npm run format && git add -A src",
     "postversion": "git push && git push --tags"
   },
-  "repository": {
+  "repository":   {
     "type": "git",
     "url": "https://github.com/GridProtectionAlliance/gpa-gemstone.git"
   },
-  "keywords": [
+  "keywords":   [
     "React",
     "Interactive",
     "GSF",
@@ -31,17 +29,15 @@
   ],
   "author": "GridProtectionAlliance",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/GridProtectionAlliance/gpa-gemstone/issues"
-  },
+  "bugs": {"url": "https://github.com/GridProtectionAlliance/gpa-gemstone/issues"},
   "homepage": "https://github.com/GridProtectionAlliance/gpa-gemstone#readme",
-  "devDependencies": {
+  "devDependencies":   {
     "@types/jest": "^27.0.0",
     "@types/jquery": "3.5.6",
     "@types/lodash": "^4.14.171",
     "@types/react": "^17.0.14",
     "@types/styled-components": "^5.1.11",
-    "@types/react-portal":"4.0.4",
+    "@types/react-portal": "4.0.4",
     "jest": "^27.0.6",
     "prettier": "^2.3.2",
     "ts-jest": "^27.0.4",
@@ -49,12 +45,12 @@
     "tslint-config-prettier": "^1.18.0",
     "typescript": "4.4.4"
   },
-  "dependencies": {
-    "@gpa-gemstone/application-typings": "0.0.53",
-    "@gpa-gemstone/gpa-symbols": "0.0.23",
-    "@gpa-gemstone/helper-functions": "0.0.18",
-    "@gpa-gemstone/react-forms": "1.1.35",
-    "@gpa-gemstone/react-table": "1.2.20",
+  "dependencies":   {
+    "@gpa-gemstone/application-typings": "0.0.56",
+    "@gpa-gemstone/gpa-symbols": "0.0.26",
+    "@gpa-gemstone/helper-functions": "0.0.20",
+    "@gpa-gemstone/react-forms": "1.1.37",
+    "@gpa-gemstone/react-table": "1.2.23",
     "@reduxjs/toolkit": "1.8.3",
     "jquery": "^3.6.0",
     "lodash": "^4.17.21",
@@ -62,9 +58,7 @@
     "react-redux": "8.0.2",
     "react-router-dom": "6.2.1",
     "styled-components": "5.3.3",
-    "react-portal":"4.2.2"
+    "react-portal": "4.2.2"
   },
-  "publishConfig": {
-    "access": "public"
-  }
+  "publishConfig": {"access": "public"}
 }

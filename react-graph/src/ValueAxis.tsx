@@ -191,4 +191,4 @@ function ValueAxis(props: IProps) {
     </g>)
 }
 
-export default ValueAxis;
+export default React.memo(ValueAxis);

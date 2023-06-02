@@ -23,8 +23,10 @@
 
 import * as React from 'react';
 import * as moment from 'moment';
+import DateTimePopup from './DateTimeUI/DateTimePopup';
+import {GetNodeSize} from '@gpa-gemstone/helper-functions';
 
-export default function DatePicker<T>(props: {
+interface IProps<T> {
   Record: T;
   Field: keyof T;
   Setter: (record: T) => void;
@@ -34,48 +36,87 @@ export default function DatePicker<T>(props: {
   Feedback?: string;
   Format?: string;
   Type?: ('datetime-local' | 'date'); // Default to date
-}) {
-  // Tracks weather or not props.Record changes are due to internal input boxes or externally
-  const [internal, setInternal] = React.useState<boolean>(false);
-  // Adds a buffer between the outside props and what the box is reading to prevent box overwriting every render with a keystroke
-  const [boxRecord, setBoxRecord] = React.useState<T>(ParseRecord());
-  
+}
+
+export default function DateTimePicker<T>(props: IProps<T>) {
   // Formats that will be used for dateBoxes
   const boxFormat = "YYYY-MM-DD" + (props.Type === undefined || props.Type === 'date' ? "" : "[T]hh:mm:ss");
   const recordFormat = props.Format !== undefined ? props.Format : "YYYY-MM-DD" + (props.Type === undefined || props.Type === 'date' ? "" : "[T]hh:mm:ss.SSS[Z]");
+  const parse = (r: T) => moment(props.Record[props.Field] as any, recordFormat);
+  const divRef = React.useRef<any|null>(null);
 
-  function ParseRecord(): T {return {...props.Record, [props.Field]: [props.Field] === null ? '' : moment(props.Record[props.Field] as any, recordFormat).format(boxFormat)}};
+  // Adds a buffer between the outside props and what the box is reading to prevent box overwriting every render with a keystroke
+  const [boxRecord, setBoxRecord] = React.useState<string>(parse(props.Record).format(boxFormat));
+  const [pickerRecord, setPickerRecord] =  React.useState<moment.Moment>(parse(props.Record));
+
+  const [showOverlay, setShowOverlay] = React.useState<boolean>(false);
+
+  const [top, setTop] = React.useState<number>(0);
+  const [left, setLeft] = React.useState<number>(0);
 
   React.useEffect(() => {
-    if (!internal)
-      setBoxRecord(ParseRecord());
-    setInternal(false);
+      setPickerRecord(parse(props.Record));
+      setBoxRecord(parse(props.Record).format(boxFormat))
   },[props.Record]);
 
+  React.useEffect(() => {
+    const valid = moment(boxRecord,boxFormat).isValid();
+
+    if (valid && parse(props.Record).format(boxFormat) !== boxRecord)
+      props.Setter({...props.Record, [props.Field]: moment(boxRecord,boxFormat).format(recordFormat)});
+  }, [boxRecord])
+
+  React.useEffect(() => {
+    if (pickerRecord.format(recordFormat) !== parse(props.Record).format(recordFormat))
+      props.Setter({...props.Record, [props.Field]: pickerRecord.format(recordFormat)});
+  }, [pickerRecord]);
+  
+  React.useLayoutEffect(() => {
+    const node = (divRef.current !== null? GetNodeSize(divRef.current) : {top, left, height: 0, width: 0});
+    setLeft(node.left + 0.5 * node.width);
+    setTop(node.top + node.height + 10);
+  })
+  
+  React.useEffect(() => {
+    window.addEventListener('click',onWindowClick);
+    return () => { window.removeEventListener('click',onWindowClick); }
+
+  },[]);
+
+  function onWindowClick(evt: any) {
+    if (evt.target.closest(`.gpa-gemstone-datetime`) == null)
+      setShowOverlay(false);
+  }
+
   return (
-    <div className="form-group">
+    <div className="form-group" ref={divRef}>
       {(props.Label !== "") ?
       <label>{props.Label == null ? props.Field : props.Label}</label> : null}
       <input
-        className={"form-control" + (props.Valid(props.Field) ? '' : ' is-invalid')}
+        className={"gpa-gemstone-datetime form-control" + (props.Valid(props.Field) ? '' : ' is-invalid')}
         type={props.Type === undefined ? 'date' : props.Type}
         onChange={(evt) => {
-          const record: T = { ...props.Record };
-          if (evt.target.value !== '')
-            record[props.Field] = moment(evt.target.value, boxFormat).format(recordFormat) as any;
-          else
-            record[props.Field] = null as any;
-          // These two updates should be batched together
-          props.Setter(record);
-          setBoxRecord({...boxRecord, [props.Field]: evt.target.value});
-          setInternal(true);
+          setBoxRecord(evt.target.value);
         }}
-        value={boxRecord[props.Field] as any}
+        onFocus={() => {setShowOverlay(true)}}
+        value={boxRecord}
         disabled={props.Disabled === undefined ? false : props.Disabled}
+        onClick={(e) => {e.preventDefault()}}
       />
       <div className="invalid-feedback">
       {props.Feedback == null ? props.Field.toString() + ' is a required field.' : props.Feedback}
       </div>
+      <DateTimePopup 
+        Setter={(d) => {setPickerRecord(d); if (props.Type === 'date') setShowOverlay(false); }}
+        Show={showOverlay}
+        DateTime={pickerRecord} 
+        Valid={props.Valid(props.Field)}
+        Top={top} Center={left}
+        Type={props.Type === undefined || props.Type === 'date' ? 'date' : 'datetime'}
+        />
     </div>
   );
 }
+
+
+

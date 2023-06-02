@@ -25,6 +25,8 @@ import Modal from './Modal';
 import Table, { TableProps, Column } from '@gpa-gemstone/react-table';
 import { SVGIcons } from '@gpa-gemstone/gpa-symbols';
 import {Portal} from 'react-portal';
+import ToolTip from './ToolTip';
+import { CreateGuid } from '@gpa-gemstone/helper-functions';
 
 interface IProps<T> extends TableProps<T> {
     /**
@@ -59,23 +61,28 @@ export default function ConfigurableTable<T>(props: IProps<T>) {
     const [colEnabled, setColEnabled] = React.useState<boolean[]>(props.cols.map(d => props.defaultColumns.findIndex(v => v === d.key) > -1 ||
         (props.requiredColumns !== undefined && props.requiredColumns.findIndex(v => v === d.key) > -1) || checkLocal(d.key)
     ));
-
+    const [hover,setHover] = React.useState<boolean>(false);
+    const [guid, setGuid] = React.useState<string>(CreateGuid());
+    
     React.useEffect(() => {
-        if (props.cols.length !== colEnabled.length)
+        if (props.cols.length !== colEnabled.length) {
             setColEnabled(props.cols.map(d => props.defaultColumns.findIndex(v => v === d.key) > -1 || (props.requiredColumns !== undefined && props.requiredColumns.findIndex(v => v === d.key) > -1) || checkLocal(d.key)));
-    }, [props.cols]);
-
+        } else {
+            // We need to redo this set collumn here to capture function changes within collumns
+            setCollumns(props.cols.filter((c, i) => colEnabled[i]));
+        }
+    }, [props.cols, colEnabled]);
+    
     React.useEffect(() => {
-        setColKeys(props.cols.map(d => d.key))
+        setColKeys(props.cols.map(d => d.key));
     }, [props.cols]);
 
     React.useEffect(() => {
         if (props.onSettingsChange !== undefined)
             props.onSettingsChange(showSettings);
-    }, [showSettings])
+    }, [showSettings]);
 
     React.useEffect(() => {
-        setCollumns(props.cols.filter((c, i) => colEnabled[i]));
         saveLocal();
     }, [colEnabled]);
 
@@ -109,7 +116,16 @@ export default function ConfigurableTable<T>(props: IProps<T>) {
     return (
         <>
             <Table
-                cols={[...collumns, { key: 'SettingsCog', label: <div style={{marginLeft: -25}}>{SVGIcons.Settings}</div>, headerStyle: { width: 30, padding: 0, verticalAlign: 'middle', textAlign: 'right' }, rowStyle: { padding: 0, width: 30 } }]}
+                cols={[...collumns, 
+                    { 
+                        key: 'SettingsCog', label: <div style={{marginLeft: -25}} 
+                            onMouseEnter={() => setHover(true)}
+                            onMouseLeave={() => setHover(false)}
+                            >{SVGIcons.Settings}</div>, 
+                    headerStyle: { width: 30, padding: 0, verticalAlign: 'middle', textAlign: 'right' },
+                    rowStyle: { padding: 0, width: 30 }
+                 }
+                ]}
                 data={props.data}
                 onClick={props.onClick}
                 sortKey={props.sortKey}
@@ -125,6 +141,9 @@ export default function ConfigurableTable<T>(props: IProps<T>) {
                 rowStyle={props.rowStyle}
                 keySelector={props.keySelector}
             />
+           <ToolTip Show={hover} Position={'bottom'} Theme={'dark'} Target={guid + '-tooltip'} Zindex={9999}>
+				<p>Change Columns</p>
+			  </ToolTip>
             {props.settingsPortal === undefined?
             <Modal Title={'Table Columns'} Show={showSettings} ShowX={true} ShowCancel={false}
                 CallBack={(conf: boolean) => {

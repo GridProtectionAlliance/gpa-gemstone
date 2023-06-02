@@ -48,5 +48,7 @@ export const PauseButton = '⏸️';
 export const FastForwardButton = '⏩';
 export const RewindButton = '⏪';
 export const Questionmark = '?';
+export const Pan = '🤚';
+export const Point = '👆';
 
 export { SVGIcons };

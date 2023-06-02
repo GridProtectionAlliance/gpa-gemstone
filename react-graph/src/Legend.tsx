@@ -55,4 +55,4 @@ function Legend(props: IProps) {
       </div>)
 }
 
-export default Legend;
+export default React.memo(Legend);
