@@ -370,11 +370,15 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
       const ptTransform = pt.matrixTransform(SVGref.current!.getScreenCTM().inverse());
 
       if (mouseMode === 'pan') {
-          const dT = xInvTransform(mousePosition[0]) - xInvTransform(ptTransform.x);
+          const dP = mousePosition[0] - ptTransform.x;
+          const Plower = xTransform(tDomain[0]);
+          const Pupper = xTransform(tDomain[1])
+          const Tmin = xInvTransform(Plower + dP);
+          const Tmax = xInvTransform(Pupper + dP);
           if (
-            (props.Tmin === undefined || tDomain[0] + dT >  props.Tmin) && 
-            (props.Tmax === undefined || tDomain[1] + dT < props.Tmax))
-            setTdomain([tDomain[0] + dT, tDomain[1] + dT]);
+            (props.Tmin === undefined || Tmin >  props.Tmin) && 
+            (props.Tmax === undefined || Tmax < props.Tmax))
+            setTdomain([Tmin, Tmax]);
 
         if (zoomMode === 'Rect') {
           const dY = yInvTransform(mousePosition[1]) - yInvTransform(ptTransform.y);
