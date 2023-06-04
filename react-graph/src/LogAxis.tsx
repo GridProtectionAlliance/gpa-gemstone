@@ -162,9 +162,9 @@ function LogAxis(props: IProps) {
     <path stroke='black' style={{ strokeWidth: 1 }} d={`M ${props.width - props.offsetRight} ${props.height - props.offsetBottom} v ${8}`} />
     {props.showTicks === undefined || props.showTicks ?
         <>
-            {tick.map((l, i) => <path key={i} stroke='lightgrey' strokeOpacity={props.showGrid? '0.8':'0.0'} style={{ strokeWidth: 1, transition: 'd 0.5s' }} d={`M ${context.XTransformation(l)} ${props.height - props.offsetBottom} V ${props.offsetTop}`} />)}
-            {tick.map((l, i) => <path key={i} stroke='black' style={{ strokeWidth: 1, transition: 'd 0.5s' }} d={`M ${context.XTransformation(l)} ${props.height - props.offsetBottom + 6} v ${-6}`} />)}
-            {tick.map((l, i) => <text fill={'black'} key={i} style={{ fontSize: '1em', textAnchor: 'middle', dominantBaseline: 'hanging', transition: 'x 0.5s, y 0.5s' }} y={props.height - props.offsetBottom + 8} x={context.XTransformation(l)}>{(l.toFixed(getDigits(l)))}</text>)}
+            {tick.map((l, i) => <path key={(l.toFixed(50))} stroke='lightgrey' strokeOpacity={props.showGrid? '0.8':'0.0'} style={{ strokeWidth: 1, transition: 'd 0.5s' }} d={`M ${context.XTransformation(l)} ${props.height - props.offsetBottom} V ${props.offsetTop}`} />)}
+            {tick.map((l, i) => <path key={(l.toFixed(50))} stroke='black' style={{ strokeWidth: 1, transition: 'd 0.5s' }} d={`M ${context.XTransformation(l)} ${props.height - props.offsetBottom + 6} v ${-6}`} />)}
+            {tick.map((l, i) => <text fill={'black'} key={(l.toFixed(50))} style={{ fontSize: '1em', textAnchor: 'middle', dominantBaseline: 'hanging', transition: 'x 0.5s, y 0.5s' }} y={props.height - props.offsetBottom + 8} x={context.XTransformation(l)}>{(l.toFixed(getDigits(l)))}</text>)}
         </>
         : null}
     {props.label !== undefined ? <text fill={'black'} style={{ fontSize: '1em', textAnchor: 'middle', dominantBaseline: 'middle' }} x={props.offsetLeft + (( props.width - props.offsetLeft - props.offsetRight) / 2)}
