@@ -52,9 +52,9 @@ export namespace DefaultSearch {
     export function Meter(props: IProps<SystemCenter.Types.DetailedMeter>) {
 
       const defaultSearchcols: Search.IField<SystemCenter.Types.DetailedMeter>[] = [
-        { label: 'AssetKey', key: 'AssetKey', type: 'string', isPivotField: false },
+        { label: 'Key', key: 'AssetKey', type: 'string', isPivotField: false },
         { label: 'Name', key: 'Name', type: 'string', isPivotField: false },
-        { label: 'Location', key: 'Location', type: 'string', isPivotField: false },
+        { label: 'Substation', key: 'Location', type: 'string', isPivotField: false },
         { label: 'Make', key: 'Make', type: 'string', isPivotField: false },
         { label: 'Model', key: 'Model', type: 'string', isPivotField: false },
         { label: 'Number of Assets', key: 'MappedAssets', type: 'number', isPivotField: false },
@@ -189,7 +189,7 @@ export namespace DefaultSearch {
 
         const defaultSearchcols: Search.IField<OpenXDA.Types.AssetGroup>[] = [
             { label: 'Name', key: 'Name', type: 'string', isPivotField: false },
-            { label: 'Number of Meter', key: 'Meters', type: 'integer', isPivotField: false },
+            { label: 'Number of Meters', key: 'Meters', type: 'integer', isPivotField: false },
             { label: 'Number of Transmission Assets', key: 'Assets', type: 'integer', isPivotField: false },
             { label: 'Number of Users', key: 'Users', type: 'integer', isPivotField: false },
             { label: 'Show in PQ Dashboard', key: 'DisplayDashboard', type: 'boolean', isPivotField: false },      
