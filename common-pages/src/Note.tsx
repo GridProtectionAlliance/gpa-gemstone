@@ -192,7 +192,7 @@ function Note(props: IProps)  {
 	if (dataStatus === "error")
 		return (<div style={{ width: '100%', height: '100%'}}>
 						 <div style={{height: '40px', margin:'auto', marginTop: 'calc(50% - 20 px)'}}>
-							 <ServerErrorIcon Show={true} Size={40} Label={'A Server Error Occured. Please Reload the Application'}/>
+							 <ServerErrorIcon Show={true} Size={40} />
 						 </div>
 					 </div>)
 
