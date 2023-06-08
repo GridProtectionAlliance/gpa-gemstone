@@ -39,7 +39,8 @@ interface IProps<T> {
   Help?: string|JSX.Element;
   Style?: React.CSSProperties;
   AllowNull?: boolean;
-  Size?: 'small'|'large'
+  Size?: 'small'|'large',
+  DefaultValue?: number
 }
 
 
@@ -60,6 +61,14 @@ export default function Input<T>(props: IProps<T>) {
       setInternal(false);
      }, [props.Record[props.Field]]);
 
+  function onBlur() {
+    const allowNull = props.AllowNull === undefined? false : props.AllowNull;
+    if (!allowNull && (props.Type === 'number' || props.Type === 'integer' ) && heldVal == '') {
+      setInternal(false);
+      props.Setter({ ...props.Record, [props.Field]: props.DefaultValue ?? 0 });
+    }
+  }
+
 	function valueChange(value: string) {
         setInternal(true);
 
@@ -70,12 +79,18 @@ export default function Input<T>(props: IProps<T>) {
           props.Setter({ ...props.Record, [props.Field]: v !== '' ? parseFloat(v) : null });
           setHeldVal(v);
         }
+        else if (v === '') {
+          setHeldVal(v);
+        }
       
     }
     else if (props.Type === 'integer') {
         if (IsInteger(value) || (value === '' && allowNull)) {
             props.Setter({ ...props.Record, [props.Field]: value !== '' ? parseFloat(value) : null });
             setHeldVal(value);
+        }
+        else if (value === '') {
+          setHeldVal(value);
         }
     }
     else {
@@ -87,7 +102,7 @@ export default function Input<T>(props: IProps<T>) {
   const showLabel = props.Label !== "";
   const showHelpIcon = props.Help !== undefined;
   const label = props.Label === undefined ? props.Field : props.Label;
-
+  
   return (
     <div className={"form-group " + (props.Size === 'large'? 'form-group-lg' : '') + (props.Size === 'small'? 'form-group-sm' : '')} style={props.Style}>
     {showHelpIcon || showLabel ?
@@ -106,6 +121,7 @@ export default function Input<T>(props: IProps<T>) {
         onChange={(evt) => valueChange(evt.target.value)}
         value={heldVal}
         disabled={props.Disabled == null ? false : props.Disabled}
+        onBlur={onBlur}
       />
       <div className="invalid-feedback">
         {props.Feedback == null ? props.Field + ' is a required field.' : props.Feedback}
