@@ -60,6 +60,7 @@ export interface TableProps<T> {
     tbodyStyle?: React.CSSProperties;
     tbodyClass?: string;
     selected?(data: T): boolean;
+    onDragStart?:((event: any) => void);
     rowStyle?: React.CSSProperties;
     keySelector?: (data: T) => string;
     /**
@@ -74,13 +75,14 @@ export default function Table<T>(props: TableProps<T>) {
     return (
         <table className={props.tableClass !== undefined ? props.tableClass : ''} style={props.tableStyle}>
             <Header<T> Class={props.theadClass} Style={props.theadStyle} Cols={props.cols} SortKey={props.sortKey} Ascending={props.ascending} Click={(d, e) => handleSort(d, e)} />
-            <Rows<T> Data={props.data} Cols={props.cols} RowStyle={props.rowStyle} BodyStyle={props.tbodyStyle} BodyClass={props.tbodyClass} Click={(data, e) => (props.onClick === undefined? null : props.onClick(data, e))} Selected={props.selected} KeySelector={props.keySelector} />
+            <Rows<T> 
+            DragStart={props.onDragStart} Data={props.data} Cols={props.cols} RowStyle={props.rowStyle} BodyStyle={props.tbodyStyle} BodyClass={props.tbodyClass} Click={(data, e) => (props.onClick === undefined? null : props.onClick(data, e))} Selected={props.selected} KeySelector={props.keySelector} />
             {props.lastRow !== undefined? <tr style={(props.rowStyle !== undefined) ? { ...props.rowStyle } : {}} key={-1}>
                 {props.lastRow}
             </tr> : null}
         </table>
     );
-
+    
     function handleSort(
         data: { colKey: string; colField?: keyof T; ascending: boolean },
         event: React.MouseEvent<HTMLTableHeaderCellElement, MouseEvent>,
@@ -97,6 +99,7 @@ interface IRowProps<T> {
     BodyStyle?: React.CSSProperties,
     BodyClass?: string,
     Click: (data: { colKey: string, colField?: keyof T, row: T, data: T[keyof T] | null, index: number }, e: React.MouseEvent<HTMLTableHeaderCellElement, MouseEvent>) => void,
+    DragStart?:((event: any) => void)
     Selected?: ((data: T) => boolean);
     KeySelector?: (data: T) => string;
 }
@@ -106,7 +109,7 @@ export function Rows<T>(props: IRowProps<T>) {
 
     const rows = props.Data.map((item, rowIndex) => {
         const cells = props.Cols.map((colData) => {
-            return <Cell<T> key={colData.key} Style={colData.rowStyle} DataKey={colData.key} DataField={colData.field} Object={item} RowIndex={rowIndex} Content={colData.content} Click={(data, e) => props.Click(data, e)} />
+            return <Cell<T> key={colData.key} Style={colData.rowStyle} DataKey={colData.key} DataField={colData.field} Object={item} RowIndex={rowIndex} Content={colData.content} Click={(data, e) => props.Click(data, e)} DragStart={props.DragStart} />
         });
 
         const style: React.CSSProperties = (props.RowStyle !== undefined) ? { ...props.RowStyle } : {};
@@ -143,7 +146,8 @@ interface ICellProps<T> {
     Object: T,
     RowIndex: number,
     Content?: ((item: T, key: string, field: keyof T | undefined, style: React.CSSProperties, index: number) => React.ReactNode),
-    Click: (data: { colKey: string, colField?: keyof T, row: T, data: T[keyof T] | null, index: number }, e: React.MouseEvent<HTMLTableHeaderCellElement, MouseEvent>) => void
+    Click: (data: { colKey: string, colField?: keyof T, row: T, data: T[keyof T] | null, index: number }, e: React.MouseEvent<HTMLTableHeaderCellElement, MouseEvent>) => void,
+    DragStart?:((event: any) => void)
 }
 
 function Cell<T>(props: ICellProps<T>) {
@@ -157,6 +161,7 @@ function Cell<T>(props: ICellProps<T>) {
         <td
             style={css}
             onClick={(e) => props.Click({ colKey: props.DataKey, colField: props.DataField, row: props.Object, data: getFieldValue(), index: props.RowIndex }, e)}
+            draggable={props.DragStart !== undefined} onDragStart={props.DragStart}
         >
             {getFieldContent()}
         </td>
