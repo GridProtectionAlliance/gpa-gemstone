@@ -40,8 +40,8 @@ interface IProps<T> {
 
 export default function DateTimePicker<T>(props: IProps<T>) {
   // Formats that will be used for dateBoxes
-  const boxFormat = "YYYY-MM-DD" + (props.Type === undefined || props.Type === 'date' ? "" : "[T]hh:mm:ss");
-  const recordFormat = props.Format !== undefined ? props.Format : "YYYY-MM-DD" + (props.Type === undefined || props.Type === 'date' ? "" : "[T]hh:mm:ss.SSS[Z]");
+  const boxFormat = "YYYY-MM-DD" + (props.Type === undefined || props.Type === 'date' ? "" : "[T]HH:mm:ss");
+  const recordFormat = props.Format !== undefined ? props.Format : "YYYY-MM-DD" + (props.Type === undefined || props.Type === 'date' ? "" : "[T]HH:mm:ss.SSS[Z]");
   const parse = (r: T) => moment(props.Record[props.Field] as any, recordFormat);
   const divRef = React.useRef<any|null>(null);
 
