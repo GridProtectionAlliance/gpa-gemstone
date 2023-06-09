@@ -63,7 +63,7 @@ export default function Input<T>(props: IProps<T>) {
 
   function onBlur() {
     const allowNull = props.AllowNull === undefined? false : props.AllowNull;
-    if (!allowNull && (props.Type === 'number' || props.Type === 'integer' ) && heldVal == '') {
+    if (!allowNull && (props.Type === 'number' || props.Type === 'integer' ) && heldVal === '') {
       setInternal(false);
       props.Setter({ ...props.Record, [props.Field]: props.DefaultValue ?? 0 });
     }
