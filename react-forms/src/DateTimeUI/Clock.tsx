@@ -58,12 +58,23 @@ export default function Clock(props: IProps) {
 
   function increase(type: Parameter) {
     const d = moment(props.DateTime).add(1,type);
-    setHour(d.format("HH"));
+    if (type ==='h')
+      setHour(d.format("HH"));
+    if (type === 'm')
+      setMinute(d.format("mm"));
+    if (type === 's')
+      setSecond(d.format("ss"))
+    
   }
 
   function decrease(type: Parameter) {
     const d = moment(props.DateTime).subtract(1,type);
+    if (type ==='h')
     setHour(d.format("HH"));
+    if (type === 'm')
+      setMinute(d.format("mm"));
+    if (type === 's')
+      setSecond(d.format("ss"))
   }
 
   return (
