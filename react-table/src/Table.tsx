@@ -60,7 +60,7 @@ export interface TableProps<T> {
     tbodyStyle?: React.CSSProperties;
     tbodyClass?: string;
     selected?(data: T): boolean;
-    onDragStart?:((event: any) => void);
+    onDragStart?:((data: { colKey: string, colField?: keyof T, row: T, data: T[keyof T] | null, index: number }, e: any) => void);
     rowStyle?: React.CSSProperties;
     keySelector?: (data: T) => string;
     /**
@@ -99,7 +99,7 @@ interface IRowProps<T> {
     BodyStyle?: React.CSSProperties,
     BodyClass?: string,
     Click: (data: { colKey: string, colField?: keyof T, row: T, data: T[keyof T] | null, index: number }, e: React.MouseEvent<HTMLTableHeaderCellElement, MouseEvent>) => void,
-    DragStart?:((event: any) => void)
+    DragStart?:((data: { colKey: string, colField?: keyof T, row: T, data: T[keyof T] | null, index: number }, e: any) => void)
     Selected?: ((data: T) => boolean);
     KeySelector?: (data: T) => string;
 }
@@ -147,11 +147,12 @@ interface ICellProps<T> {
     RowIndex: number,
     Content?: ((item: T, key: string, field: keyof T | undefined, style: React.CSSProperties, index: number) => React.ReactNode),
     Click: (data: { colKey: string, colField?: keyof T, row: T, data: T[keyof T] | null, index: number }, e: React.MouseEvent<HTMLTableHeaderCellElement, MouseEvent>) => void,
-    DragStart?:((event: any) => void)
+    DragStart?: (data: { colKey: string, colField?: keyof T, row: T, data: T[keyof T] | null, index: number }, e: any) => void,
 }
 
 function Cell<T>(props: ICellProps<T>) {
     const css: React.CSSProperties = (props.Style !== undefined) ? { ...props.Style } : {};
+    if (props.DragStart !== undefined) css.cursor = "grab";
 
     const getFieldValue = () => props.DataField !== undefined ? props.Object[props.DataField] : null;
 
@@ -161,7 +162,8 @@ function Cell<T>(props: ICellProps<T>) {
         <td
             style={css}
             onClick={(e) => props.Click({ colKey: props.DataKey, colField: props.DataField, row: props.Object, data: getFieldValue(), index: props.RowIndex }, e)}
-            draggable={props.DragStart !== undefined} onDragStart={props.DragStart}
+            draggable={props.DragStart !== undefined} 
+            onDragStart={(e) => { if (props.DragStart !== undefined) props.DragStart({ colKey: props.DataKey, colField: props.DataField, row: props.Object, data: getFieldValue(), index: props.RowIndex }, e);}}
         >
             {getFieldContent()}
         </td>
