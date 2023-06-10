@@ -44,7 +44,8 @@ interface IProps {
 	AllowAdd?: boolean,
 	ShowCard?: boolean,
 	DefaultApplication?: OpenXDA.Types.NoteApplication,
-	Filter?: (note: OpenXDA.Types.Note) => boolean
+	Filter?: (note: OpenXDA.Types.Note) => boolean,
+	AdditionalCollumns?: Column<OpenXDA.Types.Note>[]
 }
 
 
@@ -62,18 +63,9 @@ function Note(props: IProps)  {
 		{ 
 			key: 'UserAccount', field: 'UserAccount', label: 'User',
 		 	headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }
-		},
-		{
-			key: 'buttons',
-			label: '',
-			headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, 
-			content: (item: OpenXDA.Types.Note) => <>
-					{allowEdit? <button className="btn btn-sm" onClick={() => handleEdit(item)}><span> {Pencil} </span></button> : null }
-					{allowRemove? <button className="btn btn-sm" onClick={() => dispatch(props.NoteSlice.DBAction({verb: 'DELETE', record: item}))}>
-					<span> {TrashCan} </span></button> : null }
-			</>
-		}
+		}		
 	]
+
 	const allowEdit = props.AllowEdit === undefined? true : props.AllowEdit;
 	const allowRemove = props.AllowRemove === undefined? true : props.AllowRemove;
 	const allowAdd = props.AllowAdd === undefined? true : props.AllowAdd;
@@ -125,6 +117,10 @@ function Note(props: IProps)  {
 
 	React.useEffect(() => {
 		const c = standardCollumns;
+
+		if (props.AdditionalCollumns !== undefined)
+			c.push(...props.AdditionalCollumns);
+		
 		if (props.NoteTags.length > 1)
 			c.push({ key: 'NoteTagID', field: 'NoteTagID', label: 'Type', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' },
 			 content: (n) => props.NoteTags.find(t => t.ID === n.NoteTagID)?.Name }
@@ -133,8 +129,20 @@ function Note(props: IProps)  {
 			c.push({ key: 'NoteApplicationID', field: 'NoteApplicationID', label: 'Application', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' },
 			 content: (n) => props.NoteApplications.find(t => t.ID === n.NoteApplicationID)?.Name }
 			);
+
+		c.push({
+			key: 'buttons',
+			label: '',
+			headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' }, 
+			content: (item: OpenXDA.Types.Note) => <>
+					{allowEdit? <button className="btn btn-sm" onClick={() => handleEdit(item)}><span> {Pencil} </span></button> : null }
+					{allowRemove? <button className="btn btn-sm" onClick={() => dispatch(props.NoteSlice.DBAction({verb: 'DELETE', record: item}))}>
+					<span> {TrashCan} </span></button> : null }
+			</>
+		});
+		
 		setCollumns(c);
-	}, [props.NoteTags,props.NoteApplications])
+	}, [props.NoteTags,props.NoteApplications, props.AdditionalCollumns])
 	
 	React.useEffect(() => {
 			setNotes(data.filter(n => (props.Filter === undefined? true : props.Filter(n))));
