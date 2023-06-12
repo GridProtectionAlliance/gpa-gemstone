@@ -46,30 +46,30 @@ interface IProps<T> extends TableProps<T> {
      */
     onSettingsChange?: (open: boolean) => void
     /**
-     * The key used to store Collumns in local storage
+     * The key used to store columns in local storage
      */
     localStorageKey?: string
 }
 
 /**
- * Table with modal to show and hide collumns
+ * Table with modal to show and hide columns
  */
 export default function ConfigurableTable<T>(props: IProps<T>) {
     const [showSettings, setShowSettings] = React.useState<boolean>(false);
-    const [collumns, setCollumns] = React.useState<Column<T>[]>(props.cols);
+    const [columns, setColumns] = React.useState<Column<T>[]>(props.cols);
     const [colKeys, setColKeys] = React.useState<string[]>(props.cols.map(d => d.key));
     const [colEnabled, setColEnabled] = React.useState<boolean[]>(props.cols.map(d => props.defaultColumns.findIndex(v => v === d.key) > -1 ||
         (props.requiredColumns !== undefined && props.requiredColumns.findIndex(v => v === d.key) > -1) || checkLocal(d.key)
     ));
     const [hover,setHover] = React.useState<boolean>(false);
-    const [guid, setGuid] = React.useState<string>(CreateGuid());
+    const [guid] = React.useState<string>(CreateGuid());
     
     React.useEffect(() => {
         if (props.cols.length !== colEnabled.length) {
             setColEnabled(props.cols.map(d => props.defaultColumns.findIndex(v => v === d.key) > -1 || (props.requiredColumns !== undefined && props.requiredColumns.findIndex(v => v === d.key) > -1) || checkLocal(d.key)));
         } else {
-            // We need to redo this set collumn here to capture function changes within collumns
-            setCollumns(props.cols.filter((c, i) => colEnabled[i]));
+            // We need to redo this set collumn here to capture function changes within columns
+            setColumns(props.cols.filter((c, i) => colEnabled[i]));
         }
     }, [props.cols, colEnabled]);
     
@@ -116,7 +116,7 @@ export default function ConfigurableTable<T>(props: IProps<T>) {
     return (
         <>
             <Table
-                cols={[...collumns, 
+                cols={[...columns, 
                     { 
                         key: 'SettingsCog', label: <div style={{marginLeft: -25}} 
                             onMouseEnter={() => setHover(true)}
@@ -159,7 +159,7 @@ export default function ConfigurableTable<T>(props: IProps<T>) {
                 ConfirmText={'Reset Defaults'}
                 ConfirmBtnClass={'btn-primary float-left'}
                 >
-                <CollumnSelection requiredColumns={props.requiredColumns} colKeys={colKeys} onChange={changeCollums} isChecked={(i) => colEnabled[i]}/>
+                <ColumnSelection requiredColumns={props.requiredColumns} columns={columns} onChange={changeCollums} isChecked={(i) => colEnabled[i]}/>
             </Modal>
             : (showSettings? <Portal node={document && document.getElementById(props.settingsPortal)}>
                 <div className="card">
@@ -168,7 +168,7 @@ export default function ConfigurableTable<T>(props: IProps<T>) {
                         <button type="button" className="close" onClick={() => setShowSettings(false) }>&times;</button>
                     </div>
                     <div className="card-body" style={{ maxHeight: 'calc(100% - 210px)', overflowY: 'auto' }}>
-                        <CollumnSelection requiredColumns={props.requiredColumns} colKeys={colKeys} onChange={changeCollums} isChecked={(i) => colEnabled[i]}/>
+                        <ColumnSelection requiredColumns={props.requiredColumns} columns={columns} onChange={changeCollums} isChecked={(i) => colEnabled[i]}/>
                     </div>
                     <div className="card-footer">
                     <button type="button"
@@ -194,21 +194,21 @@ export default function ConfigurableTable<T>(props: IProps<T>) {
 
 interface IColSelectionProps {
     requiredColumns?: string[],
-    colKeys: string[],
+    columns: Column<T>[],
     onChange: (index: number, key: string) => void,
     isChecked: (index: number) => boolean
  }
 
-const CollumnSelection = (props: IColSelectionProps) => {
+const ColumnSelection = (props: IColSelectionProps) => {
 
-    function createCollumns(){
+    function createColumns(){
         let j = 0;
         const set: JSX.Element[][] = [[],[],[]];
 
-        props.colKeys.forEach((k,i) => {
-            if (props.requiredColumns === undefined || props.requiredColumns.findIndex(v => v === k) > -1)
+        props.columns.forEach((k,i) => {
+            if (props.requiredColumns === undefined || props.requiredColumns.findIndex(v => v === k.key) > -1)
                 return;
-            set[j%3].push(<li key={k}><label><input type="checkbox" onChange={() => props.onChange(i, k)} checked={props.isChecked(i)} /> {k} </label></li>);
+            set[j%3].push(<li key={k.key}><label><input type="checkbox" onChange={() => props.onChange(i, k.key)} checked={props.isChecked(i)} /> {k.label} </label></li>);
             j = j + 1;
         })
 
@@ -225,7 +225,7 @@ const CollumnSelection = (props: IColSelectionProps) => {
 
     return <>
         <div className='row'>          
-            {createCollumns()}
+            {createColumns()}
         </div>
      </>
 }
