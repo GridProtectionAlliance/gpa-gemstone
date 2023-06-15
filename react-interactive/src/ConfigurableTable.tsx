@@ -115,7 +115,7 @@ export default function ConfigurableTable<T>(props: IProps<T>) {
     }
     return (
         <>
-            <Table
+            <Table<T>
                 cols={[...columns, 
                     { 
                         key: 'SettingsCog', label: <div style={{marginLeft: -25}} 
@@ -159,7 +159,7 @@ export default function ConfigurableTable<T>(props: IProps<T>) {
                 ConfirmText={'Reset Defaults'}
                 ConfirmBtnClass={'btn-primary float-left'}
                 >
-                <ColumnSelection requiredColumns={props.requiredColumns} columns={columns} onChange={changeCollums} isChecked={(i) => colEnabled[i]}/>
+                <ColumnSelection<T> requiredColumns={props.requiredColumns} columns={columns} onChange={changeCollums} isChecked={(i) => colEnabled[i]}/>
             </Modal>
             : (showSettings? <Portal node={document && document.getElementById(props.settingsPortal)}>
                 <div className="card">
@@ -168,7 +168,7 @@ export default function ConfigurableTable<T>(props: IProps<T>) {
                         <button type="button" className="close" onClick={() => setShowSettings(false) }>&times;</button>
                     </div>
                     <div className="card-body" style={{ maxHeight: 'calc(100% - 210px)', overflowY: 'auto' }}>
-                        <ColumnSelection requiredColumns={props.requiredColumns} columns={columns} onChange={changeCollums} isChecked={(i) => colEnabled[i]}/>
+                        <ColumnSelection<T> requiredColumns={props.requiredColumns} columns={columns} onChange={changeCollums} isChecked={(i) => colEnabled[i]}/>
                     </div>
                     <div className="card-footer">
                     <button type="button"
@@ -192,14 +192,14 @@ export default function ConfigurableTable<T>(props: IProps<T>) {
 }
 
 
-interface IColSelectionProps {
+interface IColSelectionProps<T> {
     requiredColumns?: string[],
     columns: Column<T>[],
     onChange: (index: number, key: string) => void,
     isChecked: (index: number) => boolean
  }
 
-const ColumnSelection = (props: IColSelectionProps) => {
+function ColumnSelection<T>(props: IColSelectionProps<T>) {
 
     function createColumns(){
         let j = 0;
