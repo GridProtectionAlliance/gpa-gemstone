@@ -20,7 +20,7 @@
 //       Generated original version of source code.
 // ******************************************************************************************************
 
-import { createSlice, createAsyncThunk, AsyncThunk, Slice, Draft, ActionCreatorWithPayload, PayloadAction, ActionReducerMapBuilder, SerializedError } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk, AsyncThunk, Slice, Draft, PayloadAction, ActionReducerMapBuilder, SerializedError } from '@reduxjs/toolkit';
 import * as _ from 'lodash';
 import { Application } from '@gpa-gemstone/application-typings';
 import * as $ from 'jquery';
@@ -48,7 +48,7 @@ interface U { ID: number|string }
 
 interface IError {
 	Message: string,
-	Verb: 'POST' | 'DELETE' | 'PATCH' | 'FETCH' | 'SEARCH'
+	Verb: 'POST' | 'DELETE' | 'PATCH' | 'FETCH' | 'SEARCH' | 'PAGE'
 	Time: string
 }
 
@@ -66,25 +66,39 @@ export interface IState<T extends U> {
     Filter: Search.IFilter<T>[]
 }
 
+interface IPagedState< T extends U> extends IState<T> {
+    PagedStatus: Application.Types.Status,
+    ActivePagedID: string[],
+    CurrentPage: number
+    TotalPages: number
+    PagedData: T[],
+    PagedSortField: keyof T,
+    PagedAscending: boolean,
+    PagedFilter:  Search.IFilter<T>[]
+}
+
 export default class GenericSlice<T extends U> {
     Name: string = "";
     APIPath: string = "";
-    Slice: ( Slice<IState<T>> );
+    Slice: ( Slice<IPagedState<T>> );
     Fetch: (AsyncThunk<any, void | number | string, {}>);
     SetChanged: (AsyncThunk<any, void, {}>);
     DBAction: (AsyncThunk<any, { verb: 'POST' | 'DELETE' | 'PATCH', record: T }, {}> );
     DBSearch: (AsyncThunk<any, { filter: Search.IFilter<T>[], sortField?: keyof T, ascending?: boolean }, {}> );
+    PagedSearch: (AsyncThunk<any, { filter: Search.IFilter<T>[], sortField?: keyof T, ascending?: boolean, page?: number }, {}> );
     Sort: (AsyncThunk<any, {SortField: keyof T, Ascending: boolean}, {}>);
     AdditionalThunk: {[key: string]: AsyncThunk<any, any, {}>};
     Reducer: any;
 
     private fetchHandle: JQuery.jqXHR<any>|null;
     private searchHandle: JQuery.jqXHR<any>|null;
-    private actionDependency: ((state: IState<T>, action: string, arg: any) => void)| null;
+    private pageHandle: JQuery.jqXHR<any>|null;
 
-    private actionFullfilledDependency: ((state: IState<T>, action: string , arg: any, requestID: string) => void)| null;
-    private actionPendingDependency: ((state: IState<T>, action: string , arg: any, requestID: string)=> void)| null;
-    private actionErrorDependency: ((state: IState<T>, action: string , arg: any, requestID: string) => void)| null;
+    private actionDependency: ((state: IPagedState<T>, action: string, arg: any) => void)| null;
+
+    private actionFullfilledDependency: ((state: IPagedState<T>, action: string , arg: any, requestID: string) => void)| null;
+    private actionPendingDependency: ((state: IPagedState<T>, action: string , arg: any, requestID: string)=> void)| null;
+    private actionErrorDependency: ((state: IPagedState<T>, action: string , arg: any, requestID: string) => void)| null;
 
     /**
      * Creates a new GenericSlice of type T, which can be used to perform basic CRUD operations against
@@ -102,6 +116,7 @@ export default class GenericSlice<T extends U> {
 
         this.fetchHandle = null;
         this.searchHandle = null;
+        this.pageHandle = null;
         this.actionDependency = null;
 
         this.actionPendingDependency = null;
@@ -122,13 +137,13 @@ export default class GenericSlice<T extends U> {
 
 
         const additionalThunks: {[key: string]: any} = {};
-        let additionalBuilder: (builder: ActionReducerMapBuilder<IState<T>>) => void = () => { _.noop(); };
+        let additionalBuilder: (builder: ActionReducerMapBuilder<IPagedState<T>>) => void = () => { _.noop(); };
 
         if (options !== null && options.AddionalThunks !== undefined) {
 
             options.AddionalThunks.forEach((thunk) => {
                 additionalThunks[thunk.Name] = createAsyncThunk(`${name}/${thunk.Name}`, async (arg: any|void, { getState }) => {
-                    const state = (getState() as any)[name] as IState<T>;
+                    const state = (getState() as any)[name] as IPagedState<T>;
                     if (this.actionDependency !== null)
                         this.actionDependency(state,`${name}/${thunk.Name}`, arg)
 
@@ -141,23 +156,23 @@ export default class GenericSlice<T extends U> {
 
             additionalBuilder = (builder) => {
                  options.AddionalThunks?.forEach((thunk) => {
-                        builder.addCase(fetch.fulfilled, (state: WritableDraft<IState<T>>, action: PayloadAction<any, string, {requestId: string, arg: any|void }, never>) => {
+                        builder.addCase(fetch.fulfilled, (state: WritableDraft<IPagedState<T>>, action: PayloadAction<any, string, {requestId: string, arg: any|void }, never>) => {
                             if (thunk.OnSuccess !== undefined)
                                 thunk.OnSuccess(state,action.meta.requestId,action.payload,action.meta.arg);
                             if (this.actionFullfilledDependency !== null)
-                                this.actionFullfilledDependency(state as IState<T>,`${name}/${thunk.Name}`, action.meta.arg, action.meta.requestId)
+                                this.actionFullfilledDependency(state as IPagedState<T>,`${name}/${thunk.Name}`, action.meta.arg, action.meta.requestId)
                         });                    
-                        builder.addCase(fetch.pending, (state: WritableDraft<IState<T>>, action: PayloadAction<undefined, string,  {arg: any | void, requestId: string},never>) => {
+                        builder.addCase(fetch.pending, (state: WritableDraft<IPagedState<T>>, action: PayloadAction<undefined, string,  {arg: any | void, requestId: string},never>) => {
                             if (thunk.OnPending !== undefined)
                                 thunk.OnPending(state,action.meta.requestId,action.meta.arg);
                             if (this.actionPendingDependency !== null)
-                                this.actionPendingDependency(state as IState<T>,`${name}/${thunk.Name}`, action.meta.arg, action.meta.requestId)
+                                this.actionPendingDependency(state as IPagedState<T>,`${name}/${thunk.Name}`, action.meta.arg, action.meta.requestId)
                         });
-                        builder.addCase(fetch.rejected, (state: WritableDraft<IState<T>>, action: PayloadAction<unknown, string,  {arg: number | string | void, requestId: string},SerializedError>) => {
+                        builder.addCase(fetch.rejected, (state: WritableDraft<IPagedState<T>>, action: PayloadAction<unknown, string,  {arg: number | string | void, requestId: string},SerializedError>) => {
                             if (thunk.OnFailure !== undefined)
                                 thunk.OnFailure(state,action.meta.requestId,action.payload,action.meta.arg);
                             if (this.actionErrorDependency !== null)
-                                this.actionErrorDependency(state as IState<T>,`${name}/${thunk.Name}`, action.meta.arg, action.meta.requestId)
+                                this.actionErrorDependency(state as IPagedState<T>,`${name}/${thunk.Name}`, action.meta.arg, action.meta.requestId)
                         });
                 });
             }
@@ -165,7 +180,7 @@ export default class GenericSlice<T extends U> {
 
         const fetch = createAsyncThunk(`${name}/Fetch${name}`, async (parentID:number | void | string, { signal, getState }) => {
             
-            const state = (getState() as any)[name] as IState<T>;
+            const state = (getState() as any)[name] as IPagedState<T>;
 
             if (this.actionDependency !== null)
                 this.actionDependency(state,`${name}/Fetch${name}`, parentID)
@@ -186,7 +201,7 @@ export default class GenericSlice<T extends U> {
         const dBAction = createAsyncThunk(`${name}/DBAction${name}`, async (args: {verb: 'POST' | 'DELETE' | 'PATCH', record: T}, { signal, getState }) => {
           const handle = this.Action(args.verb, args.record);
 
-          const state = (getState() as any)[name] as IState<T>;
+          const state = (getState() as any)[name] as IPagedState<T>;
           if (this.actionDependency !== null)
             this.actionDependency(state,`${name}/DBAction${name}`, args)
 
@@ -199,7 +214,7 @@ export default class GenericSlice<T extends U> {
 
         const dBSearch = createAsyncThunk(`${name}/Search${name}`, async (args: { filter:  Search.IFilter<T>[], sortField?: keyof T, ascending?: boolean}, { getState, signal }) => {
 
-            const state = (getState() as any)[name] as IState<T>;
+            const state = (getState() as any)[name] as IPagedState<T>;
             if (this.actionDependency !== null)
                 this.actionDependency(state,`${name}/Search${name}`, args)
 
@@ -223,7 +238,7 @@ export default class GenericSlice<T extends U> {
         });
 
         const dBSort = createAsyncThunk(`${name}/DBSort${name}`, async (args: {SortField: keyof T, Ascending: boolean}, { signal, getState, dispatch }) => {
-            const state = (getState() as any)[name] as IState<T>;
+            const state = (getState() as any)[name] as IPagedState<T>;
 
             if (this.actionDependency !== null)
                 this.actionDependency(state,`${name}/DBSort${name}`, args)
@@ -250,7 +265,33 @@ export default class GenericSlice<T extends U> {
   
             
             return await handle
-          });
+        });
+
+        const dBPage = createAsyncThunk(`${name}/Page${name}`, async (args: { filter:  Search.IFilter<T>[], sortField?: keyof T, ascending?: boolean, page?: number}, { getState, signal }) => {
+
+            const state = (getState() as any)[name] as IPagedState<T>;
+            if (this.actionDependency !== null)
+                this.actionDependency(state,`${name}/Page${name}`, args)
+
+            let sortfield = args.sortField;
+            let asc = args.ascending;
+            const page = args.page ?? 0;
+
+            sortfield = sortfield === undefined ? state.PagedSortField : sortfield;
+            asc = asc === undefined ? state.PagedAscending : asc;
+
+            if (this.pageHandle != null && this.pageHandle.abort != null)
+                this.pageHandle.abort('Prev');
+
+            const handle = this.FetchPage(args.filter, asc,sortfield, page, state.ParentID);
+            this.pageHandle = handle;
+
+            signal.addEventListener('abort', () => {
+                if (handle.abort !== undefined) handle.abort();
+            });
+
+            return await handle;
+        });
 
         const setChanged = createAsyncThunk(`${name}/SetChanged${name}`, async (args: void, {}) => { return; });
           
@@ -267,28 +308,36 @@ export default class GenericSlice<T extends U> {
                 SearchResults: [],
 				Filter: [],
                 ActiveFetchID: [],
-                ActiveSearchID: []
-            } as IState<T>,
+                ActiveSearchID: [],
+                PagedStatus: 'unintiated',
+                ActivePagedID: [],
+                CurrentPage: 0,
+                TotalPages: 0,
+                PagedData: [],
+                PagedSortField: defaultSort,
+                PagedAscending: ascending,
+                PagedFilter:  []
+            } as IPagedState<T>,
             reducers: {},
-            extraReducers: (builder: ActionReducerMapBuilder<IState<T>>) => {
-                builder.addCase(fetch.fulfilled, (state: WritableDraft<IState<T>>, action: PayloadAction<T[], string, {requestId: string, arg: number | string | void }, never>) => {
+            extraReducers: (builder: ActionReducerMapBuilder<IPagedState<T>>) => {
+                builder.addCase(fetch.fulfilled, (state: WritableDraft<IPagedState<T>>, action: PayloadAction<T[], string, {requestId: string, arg: number | string | void }, never>) => {
                     state.ActiveFetchID = state.ActiveFetchID.filter(id => id !== action.meta.requestId);
                     state.Status = 'idle';
                     state.Error = null;
                     state.Data = JSON.parse(action.payload.toString()) as Draft<T[]>;
                     if (this.actionFullfilledDependency !== null)
-                        this.actionFullfilledDependency(state as IState<T>,`${name}/Fetch${name}`, action.meta.arg, action.meta.requestId)
+                        this.actionFullfilledDependency(state as IPagedState<T>,`${name}/Fetch${name}`, action.meta.arg, action.meta.requestId)
                 });
-                builder.addCase(fetch.pending, (state: WritableDraft<IState<T>>, action: PayloadAction<undefined, string,  {arg: number | string | void, requestId: string},never>) => {
+                builder.addCase(fetch.pending, (state: WritableDraft<IPagedState<T>>, action: PayloadAction<undefined, string,  {arg: number | string | void, requestId: string},never>) => {
                     if (state.ParentID !== (action.meta.arg == null? null : action.meta.arg))
                         state.SearchStatus = 'changed';
                     state.ParentID = (action.meta.arg == null? null : action.meta.arg);
                     state.Status = 'loading';
                     state.ActiveFetchID.push(action.meta.requestId);
                     if (this.actionPendingDependency !== null)
-                        this.actionPendingDependency(state as IState<T>,`${name}/Fetch${name}`, action.meta.arg, action.meta.requestId)
+                        this.actionPendingDependency(state as IPagedState<T>,`${name}/Fetch${name}`, action.meta.arg, action.meta.requestId)
                 });
-                builder.addCase(fetch.rejected, (state: WritableDraft<IState<T>>, action: PayloadAction<unknown, string,  {arg: number | string | void, requestId: string},SerializedError>) => {
+                builder.addCase(fetch.rejected, (state: WritableDraft<IPagedState<T>>, action: PayloadAction<unknown, string,  {arg: number | string | void, requestId: string},SerializedError>) => {
                     state.ActiveFetchID = state.ActiveFetchID.filter(id => id !== action.meta.requestId);
                     if (state.ActiveFetchID.length > 0)
                         return;
@@ -300,15 +349,15 @@ export default class GenericSlice<T extends U> {
 						Time: new Date().toString()
 					}
                     if (this.actionErrorDependency !== null)
-                        this.actionErrorDependency(state as IState<T>,`${name}/Fetch${name}`, action.meta.arg, action.meta.requestId)
+                        this.actionErrorDependency(state as IPagedState<T>,`${name}/Fetch${name}`, action.meta.arg, action.meta.requestId)
                 });
 
-                builder.addCase(dBAction.pending, (state: WritableDraft<IState<T>>, action: PayloadAction<undefined, string, {requestId: string, arg: {verb: 'POST' | 'DELETE' | 'PATCH', record: T} }, never>) => {
+                builder.addCase(dBAction.pending, (state: WritableDraft<IPagedState<T>>, action: PayloadAction<undefined, string, {requestId: string, arg: {verb: 'POST' | 'DELETE' | 'PATCH', record: T} }, never>) => {
                     state.Status = 'loading';
                     if (this.actionPendingDependency !== null)
-                        this.actionPendingDependency(state as IState<T>,`${name}/DBAction${name}`, action.meta.arg, action.meta.requestId)
+                        this.actionPendingDependency(state as IPagedState<T>,`${name}/DBAction${name}`, action.meta.arg, action.meta.requestId)
                 });
-                builder.addCase(dBAction.rejected, (state: WritableDraft<IState<T>>, action: PayloadAction<unknown, string,  {arg: {verb: 'POST' | 'DELETE' | 'PATCH', record: T},requestId: string},SerializedError>) => {
+                builder.addCase(dBAction.rejected, (state: WritableDraft<IPagedState<T>>, action: PayloadAction<unknown, string,  {arg: {verb: 'POST' | 'DELETE' | 'PATCH', record: T},requestId: string},SerializedError>) => {
                     state.Status = 'error';
                     state.Error = {
                         Message: (action.error.message == null? '' : action.error.message),
@@ -316,24 +365,24 @@ export default class GenericSlice<T extends U> {
                         Time: new Date().toString()
                     }
                     if (this.actionErrorDependency !== null)
-                        this.actionErrorDependency(state as IState<T>,`${name}/DBAction${name}`, action.meta.arg, action.meta.requestId)
+                        this.actionErrorDependency(state as IPagedState<T>,`${name}/DBAction${name}`, action.meta.arg, action.meta.requestId)
 
                 });
-                builder.addCase(dBAction.fulfilled, (state: WritableDraft<IState<T>>, action: PayloadAction<T, string, {requestId: string, arg: {verb: 'POST' | 'DELETE' | 'PATCH', record: T} }, never>) => {
+                builder.addCase(dBAction.fulfilled, (state: WritableDraft<IPagedState<T>>, action: PayloadAction<T, string, {requestId: string, arg: {verb: 'POST' | 'DELETE' | 'PATCH', record: T} }, never>) => {
                     state.Status = 'changed';
                     state.SearchStatus = 'changed';
                     state.Error = null;
                     if (this.actionFullfilledDependency !== null)
-                        this.actionFullfilledDependency(state as IState<T>,`${name}/DBAction${name}`, action.meta.arg, action.meta.requestId)
+                        this.actionFullfilledDependency(state as IPagedState<T>,`${name}/DBAction${name}`, action.meta.arg, action.meta.requestId)
                 });
 
-                builder.addCase(dBSearch.pending, (state: WritableDraft<IState<T>>, action: PayloadAction<undefined, string,  {requestId: string, arg: { filter:  Search.IFilter<T>[], sortField?: keyof T, ascending?: boolean}},never>) => {
+                builder.addCase(dBSearch.pending, (state: WritableDraft<IPagedState<T>>, action: PayloadAction<undefined, string,  {requestId: string, arg: { filter:  Search.IFilter<T>[], sortField?: keyof T, ascending?: boolean}},never>) => {
                     state.SearchStatus = 'loading';
                     state.ActiveSearchID.push(action.meta.requestId);
                     if (this.actionPendingDependency !== null)
-                        this.actionPendingDependency(state as IState<T>,`${name}/Search${name}`, action.meta.arg, action.meta.requestId)
+                        this.actionPendingDependency(state as IPagedState<T>,`${name}/Search${name}`, action.meta.arg, action.meta.requestId)
                 });
-                builder.addCase(dBSearch.rejected, (state: WritableDraft<IState<T>>, action: PayloadAction<unknown, string,   {requestId: string, arg: { filter:  Search.IFilter<T>[], sortField?: keyof T, ascending?: boolean}} ,SerializedError> ) => {
+                builder.addCase(dBSearch.rejected, (state: WritableDraft<IPagedState<T>>, action: PayloadAction<unknown, string,   {requestId: string, arg: { filter:  Search.IFilter<T>[], sortField?: keyof T, ascending?: boolean}} ,SerializedError> ) => {
                     state.ActiveSearchID = state.ActiveSearchID.filter(id => id !== action.meta.requestId);
                     if (state.ActiveSearchID.length > 0)
                         return;
@@ -344,23 +393,53 @@ export default class GenericSlice<T extends U> {
                         Time: new Date().toString()
                     }
                     if (this.actionErrorDependency !== null)
-                        this.actionErrorDependency(state as IState<T>,`${name}/Search${name}`, action.meta.arg, action.meta.requestId)
+                        this.actionErrorDependency(state as IPagedState<T>,`${name}/Search${name}`, action.meta.arg, action.meta.requestId)
                 });
-                builder.addCase(dBSearch.fulfilled, (state: WritableDraft<IState<T>>, action: PayloadAction<string, string,  {arg: { filter:  Search.IFilter<T>[], sortfield?: keyof T, ascending?: boolean}, requestId: string},never>) => {
+                builder.addCase(dBSearch.fulfilled, (state: WritableDraft<IPagedState<T>>, action: PayloadAction<string, string,  {arg: { filter:  Search.IFilter<T>[], sortfield?: keyof T, ascending?: boolean}, requestId: string},never>) => {
                     state.ActiveSearchID = state.ActiveSearchID.filter(id => id !== action.meta.requestId);
                     state.SearchStatus = 'idle';
                     state.SearchResults = JSON.parse(action.payload);
                     state.Filter = action.meta.arg.filter;
                     if (this.actionFullfilledDependency !== null)
-                        this.actionFullfilledDependency(state as IState<T>,`${name}/Search${name}`, action.meta.arg, action.meta.requestId)
+                        this.actionFullfilledDependency(state as IPagedState<T>,`${name}/Search${name}`, action.meta.arg, action.meta.requestId)
                 });
-                builder.addCase(dBSort.pending, (state: WritableDraft<IState<T>>, action: PayloadAction<undefined, string,  {requestId: string, arg: {SortField: keyof T, Ascending: boolean} },never>) => {
+
+                builder.addCase(dBPage.pending, (state: WritableDraft<IPagedState<T>>, action: PayloadAction<undefined, string,  {requestId: string, arg: { page?: number, filter:  Search.IFilter<T>[], sortField?: keyof T, ascending?: boolean}},never>) => {
+                    state.PagedStatus = 'loading';
+                    state.ActivePagedID.push(action.meta.requestId);
+                    if (this.actionPendingDependency !== null)
+                        this.actionPendingDependency(state as IPagedState<T>,`${name}/Page${name}`, action.meta.arg, action.meta.requestId)
+                });
+                builder.addCase(dBPage.rejected, (state: WritableDraft<IPagedState<T>>, action: PayloadAction<unknown, string,   {requestId: string, arg: { page?: number, filter:  Search.IFilter<T>[], sortField?: keyof T, ascending?: boolean}} ,SerializedError> ) => {
+                    state.ActivePagedID = state.ActivePagedID.filter(id => id !== action.meta.requestId);
+                    if (state.ActivePagedID.length > 0)
+                        return;
+                    state.PagedStatus = 'error';
+                    state.Error = {
+                        Message: (action.error.message == null? '' : action.error.message),
+                        Verb: 'PAGE',
+                        Time: new Date().toString()
+                    }
+                    if (this.actionErrorDependency !== null)
+                        this.actionErrorDependency(state as IPagedState<T>,`${name}/Page${name}`, action.meta.arg, action.meta.requestId)
+                });
+                builder.addCase(dBPage.fulfilled, (state: WritableDraft<IPagedState<T>>, action: PayloadAction<any, string,  {arg: { page?: number, filter:  Search.IFilter<T>[], sortfield?: keyof T, ascending?: boolean}, requestId: string},never>) => {
+                    state.ActivePagedID = state.ActivePagedID.filter(id => id !== action.meta.requestId);
+                    state.PagedStatus = 'idle';
+                    state.TotalPages = action.payload.NumberOfPages
+                    state.SearchResults = JSON.parse(action.payload.Data);
+                    state.Filter = action.meta.arg.filter;
+                    if (this.actionFullfilledDependency !== null)
+                        this.actionFullfilledDependency(state as IPagedState<T>,`${name}/Page${name}`, action.meta.arg, action.meta.requestId)
+                });
+
+                builder.addCase(dBSort.pending, (state: WritableDraft<IPagedState<T>>, action: PayloadAction<undefined, string,  {requestId: string, arg: {SortField: keyof T, Ascending: boolean} },never>) => {
                     state.Status = 'loading';
                     state.ActiveFetchID.push(action.meta.requestId);
                     if (this.actionPendingDependency !== null)
-                        this.actionPendingDependency(state as IState<T>,`${name}/DBSort${name}`, action.meta.arg, action.meta.requestId)
+                        this.actionPendingDependency(state as IPagedState<T>,`${name}/DBSort${name}`, action.meta.arg, action.meta.requestId)
                 });
-                builder.addCase(dBSort.rejected, (state: WritableDraft<IState<T>>, action: PayloadAction<unknown, string,  {requestId: string, arg: {SortField: keyof T, Ascending: boolean}},SerializedError> ) => {
+                builder.addCase(dBSort.rejected, (state: WritableDraft<IPagedState<T>>, action: PayloadAction<unknown, string,  {requestId: string, arg: {SortField: keyof T, Ascending: boolean}},SerializedError> ) => {
                     state.ActiveFetchID = state.ActiveFetchID.filter(id => id !== action.meta.requestId);
                     if (state.ActiveFetchID.length > 0)
                         return;
@@ -371,9 +450,9 @@ export default class GenericSlice<T extends U> {
                         Time: new Date().toString()
                     }
                     if (this.actionErrorDependency !== null)
-                        this.actionErrorDependency(state as IState<T>,`${name}/DBSort${name}`, action.meta.arg, action.meta.requestId)
+                        this.actionErrorDependency(state as IPagedState<T>,`${name}/DBSort${name}`, action.meta.arg, action.meta.requestId)
                 });
-                builder.addCase(dBSort.fulfilled, (state: WritableDraft<IState<T>>, action: PayloadAction<T[],string,{arg: {SortField: keyof T, Ascending: boolean}, requestId: string}>) => {
+                builder.addCase(dBSort.fulfilled, (state: WritableDraft<IPagedState<T>>, action: PayloadAction<T[],string,{arg: {SortField: keyof T, Ascending: boolean}, requestId: string}>) => {
                     state.ActiveFetchID = state.ActiveFetchID.filter(id => id !== action.meta.requestId);
                     state.Status = 'idle';
                     state.Error = null;
@@ -385,9 +464,9 @@ export default class GenericSlice<T extends U> {
                         state.SortField = action.meta.arg.SortField as Draft<keyof T>;
                     
                     if (this.actionFullfilledDependency !== null)
-                        this.actionFullfilledDependency(state as IState<T>,`${name}/DBSort${name}`, action.meta.arg, action.meta.requestId)
+                        this.actionFullfilledDependency(state as IPagedState<T>,`${name}/DBSort${name}`, action.meta.arg, action.meta.requestId)
                 });
-                builder.addCase(setChanged.pending,(state: WritableDraft<IState<T>>) => {
+                builder.addCase(setChanged.pending,(state: WritableDraft<IPagedState<T>>) => {
                     state.Status = 'changed';
                     state.SearchStatus = 'changed';
                 } )
@@ -402,12 +481,11 @@ export default class GenericSlice<T extends U> {
         this.DBAction = dBAction;
         this.Slice = slice;
         this.DBSearch = dBSearch;
+        this.PagedSearch = dBPage;
         this.Sort = dBSort;
         this.Reducer = slice.reducer;
         this.SetChanged = setChanged;
     }
-
-
 
     private GetRecords(ascending: (boolean | undefined), sortField: keyof T, parentID: number | void | string,): JQuery.jqXHR<T[]> {
         return $.ajax({
@@ -449,6 +527,18 @@ export default class GenericSlice<T extends U> {
         });
     }
 
+    private FetchPage(filter: Search.IFilter<T>[], ascending: (boolean | undefined), sortField: keyof T, page: number, parentID?: number | string | null): JQuery.jqXHR<string> {
+        return $.ajax({
+            type: 'POST',
+            url: `${this.APIPath}/${parentID != null ? `${parentID}/` : ''}PagedList/${page}`,
+            contentType: "application/json; charset=utf-8",
+            dataType: 'json',
+            data: JSON.stringify({ Searches: filter, OrderBy: sortField, Ascending: ascending }),
+            cache: false,
+            async: true
+        });
+    }
+
 
     public Data = (state: any) => state[this.Name].Data as T[];
 	public Error = (state: any) => state[this.Name].Error as IError;
@@ -461,4 +551,12 @@ export default class GenericSlice<T extends U> {
     public SearchResults = (state: any) => state[this.Name].SearchResults as T[];
     public SearchStatus = (state: any) => state[this.Name].SearchStatus as Application.Types.Status;
     public SearchFilters = (state: any) => state[this.Name].Filter as Search.IFilter<T>[];
+
+    public PagedResults = (state: any) => state[this.Name].PagedData as T[];
+    public PagedStatus = (state: any) => state[this.Name].PagedStatus as Application.Types.Status;
+    public PagedFilters = (state: any) => state[this.Name].PagedFilter as Search.IFilter<T>[];
+    public PagedSortField = (state: any) => state[this.Name].PagedSortField as keyof T;
+    public PagedAscending = (state: any) => state[this.Name].PagedAscending as boolean;
+    public CurrentPage = (state: any) => state[this.Name].CurrentPage as number;
+    public TotalPages = (state: any) => state[this.Name].TotalPages as number;
 }
