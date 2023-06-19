@@ -303,7 +303,7 @@ function FilterCreator<T>(props: IPropsFilterCreator<T> ) {
                             const value = evt.target.value as '=' | '<>' | '>' | '<' | '>=' | '<=';
                             props.Setter((prevState) => ({ ...prevState, Operator: value }));
                         }}>
-                            <option value='='>=</option>
+                            {/*<option value='='>=</option>*/}
                             <option value='<>'>{`<>`}</option>
                             <option value='>'>{`>`}</option>
                             <option value='>='>{`>=`}</option>
