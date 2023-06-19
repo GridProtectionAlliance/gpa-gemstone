@@ -192,7 +192,7 @@ const DayCell = (props: {date: moment.Moment, onClick: (evt: any) => void, month
    const [disabled, setDisabled] = React.useState<boolean>(false);
 
   React.useEffect(() => {
-    setActive(props.date.date() === props.day)
+    setActive(props.date.date() === props.day && props.month === props.date.month())
     setDisabled(props.date.month() !== props.month);
   }, [props.month, props.date, props.day])
 
