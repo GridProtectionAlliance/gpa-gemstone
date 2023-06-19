@@ -150,7 +150,7 @@ export default function Calender(props: IProps) {
         </thead>
         <tbody>
           
-          {mode === 'month'? weeks.map((w) => <tr key={w.sunday.isoWeekYear()} style={{height: 20, lineHeight: '20px'}}>
+          {mode === 'month'? weeks.map((w) => <tr key={w.sunday.isoWeek()} style={{height: 20, lineHeight: '20px'}}>
             <DayCell date={w.sunday} month={month} day={props.DateTime.date()} onClick={(evt) => {evt.stopPropagation(); setDate(w.sunday);}}/>
             <DayCell date={w.monday} month={month} day={props.DateTime.date()} onClick={(evt) => {evt.stopPropagation(); setDate(w.monday);}}/>
             <DayCell date={w.tuesday} month={month} day={props.DateTime.date()} onClick={(evt) => {evt.stopPropagation(); setDate(w.tuesday);}}/>
