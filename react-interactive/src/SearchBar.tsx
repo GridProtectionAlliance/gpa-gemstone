@@ -23,7 +23,7 @@
 import * as React from 'react';
 import Modal from './Modal';
 import LoadingIcon from './LoadingIcon';
-import { Select, CheckBox } from '@gpa-gemstone/react-forms';
+import { Select } from '@gpa-gemstone/react-forms';
 import {TrashCan, Pencil} from '@gpa-gemstone/gpa-symbols';
 
 interface IProps<T> {
@@ -142,7 +142,7 @@ export default function SearchBar<T> (props: IProps<T>)  {
           props.SetFilter([...oldFilters, searchFilter]);
       else
           props.SetFilter(oldFilters);
-  };
+  }
 
   function createFilter() {
 	setShow(!show);
@@ -362,7 +362,7 @@ function FilterCreator<T>(props: IPropsFilterCreator<T> ) {
                     {options.map((vli,index) => <li key={index} ><div className="form-check">
                         <input type="checkbox" className="form-check-input" style={{ zIndex: 1 }} onChange={(evt) => {
                             if (evt.target.checked) {
-                                ;
+                                
                                 let list = stripParenthesisAndSplit(props.Filter.SearchText)
                                 list = list.filter(x => x !== "")
                                 list.push(vli.Value)

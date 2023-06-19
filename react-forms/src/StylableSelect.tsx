@@ -128,4 +128,4 @@ export default function StylableSelect<T>(props: IProps<T>){
       </div>
     </div>
   );
-};
+}

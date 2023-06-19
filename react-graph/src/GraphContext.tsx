@@ -40,7 +40,7 @@ export interface IGraphContext extends IHandlerRegistration, IDataRegistration {
 
   SetXDomain: React.SetStateAction<[number,number]> | ((t: [number,number]) => void),
   SetYDomain:  React.SetStateAction<[number,number]> | ((t: [number,number]) => void),
-};
+}
 
 export const GraphContext = React.createContext({
   XDomain: [0, 0],
@@ -72,7 +72,7 @@ export interface IDataSeries {
   getMin: (tDomain: [number, number]) => number| undefined,
   getMax: (tDomain: [number, number]) => number|undefined,
   legend?: HTMLElement| React.ReactElement| JSX.Element,
-};
+}
 
 export type LineStyle = '-'|':';
 

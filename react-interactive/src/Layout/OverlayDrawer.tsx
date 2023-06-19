@@ -21,9 +21,7 @@
 // ******************************************************************************************************
 
 import * as React from 'react';
-import ToolTip from '../ToolTip';
-import {CreateGuid, GetNodeSize} from '@gpa-gemstone/helper-functions';
-import { Portal } from 'react-portal';
+import { GetNodeSize} from '@gpa-gemstone/helper-functions';
 import styled from 'styled-components';
 
 interface IProps {

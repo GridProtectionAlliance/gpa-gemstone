@@ -20,7 +20,7 @@
 //       Generated original version of source code.
 // ******************************************************************************************************
 
-import { LeftArrow, RightArrow, SVGIcons } from '@gpa-gemstone/gpa-symbols';
+import { SVGIcons } from '@gpa-gemstone/gpa-symbols';
 import { CreateGuid, GetTextWidth } from '@gpa-gemstone/helper-functions';
 import _ = require('lodash');
 import * as React from 'react';

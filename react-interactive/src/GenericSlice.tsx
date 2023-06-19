@@ -110,7 +110,7 @@ export default class GenericSlice<T extends U> {
      * @param {boolean} ascending - (optional) default sort direction - defaults to true
      * @returns a new GenericSlice<T>
      */
-    constructor(name: string, apiPath: string, defaultSort: keyof T, ascending: boolean = true, options: IOptions<T>|null = null) {
+    constructor(name: string, apiPath: string, defaultSort: keyof T, ascending = true, options: IOptions<T>|null = null) {
         this.Name = name;
         this.APIPath = apiPath;
 

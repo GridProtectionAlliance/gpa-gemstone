@@ -28,7 +28,7 @@ export interface IContext {
     homePath: string,
     userRoles: Application.Types.SecurityRoleName[],
     collapsed: boolean
-};
+}
 
 export const Context = React.createContext({
     homePath: '',

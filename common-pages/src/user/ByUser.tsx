@@ -28,7 +28,7 @@ import { SystemCenter, Application } from '@gpa-gemstone/application-typings';
 import * as CryptoJS from 'crypto-js';
 import * as _ from 'lodash';
 import UserForm from './UserForm';
-import { IAdditionalFieldSlice, IGenericSlice, IUserAccountSlice, UserValidation } from '../SliceInterfaces';
+import { IAdditionalFieldSlice, IGenericSlice, IUserAccountSlice } from '../SliceInterfaces';
 import { useDispatch, useSelector } from 'react-redux';
 import { Dispatch } from '@reduxjs/toolkit';
 

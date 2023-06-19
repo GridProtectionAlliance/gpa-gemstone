@@ -22,7 +22,6 @@
 // ******************************************************************************************************
 
 import * as React from 'react';
-import * as _ from 'lodash';
 import Table, {TableProps} from './Table';
 
 interface ISearchableTableProps<T> extends TableProps<T> {

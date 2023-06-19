@@ -25,7 +25,6 @@ import Table from '@gpa-gemstone/react-table';
 import { CrossMark, HeavyCheckMark, Warning } from '@gpa-gemstone/gpa-symbols';
 import {  Modal, ToolTip, ServerErrorIcon, Warning as WarningModal } from '@gpa-gemstone/react-interactive';
 import { SystemCenter, Application } from '@gpa-gemstone/application-typings';
-import * as _ from 'lodash';
 import { CheckBox, Input, Select } from '@gpa-gemstone/react-forms';
 import {IAdditionalFieldSlice, IGenericSlice} from '../SliceInterfaces';
 import { useDispatch, useSelector } from 'react-redux';

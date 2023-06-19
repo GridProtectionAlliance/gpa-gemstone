@@ -23,7 +23,7 @@
 
 
 import * as React from 'react';
-import {IDataSeries, GraphContext, LineStyle} from './GraphContext';
+import {IDataSeries, GraphContext} from './GraphContext';
 import * as moment from 'moment';
 import {PointNode} from './PointNode';
 import {GetTextWidth} from '@gpa-gemstone/helper-functions';

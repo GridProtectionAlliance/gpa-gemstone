@@ -64,11 +64,11 @@ export default function Select<T>(props: IProps<T>) {
     if (value !== '') record[props.Field] = value as any;
     else record[props.Field] = null as any;
     props.Setter(record);
-  };
+  }
 
   function GetRecordValue(): string {
     return props.Record[props.Field] == null ? '' : (props.Record[props.Field] as any).toString();
-  };
+  }
 
   return (
     <div className="form-group">

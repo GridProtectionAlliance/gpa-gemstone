@@ -21,7 +21,6 @@
 //
 // ******************************************************************************************************
 
-import { has } from 'lodash';
 import * as React from 'react';
 import {GraphContext} from './GraphContext'
 

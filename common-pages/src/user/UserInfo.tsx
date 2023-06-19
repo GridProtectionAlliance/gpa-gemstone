@@ -23,7 +23,6 @@
 import * as React from 'react';
 import { Application } from '@gpa-gemstone/application-typings';
 import * as CryptoJS from 'crypto-js'
-import * as _ from 'lodash';
 import UserForm from './UserForm';
 import { ToolTip } from '@gpa-gemstone/react-interactive';
 import { Warning } from '@gpa-gemstone/gpa-symbols';

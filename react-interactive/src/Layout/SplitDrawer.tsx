@@ -21,9 +21,6 @@
 // ******************************************************************************************************
 
 import * as React from 'react';
-import ToolTip from '../ToolTip';
-import {CreateGuid} from '@gpa-gemstone/helper-functions';
-import { Portal } from 'react-portal';
 
 interface IProps {
     MinWidth: number,

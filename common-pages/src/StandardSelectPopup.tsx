@@ -23,7 +23,7 @@
 import Table, { Column } from "@gpa-gemstone/react-table";
 import * as React from 'react';
 import { useDispatch, useSelector } from "react-redux";
-import { GenericSlice, Modal, SearchBar, Search } from "@gpa-gemstone/react-interactive";
+import { GenericSlice, Modal } from "@gpa-gemstone/react-interactive";
 import _ = require("lodash");
 import { CrossMark } from "@gpa-gemstone/gpa-symbols";
 import { Dispatch } from "@reduxjs/toolkit";

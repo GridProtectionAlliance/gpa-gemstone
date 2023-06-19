@@ -23,7 +23,6 @@
 import * as React from 'react';
 import { LoadingScreen, ServerErrorIcon, TabSelector, Warning } from '@gpa-gemstone/react-interactive';
 import { Application, SystemCenter } from '@gpa-gemstone/application-typings';
-import * as _ from 'lodash';
 import UserInfo from './UserInfo';
 import UserPermissions from './UserPermissions';
 import AdditionalField from './AdditionalField'
