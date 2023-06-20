@@ -59,7 +59,7 @@ export default function ConfigurableTable<T>(props: IProps<T>) {
     const [columns, setColumns] = React.useState<Column<T>[]>(props.cols);
     const [colKeys, setColKeys] = React.useState<string[]>(props.cols.map(d => d.key));
     const [colEnabled, setColEnabled] = React.useState<boolean[]>(props.cols.map(d => props.defaultColumns.findIndex(v => v === d.key) > -1 ||
-        (props.requiredColumns !== undefined && props.requiredColumns.findIndex(v => v === d.key) > -1) || (props.sortKey == d.key) ||
+        (props.requiredColumns !== undefined && props.requiredColumns.findIndex(v => v === d.key) > -1) || (props.sortKey === d.key) ||
         checkLocal(d.key)
     ));
     const [hover,setHover] = React.useState<boolean>(false);
@@ -68,7 +68,7 @@ export default function ConfigurableTable<T>(props: IProps<T>) {
     React.useEffect(() => {
         if (props.cols.length !== colEnabled.length) {
             setColEnabled(props.cols.map(d => props.defaultColumns.findIndex(v => v === d.key) > -1 ||
-             (props.requiredColumns !== undefined && props.requiredColumns.findIndex(v => v === d.key) > -1) || (props.sortKey == d.key) ||
+             (props.requiredColumns !== undefined && props.requiredColumns.findIndex(v => v === d.key) > -1) || (props.sortKey === d.key) ||
               checkLocal(d.key)));
         } else {
             // We need to redo this set collumn here to capture function changes within columns
@@ -156,7 +156,7 @@ export default function ConfigurableTable<T>(props: IProps<T>) {
                     if (conf)
                         setColEnabled(
                             props.cols.map(d => props.defaultColumns.findIndex(v => v === d.key) > -1 ||
-                                (props.requiredColumns !== undefined && props.requiredColumns.findIndex(v => v === d.key) > -1) || (props.sortKey == d.key)
+                                (props.requiredColumns !== undefined && props.requiredColumns.findIndex(v => v === d.key) > -1) || (props.sortKey === d.key)
                             ));
                     }
                 }
@@ -181,7 +181,7 @@ export default function ConfigurableTable<T>(props: IProps<T>) {
                             setShowSettings(false);
                             setColEnabled(
                                 props.cols.map(d => props.defaultColumns.findIndex(v => v === d.key) > -1 ||
-                                    (props.requiredColumns !== undefined && props.requiredColumns.findIndex(v => v === d.key) > -1) || (props.sortKey == d.key)
+                                    (props.requiredColumns !== undefined && props.requiredColumns.findIndex(v => v === d.key) > -1) || (props.sortKey === d.key)
                                 ));
                             
                         }}>
