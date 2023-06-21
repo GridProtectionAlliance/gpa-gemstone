@@ -58,6 +58,7 @@ export namespace DefaultSearch {
         { label: 'Make', key: 'Make', type: 'string', isPivotField: false },
         { label: 'Model', key: 'Model', type: 'string', isPivotField: false },
         { label: 'Number of Assets', key: 'MappedAssets', type: 'number', isPivotField: false },
+        { label: 'Description', key: 'Description', type: 'string', isPivotField: false },
       ];
 
         const dispatch = useDispatch<Dispatch<any>>();
@@ -109,7 +110,7 @@ export namespace DefaultSearch {
             { label: 'Meter', key: 'Meter', type: 'string', isPivotField: false },
             { label: 'Number of Transmission Assets', key: 'Assets', type: 'integer', isPivotField: false },
             { label: 'Number of Meters', key: 'Meters', type: 'integer', isPivotField: false },
-            { label: 'Description', key: 'Description', type: 'string', isPivotField: false }
+            { label: 'Description', key: 'Description', type: 'string', isPivotField: false },
         ]; 
 
         React.useEffect(() => {
@@ -147,12 +148,13 @@ export namespace DefaultSearch {
         const defaultSearchcols: Search.IField<SystemCenter.Types.DetailedAsset>[] = [
             { label: 'Key', key: 'AssetKey', type: 'string', isPivotField: false },
             { label: 'Name', key: 'AssetName', type: 'string', isPivotField: false },
-            { label: 'Voltage (kV)', key: 'VoltageKV', type: 'number', isPivotField: false },
+            { label: 'Nominal Voltage (L-L kV)', key: 'VoltageKV', type: 'number', isPivotField: false },
             { label: 'Type', key: 'AssetType', type: 'enum', isPivotField: false },
             { label: 'Meter Key', key: 'Meter', type: 'string', isPivotField: false },
             { label: 'Substation Key', key: 'Location', type: 'string', isPivotField: false },
             { label: 'Number of Meters', key: 'Meters', type: 'integer', isPivotField: false },
             { label: 'Number of Substations', key: 'Locations', type: 'integer', isPivotField: false },
+            { label: 'Description', key: 'Description', type: 'string', isPivotField: false },
         ];
 
         React.useEffect(() => {
@@ -191,8 +193,9 @@ export namespace DefaultSearch {
             { label: 'Name', key: 'Name', type: 'string', isPivotField: false },
             { label: 'Number of Meters', key: 'Meters', type: 'integer', isPivotField: false },
             { label: 'Number of Transmission Assets', key: 'Assets', type: 'integer', isPivotField: false },
-            { label: 'Number of Users', key: 'Users', type: 'integer', isPivotField: false },
-            { label: 'Show in PQ Dashboard', key: 'DisplayDashboard', type: 'boolean', isPivotField: false },      
+            { label: 'Number of Asset Groups', key: 'AssetGroups', type: 'integer', isPivotField: false },
+            { label: 'Show in PQ Dashboard', key: 'DisplayDashboard', type: 'boolean', isPivotField: false },
+            { label: 'Show in Email Subscription', key: 'DisplayEmail', type: 'boolean', isPivotField: false },
         ];
 
         React.useEffect(() => {
