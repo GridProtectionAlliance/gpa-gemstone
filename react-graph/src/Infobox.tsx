@@ -95,7 +95,6 @@ function Infobox(props: IProps) {
     const xT = context.XTransformation(xArg);
     const yP = calculateY(props.y);
     const yT = context.YTransformation(yArg);
-    console.log(`(${xP}, ${yP}); (${xT}, ${yT}); ${boxWidth}/${boxHeight}`)
     if (xT <= xP + boxWidth && xT >= xP && yT <= yP + boxHeight && yT >= yP) {
       setSelected(true);
       return true;

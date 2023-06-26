@@ -94,7 +94,6 @@ function SymbolicMarker(props: IProps) {
   }
 
   function onClickConsumable(xArg: number, yArg: number): boolean {
-    console.log(guid);
     if (isInBounds(xArg,yArg)) {
       setSelected(true);
       return true;
