@@ -178,7 +178,7 @@ function Infobox(props: IProps) {
     </g>);
 }
 
-//TODO: Update helper functions with these as an option later
+// TODO: Update helper functions with these as an option later
 function GetBoxHeight(font: string, fontSize: string, word: string, cssStyle?: string, widthLimit?: string): number {
 
     const text = document.createElement("span");

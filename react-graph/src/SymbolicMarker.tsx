@@ -89,7 +89,7 @@ function SymbolicMarker(props: IProps) {
     const xT = context.XTransformation(xArg);
     const yP = context.YTransformation(props.yPos);
     const yT = context.YTransformation(yArg);
-    //Note: This is actually a rectangular box
+    // Note: This is actually a rectangular box
     return (xT <= xP + props.radius && xT >= xP - props.radius && yT <= yP + props.radius && yT >= yP - props.radius);
   }
 
