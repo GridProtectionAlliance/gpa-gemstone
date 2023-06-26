@@ -78,8 +78,10 @@ export type LineStyle = '-'|':';
 
 export interface IHandlers {
   onClick?: (x:number, y: number) => void,
-  onRelease?: (x: number,y: number) => void,
-  onPlotLeave?: (x: number, y:number) => void
+  onClickConsumable?: (x:number, y: number) => boolean,
+  onRelease?: (x: number, y: number) => void,
+  onPlotLeave?: (x: number, y:number) => void,
+  onMove?: (x: number, y: number) => void
 }
 
 export interface IDataRegistration {
