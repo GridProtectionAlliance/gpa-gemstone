@@ -38,11 +38,13 @@ interface IProps {
 }
 
 type ButtonType = ('zoom' | 'pan' | 'reset' | 'select' | 'download');
+type Cleanup = ((() => void) | undefined);
 
 const InteractiveButtons: React.FunctionComponent<IProps> = (props) => {
     /*
       Used to select Zoom, Drag or Reset
     */
+    const [btnCleanup, setBtnCleanup] = React.useState<Cleanup>(undefined)
     const [expand, setExpand] = React.useState<boolean>(false);
 
     const nChildren = (props.children == null) ? 0 : React.Children.count(props.children);
@@ -98,13 +100,18 @@ const InteractiveButtons: React.FunctionComponent<IProps> = (props) => {
      <g>
          <path d={`M ${props.x} ${props.y - 10} A 10 10 180 0 1 ${props.x} ${props.y + 10} h -${width} A 10 10 180 0 1 ${props.x - width} ${props.y - 10} h ${width}`} style={{
              fill: '#1e90ff'}} />
-          {symbols.map((s,i) => <CircleButton key={i} x={props.x - i*25} y={props.y} active={props.currentSelection === symbolNames[i]} button={s} />)}
+          {symbols.map((s,i) => <CircleButton key={i} x={props.x - i*25} 
+            y={props.y} active={props.currentSelection === symbolNames[i]} 
+            button={s} btnCleanup={btnCleanup} setBtnCleanup={setBtnCleanup}
+          />)}
 
           {React.Children.map(props.children, (element, i) => {
                                     if (!React.isValidElement(element))
                                         return null;
                                     if ((element as React.ReactElement<any>).type === Button)
-                                        return <CircleButton active={false} x={props.x - (i+symbols.length)*25} y={props.y} button={element} />;
+                                        return <CircleButton active={false} x={props.x - (i+symbols.length)*25} y={props.y}
+                                         button={element} btnCleanup={btnCleanup} 
+                                         setBtnCleanup={setBtnCleanup} />;
                                     return null;
                                 })}
 
@@ -113,11 +120,16 @@ const InteractiveButtons: React.FunctionComponent<IProps> = (props) => {
 
 }
 
-function CircleButton(props: {button: React.ReactElement, x: number, y: number, active: boolean}) {
+function CircleButton(props: {button: React.ReactElement, x: number, y: number, active: boolean, setBtnCleanup: (c: Cleanup) => void, btnCleanup: Cleanup}) {
   return ( <>
     <circle r={10} cx={props.x} cy={props.y} style={{ fill: (props.active ? '#002eff' : '#1e90ff'), pointerEvents: 'all' }}
      onMouseDown={(evt) => evt.stopPropagation()}
-     onClick={(evt) => { evt.stopPropagation(); props.button.props.onClick()}} onMouseUp={(evt) => evt.stopPropagation()}/>
+     onClick={(evt) => { 
+      if (btnCleanup !== undefined)
+        btnCleanup();
+      evt.stopPropagation(); 
+      props.setBtnCleanup(props.button.props.onClick())
+      }} onMouseUp={(evt) => evt.stopPropagation()}/>
     <text fill={'black'} style={{ fontSize: '1em', textAnchor: 'middle', dominantBaseline: 'middle' }} x={props.x} y={props.y}>
     {props.button}
     </text>

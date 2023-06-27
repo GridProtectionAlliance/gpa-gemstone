@@ -30,7 +30,7 @@ import { GetTextWidth } from '@gpa-gemstone/helper-functions';
 
 
 export interface IProps {
-    onClick: () => void,
+    onClick: () => ((() => void)|undefined),
 }
 
 const Button: React.FunctionComponent<IProps> = (props) => {
