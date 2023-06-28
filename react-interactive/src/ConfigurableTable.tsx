@@ -72,7 +72,6 @@ export default function ConfigurableTable<T>(props: IProps<T>) {
               checkLocal(d.key)));
         } else {
             // We need to redo this set collumn here to capture function changes within columns
-            console.log("made it in! Length is " + props.cols.length )
             setColumns(props.cols.filter((c, i) => colEnabled[i]));
         }
     }, [props.cols, colEnabled]);
