@@ -163,7 +163,7 @@ export default function ConfigurableTable<T>(props: IProps<T>) {
                 ConfirmText={'Reset Defaults'}
                 ConfirmBtnClass={'btn-primary float-left'}
                 >
-                <ColumnSelection<T> requiredColumns={props.requiredColumns} columns={columns} onChange={changeCollums} isChecked={(i) => colEnabled[i]} sortKey={props.sortKey}/>
+                <ColumnSelection<T> requiredColumns={props.requiredColumns} columns={props.cols} onChange={changeCollums} isChecked={(i) => colEnabled[i]} sortKey={props.sortKey}/>
             </Modal>
             : (showSettings? <Portal node={document && document.getElementById(props.settingsPortal)}>
                 <div className="card">
@@ -172,7 +172,7 @@ export default function ConfigurableTable<T>(props: IProps<T>) {
                         <button type="button" className="close" onClick={() => setShowSettings(false) }>&times;</button>
                     </div>
                     <div className="card-body" style={{ maxHeight: 'calc(100% - 210px)', overflowY: 'auto' }}>
-                        <ColumnSelection<T> requiredColumns={props.requiredColumns} columns={columns} onChange={changeCollums} isChecked={(i) => colEnabled[i]} sortKey={props.sortKey}/>
+                        <ColumnSelection<T> requiredColumns={props.requiredColumns} columns={props.cols} onChange={changeCollums} isChecked={(i) => colEnabled[i]} sortKey={props.sortKey}/>
                     </div>
                     <div className="card-footer">
                     <button type="button"
