@@ -24,7 +24,7 @@
 
 import * as React from 'react';
 import InteractiveButtons from './InteractiveButtons';
-import {IDataSeries, IHandlers, ContextWrapper} from './GraphContext';
+import {IDataSeries, IHandlers, ContextWrapper, IActionFunctions} from './GraphContext';
 import {CreateGuid} from '@gpa-gemstone/helper-functions';
 import {cloneDeep, isEqual} from 'lodash';
 import TimeAxis from './TimeAxis';
@@ -62,11 +62,7 @@ export interface IProps {
     legendHeight?: number,
     legendWidth?: number,
     useMetricFactors?: boolean,
-    // onSelects are functions guaranteed to run
-    // consumable is choosen to "belong" to a particular handler by run order and if that handler chooses to "consume" the event or not
-    // If no handler decides to consume the event, then it is passed to the prop provided here
-    onSelect?: (x:number, y: number) => void,
-    onSelectConsumable?: (x:number, y: number) => boolean,
+    onSelect?: (x: number, y: number, actions: IActionFunctions) => void,
     onDataInspect?: (tDomain: [number,number]) => void,
     Ymin?: number,
     Ymax?: number,
@@ -416,23 +412,15 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
         if (selectedMode === 'pan' && (props.pan === undefined || props.pan))
             setMouseMode('pan');
         if (selectedMode === 'select' && props.onSelect !== undefined)
-          props.onSelect(xInvTransform(ptTransform.x), yInvTransform(ptTransform.y));
+          props.onSelect(
+            xInvTransform(ptTransform.x),
+            yInvTransform(ptTransform.y),
+            {
+            setYDomain: updateXDomain as React.SetStateAction<[number,number]>, 
+            setTDomain: updateYDomain as React.SetStateAction<[number,number]>
+            });
         if (handlers.current.size > 0 && selectedMode === 'select')
           handlers.current.forEach((v) => (v.onClick !== undefined? v.onClick(xInvTransform(ptTransform.x), yInvTransform(ptTransform.y)) : null));
-
-        // handle the consumable select, while 1-all may run, only one may "consume" the event by returning true, after which no more may run
-        let eventConsumed: boolean = false;
-        if (handlers.current.size > 0 && selectedMode === 'select') {
-          const mapIterator: IterableIterator<IHandlers> = handlers.current.values();
-          for(const handler of mapIterator){
-            if (handler.onClickConsumable !== undefined)
-              eventConsumed = handler.onClickConsumable(xInvTransform(ptTransform.x), yInvTransform(ptTransform.y));
-            if (eventConsumed)
-              break;
-          }
-        }
-        if (selectedMode === 'select' && props.onSelectConsumable !== undefined && !eventConsumed)
-          eventConsumed = props.onSelectConsumable(xInvTransform(ptTransform.x), yInvTransform(ptTransform.y));
     }
 
     function handleMouseUp(_: any) {
@@ -560,7 +548,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
                        <InteractiveButtons showPan={(props.pan === undefined || props.pan)}
                         showZoom={props.zoom === undefined || props.zoom}
                         showReset={!(props.pan !== undefined && props.zoom !== undefined && !props.zoom && !props.pan)}
-                        showSelect={props.onSelect !== undefined || props.onSelectConsumable !== undefined || handlers.current.size > 0}
+                        showSelect={props.onSelect !== undefined || handlers.current.size > 0}
                         showDownload={props.onDataInspect !== undefined}
                         currentSelection={selectedMode}
                         setSelection={setSelection}

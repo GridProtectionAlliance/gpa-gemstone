@@ -26,7 +26,6 @@ import * as React from 'react';
 import {GraphContext, IHandlers} from './GraphContext';
 
 export interface IProps {
-  symbol: JSX.Element,
   xPos: number,
   yPos: number,
   radius: number,
@@ -34,7 +33,7 @@ export interface IProps {
   onHover?: () => void
 }
 
-function SymbolicMarker(props: IProps) {
+const SymbolicMarker: React.FunctionComponent<IProps> = (props) => {
   const context = React.useContext(GraphContext);
   const [position, setPosition] = React.useState<{x: number, y: number}>({x: props.xPos, y: props.yPos});
   const [isSelected, setSelected] = React.useState<boolean>(false);
@@ -44,7 +43,7 @@ function SymbolicMarker(props: IProps) {
     const id = context.RegisterSelect({
       onRelease: (_) => setSelected(false),
       onPlotLeave: (_) => setSelected(false),
-      onClickConsumable,
+      onClick,
       onMove,
     } as IHandlers)
     setGuid(id)
@@ -58,7 +57,7 @@ function SymbolicMarker(props: IProps) {
     context.UpdateSelect(guid, {
       onRelease: (_) => setSelected(false),
       onPlotLeave: (_) => setSelected(false),
-      onClickConsumable,
+      onClick,
       onMove
     } as IHandlers)
   }, [props.radius, props.xPos, props.yPos]);
@@ -93,12 +92,9 @@ function SymbolicMarker(props: IProps) {
     return (xT <= xP + props.radius && xT >= xP - props.radius && yT <= yP + props.radius && yT >= yP - props.radius);
   }
 
-  function onClickConsumable(xArg: number, yArg: number): boolean {
-    if (isInBounds(xArg,yArg)) {
+  function onClick(xArg: number, yArg: number): void {
+    if (isInBounds(xArg,yArg))
       setSelected(true);
-      return true;
-    }
-    return false;
   }
 
   function onMove(xArg: number, yArg: number) {
@@ -106,26 +102,29 @@ function SymbolicMarker(props: IProps) {
       props.onHover();
   }
 
-  function getGraphic(xArg: number, yArg: number){
-    const x = context.XTransformation(xArg);
-    const y = context.YTransformation(yArg);
-    return (
-      <>
-        <circle r={props.radius} cx={x} cy={y} style={{ opacity: 0.4 }}/>
-        <text fill={'black'} style={{ fontSize: '1em', textAnchor: 'middle', dominantBaseline: 'middle' }} x={x} y={y}>
-          {props.symbol}
-        </text>
-      </>
-    );
-  }
-
   return (
     <>
-      {getGraphic(props.xPos, props.yPos)}
+      <SymbolicGraphic x={props.xPos} y={props.yPos} r={props.radius}>{props.children}</SymbolicGraphic>
       {props.setPosition !== undefined && (props.xPos !== position.x || props.yPos !== position.y) ?
-        getGraphic(position.x, position.y)
+        <SymbolicGraphic x={position.x} y={position.y} r={props.radius}>{props.children}</SymbolicGraphic>
         : null}
     </>);
+}
+
+interface IGraphicProps {
+  x: number,
+  y: number,
+  r: number
+}
+const SymbolicGraphic: React.FunctionComponent<IGraphicProps> = (props) => {
+  const context = React.useContext(GraphContext);
+  const xPixels: number = context.XTransformation(props.x); 
+  const yPixels: number = context.YTransformation(props.y); 
+  return (
+    <foreignObject x={xPixels-props.r} y={yPixels-props.r} width={2*props.r} height={2*props.r}>
+      {props.children}
+    </foreignObject>
+  );
 }
 
 export default SymbolicMarker;

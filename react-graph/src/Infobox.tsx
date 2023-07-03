@@ -30,29 +30,22 @@ interface IProps {
   x: number,
   y: number,
   origin?: "upper-right" | "upper-left" | "upper-center",
+  // Specifies the offset of the pox from the origin point, In pixels
   offset?: number,
-  // Specifies the maximum dimensions of the box
-  maxWidth?: number,
-  maxHeight?: number,
+  // Specifies the dimensions of the box (in pixels)
+  width: number,
+  height: number,
   opacity?: number,
-  // Info to fill the box in
-  info: string,
   // Function to move box
-  setPosition?: (x: number, y: number) => void,
+  setPosition?: (x: number, y: number) => void
 }
 
-function Infobox(props: IProps) {
+const Infobox: React.FunctionComponent<IProps> = (props) => {
   const context = React.useContext(GraphContext);
   const [isSelected, setSelected] = React.useState<boolean>(false);
-  const [boxWidth, setBoxWidth] = React.useState<number>(5);
-  const [boxHeight, setBoxHeight] = React.useState<number>(5);
   const [position, setPosition] = React.useState<{x: number, y: number}>({x: props.x, y: props.y});
   const [guid, setGuid] = React.useState<string>("");
-  const [offSetPix, setOffsetPix] = React.useState<number>(0);
-
-  // text formatting consts
-  const fontSize = "1em";
-  const font = "Segoe UI";
+  const offsetDefault = 0;
   
   // Functions
   const calculateX = React.useCallback((xArg: number) => {
@@ -60,21 +53,21 @@ function Infobox(props: IProps) {
     // Convert x/y to upper-left corner
     switch(props.origin) {
       case "upper-right": {
-        x -= (boxWidth + offSetPix);
+        x -= (props.width + (props.offset ?? offsetDefault));
         break;
       }
       case "upper-center": {
-        x -= Math.floor(boxWidth / 2);
+        x -= Math.floor(props.width / 2);
         break;
       }
       // Do-nothing case
       case undefined: 
       case "upper-left":
-        x += offSetPix;
+        x += props.offset ?? offsetDefault;
         break;
     }
     return x;
-  }, [context.XTransformation, props.origin, offSetPix]);
+  }, [context.XTransformation, props.origin, props.offset]);
   
   const calculateY = React.useCallback((yArg: number) => {
     let y: number = context.YTransformation(yArg);
@@ -84,34 +77,29 @@ function Infobox(props: IProps) {
       case "upper-left":
       case "upper-right":
       case "upper-center":
-        y += offSetPix;
+        y += props.offset ?? offsetDefault;
         break;
     }
     return y;
-  }, [context.YTransformation, props.origin, offSetPix]);
+  }, [context.YTransformation, props.origin, props.offset]);
   
-  const onClickConsumable = React.useCallback((xArg: number, yArg: number) => {
+  const onClick = React.useCallback((xArg: number, yArg: number) => {
     const xP = calculateX(props.x);
     const xT = context.XTransformation(xArg);
     const yP = calculateY(props.y);
     const yT = context.YTransformation(yArg);
-    if (xT <= xP + boxWidth && xT >= xP && yT <= yP + boxHeight && yT >= yP) {
+    if (xT <= xP + props.width && xT >= xP && yT <= yP + props.height && yT >= yP) {
       setSelected(true);
-      return true;
     }
-    return false;
-  }, [props.x, props.y, calculateX, calculateY, boxWidth, boxHeight, setSelected, context.XTransformation, context.YTransformation]);
-  
-  const getGraphic = React.useCallback((xArg: number, yArg: number) => {
-    return <path d={`M ${calculateX(xArg)} ${calculateY(yArg)} h ${boxWidth} v ${boxHeight} h -${boxWidth} v -${boxHeight}`} stroke={'black'} style={{opacity: props.opacity ?? 1}} />
-  }, [calculateX, calculateY, boxWidth, boxHeight, props.opacity]);
+  }, [props.x, props.y, calculateX, calculateY, props.width, props.height, setSelected, context.XTransformation, context.YTransformation]);
+
 
   // useEffect
   React.useEffect(() => {
     const id = context.RegisterSelect({
       onRelease: (_) => setSelected(false),
       onPlotLeave: (_) => setSelected(false),
-      onClickConsumable
+      onClick
     } as IHandlers)
     setGuid(id)
     return () => { context.RemoveSelect(id) }
@@ -124,9 +112,9 @@ function Infobox(props: IProps) {
     context.UpdateSelect(guid, {
       onRelease: (_) => setSelected(false),
       onPlotLeave: (_) => setSelected(false),
-      onClickConsumable
+      onClick
     } as IHandlers)
-  }, [onClickConsumable]);
+  }, [onClick]);
   
   React.useEffect(() => {
     setPosition({x: props.x, y: props.y});
@@ -149,78 +137,29 @@ function Infobox(props: IProps) {
       setPosition({x: context.XHover, y: context.YHover});
   }, [context.XHover, context.YHover]);
 
-  React.useEffect(()=> {
-    // Get height/width dimensions, limited by maxes (if provided)
-    let divWidth = GetBoxWidth(font, fontSize, props.info, undefined, true);
-    if (props.maxWidth !== undefined && divWidth > props.maxWidth)
-    divWidth = props.maxWidth;
-    let divHeight = GetBoxHeight(font, fontSize, props.info, undefined, divWidth + 'px');
-    if (props.maxHeight !== undefined && divHeight > props.maxHeight)
-      divHeight = props.maxHeight;
-
-    setBoxWidth(divWidth);
-    setBoxHeight(divHeight);
-  }, [props.info, props.maxHeight, props.maxWidth]);
-  
-  React.useEffect(() => {
-    setOffsetPix(props.offset ?? 0);
-  }, [props.offset]);
-
   return (
     <g>
-      {getGraphic(props.x, props.y)}
-      <foreignObject x={calculateX(props.x)} y={calculateY(props.y)} width={boxWidth} height={boxHeight}>
-        <div style={{ background: 'white', overflow: 'auto', whiteSpace: 'pre-wrap', opacity: props.opacity ?? 1 }}>{props.info}</div>
+      <InfoGraphic x={calculateX(props.x)} y={calculateY(props.y)} width={props.width} height={props.height} opacity={props.opacity} />
+      <foreignObject x={calculateX(props.x)} y={calculateY(props.y)} width={props.width} height={props.height}>
+        {props.children}
       </foreignObject>
       {props.setPosition !== undefined && (props.x !== position.x || props.y !== position.y) ?
-        getGraphic(position.x, position.y)
+        <InfoGraphic x={calculateX(position.x)} y={calculateY(position.y)} width={props.width} height={props.height} opacity={props.opacity} />
         : null}
     </g>);
 }
 
-// TODO: Update helper functions with these as an option later
-function GetBoxHeight(font: string, fontSize: string, word: string, cssStyle?: string, widthLimit?: string): number {
-
-    const text = document.createElement("span");
-    document.body.appendChild(text);
-
-    text.style.font = font;
-    text.style.fontSize = fontSize;
-    text.style.height = 'auto';
-    text.style.width = widthLimit ?? 'auto';
-    text.style.position = 'absolute';
-    text.style.whiteSpace = (widthLimit !== undefined) ? 'pre-wrap' : 'no-wrap';
-
-    if (cssStyle !== undefined)
-        text.style.cssText = cssStyle;
-
-    text.innerHTML = word;
-
-    const height = Math.ceil(text.clientHeight);
-    document.body.removeChild(text);
-    return height;
+interface IGraphicProps {
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  opacity?: number
 }
-
-function GetBoxWidth(font: string, fontSize: string, word: string, cssStyle?: string, allowWhiteSpace?: boolean): number {
-
-    const text = document.createElement("span");
-    document.body.appendChild(text);
-
-    text.style.font = font;
-    text.style.fontSize = fontSize;
-    text.style.height = 'auto';
-    text.style.width = 'auto';
-    text.style.position = 'absolute';
-    text.style.whiteSpace = (allowWhiteSpace ?? false) ? 'pre-wrap' : 'no-wrap';
-
-    if (cssStyle !== undefined)
-        text.style.cssText = cssStyle;
-
-    text.innerHTML = word;
-
-    const width = Math.ceil(text.clientWidth);
-    document.body.removeChild(text);
-    return width;
-} 
+const InfoGraphic: React.FunctionComponent<IGraphicProps> = (props) => {
+  return (
+    <path d={`M ${props.x} ${props.y} h ${props.width} v ${props.height} h -${props.width} v -${props.height}`} stroke={'black'} style={{opacity: props.opacity ?? 1}} />
+  );
+}
 
 export default Infobox;
