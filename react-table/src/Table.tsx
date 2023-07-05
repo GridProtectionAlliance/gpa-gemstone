@@ -210,8 +210,8 @@ function HeaderCell(props: IHeaderCellProps) {
             onClick={(e) => props.Click(e)}
         >
 
-            <div style={{position: 'absolute', width: 25}}><RenderAngleIcon SortKey={props.SortKey} Key={props.DataKey} Ascending={props.Ascending} /></div>
-            <div style={{ marginLeft: 25 }}>{props.Label}</div>
+           <RenderAngleIcon SortKey={props.SortKey} Key={props.DataKey} Ascending={props.Ascending} />
+            <div style={{ marginLeft: (props.SortKey === props.Key? 25 : 0) }}>{props.Label}</div>
         </th>
     );
 }
@@ -232,5 +232,7 @@ function RenderAngleIcon(props: IRenderAngleProps) {
     if (props.SortKey !== props.Key)
         return null;
 
-    return <AngleIcon ascending={props.Ascending} />
+    return  <div style={{position: 'absolute', width: 25}}>
+        <AngleIcon ascending={props.Ascending} />
+    </div>
 };
