@@ -211,7 +211,7 @@ function HeaderCell(props: IHeaderCellProps) {
         >
 
            <RenderAngleIcon SortKey={props.SortKey} Key={props.DataKey} Ascending={props.Ascending} />
-            <div style={{ marginLeft: (props.SortKey === props.Key? 25 : 0) }}>{props.Label}</div>
+            <div style={{ marginLeft: (props.SortKey === props.DataKey? 25 : 0) }}>{props.Label}</div>
         </th>
     );
 }
