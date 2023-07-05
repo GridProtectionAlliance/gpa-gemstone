@@ -24,7 +24,7 @@
 
 import * as React from 'react';
 import InteractiveButtons from './InteractiveButtons';
-import {IDataSeries, IHandlers, ContextWrapper} from './GraphContext';
+import {IDataSeries, IHandlers, ContextWrapper, IActionFunctions} from './GraphContext';
 import {CreateGuid} from '@gpa-gemstone/helper-functions';
 import {cloneDeep, isEqual} from 'lodash';
 import TimeAxis from './TimeAxis';
@@ -36,8 +36,10 @@ import Line from './Line';
 import Button from './Button';
 import HorizontalMarker from './HorizontalMarker';
 import VerticalMarker from './VerticalMarker';
+import SymbolicMarker from './SymbolicMarker';
 import Circle from './Circle';
 import AggregatingCircles from './AggregatingCircles';
+import Infobox from './Infobox';
 
 // A ZoomMode of AutoValue means it will zoom on time, and auto Adjust the Value to fit the data.
 export interface IProps {
@@ -60,7 +62,7 @@ export interface IProps {
     legendHeight?: number,
     legendWidth?: number,
     useMetricFactors?: boolean,
-    onSelect?: (t:number) => void,
+    onSelect?: (x: number, y: number, actions: IActionFunctions) => void,
     onDataInspect?: (tDomain: [number,number]) => void,
     Ymin?: number,
     Ymax?: number,
@@ -388,6 +390,10 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
             setYdomain([yDomain[0] + dY, yDomain[1] + dY]);
         }
       }
+
+      if (handlers.current.size > 0)
+        handlers.current.forEach((v) => (v.onMove !== undefined? v.onMove(xInvTransform(ptTransform.x), yInvTransform(ptTransform.y)) : null));
+
       setMousePosition([ptTransform.x, ptTransform.y])
 
     }
@@ -406,10 +412,15 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
         if (selectedMode === 'pan' && (props.pan === undefined || props.pan))
             setMouseMode('pan');
         if (selectedMode === 'select' && props.onSelect !== undefined)
-          props.onSelect(xInvTransform(ptTransform.x))
+          props.onSelect(
+            xInvTransform(ptTransform.x),
+            yInvTransform(ptTransform.y),
+            {
+            setYDomain: updateXDomain as React.SetStateAction<[number,number]>, 
+            setTDomain: updateYDomain as React.SetStateAction<[number,number]>
+            });
         if (handlers.current.size > 0 && selectedMode === 'select')
           handlers.current.forEach((v) => (v.onClick !== undefined? v.onClick(xInvTransform(ptTransform.x), yInvTransform(ptTransform.y)) : null));
-
     }
 
     function handleMouseUp(_: any) {
@@ -517,8 +528,8 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
                          {React.Children.map(props.children, (element) => {
                                    if (!React.isValidElement(element))
                                        return null;
-                                   if ((element as React.ReactElement<any>).type === Line || (element as React.ReactElement<any>).type === LineWithThreshold ||
-                                   (element as React.ReactElement<any>).type === HorizontalMarker || (element as React.ReactElement<any>).type === VerticalMarker
+                                   if ((element as React.ReactElement<any>).type === Line || (element as React.ReactElement<any>).type === LineWithThreshold || (element as React.ReactElement<any>).type === Infobox ||
+                                   (element as React.ReactElement<any>).type === HorizontalMarker || (element as React.ReactElement<any>).type === VerticalMarker || (element as React.ReactElement<any>).type === SymbolicMarker
                                    || (element as React.ReactElement<any>).type === Circle || (element as React.ReactElement<any>).type === AggregatingCircles
                                     )
                                        return element;
@@ -551,7 +562,6 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
                                    return null;
                                })} 
                         </InteractiveButtons>
-
                   </svg>
               </div>
             {props.legend  !== undefined && props.legend !== 'hidden' ? <Legend location={props.legend} height={props.legendHeight !== undefined? props.legendHeight : 50} width={props.legendWidth !== undefined? props.legendWidth : 100} graphWidth={svgWidth} graphHeight={svgHeight} /> : null}

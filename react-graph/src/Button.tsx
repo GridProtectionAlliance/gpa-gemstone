@@ -21,16 +21,11 @@
 //
 // ******************************************************************************************************
 
-
 import * as React from 'react';
-import {IDataSeries, GraphContext, LineStyle} from './GraphContext';
-import * as moment from 'moment';
-import {PointNode} from './PointNode';
-import { GetTextWidth } from '@gpa-gemstone/helper-functions';
-
 
 export interface IProps {
-    onClick: () => void,
+    onClick: () => ((() => void)| void),
+    isSelect?: boolean
 }
 
 const Button: React.FunctionComponent<IProps> = (props) => {

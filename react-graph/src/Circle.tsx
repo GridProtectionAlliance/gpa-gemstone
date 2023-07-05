@@ -24,12 +24,7 @@
 
 import { GetTextHeight, GetTextWidth } from '@gpa-gemstone/helper-functions';
 import * as React from 'react';
-import {IDataSeries, GraphContext, IGraphContext, IHandlers} from './GraphContext';
-
-interface IActionFunctions {
-  setTDomain: React.SetStateAction<[number,number]>,
-  setYDomain: React.SetStateAction<[number,number]>
-}
+import {IDataSeries, GraphContext, IGraphContext, IHandlers, IActionFunctions} from './GraphContext';
 
 export interface IProps {
   data: [number, number],

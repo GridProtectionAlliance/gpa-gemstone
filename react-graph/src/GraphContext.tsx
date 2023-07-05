@@ -78,8 +78,9 @@ export type LineStyle = '-'|':';
 
 export interface IHandlers {
   onClick?: (x:number, y: number) => void,
-  onRelease?: (x: number,y: number) => void,
-  onPlotLeave?: (x: number, y:number) => void
+  onRelease?: (x: number, y: number) => void,
+  onPlotLeave?: (x: number, y:number) => void,
+  onMove?: (x: number, y: number) => void
 }
 
 export interface IDataRegistration {
@@ -95,6 +96,10 @@ export interface IHandlerRegistration {
   UpdateSelect: (key: string, handlers: IHandlers) => void,
 }
 
+export interface IActionFunctions {
+  setTDomain: React.SetStateAction<[number,number]>,
+  setYDomain: React.SetStateAction<[number,number]>
+}
 
 interface IContextWrapperProps extends IHandlerRegistration, IDataRegistration {
   XDomain: [number, number],
