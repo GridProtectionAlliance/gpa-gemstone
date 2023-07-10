@@ -211,7 +211,7 @@ function ColumnSelection<T>(props: IColSelectionProps<T>) {
 
     function createColumns(){
         let j = 0;
-        const set: JSX.Element[][] = [[], [], []];
+        const set: [JSX.Element[], JSX.Element[], JSX.Element[]] = [[], [], []];
 
         props.columns.forEach((k,i) => {
             if (props.requiredColumns === undefined || props.requiredColumns.findIndex(v => v === k.key) > -1)
