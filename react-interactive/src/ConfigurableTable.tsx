@@ -64,18 +64,18 @@ export default function ConfigurableTable<T>(props: IProps<T>) {
     ));
     const [hover,setHover] = React.useState<boolean>(false);
     const [guid] = React.useState<string>(CreateGuid());
-    
+
     React.useEffect(() => {
         if (props.cols.length !== colEnabled.length) {
             setColEnabled(props.cols.map(d => props.defaultColumns.findIndex(v => v === d.key) > -1 ||
-             (props.requiredColumns !== undefined && props.requiredColumns.findIndex(v => v === d.key) > -1) || (props.sortKey === d.key) ||
-              checkLocal(d.key)));
+                (props.requiredColumns !== undefined && props.requiredColumns.findIndex(v => v === d.key) > -1) || (props.sortKey === d.key) ||
+                checkLocal(d.key)));
         } else {
             // We need to redo this set collumn here to capture function changes within columns
             setColumns(props.cols.filter((c, i) => colEnabled[i]));
         }
     }, [props.cols, colEnabled]);
-    
+
     React.useEffect(() => {
         setColKeys(props.cols.map(d => d.key));
     }, [props.cols]);
@@ -119,16 +119,16 @@ export default function ConfigurableTable<T>(props: IProps<T>) {
     return (
         <>
             <Table<T>
-                cols={[...columns, 
-                    { 
+                cols={[...columns,
+                {
                         key: 'SettingsCog', label: <div style={{marginLeft: -25}} 
-                            onMouseEnter={() => setHover(true)}
-                            onMouseLeave={() => setHover(false)}
-                            id={guid + '-tooltip'}
-                            >{SVGIcons.Settings}</div>, 
+                        onMouseEnter={() => setHover(true)}
+                        onMouseLeave={() => setHover(false)}
+                        id={guid + '-tooltip'}
+                    >{SVGIcons.Settings}</div>,
                     headerStyle: { width: 30, padding: 0, verticalAlign: 'middle', textAlign: 'right' },
                     rowStyle: { padding: 0, width: 30 }
-                 }
+                }
                 ]}
                 data={props.data}
                 onClick={props.onClick}
@@ -146,50 +146,50 @@ export default function ConfigurableTable<T>(props: IProps<T>) {
                 rowStyle={props.rowStyle}
                 keySelector={props.keySelector}
             />
-           <ToolTip Show={hover} Position={'bottom'} Theme={'dark'} Target={guid + '-tooltip'} Zindex={9999}>
-				<p>Change Columns</p>
-			  </ToolTip>
+            <ToolTip Show={hover} Position={'bottom'} Theme={'dark'} Target={guid + '-tooltip'} Zindex={9999}>
+                <p>Change Columns</p>
+            </ToolTip>
             {props.settingsPortal === undefined?
-            <Modal Title={'Table Columns'} Show={showSettings} ShowX={true} ShowCancel={false}
-                CallBack={(conf: boolean) => {
-                    setShowSettings(false);
-                    if (conf)
-                        setColEnabled(
-                            props.cols.map(d => props.defaultColumns.findIndex(v => v === d.key) > -1 ||
-                                (props.requiredColumns !== undefined && props.requiredColumns.findIndex(v => v === d.key) > -1) || (props.sortKey === d.key)
-                            ));
-                    }
-                }
-                ConfirmText={'Reset Defaults'}
-                ConfirmBtnClass={'btn-primary float-left'}
-                >
-                <ColumnSelection<T> requiredColumns={props.requiredColumns} columns={props.cols} onChange={changeCollums} isChecked={(i) => colEnabled[i]} sortKey={props.sortKey}/>
-            </Modal>
-            : (showSettings? <Portal node={document && document.getElementById(props.settingsPortal)}>
-                <div className="card">
-                    <div className="card-header">
-                        <h4 className="modal-title">Table Columns</h4>
-                        <button type="button" className="close" onClick={() => setShowSettings(false) }>&times;</button>
-                    </div>
-                    <div className="card-body" style={{ maxHeight: 'calc(100% - 210px)', overflowY: 'auto' }}>
-                        <ColumnSelection<T> requiredColumns={props.requiredColumns} columns={props.cols} onChange={changeCollums} isChecked={(i) => colEnabled[i]} sortKey={props.sortKey}/>
-                    </div>
-                    <div className="card-footer">
-                    <button type="button"
-                        className={'btn btn-primary float-left'}
-                        onClick={() => {
-                            setShowSettings(false);
+                <Modal Title={'Table Columns'} Show={showSettings} ShowX={true} ShowCancel={false}
+                    CallBack={(conf: boolean) => {
+                        setShowSettings(false);
+                        if (conf)
                             setColEnabled(
                                 props.cols.map(d => props.defaultColumns.findIndex(v => v === d.key) > -1 ||
                                     (props.requiredColumns !== undefined && props.requiredColumns.findIndex(v => v === d.key) > -1) || (props.sortKey === d.key)
                                 ));
-                            
-                        }}>
-                            Reset Defaults
-                        </button>
+                    }
+                    }
+                    ConfirmText={'Reset Defaults'}
+                    ConfirmBtnClass={'btn-primary float-left'}
+                >
+                <ColumnSelection<T> requiredColumns={props.requiredColumns} columns={props.cols} onChange={changeCollums} isChecked={(i) => colEnabled[i]} sortKey={props.sortKey}/>
+                </Modal>
+            : (showSettings? <Portal node={document && document.getElementById(props.settingsPortal)}>
+                    <div className="card">
+                        <div className="card-header">
+                            <h4 className="modal-title">Table Columns</h4>
+                        <button type="button" className="close" onClick={() => setShowSettings(false) }>&times;</button>
+                        </div>
+                        <div className="card-body" style={{ maxHeight: 'calc(100% - 210px)', overflowY: 'auto' }}>
+                        <ColumnSelection<T> requiredColumns={props.requiredColumns} columns={props.cols} onChange={changeCollums} isChecked={(i) => colEnabled[i]} sortKey={props.sortKey}/>
+                        </div>
+                        <div className="card-footer">
+                            <button type="button"
+                                className={'btn btn-primary float-left'}
+                                onClick={() => {
+                                    setShowSettings(false);
+                                    setColEnabled(
+                                        props.cols.map(d => props.defaultColumns.findIndex(v => v === d.key) > -1 ||
+                                            (props.requiredColumns !== undefined && props.requiredColumns.findIndex(v => v === d.key) > -1) || (props.sortKey === d.key)
+                                        ));
+
+                                }}>
+                                Reset Defaults
+                            </button>
+                        </div>
                     </div>
-                </div>
-            </Portal> : null)}
+                </Portal> : null)}
         </>
     );
 
@@ -202,7 +202,7 @@ interface IColSelectionProps<T> {
     onChange: (index: number, key: string) => void,
     isChecked: (index: number) => boolean,
     sortKey: string
- }
+}
 
 function ColumnSelection<T>(props: IColSelectionProps<T>) {
 
@@ -211,15 +211,15 @@ function ColumnSelection<T>(props: IColSelectionProps<T>) {
 
     function createColumns(){
         let j = 0;
-        const set: JSX.Element[][] = [[],[],[]];
+        const set: JSX.Element[][] = [[], [], []];
 
         props.columns.forEach((k,i) => {
             if (props.requiredColumns === undefined || props.requiredColumns.findIndex(v => v === k.key) > -1)
                 return;
             set[j%3].push(<li key={k.key} className='form-check form-check-inline'>
-                <input type="checkbox" onChange={() => { if (k.key === props.sortKey) return; props.onChange(i, k.key); }} 
-                    checked={props.isChecked(i) || k.key === props.sortKey} className='form-checked-input' disabled={k.key === props.sortKey}/> 
-                <label className="form-check-label">
+                <input type="checkbox" onChange={() => { if (k.key === props.sortKey) return; props.onChange(i, k.key); }}
+                    checked={props.isChecked(i) || k.key === props.sortKey} className='form-checked-input' disabled={k.key === props.sortKey} />
+                <label className="form-check-label" style={{marginLeft: 8}}>
                     {k.label}
                     {k.key === props.sortKey? <div style={{ 
                         width: '1.5em',
@@ -230,21 +230,21 @@ function ColumnSelection<T>(props: IColSelectionProps<T>) {
                         marginLeft: 10,
                         textAlign: 'center',
                         fontWeight: 'bold'
-                        }} 
-                    onMouseEnter={() => setShowHelp(true)} 
-                    onMouseLeave={() => setShowHelp(false)}
-                    id={guid}
+                    }}
+                        onMouseEnter={() => setShowHelp(true)}
+                        onMouseLeave={() => setShowHelp(false)}
+                        id={guid}
                     > ? </div> : null}
                 </label>
                 {<ToolTip Show={showHelp} Target={guid}>
-				    The Table is currenttly sorted by this collumn so it can not be hidden.
-			    </ToolTip>}
-                </li>);
+                    The Table is currenttly sorted by this collumn so it can not be hidden.
+                </ToolTip>}
+            </li>);
             j = j + 1;
         })
 
         return set.map(c => (
-            <div className='col-sm'>
+            <div className='col'>
                 <form>
                     <ul style={{ listStyleType: 'none', padding: 0, width: '100%', position: 'relative', float: 'left' }}>
                         {c}
@@ -255,8 +255,8 @@ function ColumnSelection<T>(props: IColSelectionProps<T>) {
     }
 
     return <>
-        <div className='row'>          
+        <div className='row'>
             {createColumns()}
         </div>
-     </>
+    </>
 }
