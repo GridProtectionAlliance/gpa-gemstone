@@ -55,9 +55,9 @@ function ProgressBar(props: IProps) {
             return;
         }
 
-        const index = props.steps.findIndex(s => s.id == props.activeStep);
+        const index = props.steps.findIndex(s => s.id === props.activeStep);
 
-        if (index == -1)
+        if (index === -1)
             setActiveStep(0);
         else
             setActiveStep(index);
@@ -118,12 +118,12 @@ function ProgressBar(props: IProps) {
                     <span style={{
                         ...circleStyle,
                         borderColor: i <= activeStep ? '#5DC177' : '#D3D3D3',
-                        marginLeft: (i == (props.steps.length-1) ? 'calc(100% - 25px)' : (i==0? undefined : 'calc(50% - 12px)')),
-                        marginRight: (i == 0 ? 'calc(100% - 25px)' : (i == (props.steps.length - 1) ? undefined :'calc(50% - 12px)'))
+                        marginLeft: (i === (props.steps.length-1) ? 'calc(100% - 25px)' : (i===0? undefined : 'calc(50% - 12px)')),
+                        marginRight: (i === 0 ? 'calc(100% - 25px)' : (i === (props.steps.length - 1) ? undefined :'calc(50% - 12px)'))
                     }} />
                     <span style={{
                         ...descriptionStyles,
-                        textAlign: (i == 0? 'left' : (i == (props.steps.length - 1) ? 'right' : 'center'))
+                        textAlign: (i === 0? 'left' : (i === (props.steps.length - 1) ? 'right' : 'center'))
                     }}>
                         {x.id === props.activeStep ? x.long : x.short}
                     </span>
