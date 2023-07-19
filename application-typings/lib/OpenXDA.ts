@@ -67,6 +67,7 @@ namespace OpenXDA {
 
         // Assets
         export interface Asset { ID: number, VoltageKV: number, AssetKey: string, Description: string, AssetName: string, AssetType: AssetTypeName, Spare:boolean, Channels: Array<Channel> }
+        export interface MeterAsset extends Asset { FaultDetectionLogic: string }
         export interface Breaker extends Asset { ThermalRating: number, Speed: number, TripTime: number, PickupTime: number, TripCoilCondition: number, EDNAPoint?: string, SpareBreakerID?: number, AirGapResistor: boolean }
         export interface Bus extends Asset { }
         export interface CapBank extends Asset {
