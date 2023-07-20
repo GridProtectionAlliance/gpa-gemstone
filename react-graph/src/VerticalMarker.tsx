@@ -30,6 +30,7 @@ export interface IProps {
     end?: number,
     Value: number,
     setValue?: (x: number) => void,
+    onClick?: (x: number) => void,
     color: string,
     lineStyle: LineStyle,
     width: number
@@ -43,6 +44,20 @@ function VerticalMarker(props: IProps) {
   const [value, setValue] = React.useState<number>(props.Value);
   const [isSelected, setSelected] = React.useState<boolean>(false);
   const [guid, setGuid] = React.useState<string>("");
+
+  function generateData(v: number) {
+      const y1 = (props.start === undefined? context.YDomain[0] : props.start);
+      const y2 = (props.end === undefined? context.YDomain[1] : props.end);
+      
+      return `M ${context.XTransformation(v)} ${context.YTransformation(y1)} L ${context.XTransformation(v)} ${context.YTransformation(y2)}`;
+  }
+
+  const onClick = React.useCallback((x: number, _: number) => {
+      const xP = context.XTransformation(props.Value);
+      const xT = context.XTransformation(x);
+       if (xT <= xP + (props.width/2) && xT >= xP - (props.width/2))
+         setSelected(true);
+  }, [props.width, props.Value]);
 
   React.useEffect(() => {
         const id = context.RegisterSelect({
@@ -63,42 +78,31 @@ function VerticalMarker(props: IProps) {
             onRelease: (_) => setSelected(false),
             onPlotLeave: (_) => setSelected(false)
         } as IHandlers)
-    }, [props.width, props.Value])
+    }, [onClick])
 
    React.useEffect(() => {
       setValue(props.Value);
    }, [props.Value]);
 
    React.useEffect(() => {
-        if (props.setValue === undefined)
-            return;
-        if (!isSelected && props.Value !== value)
+        if (isSelected && props.setValue !== undefined && props.Value !== value)
             props.setValue(value);
-   }, [isSelected, value])
+   }, [isSelected, value]);
+
+   React.useEffect(() => {
+        if (isSelected && props.onClick !== undefined)
+            props.onClick(props.Value);
+   }, [isSelected]);
    
    React.useEffect(() => {
     if (context.CurrentMode !== 'select')
         setSelected(false);
-   },[context.CurrentMode])
+   },[context.CurrentMode]);
 
    React.useEffect(() => {
        if (isSelected)
         setValue(context.XHover);
-   }, [context.XHover])
-
-   function generateData(v: number) {
-       const y1 = (props.start === undefined? context.YDomain[0] : props.start);
-       const y2 = (props.end === undefined? context.YDomain[1] : props.end);
-       
-       return `M ${context.XTransformation(v)} ${context.YTransformation(y1)} L ${context.XTransformation(v)} ${context.YTransformation(y2)}`;
-   }
-
-   function onClick(x: number, _: number) {
-       const xP = context.XTransformation(props.Value);
-       const xT = context.XTransformation(x);
-        if (xT <= xP + (props.width/2) && xT >= xP - (props.width/2))
-          setSelected(true);
-   }
+   }, [context.XHover]);
 
    return (
        
