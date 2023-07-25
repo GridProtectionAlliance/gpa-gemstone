@@ -23,6 +23,7 @@
 
 import * as React from 'react';
 import * as moment from 'moment';
+import { IsInteger } from '@gpa-gemstone/helper-functions'
 
 interface IProps {
   DateTime: moment.Moment
@@ -104,11 +105,11 @@ export default function Clock(props: IProps) {
             > ^ </td>
         </tr>
         <tr style={{height: 20, lineHeight: '20px'}}>
-          <td style={{ width: 50, padding: 5, }}> {hour} </td>
+          <td style={{ width: 50, padding: 5, }}> <TimeInput value={hour} setValue={setHour} max={23} /> </td>
           <td style={{ width: 20, padding: 5, }}> : </td>
-          <td style={{ width: 50, padding: 5, }}> {minute} </td>
+          <td style={{ width: 50, padding: 5, }}> <TimeInput value={minute} setValue={setMinute} max={59} /> </td>
           <td style={{ width: 20, padding: 5, }}> : </td>
-          <td style={{ width: 50, padding: 5, }}> {second} </td>
+          <td style={{ width: 50, padding: 5, }}> <TimeInput value={second} setValue={setSecond} max={59} /> </td>
         </tr>
         <tr style={{height: 20, lineHeight: '20px'}}>
           <td 
@@ -138,5 +139,41 @@ export default function Clock(props: IProps) {
   );
 }
 
+const TimeInput = (props: {value: string, setValue: (v: string) => void, max: number}) => { 
+  const [val, setVal] = React.useState<string>(props.value.toString());
+  const [error, setError] = React.useState<boolean>(false);
+
+  React.useEffect(() => { 
+    
+    setVal(props.value.toString())
+  }, [props.value])
+
+  
+  React.useEffect(() => {
+    if (!IsInteger(val))
+      return;
+    const v = parseInt(val)
+    if (v > props.max || v < 0) {
+      setError(true);
+      return;
+    }
+    setError(false);
+    props.setValue(val)
+  }, [val, error])
+
+  return <div className={"form-group form-group-sm"} style={{width: 45}}>
+    <input
+      type={"text"}
+      className={!error ? 'form-control' : 'form-control is-invalid'}
+      onChange={(evt) => {
+        if (IsInteger(evt.target.value))
+        setVal(evt.target.value)
+      }}
+      value={val}
+    />
+  </div>
+  
+ 
+ }
 
 
