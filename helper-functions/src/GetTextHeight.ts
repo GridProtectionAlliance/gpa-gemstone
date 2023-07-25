@@ -27,9 +27,11 @@
  * @param fontSize: Determines size of given font
  * @param word: Text to measure
  * @param cssStyle: Optional css style 
+ * @param width: Optional set width of measurement (default: 'auto')
+ * @param whiteSpace: Optional white space arguement (default: 'no-wrap')
  * @returns Height of text
  */
-function GetTextHeight(font: string, fontSize: string, word: string, cssStyle?: string): number {
+function GetTextHeight(font: string, fontSize: string, word: string, cssStyle?: string, width?: string, whiteSpace?: string): number {
 
     const text = document.createElement("span");
     document.body.appendChild(text);
@@ -37,9 +39,9 @@ function GetTextHeight(font: string, fontSize: string, word: string, cssStyle?: 
     text.style.font = font;
     text.style.fontSize = fontSize;
     text.style.height = 'auto';
-    text.style.width = 'auto';
+    text.style.width = width ?? 'auto';
     text.style.position = 'absolute';
-    text.style.whiteSpace = 'no-wrap';
+    text.style.whiteSpace = whiteSpace ?? 'no-wrap';
     
     if (cssStyle !== undefined)
         text.style.cssText = cssStyle

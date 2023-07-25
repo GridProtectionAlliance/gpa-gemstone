@@ -24,7 +24,7 @@
 
 import * as React from 'react';
 import { LineStyle} from './GraphContext';
-import { GetTextHeight, GetTextWidth } from '@gpa-gemstone/helper-functions';
+import { GetTextWidth, GetTextHeight } from '@gpa-gemstone/helper-functions';
 
 
 export interface IProps {
@@ -41,28 +41,32 @@ function LineLegend(props: IProps) {
   const [hLegend, setHLegend] = React.useState<number>(0);
   const [textSize, setTextSize] = React.useState<number>(1);
   const [useMultiLine, setUseMultiLine] = React.useState<boolean>(false);
+  const nonTextualWidth = 45;
+  const textFont = "Segoe UI";
+
   
   React.useLayoutEffect(() => {
-    setWLegend((ref?.current as any)?.offsetWidth ?? 0);
+    
+    setWLegend(((ref?.current as any)?.offsetWidth) ?? 0);
     setHLegend((ref?.current as any)?.offsetHeight ?? 0)
   })
 
   React.useEffect(() => {
     let t = 1;
-    let w = GetTextWidth("Segoe UI", '1em', props.label);
-    let h = GetTextWidth("Segoe UI", '1em', props.label);
+    let w = GetTextWidth(textFont, `${t}em`, props.label);
+    let h = GetTextWidth(textFont, `${t}em`, props.label);
     let useML = false;
 
-    while (t > 0.4 &&  ( w > wLegend - 45 || h > hLegend)) {
+    while (t > 0.4 &&  ( w > wLegend - nonTextualWidth || h > hLegend)) {
       t = t - 0.05;
-      w = GetTextWidth("Segoe UI", t + 'em', props.label);
-      h = GetTextHeight("Segoe UI", t + 'em', props.label);
+      w = GetTextWidth(textFont, `${t}em`, props.label);
+      h = GetTextHeight(textFont, `${t}em`, props.label);
       useML = false;
       // Consider special case when width is limiting but height is available
-      if (w > (wLegend - 45) && h < hLegend) {
+      if (w > (wLegend - nonTextualWidth) && h < hLegend) {
         useML = true;
-        h = GetTextHeight("Segoe UI", t + 'em', props.label,`width: ${wLegend-45}px; whitespace: normal;`);
-        w = wLegend - 45;
+        h = GetTextHeight(textFont, `${t}em`, props.label, undefined, `${wLegend-nonTextualWidth}px`, `normal`);
+        w = wLegend - nonTextualWidth;
       }
     }
     setTextSize(t);
