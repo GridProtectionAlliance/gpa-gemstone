@@ -152,7 +152,7 @@ const TimeInput = (props: {value: string, setValue: (v: string) => void, max: nu
   React.useEffect(() => {
     if (!IsInteger(val))
       return;
-    const v = parseInt(val)
+    const v = parseInt(val,10)
     if (v > props.max || v < 0) {
       setError(true);
       return;
