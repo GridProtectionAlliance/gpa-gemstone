@@ -25,6 +25,7 @@ import { GenericSlice, Search} from "@gpa-gemstone/react-interactive";
 import { Application, OpenXDA, SystemCenter } from "@gpa-gemstone/application-typings";
 import SelectPopup from "./StandardSelectPopup";
 import {DefaultSearch} from './SearchBar';
+import { Column } from "@gpa-gemstone/react-table";
 
 interface U { ID: number|string }
 
