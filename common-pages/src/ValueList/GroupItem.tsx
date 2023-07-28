@@ -31,45 +31,45 @@ import { IGenericSlice } from '../SliceInterfaces';
 import { Dispatch } from '@reduxjs/toolkit';
 
 interface IProps {
-		Record: SystemCenter.Types.ValueListGroup
-		ValueListItemSlice: IGenericSlice<SystemCenter.Types.ValueListItem>;
-	}
+        Record: SystemCenter.Types.ValueListGroup
+        ValueListItemSlice: IGenericSlice<SystemCenter.Types.ValueListItem>;
+    }
 
 
 export default function GroupItemsWindow(props: IProps) {
-	const dispatch = useDispatch<Dispatch<any>>();
+    const dispatch = useDispatch<Dispatch<any>>();
 
-	const recordStatus: Application.Types.Status = useSelector(props.ValueListItemSlice.Status);
-	const data: SystemCenter.Types.ValueListItem[] = useSelector(props.ValueListItemSlice.Data);
-	const parentID: number|string = useSelector((props.ValueListItemSlice.ParentID === undefined? (state: any) => -1 : props.ValueListItemSlice.ParentID));
+    const recordStatus: Application.Types.Status = useSelector(props.ValueListItemSlice.Status);
+    const data: SystemCenter.Types.ValueListItem[] = useSelector(props.ValueListItemSlice.Data);
+    const parentID: number|string = useSelector((props.ValueListItemSlice.ParentID === undefined? (state: any) => -1 : props.ValueListItemSlice.ParentID));
   const [sortField, setSortField] = React.useState<keyof SystemCenter.Types.ValueListItem>('Value');
-	const [ascending,setAscending] = React.useState<boolean>(false);
+    const [ascending,setAscending] = React.useState<boolean>(false);
 
   const emptyRecord: SystemCenter.Types.ValueListItem = { ID: 0, GroupID: props.Record.ID, Value: '', AltValue: '', SortOrder: 0 };
   const [record, setRecord] = React.useState<SystemCenter.Types.ValueListItem>(emptyRecord);
 
-	const [showNew, setShowNew] = React.useState<boolean>(false);
-	const [newErrors, setNewErrors] = React.useState<string[]>([]);
+    const [showNew, setShowNew] = React.useState<boolean>(false);
+    const [newErrors, setNewErrors] = React.useState<string[]>([]);
 
-	const [validValue, setValidValue] = React.useState<boolean>(true);
+    const [validValue, setValidValue] = React.useState<boolean>(true);
 
-	React.useEffect(() => {
-			if (recordStatus === 'unintiated' || recordStatus === 'changed' || parentID !== props.Record.ID)
-				dispatch(props.ValueListItemSlice.Fetch(props.Record.ID))
-	}, [recordStatus,dispatch]);
+    React.useEffect(() => {
+            if (recordStatus === 'unintiated' || recordStatus === 'changed' || parentID !== props.Record.ID)
+                dispatch(props.ValueListItemSlice.Fetch(props.Record.ID))
+    }, [recordStatus,dispatch]);
 
-	React.useEffect(() => {
-		dispatch(props.ValueListItemSlice.Sort({Ascending: ascending, SortField: sortField}));
-	}, [sortField, ascending])
+    React.useEffect(() => {
+        dispatch(props.ValueListItemSlice.Sort({Ascending: ascending, SortField: sortField}));
+    }, [sortField, ascending])
 
-	React.useEffect(() => {
-		if (record.Value === null)
-			setValidValue(true)
-		if (data.findIndex((d) => d.Value.toLowerCase() === record.Value.toLowerCase()) > -1 )
-			setValidValue(false)
-		else
-			setValidValue(true)
-	}, [record, data])
+    React.useEffect(() => {
+        if (record.Value === null)
+            setValidValue(true)
+        if (data.findIndex((d) => d.Value.toLowerCase() === record.Value.toLowerCase()) > -1 )
+            setValidValue(false)
+        else
+            setValidValue(true)
+    }, [record, data])
 
     return (
         <div className="card" style={{ marginBottom: 10 }}>
@@ -83,38 +83,38 @@ export default function GroupItemsWindow(props: IProps) {
             <div className="card-body">
                 <div className="row">
                     <div style={{ width: '100%', height: window.innerHeight - 421, maxHeight: window.innerHeight - 421, padding: 0, overflowY: 'auto' }}>
-												<SearchableTable<SystemCenter.Types.ValueListItem>
-													cols={[
-		                        { key: 'Value', field: 'Value', label: 'Value', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
-		                        { key: 'AltValue', field: 'AltValue', label: 'Alternate Value', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
-		                        { key: 'SortOrder', field: 'SortOrder', label: 'Sort Order', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
-		                        { key: 'remove', label: '', headerStyle: { width: '10%' }, rowStyle: { width: '10%' }, content: (item) => <button className="btn btn-sm" onClick={(e) => {
-																e.preventDefault();
-																dispatch(props.ValueListItemSlice.DBAction({verb: 'DELETE', record: item}));
-														}}><span><i className="fa fa-times"></i></span></button>
-													 },
-		                        { key: 'scroll', label: '', headerStyle: { width: 17, padding: 0 }, rowStyle: { width: 0, padding: 0 } },
-			                    ]}
-			                    tableClass="table table-hover"
-													data={data}
-													sortKey={sortField}
-													onSort={(d) => {
-														if (d.colKey === 'remove' || d.colKey === 'scroll' || d.colField === undefined)
-															return;
-														setSortField(d.colField);
-														if (d.colField === sortField)
-															setAscending((asc) => !asc)
-														else
-															setAscending(true)
-													}}
-													ascending
-													onClick={() => {}}
-												 	theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-												 	tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: window.innerHeight - 300, width: '100%' }}
-												 	rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-												 	selected={(item) => false}
-													matchSearch={(item,search) => item.Value.toLowerCase().indexOf(search.toLowerCase()) > -1}
-												/>
+                                                <SearchableTable<SystemCenter.Types.ValueListItem>
+                                                    cols={[
+                                { key: 'Value', field: 'Value', label: 'Value', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
+                                { key: 'AltValue', field: 'AltValue', label: 'Alternate Value', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
+                                { key: 'SortOrder', field: 'SortOrder', label: 'Sort Order', headerStyle: { width: 'auto' }, rowStyle: { width: 'auto' } },
+                                { key: 'remove', label: '', headerStyle: { width: '10%' }, rowStyle: { width: '10%' }, content: (item) => <button className="btn btn-sm" onClick={(e) => {
+                                                                e.preventDefault();
+                                                                dispatch(props.ValueListItemSlice.DBAction({verb: 'DELETE', record: item}));
+                                                        }}><span><i className="fa fa-times"></i></span></button>
+                                                     },
+                                { key: 'scroll', label: '', headerStyle: { width: 17, padding: 0 }, rowStyle: { width: 0, padding: 0 } },
+                                ]}
+                                tableClass="table table-hover"
+                                                    data={data}
+                                                    sortKey={sortField}
+                                                    onSort={(d) => {
+                                                        if (d.colKey === 'remove' || d.colKey === 'scroll' || d.colField === undefined)
+                                                            return;
+                                                        setSortField(d.colField);
+                                                        if (d.colField === sortField)
+                                                            setAscending((asc) => !asc)
+                                                        else
+                                                            setAscending(true)
+                                                    }}
+                                                    ascending
+                                                    onClick={() => {}}
+                                                    theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
+                                                    tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: window.innerHeight - 300, width: '100%' }}
+                                                    rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
+                                                    selected={(item) => false}
+                                                    matchSearch={(item,search) => item.Value.toLowerCase().indexOf(search.toLowerCase()) > -1}
+                                                />
                     </div>
                 </div>
             </div>
@@ -123,19 +123,19 @@ export default function GroupItemsWindow(props: IProps) {
                     <button className="btn btn-primary pull-right" data-toggle="modal" data-target="#exampleModal" onClick={() => {setRecord({ ...emptyRecord, GroupID: props.Record.ID }); setShowNew(true);} }>Add Item</button>
                 </div>
             </div>
-						<Modal Title={'Add new List Item'} Show={showNew} Size={'lg'} ShowX={true} ShowCancel={false} DisableConfirm={newErrors.length > 0 || !validValue} ConfirmShowToolTip={newErrors.length > 0 || !validValue}
-						ConfirmToolTipContent={ <>
-							{newErrors.map((t,i) => <p key={i}> {CrossMark} {t}</p>)}
-							{!validValue? <p> {CrossMark} A Value has to be unique in a given Item List.</p> : null}
-						</>}
-						CallBack={(c) => {
-							setShowNew(false);
-							if (c)
-								dispatch(props.ValueListItemSlice.DBAction({verb: 'POST', record}))
-						}}
-						>
-							<ItemForm Record={record} Setter={setRecord} ErrorSetter={setNewErrors} />
-						</Modal>
+                        <Modal Title={'Add new List Item'} Show={showNew} Size={'lg'} ShowX={true} ShowCancel={false} DisableConfirm={newErrors.length > 0 || !validValue} ConfirmShowToolTip={newErrors.length > 0 || !validValue}
+                        ConfirmToolTipContent={ <>
+                            {newErrors.map((t,i) => <p key={i}> {CrossMark} {t}</p>)}
+                            {!validValue? <p> {CrossMark} A Value has to be unique in a given Item List.</p> : null}
+                        </>}
+                        CallBack={(c) => {
+                            setShowNew(false);
+                            if (c)
+                                dispatch(props.ValueListItemSlice.DBAction({verb: 'POST', record}))
+                        }}
+                        >
+                            <ItemForm Record={record} Setter={setRecord} ErrorSetter={setNewErrors} />
+                        </Modal>
 
         </div>
 

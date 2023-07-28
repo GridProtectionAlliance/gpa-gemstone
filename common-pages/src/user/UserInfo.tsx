@@ -31,21 +31,21 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Dispatch } from '@reduxjs/toolkit';
 
 interface IProps {
-	UserSlice: IUserAccountSlice
+    UserSlice: IUserAccountSlice
 }
 
 function UserInfo(props: IProps)  {
-	const dispatch = useDispatch<Dispatch<any>>();
+    const dispatch = useDispatch<Dispatch<any>>();
 
-	const currentUser = useSelector(props.UserSlice.CurrentUser);
-	const [user, setUser] = React.useState<Application.Types.iUserAccount>(currentUser);
-	const [warnings, setWarning] = React.useState<string[]>([]);
-	const [hover, setHover] = React.useState<('None' | 'Clear')>('None');
+    const currentUser = useSelector(props.UserSlice.CurrentUser);
+    const [user, setUser] = React.useState<Application.Types.iUserAccount>(currentUser);
+    const [warnings, setWarning] = React.useState<string[]>([]);
+    const [hover, setHover] = React.useState<('None' | 'Clear')>('None');
 
 
-	React.useEffect(() => {
-		if (currentUser == null || user == null)
-			return;
+    React.useEffect(() => {
+        if (currentUser == null || user == null)
+            return;
 
     const encryptedPwd = (user.Password !== currentUser.Password ? CryptoJS.SHA256(user.Password + "0").toString(CryptoJS.enc.Base64) : user.Password)
 
@@ -74,15 +74,15 @@ function UserInfo(props: IProps)  {
     setWarning(w);
     }, [currentUser, user])
 
-		React.useEffect(() => { setUser(currentUser)}, [currentUser])
+        React.useEffect(() => { setUser(currentUser)}, [currentUser])
 
-	function updateUser() {
-			const encryptedPwd = (user.Password !== currentUser.Password ? CryptoJS.SHA256(user.Password + "0").toString(CryptoJS.enc.Base64) : user.Password)
-			dispatch(props.UserSlice.SetCurrentUser({ ...user, Name: currentUser.Name, Password: encryptedPwd }));
-			dispatch(props.UserSlice.DBAction({verb: 'PATCH', record: { ...user, Name: currentUser.Name, Password: encryptedPwd }}))
-	 }
+    function updateUser() {
+            const encryptedPwd = (user.Password !== currentUser.Password ? CryptoJS.SHA256(user.Password + "0").toString(CryptoJS.enc.Base64) : user.Password)
+            dispatch(props.UserSlice.SetCurrentUser({ ...user, Name: currentUser.Name, Password: encryptedPwd }));
+            dispatch(props.UserSlice.DBAction({verb: 'PATCH', record: { ...user, Name: currentUser.Name, Password: encryptedPwd }}))
+     }
 
-	 return (
+     return (
         <div className="card" style={{ marginBottom: 10 }}>
             <div className="card-header">
                 <div className="row">

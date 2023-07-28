@@ -32,39 +32,39 @@ import { CheckBox } from '@gpa-gemstone/react-forms';
 import { Dispatch } from '@reduxjs/toolkit';
 
 interface IProps {
-	UserID: string,
-	OnDelete: () => void,
-	SecurityRoleSlice: ISecurityRoleSlice,
-	UserSlice: IUserAccountSlice,
-	AdditionalFieldSlice: IAdditionalFieldSlice<Application.Types.iAdditionalUserField, Application.Types.iAdditionalUserFieldValue>,
-	ValueListItemSlice: IGenericSlice<SystemCenter.Types.ValueListItem>,
-	ValueListGroupSlice: IGenericSlice<SystemCenter.Types.ValueListGroup>
+    UserID: string,
+    OnDelete: () => void,
+    SecurityRoleSlice: ISecurityRoleSlice,
+    UserSlice: IUserAccountSlice,
+    AdditionalFieldSlice: IAdditionalFieldSlice<Application.Types.iAdditionalUserField, Application.Types.iAdditionalUserFieldValue>,
+    ValueListItemSlice: IGenericSlice<SystemCenter.Types.ValueListItem>,
+    ValueListGroupSlice: IGenericSlice<SystemCenter.Types.ValueListGroup>
 }
 
 function User(props: IProps)  {
-	const dispatch = useDispatch<Dispatch<any>>();
+    const dispatch = useDispatch<Dispatch<any>>();
 
-	const user: Application.Types.iUserAccount = useSelector(props.UserSlice.CurrentUser);
-	const status: Application.Types.Status = useSelector(props.UserSlice.Status);
+    const user: Application.Types.iUserAccount = useSelector(props.UserSlice.CurrentUser);
+    const status: Application.Types.Status = useSelector(props.UserSlice.Status);
 
-	const [tab, setTab] = React.useState<string>('userInfo')
+    const [tab, setTab] = React.useState<string>('userInfo')
 
-	const [showWarning, setShowWarning] =  React.useState<boolean>(false);
+    const [showWarning, setShowWarning] =  React.useState<boolean>(false);
 
-	React.useEffect(() => {
-		dispatch(props.UserSlice.LoadExistingUser(props.UserID))
-	}, [dispatch, props.UserID])
+    React.useEffect(() => {
+        dispatch(props.UserSlice.LoadExistingUser(props.UserID))
+    }, [dispatch, props.UserID])
 
-	if (status === 'error')
-		return <div style={{ width: '100%', height: '100%' }}>
-			<ServerErrorIcon Show={true} Label={'A Server Error Occured. Please Reload the Application'}/>
-		</div>;
+    if (status === 'error')
+        return <div style={{ width: '100%', height: '100%' }}>
+            <ServerErrorIcon Show={true} Label={'A Server Error Occured. Please Reload the Application'}/>
+        </div>;
 
-	const Tabs = [
-					 { Id: "userInfo", Label: "User Info" },
-					 { Id: "permissions", Label: "Permissions" },
-					 { Id: "additionalFields", Label: "Additional Fields" }
-			 ];
+    const Tabs = [
+                     { Id: "userInfo", Label: "User Info" },
+                     { Id: "permissions", Label: "Permissions" },
+                     { Id: "additionalFields", Label: "Additional Fields" }
+             ];
 
  return (
              <div style={{ width: '100%', height: window.innerHeight - 63, maxHeight: window.innerHeight - 63, overflow: 'hidden', padding: 15 }}>
@@ -76,7 +76,7 @@ function User(props: IProps)  {
                          <button className="btn btn-danger pull-right" hidden={user == null} onClick={() => setShowWarning(true)}>Delete User</button>
                      </div>
                  </div>
-							 	<LoadingScreen Show={status === 'loading'}/>
+                                <LoadingScreen Show={status === 'loading'}/>
                  <hr />
                  <TabSelector CurrentTab={tab} SetTab={(t) => setTab(t)} Tabs={Tabs} />
                  <div className="tab-content" style={{maxHeight: window.innerHeight - 235, overflow: 'hidden' }}>
@@ -88,28 +88,28 @@ function User(props: IProps)  {
                      </div>
                      <div className={"tab-pane " + (tab === "additionalFields" ? " active" : "fade")} style={{ maxHeight: window.innerHeight - 215 }}>
                          <AdditionalField<Application.Types.iAdditionalUserField, Application.Types.iAdditionalUserFieldValue>
-													 Id={props.UserID}
-													 AdditionalFieldSlice={props.AdditionalFieldSlice}
-													 ValueListItemSlice={props.ValueListItemSlice}
-													 ValueListGroupSlice={props.ValueListGroupSlice}
-													 EmptyField={{ID: -1, IsSecure: false, FieldName: '', Type: 'string'}}
-													 GetFieldValueIndex={(field, values) => values.findIndex(v => v.AdditionalUserFieldID === field.ID)}
-													 GetFieldIndex={(value, fields) => fields.findIndex(f => f.ID === value.AdditionalUserFieldID)}
-													 FieldKeySelector={(field) => (field.ID === -1? 'new' : field.ID.toString())}
-													 ValidateField={() => []}
-													 FieldUI={(fld, setter) => <CheckBox<Application.Types.iAdditionalUserField> Record={fld} Field='IsSecure' Label="Secure Data" Setter={setter} />}
-													 CreateValue={(fld) => ({Value: '', ID: -1, UserAccountID: props.UserID, AdditionalUserFieldID: fld.ID})}
-												 />
+                                                     Id={props.UserID}
+                                                     AdditionalFieldSlice={props.AdditionalFieldSlice}
+                                                     ValueListItemSlice={props.ValueListItemSlice}
+                                                     ValueListGroupSlice={props.ValueListGroupSlice}
+                                                     EmptyField={{ID: -1, IsSecure: false, FieldName: '', Type: 'string'}}
+                                                     GetFieldValueIndex={(field, values) => values.findIndex(v => v.AdditionalUserFieldID === field.ID)}
+                                                     GetFieldIndex={(value, fields) => fields.findIndex(f => f.ID === value.AdditionalUserFieldID)}
+                                                     FieldKeySelector={(field) => (field.ID === -1? 'new' : field.ID.toString())}
+                                                     ValidateField={() => []}
+                                                     FieldUI={(fld, setter) => <CheckBox<Application.Types.iAdditionalUserField> Record={fld} Field='IsSecure' Label="Secure Data" Setter={setter} />}
+                                                     CreateValue={(fld) => ({Value: '', ID: -1, UserAccountID: props.UserID, AdditionalUserFieldID: fld.ID})}
+                                                 />
                      </div>
 
                  </div>
-								 <Warning Message={'This will permanently remove the User. Are you sure you want to continue?'} Title={'Warning'} Show={showWarning} CallBack={(c) => {
-										setShowWarning(false);
-									if (c) {
-										dispatch(props.UserSlice.DBAction({verb: 'DELETE', record: user}));
-										props.OnDelete();
-									}
-								}}/>
+                                 <Warning Message={'This will permanently remove the User. Are you sure you want to continue?'} Title={'Warning'} Show={showWarning} CallBack={(c) => {
+                                        setShowWarning(false);
+                                    if (c) {
+                                        dispatch(props.UserSlice.DBAction({verb: 'DELETE', record: user}));
+                                        props.OnDelete();
+                                    }
+                                }}/>
              </div>
          )
 

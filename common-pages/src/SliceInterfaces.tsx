@@ -40,21 +40,21 @@ export interface IGenericSlice<T> {
 }
 
 export interface ISearchableSlice<T> extends IGenericSlice<T> {
-	DBSearch: (AsyncThunk<any, { filter: Search.IFilter<T>[], sortField?: keyof T, ascending?: boolean }, {}> ),
+  DBSearch: (AsyncThunk<any, { filter: Search.IFilter<T>[], sortField?: keyof T, ascending?: boolean }, {}> ),
 
-	SearchFilters: (state: any) => Search.IFilter<T>[],
-	SearchResults: (state: any) => T[],
-	SearchStatus: (state: any) => Application.Types.Status,
+  SearchFilters: (state: any) => Search.IFilter<T>[],
+  SearchResults: (state: any) => T[],
+  SearchStatus: (state: any) => Application.Types.Status,
 }
 
 export interface IAdditionalFieldSlice<F,V> {
-	FetchField: AsyncThunk<any, void, {}>,
-	FieldAction: AsyncThunk<any, { Verb: DBAction, Record: F }, {}>,
+  FetchField: AsyncThunk<any, void, {}>,
+  FieldAction: AsyncThunk<any, { Verb: DBAction, Record: F }, {}>,
   FetchValues: AsyncThunk<any, number|string, {}>,
   UpdateValues: AsyncThunk<any, {ParentID: number|string, Values: V[]}, {}>,
   Sort: ActionCreatorWithPayload<{ SortField: keyof F, Ascending: boolean}, string>,
 
-	Fields: (state: any) => F[],
+  Fields: (state: any) => F[],
   Values: (state: any) => V[],
   FieldStatus: (state: any) => Application.Types.Status,
   ValueStatus: (state: any) => Application.Types.Status,
@@ -64,13 +64,13 @@ export interface IAdditionalFieldSlice<F,V> {
 }
 
 export interface IUserAccountSlice extends ISearchableSlice<Application.Types.iUserAccount> {
-	ADUpdate: (AsyncThunk<any, void, {}>),
+  ADUpdate: (AsyncThunk<any, void, {}>),
   SetCurrentUser: (AsyncThunk<any, Application.Types.iUserAccount, {}>),
   LoadExistingUser: (AsyncThunk<any, string, {}>),
   SetNewUser: ActionCreatorWithoutPayload
 
-	CurrentID: (state: any) => string|undefined,
-	CurrentUser: (state: any) => Application.Types.iUserAccount,
+  CurrentID: (state: any) => string|undefined,
+  CurrentUser: (state: any) => Application.Types.iUserAccount,
   ADValidation: (state: any) => UserValidation
 }
 
@@ -79,7 +79,7 @@ export interface ISecurityRoleSlice {
   FetchUserRoles: (AsyncThunk<any, string, {}>),
   SetUserRoles: (AsyncThunk<any, {UserId: string, Roles: Application.Types.iApplicationRoleUserAccount[]}, {}>),
 
-	Status: (state: any) => Application.Types.Status,
+  Status: (state: any) => Application.Types.Status,
   CurrentRoleStatus: (state: any) => Application.Types.Status,
   Roles: (state: any) =>  Application.Types.iApplicationRoleUserAccount[],
   AvailableRoles: (state: any) => Application.Types.iApplicationRole<Application.Types.SecurityRoleName>[]
