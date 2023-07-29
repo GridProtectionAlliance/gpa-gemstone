@@ -78,8 +78,8 @@ interface IPagedState< T extends U> extends IState<T> {
 }
 
 export default class GenericSlice<T extends U> {
-    Name: string = "";
-    APIPath: string = "";
+    Name = "";
+    APIPath = "";
     Slice: ( Slice<IPagedState<T>> );
     Fetch: (AsyncThunk<any, void | number | string, {}>);
     SetChanged: (AsyncThunk<any, void, {}>);

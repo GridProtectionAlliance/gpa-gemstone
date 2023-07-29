@@ -40,8 +40,8 @@ interface IProps {
     CancelBtnClass?: string,
     ConfirmShowToolTip?: boolean,
     CancelShowToolTip?: boolean,
-  	ConfirmToolTipContent?: React.ReactNode,
-  	CancelToolTipContent?: React.ReactNode,
+    ConfirmToolTipContent?: React.ReactNode,
+    CancelToolTipContent?: React.ReactNode,
 }
 
 // Props Description:
@@ -81,39 +81,39 @@ const Modal: React.FunctionComponent<IProps> = (props) => {
                 <div className="modal-content">
                     <div className="modal-header">
                         <h4 className="modal-title">{props.Title}</h4>
-						{props.ShowX? <button type="button" className="close" onClick={() => props.CallBack(false,false) }>&times;</button> : null}
+                        {props.ShowX? <button type="button" className="close" onClick={() => props.CallBack(false,false) }>&times;</button> : null}
                     </div>
                     <div className="modal-body" style={{ maxHeight: 'calc(100vh - 210px)', overflowY: 'auto' }}>
                         {props.Show? props.children : null}
                     </div>
                     <div className="modal-footer">
                         <button type="button"
-                						className={confirmbtnCls + (!(props.DisableConfirm === undefined || !props.DisableConfirm)? ' disabled' : '')}
-                						data-tooltip={guid + '-confirm'}
-                						onClick={() => { if (!(props.DisableConfirm === undefined || !props.DisableConfirm)) return; props.CallBack(true,true)}}
-                						onMouseEnter={() => setHover('confirm')}
-                						onMouseLeave={() => setHover('none')}
-                						>{confirmBtn}</button>
+                                        className={confirmbtnCls + (!(props.DisableConfirm === undefined || !props.DisableConfirm)? ' disabled' : '')}
+                                        data-tooltip={guid + '-confirm'}
+                                        onClick={() => { if (!(props.DisableConfirm === undefined || !props.DisableConfirm)) return; props.CallBack(true,true)}}
+                                        onMouseEnter={() => setHover('confirm')}
+                                        onMouseLeave={() => setHover('none')}
+                                        >{confirmBtn}</button>
                         {props.ShowCancel === undefined || props.ShowCancel ?
                             <button type="button"
-							className={cxnbtnCls  + (!(props.DisableCancel === undefined || !props.DisableCancel)? ' disabled' : '')}
-							data-tooltip={guid + '-cancel'}
+                            className={cxnbtnCls  + (!(props.DisableCancel === undefined || !props.DisableCancel)? ' disabled' : '')}
+                            data-tooltip={guid + '-cancel'}
               onClick={() => { if (!(props.DisableCancel === undefined || !props.DisableCancel)) return; props.CallBack(false,true)}}
-							onMouseEnter={() => setHover('cancel') }
-							onMouseLeave={() => setHover('none')}
-							>{cxnBtn}</button>
+                            onMouseEnter={() => setHover('cancel') }
+                            onMouseLeave={() => setHover('none')}
+                            >{cxnBtn}</button>
                             : null}
                       
                     </div>
                 </div>
             </div>
             </div>
-			<ToolTip Show={showConfirmToolTip} Position={'top'} Theme={'dark'} Target={guid + '-confirm'} Zindex={9999}>
-				{props.ConfirmToolTipContent}
-			  </ToolTip>
-			  <ToolTip Show={showCxnToolTip} Position={'top'} Theme={'dark'} Target={guid + '-cancel'} Zindex={9999}>
-				{props.CancelToolTipContent}
-			  </ToolTip>
+            <ToolTip Show={showConfirmToolTip} Position={'top'} Theme={'dark'} Target={guid + '-confirm'} Zindex={9999}>
+                {props.ConfirmToolTipContent}
+              </ToolTip>
+              <ToolTip Show={showCxnToolTip} Position={'top'} Theme={'dark'} Target={guid + '-cancel'} Zindex={9999}>
+                {props.CancelToolTipContent}
+              </ToolTip>
             {props.Show ? < div style={{
                 width: '100%',
                 height: '100%',
