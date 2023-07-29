@@ -235,4 +235,4 @@ function RenderAngleIcon(props: IRenderAngleProps) {
     return  <div style={{position: 'absolute', width: 25}}>
         <AngleIcon ascending={props.Ascending} />
     </div>
-};
+}
