@@ -102,6 +102,7 @@ export default function DateTimePicker<T>(props: IProps<T>) {
         value={boxRecord}
         disabled={props.Disabled === undefined ? false : props.Disabled}
         onClick={(e) => {e.preventDefault()}}
+        step="1"
       />
       <div className="invalid-feedback">
       {props.Feedback == null ? props.Field.toString() + ' is a required field.' : props.Feedback}
