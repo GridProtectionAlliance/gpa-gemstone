@@ -23,7 +23,7 @@
 import * as React from 'react';
 import Modal from './Modal';
 import LoadingIcon from './LoadingIcon';
-import { Select, CheckBox } from '@gpa-gemstone/react-forms';
+import { Select } from '@gpa-gemstone/react-forms';
 import {TrashCan, Pencil} from '@gpa-gemstone/gpa-symbols';
 
 interface IProps<T> {
@@ -36,7 +36,7 @@ interface IProps<T> {
     children: React.ReactNode,
     GetEnum?: EnumSetter<T>,
     ShowLoading?: boolean,
-	  ResultNote?: string,
+      ResultNote?: string,
     StorageID?: string
   }
 
@@ -129,25 +129,25 @@ export default function SearchBar<T> (props: IProps<T>)  {
   }
 
   function editFilter(index: number) {
-	  setIsNew(false);
-	  const oldFilters = [...filters];
-	  const filt = {...oldFilters[index]};
+      setIsNew(false);
+      const oldFilters = [...filters];
+      const filt = {...oldFilters[index]};
       oldFilters.splice(index,1);
-	  if (filt.Type === 'string' && (filt.Operator === 'LIKE' || filt.Operator === 'NOT LIKE'))
-		filt.SearchText = filt.SearchText.substr(1,filt.SearchText.length -2);
-	  setShow(true);
+      if (filt.Type === 'string' && (filt.Operator === 'LIKE' || filt.Operator === 'NOT LIKE'))
+        filt.SearchText = filt.SearchText.substr(1,filt.SearchText.length -2);
+      setShow(true);
       setFilters(oldFilters);
       setFilter(filt);
       if (props.defaultCollumn !== undefined && searchFilter !== null)
           props.SetFilter([...oldFilters, searchFilter]);
       else
           props.SetFilter(oldFilters);
-  };
+  }
 
   function createFilter() {
-	setShow(!show);
-	setIsNew(true);
-	setFilter({ FieldName: props.CollumnList[0].key, SearchText: '', Operator: props.CollumnList[0].type === 'string'? 'LIKE': '=', Type: props.CollumnList[0].type, isPivotColumn: props.CollumnList[0].isPivotField });
+    setShow(!show);
+    setIsNew(true);
+    setFilter({ FieldName: props.CollumnList[0].key, SearchText: '', Operator: props.CollumnList[0].type === 'string'? 'LIKE': '=', Type: props.CollumnList[0].type, isPivotColumn: props.CollumnList[0].isPivotField });
   }
 
   const content = (
@@ -161,7 +161,7 @@ export default function SearchBar<T> (props: IProps<T>)  {
           {props.ShowLoading!== undefined && props.ShowLoading? <div className="input-group-append"> <LoadingIcon Show={true}/> </div>: null}
         </div>
       <p style={{marginTop: 2, marginBottom: 2}}>{props.ResultNote}</p>
-		</div> : null}
+        </div> : null}
       <div style={{ position: 'relative', display: 'inline-block' }} className='col'>
           <button className={"btn btn-" + (filters.length > 0? "warning" : "primary")} onClick={(evt) => { evt.preventDefault(); createFilter(); }} onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>Add Filter{filters.length > 0 ? ("(" + filters.length + ")") : ""}</button>
           <div style={{ width: window.innerWidth / 3, display: hover ? 'block' : 'none', position: 'absolute', backgroundColor: '#f1f1f1', boxShadow: '0px 8px 16px 0px rgba(0,0,0,0.2)', zIndex: 1, right: (props.Direction === 'right' ? 0 : undefined), left: (props.Direction === 'left' ? 0: undefined) }} onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
@@ -223,18 +223,18 @@ export default function SearchBar<T> (props: IProps<T>)  {
 interface IPropsFilterCreator<T> { Filter: Search.IFilter<T>, Setter: (filter: React.SetStateAction<Search.IFilter<T>>) => void, Field: Search.IField<T>|undefined, Enum?: EnumSetter<T> }
 
 function FilterCreator<T>(props: IPropsFilterCreator<T> ) {
-	const [options, setOptions] = React.useState<IOptions[]>([]);
+    const [options, setOptions] = React.useState<IOptions[]>([]);
 
-	React.useEffect(() => {
-		if (props.Field === undefined)
-			return;
-		if (props.Field.enum !== undefined)
-			setOptions(props.Field.enum);
-		if (props.Enum !== undefined)
-			return props.Enum(setOptions,props.Field);
-		if (props.Field.enum === undefined)
-		setOptions([]);
-	},[props.Field, props.Enum]);
+    React.useEffect(() => {
+        if (props.Field === undefined)
+            return;
+        if (props.Field.enum !== undefined)
+            setOptions(props.Field.enum);
+        if (props.Enum !== undefined)
+            return props.Enum(setOptions,props.Field);
+        if (props.Field.enum === undefined)
+        setOptions([]);
+    },[props.Field, props.Enum]);
 
     if (props.Field === undefined)
         return null;
@@ -293,7 +293,7 @@ function FilterCreator<T>(props: IPropsFilterCreator<T> ) {
             </>
         );
     }
-	else if (props.Field.type === "datetime") {
+    else if (props.Field.type === "datetime") {
         return (
             <>
                 <label>Column type is {props.Field.type}.</label>
@@ -316,7 +316,7 @@ function FilterCreator<T>(props: IPropsFilterCreator<T> ) {
                             const value = evt.target.value as string;
                             props.Setter((prevState) => ({ ...prevState, SearchText: (value + ' ' + (prevState.SearchText.split(' ').length > 1? prevState.SearchText.split(' ')[1]: '0:00')) }));
                         }} />
-						<input type={'time'}className='form-control' value={props.Filter.SearchText.split(' ').length > 1? props.Filter.SearchText.split(' ')[1]: '0:00'} onChange={(evt) => {
+                        <input type={'time'}className='form-control' value={props.Filter.SearchText.split(' ').length > 1? props.Filter.SearchText.split(' ')[1]: '0:00'} onChange={(evt) => {
                             const value = evt.target.value as string;
                             props.Setter((prevState) => ({ ...prevState, SearchText: (prevState.SearchText.split(' ')[0] + ' ' + value) }));
                         }} />
@@ -362,7 +362,7 @@ function FilterCreator<T>(props: IPropsFilterCreator<T> ) {
                     {options.map((vli,index) => <li key={index} ><div className="form-check">
                         <input type="checkbox" className="form-check-input" style={{ zIndex: 1 }} onChange={(evt) => {
                             if (evt.target.checked) {
-                                ;
+                                
                                 let list = stripParenthesisAndSplit(props.Filter.SearchText)
                                 list = list.filter(x => x !== "")
                                 list.push(vli.Value)

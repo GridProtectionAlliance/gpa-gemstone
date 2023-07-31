@@ -29,45 +29,45 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Dispatch } from '@reduxjs/toolkit';
 
 interface IProps {
-	UserID: string,
-	RoleSlice: ISecurityRoleSlice
+    UserID: string,
+    RoleSlice: ISecurityRoleSlice
 }
 
 function UserPermission(props: IProps)  {
-	const dispatch = useDispatch<Dispatch<any>>();
+    const dispatch = useDispatch<Dispatch<any>>();
 
-	const currentRoles: Application.Types.iApplicationRoleUserAccount[] = useSelector(props.RoleSlice.Roles);
-	const allRoleStatus: Application.Types.Status = useSelector(props.RoleSlice.Status)
-	const availableRoles: Application.Types.iApplicationRole<Application.Types.SecurityRoleName>[] = useSelector(props.RoleSlice.AvailableRoles)
-	const currentRoleStatus: Application.Types.Status = useSelector(props.RoleSlice.CurrentRoleStatus)
+    const currentRoles: Application.Types.iApplicationRoleUserAccount[] = useSelector(props.RoleSlice.Roles);
+    const allRoleStatus: Application.Types.Status = useSelector(props.RoleSlice.Status)
+    const availableRoles: Application.Types.iApplicationRole<Application.Types.SecurityRoleName>[] = useSelector(props.RoleSlice.AvailableRoles)
+    const currentRoleStatus: Application.Types.Status = useSelector(props.RoleSlice.CurrentRoleStatus)
 
-	const [workingRoles, setWorkingRoles] = React.useState<Application.Types.iApplicationRole<Application.Types.SecurityRoleName>[]>([]);
-	const [changed, setChanged] = React.useState<boolean>(false)
+    const [workingRoles, setWorkingRoles] = React.useState<Application.Types.iApplicationRole<Application.Types.SecurityRoleName>[]>([]);
+    const [changed, setChanged] = React.useState<boolean>(false)
 
-	React.useEffect(() => {
-	  if (allRoleStatus === 'unintiated' || allRoleStatus === 'changed')
-			dispatch(props.RoleSlice.FetchRoles())
-	}, [dispatch, allRoleStatus])
+    React.useEffect(() => {
+      if (allRoleStatus === 'unintiated' || allRoleStatus === 'changed')
+            dispatch(props.RoleSlice.FetchRoles())
+    }, [dispatch, allRoleStatus])
 
-	React.useEffect(() => {
-		if (currentRoleStatus === 'unintiated' || currentRoleStatus === 'changed')
-			dispatch(props.RoleSlice.FetchUserRoles(props.UserID))
-	}, [dispatch, currentRoleStatus, props.UserID])
+    React.useEffect(() => {
+        if (currentRoleStatus === 'unintiated' || currentRoleStatus === 'changed')
+            dispatch(props.RoleSlice.FetchUserRoles(props.UserID))
+    }, [dispatch, currentRoleStatus, props.UserID])
 
-	React.useEffect(() => {
-		resetCurrentRoles(availableRoles, currentRoles)
+    React.useEffect(() => {
+        resetCurrentRoles(availableRoles, currentRoles)
  },[currentRoles, availableRoles]);
 
 function resetCurrentRoles(avRoles: Application.Types.iApplicationRole<Application.Types.SecurityRoleName>[], currRoles: Application.Types.iApplicationRoleUserAccount[] ) {
-	setChanged(false);
-	setWorkingRoles(avRoles.map(src => {
-		 const upd = _.cloneDeep(src);
-		 upd.Assigned = currRoles.find(usrc => usrc.ApplicationRoleID === upd.ID) !== undefined;
-		 return upd;
+    setChanged(false);
+    setWorkingRoles(avRoles.map(src => {
+         const upd = _.cloneDeep(src);
+         upd.Assigned = currRoles.find(usrc => usrc.ApplicationRoleID === upd.ID) !== undefined;
+         return upd;
  }))
 }
 
-	return (
+    return (
         <div className="card" style={{ marginBottom: 10 }}>
             <div className="card-header">
                 <div className="row">
@@ -100,10 +100,10 @@ function resetCurrentRoles(avRoles: Application.Types.iApplicationRole<Applicati
             <div className="card-footer">
                 <div className="btn-group mr-2">
                     <button className="btn btn-primary" onClick={() =>
-											dispatch(props.RoleSlice.SetUserRoles({
-												UserId: props.UserID,
-												Roles: workingRoles.filter(scr => scr.Assigned).map(scr => ({ ID: '00000000-0000-0000-0000-000000000000', ApplicationRoleID: scr.ID, UserAccountID: props.UserID }))
-											}))} disabled={!changed}>Update</button>
+                                            dispatch(props.RoleSlice.SetUserRoles({
+                                                UserId: props.UserID,
+                                                Roles: workingRoles.filter(scr => scr.Assigned).map(scr => ({ ID: '00000000-0000-0000-0000-000000000000', ApplicationRoleID: scr.ID, UserAccountID: props.UserID }))
+                                            }))} disabled={!changed}>Update</button>
                 </div>
                 <div className="btn-group mr-2">
                     <button className="btn btn-default" onClick={() => resetCurrentRoles(availableRoles, currentRoles)} disabled={!changed}>Reset</button>

@@ -31,25 +31,25 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Dispatch } from '@reduxjs/toolkit';
 
 interface IProps {
-	SettingsSlice: ISearchableSlice<SystemCenter.Types.Setting>
+  SettingsSlice: ISearchableSlice<SystemCenter.Types.Setting>
 }
 
 
 
 function Setting(props: IProps)  {
-	const dispatch = useDispatch<Dispatch<any>>();
+  const dispatch = useDispatch<Dispatch<any>>();
 
   const search: Search.IFilter<SystemCenter.Types.Setting>[] = useSelector(props.SettingsSlice.SearchFilters);
-	const searchStatus: Application.Types.Status =  useSelector(props.SettingsSlice.SearchStatus);
+  const searchStatus: Application.Types.Status =  useSelector(props.SettingsSlice.SearchStatus);
 
-	const data:  SystemCenter.Types.Setting[] =  useSelector(props.SettingsSlice.SearchResults);
-	const allSettings: SystemCenter.Types.Setting[] =  useSelector(props.SettingsSlice.Data);
-	const status: Application.Types.Status =  useSelector(props.SettingsSlice.Status);
+  const data:  SystemCenter.Types.Setting[] =  useSelector(props.SettingsSlice.SearchResults);
+  const allSettings: SystemCenter.Types.Setting[] =  useSelector(props.SettingsSlice.Data);
+  const status: Application.Types.Status =  useSelector(props.SettingsSlice.Status);
 
   const [sortField, setSortField] = React.useState<keyof SystemCenter.Types.Setting>('Name');
   const [ascending, setAscending] = React.useState<boolean>(true);
 
-	const emptySetting = {ID: 0, Name: '', Value: '', DefaultValue: ''}
+  const emptySetting = {ID: 0, Name: '', Value: '', DefaultValue: ''}
   const [editnewSetting, setEditNewSetting] = React.useState<SystemCenter.Types.Setting>(emptySetting);
   const [editNew, setEditNew] = React.useState<Application.Types.NewEdit>('New');
 
@@ -57,30 +57,30 @@ function Setting(props: IProps)  {
   const [showWarning, setShowWarning] = React.useState<boolean>(false);
   const [hasChanged, setHasChanged] = React.useState<boolean>(false);
 
-	const [errors, setErrors] = React.useState<string[]>([]);
+  const [errors, setErrors] = React.useState<string[]>([]);
 
   React.useEffect(() => {
       if (status === 'unintiated' || status === 'changed')
-				dispatch(props.SettingsSlice.Fetch());
+        dispatch(props.SettingsSlice.Fetch());
   }, [dispatch,status]);
 
-	React.useEffect(() => {
+  React.useEffect(() => {
       if (searchStatus === 'unintiated' || status === 'changed')
-				dispatch(props.SettingsSlice.DBSearch({filter: search, sortField, ascending}));
+        dispatch(props.SettingsSlice.DBSearch({filter: search, sortField, ascending}));
   }, [dispatch,searchStatus, ascending, sortField, search]);
 
   React.useEffect(() => { setHasChanged(false) }, [showModal]);
 
-	React.useEffect(() => {
-		const e: string[] = [];
-		if (editnewSetting.Name == null || editnewSetting.Name.length === 0)
-			e.push('A Name is required')
-		if (editnewSetting.Name != null && editnewSetting.Name.length > 0 && allSettings.findIndex(s => s.Name.toLowerCase() === editnewSetting.Name.toLowerCase() && s.ID !== editnewSetting.ID) > -1)
-			e.push('A Settign with this Name already exists.')
-		if (editnewSetting.Value == null || editnewSetting.Value.length === 0)
-			e.push('A Value is required')
-		setErrors(e)
-	}, [editnewSetting])
+  React.useEffect(() => {
+    const e: string[] = [];
+    if (editnewSetting.Name == null || editnewSetting.Name.length === 0)
+      e.push('A Name is required')
+    if (editnewSetting.Name != null && editnewSetting.Name.length > 0 && allSettings.findIndex(s => s.Name.toLowerCase() === editnewSetting.Name.toLowerCase() && s.ID !== editnewSetting.ID) > -1)
+      e.push('A Settign with this Name already exists.')
+    if (editnewSetting.Value == null || editnewSetting.Value.length === 0)
+      e.push('A Value is required')
+    setErrors(e)
+  }, [editnewSetting])
 
   const searchFields: Search.IField<SystemCenter.Types.Setting>[] = [
       { key: 'Name', label: 'Name', type: 'string', isPivotField: false },
@@ -88,17 +88,17 @@ function Setting(props: IProps)  {
       { key: 'Value', label: 'Value', type: 'string', isPivotField: false }
   ]
 
-	if (status === 'error')
-		return <div style={{ width: '100%', height: '100%' }}>
-		<ServerErrorIcon Show={true} Label={'A Server Error Occured. Please Reload the Application'}/>
-		</div>;
+  if (status === 'error')
+    return <div style={{ width: '100%', height: '100%' }}>
+    <ServerErrorIcon Show={true} Label={'A Server Error Occured. Please Reload the Application'}/>
+    </div>;
 
   return (
       <>
-			<LoadingScreen Show={status === 'loading'} />
+      <LoadingScreen Show={status === 'loading'} />
       <div style={{ width: '100%', height: '100%' }}>
         <SearchBar<SystemCenter.Types.Setting> CollumnList={searchFields} SetFilter={(flds) => dispatch(props.SettingsSlice.DBSearch({filter: flds, sortField, ascending}))}
-					Direction={'left'} defaultCollumn={{ key: 'Name', label: 'Name', type: 'string', isPivotField: false}} Width={'50%'} Label={'Search'}
+          Direction={'left'} defaultCollumn={{ key: 'Name', label: 'Name', type: 'string', isPivotField: false}} Width={'50%'} Label={'Search'}
           ShowLoading={searchStatus === 'loading'} ResultNote={searchStatus === 'error' ? 'Could not complete Search' : 'Found ' + data.length + ' Settings'}
           GetEnum={() => {
             return () => {}
@@ -112,7 +112,7 @@ function Setting(props: IProps)  {
               </form>
             </fieldset>
           </li>
-      	</SearchBar>
+        </SearchBar>
 
         <div style={{ width: '100%', height: 'calc( 100% - 136px)' }}>
           <Table<SystemCenter.Types.Setting>
@@ -127,18 +127,18 @@ function Setting(props: IProps)  {
             sortKey={sortField}
             ascending={ascending}
             onSort={(d) => {
-							if (d.colKey === 'scroll' || d.colField  === undefined)
-								return;
+              if (d.colKey === 'scroll' || d.colField  === undefined)
+                return;
               if (d.colField === sortField)
                 setAscending(!ascending);
               else {
                 setAscending(true);
                 setSortField(d.colField);
               }
-							if (d.colField === sortField)
-								dispatch(props.SettingsSlice.DBSearch({filter: search, sortField, ascending: true}));
-							else
-								dispatch(props.SettingsSlice.DBSearch({filter: search, sortField: d.colField, ascending}));
+              if (d.colField === sortField)
+                dispatch(props.SettingsSlice.DBSearch({filter: search, sortField, ascending: true}));
+              else
+                dispatch(props.SettingsSlice.DBSearch({filter: search, sortField: d.colField, ascending}));
             }}
             onClick={(item) => { setEditNewSetting(item.row); setShowModal(true); setEditNew('Edit');}}
             theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
@@ -152,32 +152,32 @@ function Setting(props: IProps)  {
         Show={showModal} ShowX={true} Size={'lg'} ShowCancel={editNew === 'Edit'} ConfirmText={'Save'} CancelText={'Delete'}
         CallBack={(conf, isBtn) => {
           if (conf && editNew === 'New')
-						dispatch(props.SettingsSlice.DBAction({verb: 'POST', record: editnewSetting}))
+            dispatch(props.SettingsSlice.DBAction({verb: 'POST', record: editnewSetting}))
           if (conf && editNew === 'Edit')
-						dispatch(props.SettingsSlice.DBAction({verb: 'PATCH', record: editnewSetting}))
+            dispatch(props.SettingsSlice.DBAction({verb: 'PATCH', record: editnewSetting}))
           if (!conf && isBtn)
             setShowWarning(true);
-					setShowModal(false);
+          setShowModal(false);
         }}
         DisableConfirm={(editNew === 'Edit' && !hasChanged) || errors.length > 0}
         ConfirmShowToolTip={errors.length > 0}
         ConfirmToolTipContent={
-					errors.map((t,i) => <p key={i}>{CrossMark} {t} </p>)
-				}
+          errors.map((t,i) => <p key={i}>{CrossMark} {t} </p>)
+        }
         >
-        	<div className="row">
-          	<div className="col">
+          <div className="row">
+            <div className="col">
               <Input<SystemCenter.Types.Setting> Record={editnewSetting} Field={'Name'} Label='Setting Name' Feedback={'A unique Name is required.'}
                 Valid={field => editnewSetting.Name != null && editnewSetting.Name.length > 0 && allSettings.findIndex(s => s.Name === editnewSetting.Name && s.ID !== editnewSetting.ID) < 0}
                 Setter={(record) => { setEditNewSetting(record); setHasChanged(true); }}
-							/>
+              />
               <Input<SystemCenter.Types.Setting> Record={editnewSetting} Field={'Value'} Label='Value' Feedback={'Value is required.'}
                 Valid={field => editnewSetting.Value != null && editnewSetting.Value.length > 0}
                 Setter={(record) => { setEditNewSetting(record); setHasChanged(true); }}
-							/>
+              />
               <Input<SystemCenter.Types.Setting> Record={editnewSetting} Field={'DefaultValue'} Label='Default Value' Valid={field => true}
-							 	Setter={(record) => { setEditNewSetting(record); setHasChanged(true); }}
-						 	/>
+                Setter={(record) => { setEditNewSetting(record); setHasChanged(true); }}
+              />
           </div>
         </div>
       </Modal>

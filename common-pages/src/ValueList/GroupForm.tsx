@@ -25,31 +25,31 @@ import { SystemCenter } from '@gpa-gemstone/application-typings';
 import { Input, TextArea } from '@gpa-gemstone/react-forms';
 
 interface IProps {
-	 Record: SystemCenter.Types.ValueListGroup,
-	 Setter: (record: SystemCenter.Types.ValueListGroup) => void,
-	 ErrorSetter?: (errors: string[]) => void
-	}
+     Record: SystemCenter.Types.ValueListGroup,
+     Setter: (record: SystemCenter.Types.ValueListGroup) => void,
+     ErrorSetter?: (errors: string[]) => void
+    }
 
 export default function GroupForm(props: IProps) {
-	const [errors, setErrors] = React.useState<string[]>([]);
+    const [errors, setErrors] = React.useState<string[]>([]);
 
-	React.useEffect(() => {
-		const e = [];
+    React.useEffect(() => {
+        const e = [];
 
-		if (props.Record.Name == null || props.Record.Name.length === 0)
-			e.push('A Name is required.')
-		if (props.Record.Name != null && props.Record.Name.length > 200)
-			e.push('Name has to be less than 200 characters.')
-		setErrors(e)
+        if (props.Record.Name == null || props.Record.Name.length === 0)
+            e.push('A Name is required.')
+        if (props.Record.Name != null && props.Record.Name.length > 200)
+            e.push('Name has to be less than 200 characters.')
+        setErrors(e)
 
-	}, [props.Record])
+    }, [props.Record])
 
-	React.useEffect(() => {
-		if (props.ErrorSetter !== undefined)
-			props.ErrorSetter(errors);
-	}, [errors,props.ErrorSetter]);
+    React.useEffect(() => {
+        if (props.ErrorSetter !== undefined)
+            props.ErrorSetter(errors);
+    }, [errors,props.ErrorSetter]);
 
-	function Valid(field: keyof (SystemCenter.Types.ValueListGroup)): boolean {
+    function Valid(field: keyof (SystemCenter.Types.ValueListGroup)): boolean {
         if (field === 'Name')
             return props.Record.Name != null && props.Record.Name.length > 0 && props.Record.Name.length <= 200;
         else if (field === 'Description')
@@ -58,10 +58,10 @@ export default function GroupForm(props: IProps) {
     }
 
     return (
-			<form>
-				<Input<SystemCenter.Types.ValueListGroup> Record={props.Record} Field={'Name'} Feedback={'Name must be less than 200 characters.'} Valid={Valid} Setter={props.Setter} />
-				<TextArea<SystemCenter.Types.ValueListGroup> Rows={3} Record={props.Record} Field={'Description'} Valid={Valid} Setter={props.Setter} />
-			</form>
+            <form>
+                <Input<SystemCenter.Types.ValueListGroup> Record={props.Record} Field={'Name'} Feedback={'Name must be less than 200 characters.'} Valid={Valid} Setter={props.Setter} />
+                <TextArea<SystemCenter.Types.ValueListGroup> Rows={3} Record={props.Record} Field={'Description'} Valid={Valid} Setter={props.Setter} />
+            </form>
 
         );
 }

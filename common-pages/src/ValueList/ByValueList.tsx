@@ -31,18 +31,18 @@ import { IGenericSlice, ISearchableSlice } from '../SliceInterfaces';
 import { Dispatch } from '@reduxjs/toolkit';
 
 interface IProps {
-	OnValueListSelect: (id: number) => void,
-	ValueListSlice: ISearchableSlice<SystemCenter.Types.ValueListGroup>;
-	ValueListItemSlice: IGenericSlice<SystemCenter.Types.ValueListItem>;
+    OnValueListSelect: (id: number) => void,
+    ValueListSlice: ISearchableSlice<SystemCenter.Types.ValueListGroup>;
+    ValueListItemSlice: IGenericSlice<SystemCenter.Types.ValueListItem>;
 }
 
 function ByValueListGroup(props: IProps)  {
-	const dispatch = useDispatch<Dispatch<any>>();
+    const dispatch = useDispatch<Dispatch<any>>();
 
-	const data: SystemCenter.Types.ValueListGroup[] = useSelector(props.ValueListSlice.SearchResults);
+    const data: SystemCenter.Types.ValueListGroup[] = useSelector(props.ValueListSlice.SearchResults);
   const dataStatus: Application.Types.Status = useSelector(props.ValueListSlice.SearchStatus);
 
-	const groups: SystemCenter.Types.ValueListGroup[] = useSelector(props.ValueListSlice.Data);
+    const groups: SystemCenter.Types.ValueListGroup[] = useSelector(props.ValueListSlice.Data);
   const groupStatus: Application.Types.Status = useSelector(props.ValueListSlice.Status);
 
   const [sortKey,setSortKey] = React.useState<keyof SystemCenter.Types.ValueListGroup>('Name');
@@ -50,44 +50,44 @@ function ByValueListGroup(props: IProps)  {
 
   const emptyRecord: SystemCenter.Types.ValueListGroup = {ID: 0, Name: '', Description: ''};
 
-	const [showNew, setShowNew] = React.useState<boolean>(false);
+    const [showNew, setShowNew] = React.useState<boolean>(false);
   const [record, setRecord] = React.useState<SystemCenter.Types.ValueListGroup>(emptyRecord);
 
-	const items: SystemCenter.Types.ValueListItem[] = useSelector(props.ValueListItemSlice.Data);
+    const items: SystemCenter.Types.ValueListItem[] = useSelector(props.ValueListItemSlice.Data);
   const itemStatus: Application.Types.Status = useSelector(props.ValueListItemSlice.Status);
 
   const [search, setSearch] = React.useState<Search.IFilter<SystemCenter.Types.ValueListGroup>[]>([]);
-	const [newErrors, setNewErrors] = React.useState<string[]>([]);
-	const [validName, setValidName] = React.useState<boolean>(true);
+    const [newErrors, setNewErrors] = React.useState<string[]>([]);
+    const [validName, setValidName] = React.useState<boolean>(true);
 
-	React.useEffect(() => {
-		if (dataStatus === 'unintiated' || dataStatus === 'changed')
-			dispatch(props.ValueListSlice.DBSearch({filter: search, sortField: sortKey, ascending: asc}));
-
-}, [dispatch]);
-
-	React.useEffect(() => {
-		dispatch(props.ValueListSlice.DBSearch({filter: search, sortField: sortKey, ascending: asc}));
-	 },[search,asc,sortKey]
-	);
-
-	React.useEffect(() => {
-		if (itemStatus === 'unintiated' || itemStatus === 'changed')
-			dispatch(props.ValueListItemSlice.Fetch());
+    React.useEffect(() => {
+        if (dataStatus === 'unintiated' || dataStatus === 'changed')
+            dispatch(props.ValueListSlice.DBSearch({filter: search, sortField: sortKey, ascending: asc}));
 
 }, [dispatch]);
 
-	React.useEffect(() => {
-		if (groupStatus === 'unintiated' || groupStatus === 'changed')
-			dispatch(props.ValueListSlice.Fetch());
-	}, [dispatch]);
+    React.useEffect(() => {
+        dispatch(props.ValueListSlice.DBSearch({filter: search, sortField: sortKey, ascending: asc}));
+     },[search,asc,sortKey]
+    );
 
-	React.useEffect(() => {
-			if (record.Name == null)
-				setValidName(true)
-			else
-				setValidName(groups.findIndex(g => g.Name.toLowerCase() === record.Name.toLowerCase()) < 0)
-	}, [record])
+    React.useEffect(() => {
+        if (itemStatus === 'unintiated' || itemStatus === 'changed')
+            dispatch(props.ValueListItemSlice.Fetch());
+
+}, [dispatch]);
+
+    React.useEffect(() => {
+        if (groupStatus === 'unintiated' || groupStatus === 'changed')
+            dispatch(props.ValueListSlice.Fetch());
+    }, [dispatch]);
+
+    React.useEffect(() => {
+            if (record.Name == null)
+                setValidName(true)
+            else
+                setValidName(groups.findIndex(g => g.Name.toLowerCase() === record.Name.toLowerCase()) < 0)
+    }, [record])
 
  return (
        <div style={{ width: '100%', height: '100%' }}>
@@ -118,13 +118,13 @@ function ByValueListGroup(props: IProps)  {
                    sortKey={sortKey}
                    ascending={asc}
                    onSort={(d) => {
-										 if (d.colKey === 'remove' || d.colKey === 'scroll' || d.colField === undefined)
-											 return;
-										 setSortKey(d.colField);
-										 if (d.colField === sortKey)
-											 setASC((b) => !b)
-										 else
-											 setASC(true)
+                                         if (d.colKey === 'remove' || d.colKey === 'scroll' || d.colField === undefined)
+                                             return;
+                                         setSortKey(d.colField);
+                                         if (d.colField === sortKey)
+                                             setASC((b) => !b)
+                                         else
+                                             setASC(true)
                    }}
                    onClick={(d) => props.OnValueListSelect(d.row.ID)}
                    theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
@@ -134,21 +134,21 @@ function ByValueListGroup(props: IProps)  {
                />
            </div>
 
-				 	<Modal Show={showNew} Title={'Add new Value List'} ShowX={true} ShowCancel={false} DisableConfirm={newErrors.length > 0 || !validName} ConfirmShowToolTip={newErrors.length > 0 || !validName}
-					ConfirmToolTipContent={
-						<>
-						{newErrors.map((t,i) => <p key={i}> {CrossMark} {t}</p>)}
-						{!validName? <p>{CrossMark} The Name has to be unique.</p> : null}
-						</>
-						}
-					 CallBack={(c)=>{
-							setShowNew(false);
-							if (c)
-								dispatch(props.ValueListSlice.DBAction({verb: 'POST', record}))
+                    <Modal Show={showNew} Title={'Add new Value List'} ShowX={true} ShowCancel={false} DisableConfirm={newErrors.length > 0 || !validName} ConfirmShowToolTip={newErrors.length > 0 || !validName}
+                    ConfirmToolTipContent={
+                        <>
+                        {newErrors.map((t,i) => <p key={i}> {CrossMark} {t}</p>)}
+                        {!validName? <p>{CrossMark} The Name has to be unique.</p> : null}
+                        </>
+                        }
+                     CallBack={(c)=>{
+                            setShowNew(false);
+                            if (c)
+                                dispatch(props.ValueListSlice.DBAction({verb: 'POST', record}))
 
-					}}>
-						<GroupForm Record={record} Setter={setRecord} ErrorSetter={setNewErrors} />
-					</Modal>
+                    }}>
+                        <GroupForm Record={record} Setter={setRecord} ErrorSetter={setNewErrors} />
+                    </Modal>
        </div>
    )
 }

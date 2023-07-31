@@ -41,9 +41,9 @@ interface IProps<T> {
 
 
 export default function Select<T>(props: IProps<T>) {
-	const [guid, setGuid] = React.useState<string>("");
-	const [showHelp, setShowHelp] = React.useState<boolean>(false);
-	
+  const [guid, setGuid] = React.useState<string>("");
+  const [showHelp, setShowHelp] = React.useState<boolean>(false);
+  
   React.useEffect(() => {
     setGuid(CreateGuid());
   }, []);
@@ -58,31 +58,31 @@ export default function Select<T>(props: IProps<T>) {
       
   }, [props.Options]);
     
-	  
+    
   function SetRecord(value: string): void {
     const record: T = { ...props.Record };
     if (value !== '') record[props.Field] = value as any;
     else record[props.Field] = null as any;
     props.Setter(record);
-  };
+  }
 
   function GetRecordValue(): string {
     return props.Record[props.Field] == null ? '' : (props.Record[props.Field] as any).toString();
-  };
+  }
 
   return (
     <div className="form-group">
     {(props.Label !== "") ?
-	  <label>{props.Label === undefined ? props.Field : props.Label} 
+    <label>{props.Label === undefined ? props.Field : props.Label} 
      {props.Help !== undefined? <div style={{ width: 20, height: 20, borderRadius: '50%', display: 'inline-block', background: '#0D6EFD', marginLeft: 10, textAlign: 'center', fontWeight: 'bold' }} onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)}> ? </div> : null}
-		</label> : null }
-		{props.Help !== undefined? 
-			<HelperMessage Show={showHelp} Target={guid}>
-				{props.Help}
-			</HelperMessage>
-		: null}
+    </label> : null }
+    {props.Help !== undefined? 
+      <HelperMessage Show={showHelp} Target={guid}>
+        {props.Help}
+      </HelperMessage>
+    : null}
       <select
-		data-help={guid}
+    data-help={guid}
         className="form-control"
         onChange={(evt) => SetRecord(evt.target.value)}
         value={GetRecordValue()}

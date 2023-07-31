@@ -30,72 +30,72 @@ import { IGenericSlice } from '../SliceInterfaces';
 import { Dispatch } from '@reduxjs/toolkit';
 
 interface IProps {
-	Id: number;
-	ValueListSlice: IGenericSlice<SystemCenter.Types.ValueListGroup>;
-	ValueListItemSlice: IGenericSlice<SystemCenter.Types.ValueListItem>;
-	OnDelete: () => {};
+    Id: number;
+    ValueListSlice: IGenericSlice<SystemCenter.Types.ValueListGroup>;
+    ValueListItemSlice: IGenericSlice<SystemCenter.Types.ValueListItem>;
+    OnDelete: () => {};
 }
 
-	export default function ValueListGroup (props: IProps) {
-			const dispatch = useDispatch<Dispatch<any>>();
+    export default function ValueListGroup (props: IProps) {
+            const dispatch = useDispatch<Dispatch<any>>();
 
-	    const record: SystemCenter.Types.ValueListGroup|undefined = useSelector((state) => props.ValueListSlice.Data(state).find(i => i.ID === props.Id))
-			const recordStatus: Application.Types.Status = useSelector(props.ValueListSlice.Status)
+        const record: SystemCenter.Types.ValueListGroup|undefined = useSelector((state) => props.ValueListSlice.Data(state).find(i => i.ID === props.Id))
+            const recordStatus: Application.Types.Status = useSelector(props.ValueListSlice.Status)
 
-			const [tab, setTab] = React.useState('items');
-			const [showWarning, setShowWarning] =  React.useState<boolean>(false);
+            const [tab, setTab] = React.useState('items');
+            const [showWarning, setShowWarning] =  React.useState<boolean>(false);
 
-			React.useEffect(() => {
+            React.useEffect(() => {
 
-				if (recordStatus === 'unintiated' || recordStatus === 'changed')
-					dispatch(props.ValueListSlice.Fetch());
-			}, [dispatch, recordStatus]);
+                if (recordStatus === 'unintiated' || recordStatus === 'changed')
+                    dispatch(props.ValueListSlice.Fetch());
+            }, [dispatch, recordStatus]);
 
-			const Tabs = [
+            const Tabs = [
             { Id: "info", Label: "Value List Group Info" },
             { Id: "items", Label: "List Items" }
         ];
 
 
-				if (recordStatus === 'error' )
-					return <div style={{ width: '100%', height: '100%' }}>
-					<ServerErrorIcon Show={true} Label={'A Server Error Occured. Please Reload the Application'}/>
-					</div>;
+                if (recordStatus === 'error' )
+                    return <div style={{ width: '100%', height: '100%' }}>
+                    <ServerErrorIcon Show={true} Label={'A Server Error Occured. Please Reload the Application'}/>
+                    </div>;
 
-				if (record == null)
-					return null;
+                if (record == null)
+                    return null;
 
-	    return (
-	        <div style={{ width: '100%', height: window.innerHeight - 63, maxHeight: window.innerHeight - 63, overflow: 'hidden', padding: 15 }}>
-							<div className="row">
-	                <div className="col">
-	                    <h2>{record.Name}</h2>
-	                </div>
-	                <div className="col">
-	                    <button className="btn btn-danger pull-right" hidden={record == null} onClick={() => setShowWarning(true)}>Delete Value List Group (Permanent)</button>
-	                </div>
-	            </div>
-	            <hr />
-							 <TabSelector CurrentTab={tab} SetTab={(t) => setTab(t)} Tabs={Tabs} />
-	             <div className="tab-content" style={{maxHeight: window.innerHeight - 235, overflow: 'hidden' }}>
-	                <div className={"tab-pane " + (tab === "info" ? " active" : "fade")} id="info">
-	                    <InfoWindow Record={record} Setter={(r) => {
-												dispatch(props.ValueListSlice.DBAction({verb: 'PATCH', record: r}))
-											}}/>
-	                </div>
-	                <div className={"tab-pane " + (tab === "items" ? " active" : "fade")} id="items">
-	                    <GroupItemsWindow Record={record} ValueListItemSlice={props.ValueListItemSlice} />
-	                </div>
-	            </div>
-						<Warning Message={'This will permanently remove the ValueList Group. Are you sure you want to continue?'} Title={'Warning'} Show={showWarning} CallBack={(c) => {
-								setShowWarning(false);
-							if (c)
-							{
-								dispatch(props.ValueListSlice.DBAction({verb: 'DELETE', record}))
-								props.OnDelete();
-							}
+        return (
+            <div style={{ width: '100%', height: window.innerHeight - 63, maxHeight: window.innerHeight - 63, overflow: 'hidden', padding: 15 }}>
+                            <div className="row">
+                    <div className="col">
+                        <h2>{record.Name}</h2>
+                    </div>
+                    <div className="col">
+                        <button className="btn btn-danger pull-right" hidden={record == null} onClick={() => setShowWarning(true)}>Delete Value List Group (Permanent)</button>
+                    </div>
+                </div>
+                <hr />
+                             <TabSelector CurrentTab={tab} SetTab={(t) => setTab(t)} Tabs={Tabs} />
+                 <div className="tab-content" style={{maxHeight: window.innerHeight - 235, overflow: 'hidden' }}>
+                    <div className={"tab-pane " + (tab === "info" ? " active" : "fade")} id="info">
+                        <InfoWindow Record={record} Setter={(r) => {
+                                                dispatch(props.ValueListSlice.DBAction({verb: 'PATCH', record: r}))
+                                            }}/>
+                    </div>
+                    <div className={"tab-pane " + (tab === "items" ? " active" : "fade")} id="items">
+                        <GroupItemsWindow Record={record} ValueListItemSlice={props.ValueListItemSlice} />
+                    </div>
+                </div>
+                        <Warning Message={'This will permanently remove the ValueList Group. Are you sure you want to continue?'} Title={'Warning'} Show={showWarning} CallBack={(c) => {
+                                setShowWarning(false);
+                            if (c)
+                            {
+                                dispatch(props.ValueListSlice.DBAction({verb: 'DELETE', record}))
+                                props.OnDelete();
+                            }
 
-						}}/>
-					 </div>
-	    )
-	}
+                        }}/>
+                     </div>
+        )
+    }

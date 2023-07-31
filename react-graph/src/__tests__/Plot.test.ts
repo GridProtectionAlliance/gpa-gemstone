@@ -1,4 +1,3 @@
-import {Plot} from '../index';
 import {PointNode} from '../PointNode';
 
 

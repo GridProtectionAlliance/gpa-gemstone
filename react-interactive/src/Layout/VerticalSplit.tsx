@@ -20,7 +20,7 @@
 //       Generated original version of source code.
 // ******************************************************************************************************
 
-import { LeftArrow, RightArrow, SVGIcons } from '@gpa-gemstone/gpa-symbols';
+import { SVGIcons } from '@gpa-gemstone/gpa-symbols';
 import { CreateGuid, GetTextWidth } from '@gpa-gemstone/helper-functions';
 import _ = require('lodash');
 import * as React from 'react';
@@ -420,7 +420,7 @@ const DrawerHeader: React.FunctionComponent<IDrawerHeaderProps> = (props) => {
         <span style={{margin: 'auto', writingMode: 'vertical-rl', textOrientation: 'sideways', fontSize: props.textSize + 'rem'}}>{props.title}</span>
      </div>
      {props.showTooltip? <ToolTip Show={hover} Position={'right'} Theme={'dark'} Target={guid + '-tooltip'} Zindex={9999}>
-				{props.title}
-			  </ToolTip>: null}
+                {props.title}
+              </ToolTip>: null}
      </>
 }

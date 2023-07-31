@@ -38,8 +38,8 @@ const MultiSelect = (props: IProps) => {
   const multiSelect = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
-		setGuid(CreateGuid());
-	  }, []);
+    setGuid(CreateGuid());
+    }, []);
     
   function HandleShow(evt: React.MouseEvent<HTMLButtonElement, MouseEvent> | MouseEvent) {
     if (multiSelect.current === null) setShow(!show);
@@ -61,17 +61,17 @@ const MultiSelect = (props: IProps) => {
   return (
     <div className="form-group">
     {showLabel || showHelpIcon ?
-		<label>{showLabel? label : ''} 
-		{showHelpIcon? <div 
+    <label>{showLabel? label : ''} 
+    {showHelpIcon? <div 
     style={{ width: 20, height: 20, borderRadius: '50%', display: 'inline-block', background: '#0D6EFD', marginLeft: 10, textAlign: 'center', fontWeight: 'bold' }}
      onMouseEnter={() => setShowHelp(true)} 
      onMouseLeave={() => setShowHelp(false)}> ? </div> : null}
-		</label> : null}
+    </label> : null}
     {showHelpIcon? 
-			<HelperMessage Show={showHelp} Target={guid}>
-				{props.Help}
-			</HelperMessage>
-		: null}
+      <HelperMessage Show={showHelp} Target={guid}>
+        {props.Help}
+      </HelperMessage>
+    : null}
     <div ref={multiSelect} style={{ position: 'relative', display: 'block', width: 'inherit' }}>
       <button
         type="button"

@@ -27,10 +27,10 @@ import { Portal } from 'react-portal';
 
 interface IProps {
     Show: boolean,
-	  Position?: ('top'|'bottom'|'left'|'right'),
+    Position?: ('top'|'bottom'|'left'|'right'),
     Theme?: ('dark'|'light'),
     Target?: string,
-	  Zindex?: number,
+    Zindex?: number,
 }
 
 interface IWrapperProps {

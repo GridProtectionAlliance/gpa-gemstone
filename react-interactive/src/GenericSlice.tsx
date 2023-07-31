@@ -78,8 +78,8 @@ interface IPagedState< T extends U> extends IState<T> {
 }
 
 export default class GenericSlice<T extends U> {
-    Name: string = "";
-    APIPath: string = "";
+    Name = "";
+    APIPath = "";
     Slice: ( Slice<IPagedState<T>> );
     Fetch: (AsyncThunk<any, void | number | string, {}>);
     SetChanged: (AsyncThunk<any, void, {}>);
@@ -110,7 +110,7 @@ export default class GenericSlice<T extends U> {
      * @param {boolean} ascending - (optional) default sort direction - defaults to true
      * @returns a new GenericSlice<T>
      */
-    constructor(name: string, apiPath: string, defaultSort: keyof T, ascending: boolean = true, options: IOptions<T>|null = null) {
+    constructor(name: string, apiPath: string, defaultSort: keyof T, ascending = true, options: IOptions<T>|null = null) {
         this.Name = name;
         this.APIPath = apiPath;
 

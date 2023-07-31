@@ -23,7 +23,7 @@
 
 // Spacing values
 let currentHue: number = Math.random();
-const GOLDEN_RATIO_CONJUGATE: number = 0.618033988749895;
+const GOLDEN_RATIO_CONJUGATE = 0.618033988749895;
 
 /**
  * This function returns a semi-random color with a spacing value between subseqent calls.

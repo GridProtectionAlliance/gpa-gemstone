@@ -124,12 +124,12 @@ const InteractiveButtons: React.FunctionComponent<IProps> = (props) => {
                                     if (!React.isValidElement(element))
                                         return null;
                                     if ((element as React.ReactElement<any>).type === Button) {
-                                        const id: string = `custom_${i}`;
+                                        const id = `custom_${i}`;
                                         return <CircleButton key={id} active={props.currentSelection === 'select' && currentSelect === id}
                                           x={props.x - (i+symbols.length)*25} y={props.y}
                                           button={element} setSelectIcon={setBtnAndSelect} selectName={id}
                                           btnCleanup={btnCleanup} />
-                                        };
+                                        }
                                     return null;
                                 })}
 
