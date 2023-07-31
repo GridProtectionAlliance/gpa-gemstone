@@ -32,7 +32,7 @@
   },
   "homepage": "https://github.com/GridProtectionAlliance/gpa-gemstone#readme",
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "6.2.4",
+    "@typescript-eslint/eslint-plugin": "6.2.1",
     "@typescript-eslint/parser": "6.2.1",
     "eslint": "8.46.0",
     "typescript": "5.1.6"
