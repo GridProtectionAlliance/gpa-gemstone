@@ -48,7 +48,7 @@ interface IProps<T> extends TableProps<T> {
 /**
  * Table with Filters in the column Headers
  */
-export default function FilterableTable<T>(props: IProps<T>) {
+export default function FilterableTable<T extends {}>(props: IProps<T>) {
     const [filters, setFilters] = React.useState<Search.IFilter<T>[]>((props.DefaultFilter === undefined ? [] : props.DefaultFilter));
     const [guid, setGuid] = React.useState<string>(CreateGuid());
 

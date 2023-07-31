@@ -54,7 +54,7 @@ interface IProps<T> extends TableProps<T> {
 /**
  * Table with modal to show and hide columns
  */
-export default function ConfigurableTable<T>(props: IProps<T>) {
+export default function ConfigurableTable<T extends {}>(props: IProps<T>) {
     const [showSettings, setShowSettings] = React.useState<boolean>(false);
     const [columns, setColumns] = React.useState<Column<T>[]>(props.cols);
     const [colKeys, setColKeys] = React.useState<string[]>(props.cols.map(d => d.key));
