@@ -32,7 +32,7 @@ interface IProps {
   graphWidth: number
 }
 
-function Legend(props: IProps) {
+function Legend(props: React.PropsWithChildren<IProps>) {
   const context = React.useContext(GraphContext)
   const w = (props.location === 'bottom'? props.graphWidth : props.width);
   const h = (props.location === 'right'? props.graphHeight : props.height);

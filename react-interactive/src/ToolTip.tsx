@@ -119,7 +119,7 @@ const WrapperDiv = styled.div<IWrapperProps>`
   `: '')}`
 
 // The other element needs to be labeld as data-tooltip that will only be used for positioning
-const ToolTip: React.FunctionComponent<IProps> = (props) => {
+const ToolTip: React.FunctionComponent<React.PropsWithChildren<IProps>> = (props) => {
   const toolTip = React.useRef(null);
 
   const [top, setTop] = React.useState<number>(0);

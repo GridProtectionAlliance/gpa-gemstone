@@ -56,7 +56,7 @@ interface ISection {
 // Props Description:
 // style => style of the encompasing div
 
-const VerticalSplit: React.FunctionComponent<IProps> = (props) => {
+const VerticalSplit: React.FunctionComponent<React.PropsWithChildren<IProps>> = (props) => {
     const divRef = React.useRef<any>(null);
 
     const [currentWidth, setCurrentWidth] = React.useState<number>(0);

@@ -52,7 +52,7 @@ export default function DateRangePicker<T>(props: {
   const recordFormat = props.Format !== undefined ? props.Format : "YYYY-MM-DD" + (props.Type === undefined || props.Type === 'date' ? "" : "[T]hh:mm:ss.SSS[Z]");
 
   React.useEffect(() => {
-    setRange(ToRange(moment(props.Record[props.ToField], recordFormat).diff(moment(props.Record[props.FromField], recordFormat), 'days')));
+    setRange(ToRange(moment(props.Record[props.ToField] as string, recordFormat).diff(moment(props.Record[props.FromField] as string, recordFormat), 'days')));
     if (!internal)
       setBoxRecord(ParseRecord());
     setInternal(false);
@@ -60,7 +60,7 @@ export default function DateRangePicker<T>(props: {
 
   React.useEffect(() => {
     setRange(formRange);
-    const toTime: moment.Moment =  moment(props.Record[props.FromField], recordFormat).add(GetDays(formRange), 'days');
+    const toTime: moment.Moment =  moment(props.Record[props.FromField] as string, recordFormat).add(GetDays(formRange), 'days');
     props.Setter({...props.Record, [props.ToField]: toTime.format(recordFormat) as any});
     setBoxRecord({...boxRecord, [props.ToField]: toTime.format(boxFormat) as any});
   }, [formRange]);

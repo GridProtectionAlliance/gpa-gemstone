@@ -42,7 +42,7 @@ export interface ISelectTableProps<T> {
     selectAllCounter?: number;
 }
 
-export function SelectTable<T>(props: ISelectTableProps<T>) {
+export function SelectTable<T extends {}>(props: ISelectTableProps<T>) {
     const didMountRef = React.useRef(false);
 
     const [data, setData] = React.useState<T[]>(props.data);

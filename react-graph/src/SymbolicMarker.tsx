@@ -33,7 +33,7 @@ export interface IProps {
   onHover?: () => void
 }
 
-const SymbolicMarker: React.FunctionComponent<IProps> = (props) => {
+const SymbolicMarker: React.FunctionComponent<React.PropsWithChildren<IProps>> = (props) => {
   const context = React.useContext(GraphContext);
   const [position, setPosition] = React.useState<{x: number, y: number}>({x: props.xPos, y: props.yPos});
   const [isSelected, setSelected] = React.useState<boolean>(false);
@@ -116,7 +116,7 @@ interface IGraphicProps {
   y: number,
   r: number
 }
-const SymbolicGraphic: React.FunctionComponent<IGraphicProps> = (props) => {
+const SymbolicGraphic: React.FunctionComponent<React.PropsWithChildren<IGraphicProps>> = (props) => {
   const context = React.useContext(GraphContext);
   const xPixels: number = context.XTransformation(props.x); 
   const yPixels: number = context.YTransformation(props.y); 

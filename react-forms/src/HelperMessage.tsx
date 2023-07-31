@@ -75,7 +75,7 @@ const WrapperDiv = styled.div<IWrapperProps>`
   `}`
   
   
-  const HelperMessage: React.FunctionComponent<IProps> = (props) => {
+  const HelperMessage: React.FunctionComponent<React.PropsWithChildren<IProps>> = (props) => {
     const [top, setTop] = React.useState<number>(0);
     const [left, setLeft] = React.useState<number>(0);
     const [width, setWidth] = React.useState<number>(0);

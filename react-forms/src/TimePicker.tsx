@@ -36,7 +36,7 @@ export default function DatePicker<T>(props: {
   return (
     <div className="form-group">
       {(props.Label !== "") ?
-      <label>{props.Label == null ? props.Field : props.Label}</label> : null}
+      <label>{props.Label == null ? props.Field as string : props.Label}</label> : null}
       <input
         className={'form-control' + (props.Valid(props.Field) ? '' : ' is-invalid')}
         type="time"

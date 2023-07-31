@@ -34,7 +34,7 @@ export default function ArrayMultiSelect<T>(props: {
 }) {
   return (
     <div className="form-group">
-      <label>{props.Label == null ? props.Field : props.Label}</label>
+      <label>{props.Label == null ? props.Field as string: props.Label}</label>
       <select
         multiple
         className="form-control"

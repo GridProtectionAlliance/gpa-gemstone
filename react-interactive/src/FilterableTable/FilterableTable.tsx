@@ -66,7 +66,7 @@ export default function FilterableTable<T>(props: IProps<T>) {
             <Table
                 cols={props.cols.map(c => ({
                     ...c, label: <Header
-                        Label={c.label}
+                        Label={c.label as React.ReactNode}
                         Filter={filters.filter(f => f.FieldName === c.field?.toString())}
                         SetFilter={(f) => updateFilters(f, c.field)}
                         Field={c.field}

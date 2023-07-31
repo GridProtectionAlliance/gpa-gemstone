@@ -98,7 +98,7 @@ const ClosedOverlayDiv = styled.div<IClosedOverlayProps>`
 // Target: The data-drawer property of the target containing the drawer 
 // GetOverride: This will be called with a callback to set the Drawer to open or closed form the parent
 // OnChange: Callback when the Drawer changes 
-const OverlayDrawer: React.FunctionComponent<IProps> = (props) => {
+const OverlayDrawer: React.FunctionComponent<React.PropsWithChildren<IProps>> = (props) => {
     const divRef = React.useRef<any>(null);
  
     const [top, setTop] = React.useState<number>(0);

@@ -71,7 +71,7 @@ export const GraphContext = React.createContext({
 export interface IDataSeries {
   getMin: (tDomain: [number, number]) => number| undefined,
   getMax: (tDomain: [number, number]) => number|undefined,
-  legend?: HTMLElement| React.ReactElement| JSX.Element,
+  legend?: React.ReactElement| JSX.Element,
 }
 
 export type LineStyle = '-'|':';
@@ -87,7 +87,7 @@ export interface IDataRegistration {
   AddData: ((d: IDataSeries) => string),
   RemoveData: (key: string) => void,
   UpdateData: (key: string, d: IDataSeries) => void,
-  SetLegend: (key: string, legend?: HTMLElement| React.ReactElement| JSX.Element) => void,
+  SetLegend: (key: string, legend?: React.ReactElement| JSX.Element) => void,
 }
 
 export interface IHandlerRegistration {
@@ -117,7 +117,7 @@ interface IContextWrapperProps extends IHandlerRegistration, IDataRegistration {
   SetYDomain: (y: [number, number]) => void,
 }
 
-export const ContextWrapper: React.FC<IContextWrapperProps> = (props) => {
+export const ContextWrapper: React.FC<React.PropsWithChildren<IContextWrapperProps>> = (props) => {
 
   const context = React.useMemo(GetContext, [
     props.XDomain,

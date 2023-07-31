@@ -25,7 +25,7 @@ import * as React from 'react';
 import { useParams } from 'react-router-dom';
 
 
-const Content: React.FunctionComponent<{}> = (props) => {
+const Content: React.FunctionComponent<React.PropsWithChildren<{}>> = (props) => {
     const params = useParams();
 
     return (
@@ -33,7 +33,7 @@ const Content: React.FunctionComponent<{}> = (props) => {
             {React.Children.map(props.children, (element) => {
                 if (!React.isValidElement(element))
                     return null;
-                return React.cloneElement(element, {useParams : params}, null);
+                return React.cloneElement<any>(element, {useParams : params}, null);
             })}
         </>);
 }

@@ -80,7 +80,7 @@ const MainDiv = styled.div<IMainDivProps>`
     user-select: none;
  }`;
 
-const Applications: React.FunctionComponent<IProps> = (props) => {
+const Applications: React.FunctionComponent<React.PropsWithChildren<IProps>> = (props) => {
 
     const [collapsed, setCollapsed] = React.useState<boolean>(false)
 
@@ -194,7 +194,7 @@ interface IHeaderProps {
     NavBarContent?: React.ReactNode
 }
 
-const HeaderContent: React.FunctionComponent<IHeaderProps> = (props) => {
+const HeaderContent: React.FunctionComponent<React.PropsWithChildren<IHeaderProps>> = (props) => {
 
     return <>
     <nav className="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">

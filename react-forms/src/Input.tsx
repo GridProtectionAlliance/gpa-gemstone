@@ -106,7 +106,7 @@ export default function Input<T>(props: IProps<T>) {
   return (
     <div className={"form-group " + (props.Size === 'large'? 'form-group-lg' : '') + (props.Size === 'small'? 'form-group-sm' : '')} style={props.Style}>
     {showHelpIcon || showLabel ?
-    <label>{showLabel ? label : ''} 
+    <label>{showLabel ? label as string : ''} 
     {showHelpIcon? <div style={{ width: 20, height: 20, borderRadius: '50%', display: 'inline-block', background: '#0D6EFD', marginLeft: 10, textAlign: 'center', fontWeight: 'bold' }} onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)}> ? </div> : null}
     </label> : null}
     {showHelpIcon? 
@@ -124,7 +124,7 @@ export default function Input<T>(props: IProps<T>) {
         onBlur={onBlur}
       />
       <div className="invalid-feedback">
-        {props.Feedback == null ? props.Field + ' is a required field.' : props.Feedback}
+        {props.Feedback == null ? props.Field as string + ' is a required field.' : props.Feedback}
       </div>
     </div>
   );

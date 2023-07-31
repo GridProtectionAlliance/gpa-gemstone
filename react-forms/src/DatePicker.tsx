@@ -91,7 +91,7 @@ export default function DateTimePicker<T>(props: IProps<T>) {
   return (
     <div className="form-group" ref={divRef}>
       {(props.Label !== "") ?
-      <label>{props.Label == null ? props.Field : props.Label}</label> : null}
+      <label>{props.Label == null ? props.Field as string : props.Label}</label> : null}
       <input
         className={"gpa-gemstone-datetime form-control" + (props.Valid(props.Field) ? '' : ' is-invalid')}
         type={props.Type === undefined ? 'date' : props.Type}

@@ -73,7 +73,7 @@ export default function Select<T>(props: IProps<T>) {
   return (
     <div className="form-group">
     {(props.Label !== "") ?
-    <label>{props.Label === undefined ? props.Field : props.Label} 
+    <label>{props.Label === undefined ? props.Field as string: props.Label} 
      {props.Help !== undefined? <div style={{ width: 20, height: 20, borderRadius: '50%', display: 'inline-block', background: '#0D6EFD', marginLeft: 10, textAlign: 'center', fontWeight: 'bold' }} onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)}> ? </div> : null}
     </label> : null }
     {props.Help !== undefined? 

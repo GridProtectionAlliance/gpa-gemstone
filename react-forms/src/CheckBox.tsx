@@ -45,7 +45,7 @@ export default class CheckBox<T> extends React.Component<
           checked={this.props.Record[this.props.Field] ? true : false}
           disabled={this.props.Disabled == null ? false : this.props.Disabled}
         />
-        <label className="form-check-label">{this.props.Label == null ? this.props.Field : this.props.Label}</label>
+        <label className="form-check-label">{this.props.Label == null ? this.props.Field as string: this.props.Label}</label>
       </div>
     );
   }

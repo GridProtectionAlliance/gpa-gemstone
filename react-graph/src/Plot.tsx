@@ -80,7 +80,7 @@ const SvgStyle: React.CSSProperties = {
     pointerEvents: 'none',
 };
 
-const Plot: React.FunctionComponent<IProps> = (props) => {
+const Plot: React.FunctionComponent<React.PropsWithChildren<IProps>> = (props) => {
     /*
       Actual plot that will handle Axis etc.
     */
@@ -276,7 +276,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
         setData((fld) => { const updated = cloneDeep(fld); updated.delete(d); return updated;})
     },[]);
 
-    const setLegend = React.useCallback((key: string, legend?:  HTMLElement| React.ReactElement| JSX.Element) =>  {
+    const setLegend = React.useCallback((key: string, legend?: React.ReactElement| JSX.Element) =>  {
         setData((fld) => {
           const updated = cloneDeep(fld);
           const series = updated.get(key);
@@ -302,7 +302,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
       handlers.current.set(key,handler)
     },[]);
 
-    const setSelection = React.useCallback((s) => {
+    const setSelection = React.useCallback((s: ('zoom' | 'pan' | 'reset' | 'select' | 'download') ) => {
       if (s === "reset") Reset();
       else if (s === "download") props.onDataInspect!(tDomain);
       else setSelectedMode(s as ('zoom'|'pan'|'select'))

@@ -29,7 +29,7 @@ export interface IProps {
 }
 
 
-const Section: React.FunctionComponent<IProps> = (props) => {
+const Section: React.FunctionComponent<React.PropsWithChildren<IProps>> = (props) => {
     const context = React.useContext(Context)
     return (
         <>

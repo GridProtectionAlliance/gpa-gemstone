@@ -45,7 +45,7 @@ export default function ArrayCheckBoxes<T>(props: {
   };
   return (
     <div className="form-group">
-      <label>{props.Label == null ? props.Field : props.Label}</label>
+      <label>{props.Label == null ? props.Field as string: props.Label}</label>
       <br />
       <div className="form-check form-check-inline">
           <input

@@ -37,7 +37,7 @@ interface ISearchableTableProps<T> extends TableProps<T> {
 /**
  * A Table with an input Field to search on top
  */
-export function SearchableTable<T>(props: ISearchableTableProps<T>) {
+export function SearchableTable<T extends {}>(props: ISearchableTableProps<T>) {
   const [data, setData] = React.useState<T[]>(props.data);
   const [searchTextAS, setSearchTextAS] = React.useState<string>('');
 

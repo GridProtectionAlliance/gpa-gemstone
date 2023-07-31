@@ -40,7 +40,7 @@ interface IProps {
 type ButtonType = ('zoom' | 'pan' | 'reset' | 'select' | 'download');
 type Cleanup = ((() => void) | void);
 
-const InteractiveButtons: React.FunctionComponent<IProps> = (props) => {
+const InteractiveButtons: React.FunctionComponent<React.PropsWithChildren<IProps>> = (props) => {
     const btnCleanup = React.useRef<Cleanup>(undefined);
     const [selectIcon, setSelectIcon] = React.useState<React.ReactElement>(<>{Point}</>);
     const [expand, setExpand] = React.useState<boolean>(false);

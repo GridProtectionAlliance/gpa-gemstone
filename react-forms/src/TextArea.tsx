@@ -34,7 +34,7 @@ export default function TextArea<T>(props: {
 }) {
   return (
     <div className="form-group">
-    {(props.Label !== "") ? <label>{props.Label === undefined ? props.Field : props.Label} </label> : null}
+    {(props.Label !== "") ? <label>{props.Label === undefined ? props.Field as string : props.Label} </label> : null}
       <textarea
         rows={props.Rows}
         className={props.Valid(props.Field) ? 'form-control' : 'form-control is-invalid'}
@@ -49,7 +49,7 @@ export default function TextArea<T>(props: {
         disabled={props.Disabled == null ? false : props.Disabled}
       />
       <div className="invalid-feedback">
-        {props.Feedback == null ? props.Field + ' is a required field.' : props.Feedback}
+        {props.Feedback == null ? props.Field as string + ' is a required field.' : props.Feedback}
       </div>
     </div>
   );

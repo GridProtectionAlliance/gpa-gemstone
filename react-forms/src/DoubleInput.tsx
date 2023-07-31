@@ -36,7 +36,7 @@ export default function DoubleInput<T>(props: {
 }) {
     return (
         <div className="form-group">
-            <label>{props.Label == null ? (props.Field1 + ' ' + props.Field2) : props.Label}</label>
+            <label>{props.Label == null ? (props.Field1 as string + ' ' + (props.Field2 as string)) : props.Label}</label>
             <div className="input-group">
                 <input
                     type={props.Type === undefined ? 'text' : props.Type}
@@ -58,7 +58,7 @@ export default function DoubleInput<T>(props: {
                 />
             </div>
             <div className="invalid-feedback">
-                {props.Feedback == null ? (props.Field1 + ' ' + props.Field2 + ' is a required field.') : props.Feedback}
+                {props.Feedback == null ? (props.Field1 as string + ' ' + (props.Field2 as string) + ' is a required field.') : props.Feedback}
             </div>
         </div>
     );

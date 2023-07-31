@@ -70,7 +70,7 @@ export interface TableProps<T> {
     lastRow?: string|React.ReactNode;
 }
 
-export default function Table<T>(props: TableProps<T>) {
+export default function Table<T extends {}>(props: React.PropsWithChildren<TableProps<T>>) {
 
     return (
         <table className={props.tableClass !== undefined ? props.tableClass : ''} style={props.tableStyle}>
@@ -103,7 +103,7 @@ interface IRowProps<T> {
     Selected?: ((data: T) => boolean);
     KeySelector?: (data: T) => string;
 }
-export function Rows<T>(props: IRowProps<T>) {
+export function Rows<T extends {}>(props: IRowProps<T>) {
 
     if (props.Data.length === 0) return null;
 
@@ -139,7 +139,7 @@ export function Rows<T>(props: IRowProps<T>) {
     );
 }
 
-interface ICellProps<T> {
+interface ICellProps<T extends {}> {
     Style?: React.CSSProperties,
     DataKey: string,
     DataField?: keyof T,
@@ -150,7 +150,7 @@ interface ICellProps<T> {
     DragStart?: (data: { colKey: string, colField?: keyof T, row: T, data: T[keyof T] | null, index: number }, e: any) => void,
 }
 
-function Cell<T>(props: ICellProps<T>) {
+function Cell<T extends {}>(props: ICellProps<T>) {
     const css: React.CSSProperties = (props.Style !== undefined) ? { ...props.Style } : {};
     if (props.DragStart !== undefined) css.cursor = "grab";
 

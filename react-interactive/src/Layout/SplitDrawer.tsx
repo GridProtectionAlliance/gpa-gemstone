@@ -39,7 +39,7 @@ interface IProps {
 // Width: Default Width (in % of total) 
 // open: indicates the initial state of the drawer\
 // title: The Title used for this drawer
-const SplitDrawer: React.FunctionComponent<IProps> = (props) => {
+const SplitDrawer: React.FunctionComponent<React.PropsWithChildren<IProps>> = (props) => {
 
     return <>{props.children}</>
 }

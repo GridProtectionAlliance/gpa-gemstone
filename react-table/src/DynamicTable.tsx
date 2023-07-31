@@ -25,7 +25,7 @@
 import * as React from 'react';
 import { Column, Header, Rows } from './Table';
 
-export interface DynamicTableProps<T> {
+export interface DynamicTableProps<T extends {}> {
   /**
    * List of T objects used to generate rows
    */
@@ -51,7 +51,7 @@ export interface DynamicTableProps<T> {
   keySelector?: (data: T) => string;
 }
 
-export function DynamicTable<T>(props: DynamicTableProps<T>) {
+export function DynamicTable<T extends {}>(props: DynamicTableProps<T>) {
     if (props.data.length <= 0) return null;
 
     const cols: Column<T>[] = [];
@@ -62,15 +62,13 @@ export function DynamicTable<T>(props: DynamicTableProps<T>) {
 
   return (
     <table className={props.tableClass !== undefined ? props.tableClass : ''} style={props.tableStyle}>
-      <Header<T> Class={props.theadClass} Style={props.theadStyle} Cols={cols} SortKey={props.sortKey} Ascending={props.ascending} Click={(d,e) => handleSort(d,e)} />
+      <Header<T> Class={props.theadClass} Style={props.theadStyle} Cols={cols} SortKey={props.sortKey} Ascending={props.ascending} Click={(d,e) => handleSort(d)} />
       <Rows<T> Data={props.data} Cols={cols} RowStyle={props.rowStyle} BodyStyle={props.tbodyStyle} BodyClass={props.tbodyClass} Click={(data,e) => props.onClick(data, e)} Selected={props.selected} KeySelector={props.keySelector} />
     </table>
   );
 
   function handleSort(
-    data: { colKey: string; colField?: keyof T; ascending: boolean },
-    event: React.MouseEvent<HTMLTableHeaderCellElement, MouseEvent>,
-  ) {
+    data: { colKey: string; colField?: keyof T; ascending: boolean } ) {
     if (data.colKey !== null)
       props.onSort(data);
   }

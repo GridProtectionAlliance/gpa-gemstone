@@ -220,7 +220,7 @@ function ColumnSelection<T>(props: IColSelectionProps<T>) {
                 <input type="checkbox" onChange={() => { if (k.key === props.sortKey) return; props.onChange(i, k.key); }}
                     checked={props.isChecked(i) || k.key === props.sortKey} className='form-checked-input' disabled={k.key === props.sortKey} />
                 <label className="form-check-label" style={{marginLeft: 8}}>
-                    {k.label}
+                    {k.label as string}
                     {k.key === props.sortKey? <div style={{ 
                         width: '1.5em',
                         height: '1.5em',

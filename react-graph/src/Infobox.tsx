@@ -40,7 +40,7 @@ interface IProps {
   setPosition?: (x: number, y: number) => void
 }
 
-const Infobox: React.FunctionComponent<IProps> = (props) => {
+const Infobox: React.FunctionComponent<React.PropsWithChildren<IProps>> = (props) => {
   const context = React.useContext(GraphContext);
   const [isSelected, setSelected] = React.useState<boolean>(false);
   const [position, setPosition] = React.useState<{x: number, y: number}>({x: props.x, y: props.y});
