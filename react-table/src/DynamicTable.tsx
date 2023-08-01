@@ -30,7 +30,7 @@ export interface DynamicTableProps<T> {
    * List of T objects used to generate rows
    */
   data: T[];
-  onClick: (data: { colKey: string; colField?: keyof T; row: T; data: T[keyof T]|null, index: number }, event: any) => void;
+  onClick: (data: { colKey: string; colField?: keyof T; row: T; data: T[keyof T]|null, index: number }, event: React.MouseEvent<HTMLElement, MouseEvent>) => void;
   /**
    * Key of the collumn to sort by
    */
@@ -62,7 +62,7 @@ export function DynamicTable<T>(props: DynamicTableProps<T>) {
 
   return (
     <table className={props.tableClass !== undefined ? props.tableClass : ''} style={props.tableStyle}>
-      <Header<T> Class={props.theadClass} Style={props.theadStyle} Cols={cols} SortKey={props.sortKey} Ascending={props.ascending} Click={(d,e) => handleSort(d)} />
+      <Header<T> Class={props.theadClass} Style={props.theadStyle} Cols={cols} SortKey={props.sortKey} Ascending={props.ascending} Click={(d) => handleSort(d)} />
       <Rows<T> Data={props.data} Cols={cols} RowStyle={props.rowStyle} BodyStyle={props.tbodyStyle} BodyClass={props.tbodyClass} Click={(data,e) => props.onClick(data, e)} Selected={props.selected} KeySelector={props.keySelector} />
     </table>
   );
