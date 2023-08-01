@@ -389,8 +389,10 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
 
     const axisHasData = React.useCallback((axis: AxisIdentifier) => {
       return [...data.values()].some((series) => {
-        if (series.getAxis !== undefined) return axis === series.getAxis() ?? defaultAxis;
-        else return axis === defaultAxis;
+        if (series.getAxis !== undefined)
+          return axis === (series.getAxis() ?? defaultAxis);
+        else
+          return axis === defaultAxis;
       });
     }, [data, defaultAxis]);
 
