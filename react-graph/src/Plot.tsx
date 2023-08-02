@@ -57,6 +57,7 @@ export interface IProps {
     showBorder?: boolean,
     Tlabel?: string,
     Ylabel?: string,
+    YRightlabel?: string,
     legend?: 'hidden'| 'bottom' | 'right',
     showMouse: boolean,
     legendHeight?: number,
@@ -99,6 +100,8 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
     const [yDomain, setYdomain] = React.useState<[number,number][]>(Array(AxisMap.size).fill([0,0]));
     const [yOffset, setYoffset] = React.useState<number[]>(Array(AxisMap.size).fill(0));
     const [yScale, setYscale] = React.useState<number[]>(Array(AxisMap.size).fill(1));
+    // ToDo: This is hardset to two because it's tied to display, 'left' and 'right'
+    const [yHasData, setYHasData] = React.useState<boolean[]>(Array(2).fill(0));
 
     const [mouseMode, setMouseMode] = React.useState<'none' | 'zoom' | 'pan' | 'select'>('none');
     const [selectedMode, setSelectedMode] = React.useState<'pan' | 'zoom' | 'select'>('zoom');
@@ -254,6 +257,22 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
       applyToYDomain(mutateDomain);
     }, [tDomain, data]);
 
+    React.useEffect(() => {
+      const newHasData: boolean[] = Array<boolean>(2);
+      const hasFunc = (axis: AxisIdentifier) => {
+        return [...data.values()].some((series) => {
+          if (series.getAxis !== undefined)
+            return axis === (series.getAxis() ?? defaultAxis);
+          else
+            return axis === defaultAxis;
+        });
+      }
+      newHasData[0] = hasFunc('left');
+      newHasData[1] = hasFunc('right');
+      console.log(newHasData);
+      setYHasData(newHasData);
+    }, [data]);
+
     // Adjust x axis
     React.useEffect(() => {
      let dT = tDomain[1] - tDomain[0];
@@ -386,15 +405,6 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
       else if (s === "download") props.onDataInspect!(tDomain);
       else setSelectedMode(s as ('zoom'|'pan'|'select'))
     }, [tDomain]);
-
-    const axisHasData = React.useCallback((axis: AxisIdentifier) => {
-      return [...data.values()].some((series) => {
-        if (series.getAxis !== undefined)
-          return axis === (series.getAxis() ?? defaultAxis);
-        else
-          return axis === defaultAxis;
-      });
-    }, [data, defaultAxis]);
 
     function handleMouseWheel(evt: any) {
           if (props.zoom !== undefined && !props.zoom)
@@ -625,14 +635,14 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
                   onWheel={handleMouseWheel} onMouseMove={handleMouseMove} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} onMouseLeave={handleMouseOut} onMouseEnter={handleMouseIn} >
                   <svg ref={SVGref} width={svgWidth < 0? 0 : svgWidth} height={svgHeight < 0 ? 0 : svgHeight}
                    style={SvgStyle} viewBox={`0 0 ${svgWidth < 0? 0 : svgWidth} ${svgHeight < 0 ? 0 : svgHeight}`}>
-                     {props.showBorder !== undefined && props.showBorder ? < path stroke='black' d={`M ${offsetLeft} ${offsetTop} H ${svgWidth- offsetRight} V ${svgHeight - offsetBottom} H ${offsetLeft} Z`} /> : null}
-                     { props.XAxisType === 'time' || props.XAxisType === undefined ?
-                      <TimeAxis label={props.Tlabel} offsetBottom={offsetBottom} offsetLeft={offsetLeft} offsetRight={offsetRight} width={svgWidth} height={svgHeight} setHeight={setHeightXLabel} heightAxis={heightXLabel}/> :
-                      <LogAxis offsetTop={offsetTop} showGrid={props.showGrid} label={props.Tlabel} offsetBottom={offsetBottom} offsetLeft={offsetLeft} offsetRight={offsetRight} width={svgWidth} height={svgHeight} setHeight={setHeightXLabel} heightAxis={heightXLabel}/> }
-                      {axisHasData(defaultAxis) ? <ValueAxis offsetRight={offsetRight} showGrid={props.showGrid} label={props.Ylabel} offsetTop={offsetTop} offsetLeft={offsetLeft} offsetBottom={offsetBottom}
+                      { props.showBorder !== undefined && props.showBorder ? < path stroke='black' d={`M ${offsetLeft} ${offsetTop} H ${svgWidth- offsetRight} V ${svgHeight - offsetBottom} H ${offsetLeft} Z`} /> : null}
+                      { props.XAxisType === 'time' || props.XAxisType === undefined ?
+                      <TimeAxis label={props.Tlabel} offsetBottom={offsetBottom} offsetLeft={offsetLeft} offsetRight={offsetRight} width={svgWidth} height={svgHeight} setHeight={setHeightXLabel} heightAxis={heightXLabel} showRightMostTick={!yHasData[1]} /> :
+                      <LogAxis offsetTop={offsetTop} showGrid={props.showGrid} label={props.Tlabel} offsetBottom={offsetBottom} offsetLeft={offsetLeft} offsetRight={offsetRight} width={svgWidth} height={svgHeight} setHeight={setHeightXLabel} heightAxis={heightXLabel} showRightMostTick={!yHasData[1]} /> }
+                      {yHasData[0] ? <ValueAxis offsetRight={offsetRight} showGrid={props.showGrid} label={props.Ylabel} offsetTop={offsetTop} offsetLeft={offsetLeft} offsetBottom={offsetBottom}
                         width={svgWidth} height={svgHeight} setWidthAxis={setHeightLeftYLabel} setHeightFactor={setHeightYFactor} domainAxis={defaultAxisNumber}
                         hAxis={heightLeftYLabel} hFactor={heightYFactor} useFactor={props.useMetricFactors === undefined? true: props.useMetricFactors}/> : null}
-                      {axisHasData('right') ? <ValueAxis offsetRight={offsetRight} showGrid={props.showGrid} label={props.Ylabel} offsetTop={offsetTop} offsetLeft={offsetLeft} offsetBottom={offsetBottom}
+                      {yHasData[1] ? <ValueAxis offsetRight={offsetRight} showGrid={props.showGrid} label={props.YRightlabel} offsetTop={offsetTop} offsetLeft={offsetLeft} offsetBottom={offsetBottom}
                         width={svgWidth} height={svgHeight} setWidthAxis={setHeightRightYLabel} setHeightFactor={setHeightYFactor} domainAxis={AxisMap.get('right')}
                         hAxis={heightRightYLabel} hFactor={heightYFactor} useFactor={props.useMetricFactors === undefined? true: props.useMetricFactors}/> : null}
                       <defs>

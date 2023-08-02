@@ -189,20 +189,20 @@ function ValueAxis(props: IProps) {
 
     const tickDirection = React.useMemo(() => {
       if (props.domainAxis === undefined || props.domainAxis === AxisMap.get('left'))
-        return 1;
+        return -1;
       else
-        return -1
+        return 1
     }, [props.domainAxis]);
 
     return (<g>
       <path stroke='black' style={{ strokeWidth: 1, transition: 'd 0.5s' }} d={`M ${leftPosition} ${props.height - props.offsetBottom + 8} V ${props.offsetTop}`} />
-      <path stroke='black' style={{ strokeWidth: 1, transition: 'd 0.5s' }} d={`M ${leftPosition - 8} ${props.offsetTop} h ${8}`} />
-      {tick.map((l, i) => <path key={i} stroke='lightgrey' strokeOpacity={props.showGrid? '0.8':'0.0'} style={{ strokeWidth: 1, transition: 'd 0.5s' }} d={`M ${leftPosition} ${context.YTransformation(l, props.domainAxis)} h ${tickDirection*(props.width - props.offsetLeft - props.offsetRight)}`} />)}
-      {tick.map((l, i) => <path key={i} stroke='black' style={{ strokeWidth: 1, transition: 'd 1s' }} d={`M ${leftPosition - 6} ${context.YTransformation(l, props.domainAxis)} h ${tickDirection*6}`} />)}
-      {tick.map((l, i) => <text fill={'black'} key={i} style={{ fontSize: '1em', textAnchor: 'end', transition: 'x 0.5s, y 0.5s' }} dominantBaseline={'middle'} x={leftPosition - (tickDirection*8)} y={context.YTransformation(l, props.domainAxis)}>{(l * factor).toFixed(nDigits)}</text>)}
+      <path stroke='black' style={{ strokeWidth: 1, transition: 'd 0.5s' }} d={`M ${leftPosition} ${props.offsetTop} h ${tickDirection * 8}`} />
+      {tick.map((l, i) => <path key={i} stroke={((props.domainAxis === undefined || props.domainAxis === AxisMap.get('left')) ? 'lightgrey' : 'darkgrey')} strokeOpacity={props.showGrid ? '0.8':'0.0'} style={{ strokeWidth: 1, transition: 'd 0.5s' }} d={`M ${props.offsetLeft} ${context.YTransformation(l, props.domainAxis)} h ${props.width - props.offsetLeft - props.offsetRight}`} />)}
+      {tick.map((l, i) => <path key={i} stroke='black' style={{ strokeWidth: 1, transition: 'd 1s' }} d={`M ${leftPosition} ${context.YTransformation(l, props.domainAxis)} h ${tickDirection * 6}`} />)}
+      {tick.map((l, i) => <text fill={'black'} key={i} style={{ fontSize: '1em', textAnchor: (props.domainAxis === undefined || props.domainAxis === AxisMap.get('left')) ? 'end' : 'start', transition: 'x 0.5s, y 0.5s' }} dominantBaseline={'middle'} x={leftPosition + tickDirection * 8} y={context.YTransformation(l, props.domainAxis)}>{(l * factor).toFixed(nDigits)}</text>)}
 
       {props.label !== undefined ? <text fill={'black'} style={{ fontSize: ftSizeLabel + 'em', textAnchor: 'middle'}} dominantBaseline={'text-bottom'}
-      transform={`rotate(-90,${props.offsetLeft - hAxis - 4},${(props.offsetTop  - props.offsetBottom + props.height)/ 2.0})`} x={leftPosition - hAxis - 4} y={(props.offsetTop  - props.offsetBottom + props.height)/ 2.0}>{props.label}</text> : null}
+      transform={`rotate(${tickDirection*90},${leftPosition + tickDirection*(hAxis + 4)},${(props.offsetTop  - props.offsetBottom + props.height)/ 2.0})`} x={leftPosition + tickDirection*(hAxis + 4)} y={(props.offsetTop  - props.offsetBottom + props.height)/ 2.0}>{props.label}</text> : null}
       {factor !== 1 ? <text fill={'black'} style={{ fontSize: '1em' }} x={leftPosition} y={props.offsetTop - 5}>x{1/factor}</text> : null}
     </g>)
 }

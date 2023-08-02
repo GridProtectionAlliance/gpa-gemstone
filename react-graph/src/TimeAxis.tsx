@@ -36,7 +36,8 @@ export interface IProps {
   width: number,
   setHeight: (h: number) => void,
   label?: string,
-  showTicks?: boolean
+  showTicks?: boolean,
+  showRightMostTick?: boolean
 }
 
 const msPerSecond = 1000.00;
@@ -357,8 +358,8 @@ function TimeAxis(props: IProps) {
     }
 
     return (<g>
-     <path stroke='black' style={{ strokeWidth: 1 }} d={`M ${props.offsetLeft - 8} ${props.height - props.offsetBottom} H ${props.width - props.offsetRight}`} />
-     <path stroke='black' style={{ strokeWidth: 1 }} d={`M ${props.width - props.offsetRight} ${props.height - props.offsetBottom} v ${8}`} />
+     <path stroke='black' style={{ strokeWidth: 1 }} d={`M ${props.offsetLeft - 8} ${props.height - props.offsetBottom} H ${props.width - props.offsetRight + (props.showRightMostTick ?? true ? 0 : 8)}`} />
+     {props.showRightMostTick ?? true ? <path stroke='black' style={{ strokeWidth: 1 }} d={`M ${props.width - props.offsetRight} ${props.height - props.offsetBottom} v ${8}`} /> : null}
      {props.showTicks === undefined || props.showTicks ?
          <>
              {tick.map((l, i) => <path key={i} stroke='black' style={{ strokeWidth: 1, transition: 'd 0.5s' }} d={`M ${context.XTransformation(l)} ${props.height - props.offsetBottom + 6} v ${-6}`} />)}
