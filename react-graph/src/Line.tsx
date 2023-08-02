@@ -59,7 +59,7 @@ function Line(props: IProps) {
         return;
       context.UpdateData(guid, {
         legend: createLegend(),
-        getAxis: getAxis,
+        getAxis,
         getMax: (t) => (data == null|| !enabled? -Infinity : data.GetLimits(t[0],t[1])[1]) ,
         getMin: (t) => (data == null|| !enabled? Infinity : data.GetLimits(t[0],t[1])[0]),
       } as IDataSeries)
@@ -94,7 +94,7 @@ function Line(props: IProps) {
    React.useEffect(() => {
        const id = context.AddData({
            legend: createLegend(),
-           getAxis: getAxis,
+           getAxis,
            getMax: (t) => (data == null|| !enabled? -Infinity : data.GetLimits(t[0],t[1])[1]),
            getMin: (t) => (data == null|| !enabled? Infinity : data.GetLimits(t[0],t[1])[0]),
        } as IDataSeries)

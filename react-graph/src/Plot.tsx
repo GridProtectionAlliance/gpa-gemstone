@@ -129,7 +129,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
     
     const zoomMode = props.zoomMode === undefined? 'AutoValue' : props.zoomMode;
 
-    //Type correcting functions to convert props into something usable
+    // Type correcting functions to convert props into something usable
     const typeCorrectNumber = (arg: number | number[] | undefined, arrayIndex: number): number | undefined => {
       if (arg === undefined) return undefined;
       if (typeof(arg) === 'number') return (arrayIndex === 0 ? arg : undefined);
@@ -269,7 +269,6 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
       }
       newHasData[0] = hasFunc('left');
       newHasData[1] = hasFunc('right');
-      console.log(newHasData);
       setYHasData(newHasData);
     }, [data]);
 
