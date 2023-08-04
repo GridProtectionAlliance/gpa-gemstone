@@ -34,7 +34,8 @@ interface IProps {
     currentSelection: 'zoom'|'pan'|'select',
     setSelection: (selection: ButtonType) => void,
     x: number,
-    y: number
+    y: number,
+    holdOpen?: boolean
 }
 
 type ButtonType = ('zoom' | 'pan' | 'reset' | 'select' | 'download');
@@ -43,17 +44,17 @@ type Cleanup = ((() => void) | void);
 const InteractiveButtons: React.FunctionComponent<IProps> = (props) => {
     const btnCleanup = React.useRef<Cleanup>(undefined);
     const [selectIcon, setSelectIcon] = React.useState<React.ReactElement>(<>{Point}</>);
-    const [expand, setExpand] = React.useState<boolean>(false);
+    const [expand, setExpand] = React.useState<boolean>(props.holdOpen ?? false);
     const [currentSelect, setCurrentSelect] = React.useState<string>('regular');
 
     const nChildren = (props.children == null) ? 0 : React.Children.count(props.children);
-    const nButtons = (props.showZoom? 1 : 0) + (props.showPan? 1 : 0) + (props.showReset? 1 : 0) + (props.showSelect? 1 : 0) + (props.showDownload? 1 : 0) + nChildren;
+    const nButtons = (props.holdOpen? 1 : 0) + (props.showZoom? 1 : 0) + (props.showPan? 1 : 0) + (props.showReset? 1 : 0) + (props.showSelect? 1 : 0) + (props.showDownload? 1 : 0) + nChildren;
 
     const setBtnAndSelect = React.useCallback((newIcon: React.ReactElement, id?: string) => {
       setSelectIcon(newIcon);
       setCurrentSelect(id ?? 'regular');
       props.setSelection('select');
-      setExpand(false); 
+      collaspeMenu(); 
     }, [props.setSelection, setSelectIcon, setExpand]);
 
     const openTray = React.useCallback((evt: React.MouseEvent) => {
@@ -61,13 +62,18 @@ const InteractiveButtons: React.FunctionComponent<IProps> = (props) => {
       setExpand(true);
     }, [setExpand]);
 
+    const collaspeMenu = React.useCallback(() => {
+      if (!(props.holdOpen ?? false))
+        setExpand(false);
+    }, [setExpand, props.holdOpen])
+
     const displayIcon = React.useCallback(()=>{
-     switch(props.currentSelection){
-      default:
-      case 'pan': return Pan;
-      case 'zoom': return MagnifyingGlass;
-      case 'select': return selectIcon;
-     } 
+      switch(props.currentSelection){
+        default:
+        case 'pan': return Pan;
+        case 'zoom': return MagnifyingGlass;
+        case 'select': return selectIcon;
+      } 
     },[selectIcon, props.currentSelection]);
 
     if (nButtons === 0)
@@ -90,25 +96,29 @@ const InteractiveButtons: React.FunctionComponent<IProps> = (props) => {
     const width = 25*nButtons - 25;
     const symbols = [] as React.ReactElement[];
     const symbolNames = [] as ButtonType[];
+    if (props.holdOpen ?? false) {
+      symbolNames.push('collaspe' as ButtonType);
+      symbols.push(<Button onClick={() => setExpand(false)}>{">"}</Button>)
+    }
     if (props.showZoom) {
       symbolNames.push('zoom' as ButtonType);
-      symbols.push(<Button onClick={() => {props.setSelection('zoom'); setExpand(false); }}>{MagnifyingGlass}</Button>)
+      symbols.push(<Button onClick={() => {props.setSelection('zoom'); collaspeMenu(); }}>{MagnifyingGlass}</Button>)
     }
     if (props.showPan) {
       symbolNames.push('pan' as ButtonType);
-      symbols.push(<Button onClick={() => {props.setSelection('pan'); setExpand(false); }}>{Pan}</Button>)
+      symbols.push(<Button onClick={() => {props.setSelection('pan'); collaspeMenu(); }}>{Pan}</Button>)
     }
     if (props.showSelect) {
         symbolNames.push('select' as ButtonType);
-        symbols.push(<Button isSelect={true} onClick={() => {props.setSelection('select'); setCurrentSelect('regular'); setExpand(false); }}>{Point}</Button>)
+        symbols.push(<Button isSelect={true} onClick={() => {props.setSelection('select'); setCurrentSelect('regular'); collaspeMenu(); }}>{Point}</Button>)
     }
     if (props.showReset) {
       symbolNames.push('reset' as ButtonType);
-      symbols.push(<Button onClick={() => {setExpand(false); props.setSelection('reset'); }}>{House}</Button>)
+      symbols.push(<Button onClick={() => {collaspeMenu(); props.setSelection('reset'); }}>{House}</Button>)
     }
     if (props.showDownload) {
       symbolNames.push('download' as ButtonType);
-      symbols.push(<Button onClick={() => {setExpand(false); props.setSelection('download');}}>{InputNumbers}</Button>)
+      symbols.push(<Button onClick={() => {collaspeMenu(); props.setSelection('download');}}>{InputNumbers}</Button>)
     }
 
     return (
