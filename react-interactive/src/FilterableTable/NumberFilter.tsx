@@ -135,7 +135,7 @@ export function NumberFilter<T>(props: IProps<T>) {
             <tr onClick={(evt) => { evt.preventDefault(); }}>
                 <td>
                     <input type={'number'} className='form-control' 
-                    value={hasUnit? props.Unit[unitIndex].GetValue(parseFloat(value)).toString() : value}
+                    value={props.Unit !== undefined && hasUnit? props.Unit[unitIndex].GetValue(parseFloat(value)).toString() ?? '' : value}
                     onChange={(evt) => {
                         let v = evt.target.value as string;
                         if (props.Unit !== undefined && unitIndex >= 0 && unitIndex < props.Unit.length)
@@ -147,9 +147,9 @@ export function NumberFilter<T>(props: IProps<T>) {
                 </td>
                 {props.Unit !== undefined?
                 <td>
-                    <select className='form-control' value={unitIndex.label} onChange={(evt) => {
+                    <select className='form-control' value={props.Unit[unitIndex]?.label ?? ''} onChange={(evt) => {
                             const v = evt.target.value;
-                            setUnitIndex(props.Unit?.findIndex(u => u.label === v))
+                            setUnitIndex(props.Unit?.findIndex(u => u.label === v) ?? -1)
                         }}>
                         {props.Unit.map((u) => <option value={u.label} key={u.label}>{u.label}</option>)}
                     </select>
@@ -165,9 +165,9 @@ export function NumberFilter<T>(props: IProps<T>) {
                 <tr onClick={(evt) => { evt.preventDefault(); }}>
                     <td>
                         <input type={'number'} className='form-control' 
-                        value={hasUnit? props.Unit[unitIndex].GetValue(parseFloat(secondValue)).toString() : vasecondValuelue}
+                        value={props.Unit !== undefined && hasUnit? props.Unit[unitIndex].GetValue(parseFloat(secondValue)).toString() : secondValue}
                          onChange={(evt) => {
-                            const v = evt.target.value as string;
+                            let v = evt.target.value as string;
                             if (props.Unit !== undefined && unitIndex >= 0 && unitIndex < props.Unit.length)
                             {
                                 v = props.Unit[unitIndex].GetFilter(parseFloat(v)).toString();
@@ -178,9 +178,9 @@ export function NumberFilter<T>(props: IProps<T>) {
                 </tr>
                 {props.Unit !== undefined?
                 <td>
-                    <select className='form-control' value={unitIndex.label} onChange={(evt) => {
+                    <select className='form-control' value={props.Unit[unitIndex]?.label ?? ''} onChange={(evt) => {
                             const v = evt.target.value;
-                            setUnitIndex(props.Unit?.findIndex(u => u.label === v))
+                            setUnitIndex(props.Unit?.findIndex(u => u.label === v) ?? -1)
                         }}>
                         {props.Unit.map((u) => <option value={u.label} key={u.label}>{u.label}</option>)}
                     </select>
