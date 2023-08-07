@@ -73,6 +73,11 @@ export default function DateTimePicker<T>(props: IProps<T>) {
   
   React.useLayoutEffect(() => {
     const node = (divRef.current !== null? GetNodeSize(divRef.current) : {top, left, height: 0, width: 0});
+    if ( node.height === 0 && node.width === 0) {
+      setLeft(0)
+      setTop(-9999)
+      return;
+    }
     setLeft(node.left + 0.5 * node.width);
     setTop(node.top + node.height + 10);
   })
