@@ -44,7 +44,7 @@ export function EnumFilter<T>(props: IProps<T>) {
     }, [props.Options])
 
     React.useEffect(() => {
-        if (props.Filter.length !== 0 && (options.filter((x) => x.Selected).length === options.length || options.filter((x) => !x.Selected).length === options.length)) {
+        if (props.Filter.length !== 0 && (options.filter((x) => x.Selected).length === options.length)) {
             props.SetFilter([]);
             return;
         }
