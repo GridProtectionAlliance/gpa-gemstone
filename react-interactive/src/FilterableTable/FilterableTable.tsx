@@ -27,16 +27,18 @@ import { SVGIcons } from '@gpa-gemstone/gpa-symbols';
 import { BooleanFilter } from './BooleanFilter';
 import { TextFilter } from './TextFilter';
 import { EnumFilter } from './EnumFilter';
-import { NumberFilter } from './NumberFilter';
+import { NumberFilter, IUnit } from './NumberFilter';
 import { DateFilter, TimeFilter } from './DateTimeFilters';
 import { CreateGuid} from '@gpa-gemstone/helper-functions';
 
 interface IOptions { Value: string | number, Label: string }
 
+     
 interface IFilterableCollumn<T> extends Column<T> { 
     Type?: Search.FieldType, 
     Enum?: IOptions[],
-    ExpandedLabel?: string
+    ExpandedLabel?: string,
+    Unit?: IUnit[]
 }
 
 interface IProps<T> extends TableProps<T> {
@@ -74,6 +76,7 @@ export default function FilterableTable<T>(props: IProps<T>) {
                         Options={c.Enum}
                         ExpandedLabel={c.ExpandedLabel}
                         Guid={guid}
+                        Unit={c.Unit}
                     />
                 }))}
                 data={props.data}
@@ -105,6 +108,7 @@ export default function FilterableTable<T>(props: IProps<T>) {
 interface IHeaderProps<T> {
     Label: string | React.ReactNode,
     Type?: Search.FieldType,
+    Unit?: IUnit[],
     Filter: Search.IFilter<T>[],
     SetFilter: (flt: Search.IFilter<T>[]) => void,
     Field: string | number | symbol | undefined,
@@ -179,6 +183,7 @@ function Header<T>(props: IHeaderProps<T>) {
                                 FieldName={props.Field?.toString() ?? ''}
                                 Filter={props.Filter}
                                 SetFilter={props.SetFilter}
+                                Unit={props.Unit}
                             /> : null}
 
                         </tbody>

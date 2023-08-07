@@ -26,6 +26,13 @@ interface IProps<T> {
     SetFilter: (evt: Search.IFilter<T>[]) => void,
     Filter: Search.IFilter<T>[],
     FieldName: string,
+    Unit?: IUnit[]
+}
+
+export interface IUnit { 
+    label: string,
+    GetValue: (value: number) => number, 
+    GetFilter: (filter: number) => number
 }
 
 type FilterType = 'less than' | 'greater than' | 'between' | 'equal to'
@@ -34,7 +41,8 @@ export function NumberFilter<T>(props: IProps<T>) {
         const [value, setValue] = React.useState<string>('');
         const [secondValue, setSecondValue] = React.useState<string>('')
         const [operator, setOperator] = React.useState<FilterType>('less than');
-    
+        const [unitIndex, setUnitIndex] = React.useState<number>(0);
+
         React.useEffect(() => {
             if (props.Filter.length === 0) {
                 setValue('');
@@ -109,6 +117,7 @@ export function NumberFilter<T>(props: IProps<T>) {
             return '='
         }
 
+        const hasUnit = props.Unit !== undefined && unitIndex >= 0 && unitIndex < props.Unit.length;
         return <>
             <tr onClick={(evt) => { evt.preventDefault(); }}>
                 <td>
@@ -125,11 +134,27 @@ export function NumberFilter<T>(props: IProps<T>) {
             </tr>
             <tr onClick={(evt) => { evt.preventDefault(); }}>
                 <td>
-                    <input type={'number'} className='form-control' value={value} onChange={(evt) => {
-                        const v = evt.target.value as string;
+                    <input type={'number'} className='form-control' 
+                    value={hasUnit? props.Unit[unitIndex].GetValue(parseFloat(value)).toString() : value}
+                    onChange={(evt) => {
+                        let v = evt.target.value as string;
+                        if (props.Unit !== undefined && unitIndex >= 0 && unitIndex < props.Unit.length)
+                        {
+                            v = props.Unit[unitIndex].GetFilter(parseFloat(v)).toString();
+                        }
                         setValue(v);
                     }} />
                 </td>
+                {props.Unit !== undefined?
+                <td>
+                    <select className='form-control' value={unitIndex.label} onChange={(evt) => {
+                            const v = evt.target.value;
+                            setUnitIndex(props.Unit?.findIndex(u => u.label === v))
+                        }}>
+                        {props.Unit.map((u) => <option value={u.label} key={u.label}>{u.label}</option>)}
+                    </select>
+                </td> : null
+                }
             </tr>
             {operator === 'between' ? <>
                 <tr onClick={(evt) => { evt.preventDefault(); }}>
@@ -139,12 +164,28 @@ export function NumberFilter<T>(props: IProps<T>) {
                 </tr>
                 <tr onClick={(evt) => { evt.preventDefault(); }}>
                     <td>
-                        <input type={'number'} className='form-control' value={secondValue} onChange={(evt) => {
+                        <input type={'number'} className='form-control' 
+                        value={hasUnit? props.Unit[unitIndex].GetValue(parseFloat(secondValue)).toString() : vasecondValuelue}
+                         onChange={(evt) => {
                             const v = evt.target.value as string;
+                            if (props.Unit !== undefined && unitIndex >= 0 && unitIndex < props.Unit.length)
+                            {
+                                v = props.Unit[unitIndex].GetFilter(parseFloat(v)).toString();
+                            }
                             setSecondValue(v);
                         }} />
                     </td>
                 </tr>
+                {props.Unit !== undefined?
+                <td>
+                    <select className='form-control' value={unitIndex.label} onChange={(evt) => {
+                            const v = evt.target.value;
+                            setUnitIndex(props.Unit?.findIndex(u => u.label === v))
+                        }}>
+                        {props.Unit.map((u) => <option value={u.label} key={u.label}>{u.label}</option>)}
+                    </select>
+                </td> : null
+                }
             </> : null}
         </>
     }
