@@ -74,7 +74,7 @@ export function NumberFilter<T>(props: IProps<T>) {
     
     
         React.useEffect(() => {
-            let handle:any = null;
+            let handle: NodeJS.Timeout|null = null;
             if (value === '' && secondValue === '' && props.Filter.length !== 0)
                 handle = setTimeout(() => props.SetFilter([]), 500);
             if (value === '' && secondValue === '')

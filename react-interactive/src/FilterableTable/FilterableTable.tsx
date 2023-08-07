@@ -52,7 +52,7 @@ interface IProps<T> extends TableProps<T> {
  */
 export default function FilterableTable<T>(props: IProps<T>) {
     const [filters, setFilters] = React.useState<Search.IFilter<T>[]>((props.DefaultFilter === undefined ? [] : props.DefaultFilter));
-    const [guid, setGuid] = React.useState<string>(CreateGuid());
+    const [guid] = React.useState<string>(CreateGuid());
 
     function updateFilters(flts: Search.IFilter<T>[], fld: string | number | symbol| undefined) {
         setFilters((fls) => {

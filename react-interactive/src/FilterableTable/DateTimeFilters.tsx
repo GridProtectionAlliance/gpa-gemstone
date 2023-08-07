@@ -70,7 +70,7 @@ export function DateFilter<T>(props: IProps<T>) {
 
 
     React.useEffect(() => {
-        let handle:any = null;
+        let handle: NodeJS.Timeout|null = null;
 
         if (date === '' && secondDate === '' && props.Filter.length !== 0) 
             handle = setTimeout(() => props.SetFilter([]),500);
@@ -180,7 +180,7 @@ export function TimeFilter<T>(props: IProps<T>) {
 
 
     React.useEffect(() => {
-        let handle:any = null;
+        let handle: NodeJS.Timeout|null = null;
 
         if (time === '' && secondTime === '' && props.Filter.length !== 0)
             handle = setTimeout(() => props.SetFilter([]),500);
@@ -294,7 +294,7 @@ export function DateTimeFilter<T>(props: IProps<T>) {
 
 
     React.useEffect(() => {
-        let handle:any = null;
+        let handle: NodeJS.Timeout|null = null;
 
         if (dateTime === '' && secondDateTime === '' && props.Filter.length !== 0)
             handle = setTimeout(() => props.SetFilter([]),500);
@@ -350,7 +350,7 @@ export function DateTimeFilter<T>(props: IProps<T>) {
                     Setter={(r) => setDateTime(r.Value)}
                     Label=''
                     Type='datetime-local'
-                    Valid={(record) => { return true; }} Format={momentDateFormat + ' ' + momentTimeFormat} 
+                    Valid={() => true} Format={momentDateFormat + ' ' + momentTimeFormat} 
                 />
             </td>
         </tr>
@@ -366,7 +366,7 @@ export function DateTimeFilter<T>(props: IProps<T>) {
                     Setter={(r) => setSecondDateTime(r.Value)}
                     Label=''
                     Type='datetime-local'
-                    Valid={(record) => { return true; }} Format={momentDateFormat + ' ' + momentTimeFormat} 
+                    Valid={() => true} Format={momentDateFormat + ' ' + momentTimeFormat} 
                 />
                 </td>
             </tr>

@@ -95,7 +95,7 @@ export function EnumFilter<T>(props: IProps<T>) {
             <td>All</td>
         </tr>
         {options.map((f, i) => (
-            <tr key={i} onClick={(evt) => { setOptions((old) => old.map((o) => ({ ...o, Selected: (o.Value === f.Value ? !o.Selected : o.Selected) }))); }}>
+            <tr key={i} onClick={() => { setOptions((old) => old.map((o) => ({ ...o, Selected: (o.Value === f.Value ? !o.Selected : o.Selected) }))); }}>
                 <td>
                     <input type="checkbox" checked={f.Selected} onChange={() => null} />
                 </td>

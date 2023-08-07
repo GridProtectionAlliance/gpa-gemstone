@@ -45,7 +45,7 @@ export function TextFilter<T>(props: IProps<T>) {
     }, [props.Filter]);
 
     React.useEffect(() => {
-        let handle: any = null;
+        let handle: NodeJS.Timeout|null = null;
 
         if ((txt == null || txt.trim().length === 0) && props.Filter.length !== 0) 
             handle = setTimeout(() =>  props.SetFilter([]), 500);
