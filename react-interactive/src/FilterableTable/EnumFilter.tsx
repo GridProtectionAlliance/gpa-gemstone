@@ -74,7 +74,7 @@ export function EnumFilter<T>(props: IProps<T>) {
                 return false;
             })
             if (hasChanged)
-                setOptions((opt) => opt.map((item) => ({ ...item, Selected: list.findIndex(l => l === item.Value) >= 0 })));
+                setOptions((opt) => opt.map((item) => ({ ...item, Selected: list.findIndex(l => l == item.Value) >= 0 })));
         }
     }, [props.Filter])
 
