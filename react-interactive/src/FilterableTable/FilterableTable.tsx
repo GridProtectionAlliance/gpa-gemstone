@@ -28,7 +28,7 @@ import { BooleanFilter } from './BooleanFilter';
 import { TextFilter } from './TextFilter';
 import { EnumFilter } from './EnumFilter';
 import { NumberFilter, IUnit } from './NumberFilter';
-import { DateFilter, TimeFilter } from './DateTimeFilters';
+import { DateFilter, DateTimeFilter, TimeFilter } from './DateTimeFilters';
 import { CreateGuid} from '@gpa-gemstone/helper-functions';
 
 interface IOptions { Value: string | number, Label: string }
@@ -185,7 +185,11 @@ function Header<T>(props: IHeaderProps<T>) {
                                 SetFilter={props.SetFilter}
                                 Unit={props.Unit}
                             /> : null}
-
+                            {props.Type === 'datetime' ? <DateTimeFilter
+                                FieldName={props.Field?.toString() ?? ''}
+                                Filter={props.Filter}
+                                SetFilter={props.SetFilter}
+                            /> : null}
                         </tbody>
                     </table>
                 </div>                
