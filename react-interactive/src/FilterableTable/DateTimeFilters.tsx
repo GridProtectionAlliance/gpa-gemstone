@@ -56,7 +56,14 @@ export function DateFilter<T>(props: IProps<T>) {
             if (f2 == null)
                 setSecondDate('')
             else
-                setSecondDate(f2.SearchText)
+                setSecondDate(f2.SearchText);
+                
+            if (f1 !== null && f2 !== null)
+                setOperator('between');
+            else if (f1 == null)
+                setOperator('before');
+            else 
+                setOperator('after')
         }
         if (props.Filter.length === 1) {
             setSecondDate('');
@@ -167,6 +174,14 @@ export function TimeFilter<T>(props: IProps<T>) {
                 setSecondTime('')
             else
                 setSecondTime(f2.SearchText)
+            
+            if (f1 !== null && f2 !== null)
+                setOperator('between');
+            else if (f1 == null)
+                setOperator('before');
+            else 
+                setOperator('after')
+                
         }
         if (props.Filter.length === 1) {
             setSecondTime('');
@@ -280,7 +295,14 @@ export function DateTimeFilter<T>(props: IProps<T>) {
             if (f2 == null)
                 setSecondDateTime('')
             else
-                setSecondDateTime(f2.SearchText)
+                setSecondDateTime(f2.SearchText);
+
+            if (f1 !== null && f2 !== null)
+                setOperator('between');
+            else if (f1 == null)
+                setOperator('before');
+            else 
+                setOperator('after')
         }
         if (props.Filter.length === 1) {
             setSecondDateTime('');
