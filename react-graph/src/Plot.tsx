@@ -56,15 +56,14 @@ export interface IProps {
     Tmax?: number,
     showBorder?: boolean,
     Tlabel?: string,
-    Ylabel?: string,
-    YRightlabel?: string,
+    Ylabel?: string|string[],
     holdMenuOpen?: boolean,
     legend?: 'hidden'| 'bottom' | 'right',
     showMouse: boolean,
     legendHeight?: number,
     legendWidth?: number,
     useMetricFactors?: boolean,
-    onSelect?: (x: number, y: number, actions: IActionFunctions) => void,
+    onSelect?: (x: number, y: number[], actions: IActionFunctions) => void,
     onDataInspect?: (tDomain: [number,number]) => void,
     Ymin?: number | number[],
     Ymax?: number | number[],
@@ -96,8 +95,6 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
     const [tOffset, setToffset] = React.useState<number>(0);
     const [tScale, setTscale] = React.useState<number>(1);
 
-    const defaultAxis: AxisIdentifier = 'left';
-    const defaultAxisNumber: number = AxisMap.get(defaultAxis) ?? 0;
     const [yDomain, setYdomain] = React.useState<[number,number][]>(Array(AxisMap.size).fill([0,0]));
     const [yOffset, setYoffset] = React.useState<number[]>(Array(AxisMap.size).fill(0));
     const [yScale, setYscale] = React.useState<number[]>(Array(AxisMap.size).fill(1));
@@ -131,10 +128,10 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
     const zoomMode = props.zoomMode === undefined? 'AutoValue' : props.zoomMode;
 
     // Type correcting functions to convert props into something usable
-    const typeCorrectNumber = (arg: number | number[] | undefined, arrayIndex: number): number | undefined => {
-      if (arg === undefined) return undefined;
-      if (typeof(arg) === 'number') return (arrayIndex === 0 ? arg : undefined);
-      return arg[arrayIndex];
+    const typeCorrect: <T>(arg: T | T[] | undefined, arrayIndex: number) => T|undefined = (arg, arrayIndex) => {
+      if (arg == null) return undefined;
+      if (!Object.prototype.hasOwnProperty.call(arg, 'length')) return (arrayIndex === 0 ? arg : undefined);
+      return (arg as any)[arrayIndex];
     }
     const typeCorrectDomain = (arg: [number, number] | [number, number][] | undefined, arrayIndex: number): [number,number] | undefined => {
       if (arg === undefined || arg.length === 0) return undefined;
@@ -175,8 +172,8 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
       const mutateDomain = (domain: [number,number], axis: number, allDomains: [number, number][]): boolean => {
         let hasApplied = false;
         // Need to type correct our arguements
-        const propMin: number | undefined = typeCorrectNumber(props.Ymin, axis);
-        const propMax: number | undefined = typeCorrectNumber(props.Ymax, axis);
+        const propMin: number | undefined = typeCorrect<number>(props.Ymin, axis);
+        const propMax: number | undefined = typeCorrect<number>(props.Ymax, axis);
         if (propMin !== undefined && domain[0] < propMin){
           allDomains[axis] = [propMin, domain[1]];
           hasApplied = true;
@@ -239,7 +236,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
         if (zoomMode === 'AutoValue') {
           const dataReducerFunc = (result: number[], series: IDataSeries, func: (tDomain: [number, number]) => number|undefined) => {
             // This part of the data may not belong to the axis we care about at the moment
-            const dataAxis = series.getAxis !== undefined ? AxisMap.get(series.getAxis() ?? defaultAxis) : defaultAxisNumber;
+            const dataAxis = AxisMap.get(series.axis);
             if (axis === dataAxis) {
               const value =  func(tDomain);
               if (value !== undefined) result.push(value);
@@ -260,14 +257,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
 
     React.useEffect(() => {
       const newHasData: boolean[] = Array<boolean>(2);
-      const hasFunc = (axis: AxisIdentifier) => {
-        return [...data.values()].some((series) => {
-          if (series.getAxis !== undefined)
-            return axis === (series.getAxis() ?? defaultAxis);
-          else
-            return axis === defaultAxis;
-        });
-      }
+      const hasFunc = (axis: AxisIdentifier) => [...data.values()].some(series => AxisMap.get(axis) === AxisMap.get(series.axis));
       newHasData[0] = hasFunc('left');
       newHasData[1] = hasFunc('right');
       setYHasData(newHasData);
@@ -321,8 +311,8 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
     },[tOffset,tScale,props.XAxisType]);
 
     // transforms from pixels into y value. result passed into onClick function
-    const yInvTransform = React.useCallback((p: number, a?: AxisIdentifier | number) =>  {
-      const axis = (typeof(a) !== 'number') ? AxisMap.get(a ?? defaultAxis) ?? defaultAxisNumber : a;
+    const yInvTransform = React.useCallback((p: number, a: AxisIdentifier | number) =>  {
+      const axis = (typeof(a) !== 'number') ? AxisMap.get(a) : a;
       return (p - yOffset[axis]) / yScale[axis];
     },[yOffset,yScale]);
 
@@ -355,8 +345,8 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
     }, [tScale,tOffset,props.XAxisType, tDomain])
 
     // new Y transformation from y value into Pixels
-    const yTransform = React.useCallback((value: number, a?: AxisIdentifier|number) => {
-      const axis = (typeof(a) !== 'number') ? AxisMap.get(a ?? defaultAxis) ?? defaultAxisNumber : a;
+    const yTransform = React.useCallback((value: number, a: AxisIdentifier|number) => {
+      const axis = (typeof(a) !== 'number') ? AxisMap.get(a) : a;
       return value * yScale[axis] + yOffset[axis];
     }, [yScale,yOffset]);
 
@@ -423,7 +413,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
           if (evt.deltaY < 0) multiplier = 0.75;
 
           let x0 = xTransform(tDomain[0]);
-          let x1 = yTransform(tDomain[1]);
+          let x1 = xTransform(tDomain[1]);
 
           if (mousePosition[0] < offsetLeft) 
               x1 = multiplier * (x1 - x0) + x0;
@@ -490,8 +480,8 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
           const zoomYAxis = (domain: [number,number], axis: number, allDomains: [number, number][]): boolean => {
             const dY = yInvTransform(mousePosition[1], axis) - yInvTransform(ptTransform.y, axis);
             // Need to type correct our arguements
-            const propMin: number | undefined = typeCorrectNumber(props.Ymin, axis);
-            const propMax: number | undefined = typeCorrectNumber(props.Ymax, axis);
+            const propMin: number | undefined = typeCorrect<number>(props.Ymin, axis);
+            const propMax: number | undefined = typeCorrect<number>(props.Ymax, axis);
             if (
               (propMin === undefined || domain[0] + dY >  propMin) && 
               (propMax === undefined || domain[1] + dY < propMax)) {
@@ -505,7 +495,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
       }
 
       if (handlers.current.size > 0)
-        handlers.current.forEach((v) => (v.onMove !== undefined? v.onMove(xInvTransform(ptTransform.x), yInvTransform(ptTransform.y)) : null));
+        handlers.current.forEach((v) => (v.onMove !== undefined? v.onMove(xInvTransform(ptTransform.x), yInvTransform(ptTransform.y, v.axis)) : null));
 
       setMousePosition([ptTransform.x, ptTransform.y])
 
@@ -527,13 +517,13 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
         if (selectedMode === 'select' && props.onSelect !== undefined)
           props.onSelect(
             xInvTransform(ptTransform.x),
-            yInvTransform(ptTransform.y),
+            [...AxisMap.values()].map(axis => yInvTransform(ptTransform.y, axis)),
             {
-            setYDomain: updateXDomain as React.SetStateAction<[number,number]>, 
-            setTDomain: updateYDomain as React.SetStateAction<[number,number]>
+            setTDomain: updateXDomain as React.SetStateAction<[number,number]>, 
+            setYDomain: updateYDomain as React.SetStateAction<[number,number][]>
             });
         if (handlers.current.size > 0 && selectedMode === 'select')
-          handlers.current.forEach((v) => (v.onClick !== undefined? v.onClick(xInvTransform(ptTransform.x), yInvTransform(ptTransform.y)) : null));
+          handlers.current.forEach((v) => (v.onClick !== undefined? v.onClick(xInvTransform(ptTransform.x), yInvTransform(ptTransform.y, v.axis)) : null));
     }
 
     function handleMouseUp(_: any) {
@@ -562,7 +552,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
         setMouseMode('none');
 
         if (handlers.current.size > 0 && selectedMode === 'select')
-          handlers.current.forEach((v) => (v.onRelease !== undefined? v.onRelease(xTransform(mousePosition[0]), yTransform(mousePosition[1])) : null));
+          handlers.current.forEach((v) => (v.onRelease !== undefined? v.onRelease(xTransform(mousePosition[0]), yTransform(mousePosition[1], v.axis)) : null));
 
     }
 
@@ -572,7 +562,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
             setMouseMode('none');
 
         if (handlers.current.size > 0 && selectedMode === 'select')
-          handlers.current.forEach((v) => (v.onPlotLeave !== undefined? v.onPlotLeave(xTransform(mousePosition[0]), yTransform(mousePosition[1])) : null));
+          handlers.current.forEach((v) => (v.onPlotLeave !== undefined? v.onPlotLeave(xTransform(mousePosition[0]), yTransform(mousePosition[1], v.axis)) : null));
   
     }
 
@@ -590,21 +580,18 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
         setTdomain([x[1],x[0]]);
     }
 
-    function updateYDomain(y: [number,number], a?: AxisIdentifier|number) {
-      let axis;
-      if (typeof(a) === 'number')
-        axis = a;
-      else
-        axis = AxisMap.get(a ?? defaultAxis) ?? defaultAxisNumber;
-      if (y[0] === yDomain[axis][0] && y[1] === yDomain[axis][1])
-        return;
-      
-      const newYDomain = [...yDomain];
-      if (y[0] < y[1])
-        newYDomain[axis] = y;
-      else
-        newYDomain[axis] = [y[1],y[0]];
-      setYdomain(newYDomain);
+    function updateYDomain(y: [number,number][]) {
+      const correctFunction = (domain: [number,number], axis: number, allDomains: [number, number][]): boolean => {
+        if (y[axis][0] === domain[0] && y[axis][1] === domain[1])
+          return false;
+        
+        if (y[0] < y[1])
+          allDomains[axis] = y[axis];
+        else
+          allDomains[axis] = [y[axis][1],y[axis][0]];
+        return true;
+      }
+      applyToYDomain(correctFunction);
     }
 
     return (
@@ -637,13 +624,15 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
                    style={SvgStyle} viewBox={`0 0 ${svgWidth < 0? 0 : svgWidth} ${svgHeight < 0 ? 0 : svgHeight}`}>
                       { props.showBorder !== undefined && props.showBorder ? < path stroke='black' d={`M ${offsetLeft} ${offsetTop} H ${svgWidth- offsetRight} V ${svgHeight - offsetBottom} H ${offsetLeft} Z`} /> : null}
                       { props.XAxisType === 'time' || props.XAxisType === undefined ?
-                      <TimeAxis label={props.Tlabel} offsetBottom={offsetBottom} offsetLeft={offsetLeft} offsetRight={offsetRight} width={svgWidth} height={svgHeight} setHeight={setHeightXLabel} heightAxis={heightXLabel} showRightMostTick={!yHasData[1]} /> :
-                      <LogAxis offsetTop={offsetTop} showGrid={props.showGrid} label={props.Tlabel} offsetBottom={offsetBottom} offsetLeft={offsetLeft} offsetRight={offsetRight} width={svgWidth} height={svgHeight} setHeight={setHeightXLabel} heightAxis={heightXLabel} showRightMostTick={!yHasData[1]} /> }
-                      {yHasData[0] ? <ValueAxis offsetRight={offsetRight} showGrid={props.showGrid} label={props.Ylabel} offsetTop={offsetTop} offsetLeft={offsetLeft} offsetBottom={offsetBottom}
-                        width={svgWidth} height={svgHeight} setWidthAxis={setHeightLeftYLabel} setHeightFactor={setHeightYFactor} domainAxis={defaultAxisNumber}
+                      <TimeAxis label={props.Tlabel} offsetBottom={offsetBottom} offsetLeft={offsetLeft} offsetRight={offsetRight} width={svgWidth} height={svgHeight} setHeight={setHeightXLabel} 
+                        heightAxis={heightXLabel} showLeftMostTick={!yHasData[0]}  showRightMostTick={!yHasData[1]} /> :
+                      <LogAxis offsetTop={offsetTop} showGrid={props.showGrid} label={props.Tlabel} offsetBottom={offsetBottom} offsetLeft={offsetLeft} offsetRight={offsetRight} width={svgWidth} 
+                        height={svgHeight} setHeight={setHeightXLabel} heightAxis={heightXLabel} showLeftMostTick={!yHasData[0]}  showRightMostTick={!yHasData[1]} /> }
+                      {yHasData[0] ? <ValueAxis offsetRight={offsetRight} showGrid={props.showGrid} label={typeCorrect<string>(props.Ylabel, 0)} offsetTop={offsetTop} offsetLeft={offsetLeft} offsetBottom={offsetBottom}
+                        width={svgWidth} height={svgHeight} setWidthAxis={setHeightLeftYLabel} setHeightFactor={setHeightYFactor} axis={'left'}
                         hAxis={heightLeftYLabel} hFactor={heightYFactor} useFactor={props.useMetricFactors === undefined? true: props.useMetricFactors}/> : null}
-                      {yHasData[1] ? <ValueAxis offsetRight={offsetRight} showGrid={props.showGrid} label={props.YRightlabel} offsetTop={offsetTop} offsetLeft={offsetLeft} offsetBottom={offsetBottom}
-                        width={svgWidth} height={svgHeight} setWidthAxis={setHeightRightYLabel} setHeightFactor={setHeightYFactor} domainAxis={AxisMap.get('right')}
+                      {yHasData[1] ? <ValueAxis offsetRight={offsetRight} showGrid={props.showGrid} label={typeCorrect<string>(props.Ylabel, 1)} offsetTop={offsetTop} offsetLeft={offsetLeft} offsetBottom={offsetBottom}
+                        width={svgWidth} height={svgHeight} setWidthAxis={setHeightRightYLabel} setHeightFactor={setHeightYFactor} axis={'right'}
                         hAxis={heightRightYLabel} hFactor={heightYFactor} useFactor={props.useMetricFactors === undefined? true: props.useMetricFactors}/> : null}
                       <defs>
                           <clipPath id={"cp-" + guid}>

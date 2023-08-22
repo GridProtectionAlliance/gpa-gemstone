@@ -41,7 +41,8 @@ export interface IProps {
     useFactor?: boolean,
     showTicks?: boolean,
     label?: string,
-    showRightMostTick?: boolean
+    showRightMostTick?: boolean,
+    showLeftMostTick?: boolean
 }
 
 
@@ -156,8 +157,9 @@ function LogAxis(props: IProps) {
     }
 
     return (<g>
-    <path stroke='black' style={{ strokeWidth: 1 }} d={`M ${props.offsetLeft - 8} ${props.height - props.offsetBottom} H ${props.width - props.offsetRight + (props.showRightMostTick ?? true ? 0 : 8)}`}/>
-     {props.showRightMostTick ?? true ? <path stroke='black' style={{ strokeWidth: 1 }} d={`M ${props.width - props.offsetRight} ${props.height - props.offsetBottom} v ${8}`} /> : null}
+    <path stroke='black' style={{ strokeWidth: 1 }} d={`M ${props.offsetLeft - (props.showLeftMostTick ?? true ? 0 : 8)} ${props.height - props.offsetBottom} H ${props.width - props.offsetRight + (props.showRightMostTick ?? true ? 0 : 8)}`}/>
+    {props.showLeftMostTick ?? true ? <path stroke='black' style={{ strokeWidth: 1 }} d={`M ${props.offsetLeft} ${props.height - props.offsetBottom} v ${8}`} /> : null}
+    {props.showRightMostTick ?? true ? <path stroke='black' style={{ strokeWidth: 1 }} d={`M ${props.width - props.offsetRight} ${props.height - props.offsetBottom} v ${8}`} /> : null}
     {props.showTicks === undefined || props.showTicks ?
         <>
             {tick.map((l, i) => <path key={(l.toFixed(50))} stroke='lightgrey' strokeOpacity={props.showGrid? '0.8':'0.0'} style={{ strokeWidth: 1, transition: 'd 0.5s' }} d={`M ${context.XTransformation(l)} ${props.height - props.offsetBottom} V ${props.offsetTop}`} />)}
