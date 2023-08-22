@@ -23,7 +23,7 @@
 
 
 import * as React from 'react';
-import {IDataSeries, GraphContext, LineStyle} from './GraphContext';
+import {IDataSeries, GraphContext, AxisIdentifier, AxisMap} from './GraphContext';
 import * as moment from 'moment';
 import {PointNode} from './PointNode';
 import {GetTextWidth} from '@gpa-gemstone/helper-functions';
@@ -35,7 +35,8 @@ export interface IProps extends ILineProps {
 
 export interface IThreshold {
   Value: number,
-  Color: string
+  Color: string,
+  axis?: AxisIdentifier,
 }
 
 function LineWithThreshold(props: IProps) {
@@ -48,7 +49,7 @@ function LineWithThreshold(props: IProps) {
   const [wLegend, setWLegend] = React.useState<number>(0);
   const [data, setData] = React.useState<PointNode|null>(null);
   const [threshHoldLimits, setThresholdLimits] = React.useState<[number,number]>([NaN,NaN]);
-  const context = React.useContext(GraphContext)
+  const context = React.useContext(GraphContext);
 
    React.useEffect(() => {
        if (guid === "")
@@ -133,7 +134,7 @@ function LineWithThreshold(props: IProps) {
         return ""
      result = result + data!.GetFullData().map((pt, _) => {
            const x = context.XTransformation(pt[0]);
-           const y = context.YTransformation(pt[1]);
+           const y = context.YTransformation(pt[1], AxisMap.get(props.axis));
 
            return `${x},${y}`
        }).join(" L ")
@@ -146,11 +147,11 @@ function LineWithThreshold(props: IProps) {
        enabled?
        <g>
            <path d={generateData()} style={{ fill: 'none', strokeWidth: 3, stroke: props.color, transition: 'd 0.5s' }} strokeDasharray={props.lineStyle === ':'? '10,5' : 'none'} />
-           {data != null? data.GetFullData().map((pt, i) => <circle key={i} r={3} cx={context.XTransformation(pt[0])} cy={context.YTransformation(pt[1])} fill={props.color} stroke={'black'} style={{ opacity: 0.8, transition: 'cx 0.5s,cy 0.5s' }} />) : null}
+           {data != null? data.GetFullData().map((pt, i) => <circle key={i} r={3} cx={context.XTransformation(pt[0])} cy={context.YTransformation(pt[1], AxisMap.get(props.axis))} fill={props.color} stroke={'black'} style={{ opacity: 0.8, transition: 'cx 0.5s,cy 0.5s' }} />) : null}
            {props.highlightHover && !isNaN(highlight[0]) && !isNaN(highlight[1])?
-          <circle r={5} cx={context.XTransformation(highlight[0])} cy={context.YTransformation(highlight[1])} fill={props.color} stroke={'black'} style={{ opacity: 0.8, transition: 'cx 0.5s,cy 0.5s' }} /> : null}
+          <circle r={5} cx={context.XTransformation(highlight[0])} cy={context.YTransformation(highlight[1], AxisMap.get(props.axis))} fill={props.color} stroke={'black'} style={{ opacity: 0.8, transition: 'cx 0.5s,cy 0.5s' }} /> : null}
           {props.threshHolds.map((t,i) => <path key={i}
-             d={`M ${context.XTransformation(context.XDomain[0])},${context.YTransformation(t.Value)} H ${context.XTransformation(context.XDomain[1])}`}
+             d={`M ${context.XTransformation(context.XDomain[0])},${context.YTransformation(t.Value, AxisMap.get(props.axis))} H ${context.XTransformation(context.XDomain[1])}`}
              style={{ fill: 'none', strokeWidth: 3, stroke: t.Color, transition: 'd 0.5s' }} strokeDasharray={'10,5'} />)}
        </g > : null
    );

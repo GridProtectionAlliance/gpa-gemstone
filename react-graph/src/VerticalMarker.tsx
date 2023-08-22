@@ -23,7 +23,7 @@
 
 
 import * as React from 'react';
-import {GraphContext, IHandlers, LineStyle} from './GraphContext';
+import {AxisIdentifier, AxisMap, GraphContext, IHandlers, LineStyle} from './GraphContext';
 
 export interface IProps {
     start?: number,
@@ -33,7 +33,8 @@ export interface IProps {
     onClick?: (x: number) => void,
     color: string,
     lineStyle: LineStyle,
-    width: number
+    width: number,
+    axis?: AxisIdentifier,
 }
 
 function VerticalMarker(props: IProps) {
@@ -46,10 +47,11 @@ function VerticalMarker(props: IProps) {
   const [guid, setGuid] = React.useState<string>("");
 
   function generateData(v: number) {
-      const y1 = (props.start === undefined? context.YDomain[0] : props.start);
-      const y2 = (props.end === undefined? context.YDomain[1] : props.end);
+      const axis = AxisMap.get(props.axis);
+      const y1 = (props.start === undefined? context.YDomain[axis][0] : props.start);
+      const y2 = (props.end === undefined? context.YDomain[axis][1] : props.end);
       
-      return `M ${context.XTransformation(v)} ${context.YTransformation(y1)} L ${context.XTransformation(v)} ${context.YTransformation(y2)}`;
+      return `M ${context.XTransformation(v)} ${context.YTransformation(y1, axis)} L ${context.XTransformation(v)} ${context.YTransformation(y2, axis)}`;
   }
 
   const onClick = React.useCallback((x: number, _: number) => {
@@ -63,7 +65,8 @@ function VerticalMarker(props: IProps) {
         const id = context.RegisterSelect({
             onClick,
             onRelease: (_) => setSelected(false),
-            onPlotLeave: (_) => setSelected(false)
+            onPlotLeave: (_) => setSelected(false),
+            axis: props.axis
         } as IHandlers)
         setGuid(id)
         return () => { context.RemoveSelect(id) }
@@ -76,7 +79,8 @@ function VerticalMarker(props: IProps) {
         context.UpdateSelect(guid, {
             onClick,
             onRelease: (_) => setSelected(false),
-            onPlotLeave: (_) => setSelected(false)
+            onPlotLeave: (_) => setSelected(false),
+            axis: props.axis
         } as IHandlers)
     }, [onClick])
 

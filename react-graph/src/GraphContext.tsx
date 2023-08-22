@@ -20,36 +20,35 @@
 //       Generated original version of source code.
 //
 // ******************************************************************************************************
+import { map } from 'lodash';
 import * as React from 'react';
 
 export interface IGraphContext extends IHandlerRegistration, IDataRegistration {
   XDomain: [number, number],
   XHover: number,
 
-  YHover: number,
-  YDomain: [number, number],
-  AllYDomain: [number, number][],
+  YHover: number[],
+  YDomain: [number, number][],
 
   CurrentMode: 'zoom'|'pan'|'select',
   Data: Map<string, IDataSeries>,
   XTransformation: (x: number) => number,
-  YTransformation: (y: number, axis?: AxisIdentifier|number) => number,
+  YTransformation: (y: number, axis: AxisIdentifier|number) => number,
   
   UpdateFlag: number,
   XInverseTransformation: (p: number) => number,
-  YInverseTransformation: (p: number, axis?: AxisIdentifier|number) => number,
+  YInverseTransformation: (p: number, axis: AxisIdentifier|number) => number,
 
   SetXDomain: React.SetStateAction<[number,number]> | ((t: [number,number]) => void),
-  SetYDomain:  React.SetStateAction<[number,number]> | ((t: [number,number], a?: AxisIdentifier|number) => void),
+  SetYDomain:  ((t: [number,number][]) => void),
 };
 
 export const GraphContext = React.createContext({
   XDomain: [0, 0],
   XHover: NaN,
 
-  YHover: NaN,
-  YDomain: [0, 0],
-  AllYDomain: [[0, 0]],
+  YHover: [NaN, NaN],
+  YDomain: [[0, 0]],
   CurrentMode: 'select',
 
 
@@ -66,30 +65,44 @@ export const GraphContext = React.createContext({
   RemoveSelect: (_) => undefined,
   UpdateSelect: (_) => undefined,
   SetXDomain: (_) => undefined,
-  SetYDomain: (_, __) => undefined,
+  SetYDomain: (_) => undefined,
   UpdateFlag: 0
 } as IGraphContext);
 
 export interface IDataSeries {
   getMin: (tDomain: [number, number]) => number| undefined,
   getMax: (tDomain: [number, number]) => number|undefined,
-  getAxis?: () => AxisIdentifier|undefined,
+  axis: AxisIdentifier|undefined,
   legend?: HTMLElement| React.ReactElement| JSX.Element,
 };
 
 export type LineStyle = '-'|':';
 
 export type AxisIdentifier = 'left'|'right'; 
-export const AxisMap = new Map<AxisIdentifier, number>([
+
+class AxisMapClass<T, U> extends Map<T, U> {
+  undefinedOverride: U; 
+  constructor(iterable: Iterable<[T,U]>, undefinedOverride: U) {
+    super(iterable);
+    this.undefinedOverride = undefinedOverride;
+  }
+  get = (key: T): U => {
+    return this.get(key) ?? this.undefinedOverride;
+  }
+};
+
+// Giving this undefined (such as when an axis for a component is not specfied), will return 0, same as making a default of 'left'
+export const AxisMap = new AxisMapClass<AxisIdentifier|undefined, number>([
   ['left', 0],
   ['right', 1]
-]);
+], 0);
 
 export interface IHandlers {
   onClick?: (x:number, y: number) => void,
   onRelease?: (x: number, y: number) => void,
   onPlotLeave?: (x: number, y:number) => void,
-  onMove?: (x: number, y: number) => void
+  onMove?: (x: number, y: number) => void,
+  axis: number|AxisIdentifier
 }
 
 export interface IDataRegistration {
@@ -107,7 +120,7 @@ export interface IHandlerRegistration {
 
 export interface IActionFunctions {
   setTDomain: React.SetStateAction<[number,number]>,
-  setYDomain: React.SetStateAction<[number,number]>
+  setYDomain: React.SetStateAction<[number,number][]>
 }
 
 interface IContextWrapperProps extends IHandlerRegistration, IDataRegistration {
@@ -119,11 +132,11 @@ interface IContextWrapperProps extends IHandlerRegistration, IDataRegistration {
   UpdateFlag: number,
   Data: Map<string, IDataSeries>,
   XTransform: (x: number) => number,
-  YTransform: (y: number, axis?: AxisIdentifier|number) => number,
+  YTransform: (y: number, axis: AxisIdentifier|number) => number,
   XInvTransform: (p: number) => number,
-  YInvTransform: (p: number) => number,
+  YInvTransform: (p: number, axis: AxisIdentifier|number) => number,
   SetXDomain: (x: [number,number]) => void,
-  SetYDomain: (y: [number, number], axis?: AxisIdentifier|number) => void,
+  SetYDomain: (y: [number, number][]) => void,
 }
 
 export const ContextWrapper: React.FC<IContextWrapperProps> = (props) => {
@@ -155,9 +168,8 @@ export const ContextWrapper: React.FC<IContextWrapperProps> = (props) => {
     return {
         XDomain: props.XDomain,
         XHover: props.MouseIn? props.XInvTransform(props.MousePosition[0]) : NaN,
-        YHover: props.MouseIn? props.YInvTransform(props.MousePosition[1]) : NaN,
-        YDomain: props.YDomain[AxisMap.get('left') ?? 0],
-        AllYDomain: props.YDomain,
+        YHover: props.MouseIn ? [...AxisMap.values()].map(axis => props.YInvTransform(props.MousePosition[1], axis)) : Array<number>(AxisMap.size).fill(NaN),
+        YDomain: props.YDomain,
         CurrentMode: props.CurrentMode,
         Data: props.Data,
         XTransformation: props.XTransform,

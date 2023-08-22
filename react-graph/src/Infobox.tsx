@@ -21,14 +21,14 @@
 //
 // ******************************************************************************************************
 
-import { GetTextWidth } from '@gpa-gemstone/helper-functions';
 import * as React from 'react';
-import { GraphContext, IHandlers } from './GraphContext';
+import { AxisIdentifier, AxisMap, GraphContext, IHandlers } from './GraphContext';
 
 interface IProps {
   // Specifies the upper left corner of the box (or other spots depending on origin)
   x: number,
   y: number,
+  axis?: AxisIdentifier,
   origin?: "upper-right" | "upper-left" | "upper-center",
   // Specifies the offset of the pox from the origin point, In pixels
   offset?: number,
@@ -70,7 +70,7 @@ const Infobox: React.FunctionComponent<IProps> = (props) => {
   }, [context.XTransformation, props.origin, props.offset]);
   
   const calculateY = React.useCallback((yArg: number) => {
-    let y: number = context.YTransformation(yArg);
+    let y: number = context.YTransformation(yArg, AxisMap.get(props.axis));
     // Convert x/y to upper-left corner
     switch(props.origin) {
       case undefined: 
@@ -81,22 +81,23 @@ const Infobox: React.FunctionComponent<IProps> = (props) => {
         break;
     }
     return y;
-  }, [context.YTransformation, props.origin, props.offset]);
+  }, [context.YTransformation, props.origin, props.offset, props.axis]);
   
   const onClick = React.useCallback((xArg: number, yArg: number) => {
     const xP = calculateX(props.x);
     const xT = context.XTransformation(xArg);
     const yP = calculateY(props.y);
-    const yT = context.YTransformation(yArg);
+    const yT = context.YTransformation(yArg, AxisMap.get(props.axis));
     if (xT <= xP + props.width && xT >= xP && yT <= yP + props.height && yT >= yP) {
       setSelected(true);
     }
-  }, [props.x, props.y, calculateX, calculateY, props.width, props.height, setSelected, context.XTransformation, context.YTransformation]);
+  }, [props.x, props.y, calculateX, calculateY, props.width, props.height, setSelected, context.XTransformation, context.YTransformation, props.axis]);
 
 
   // useEffect
   React.useEffect(() => {
     const id = context.RegisterSelect({
+      axis: props.axis,
       onRelease: (_) => setSelected(false),
       onPlotLeave: (_) => setSelected(false),
       onClick
@@ -110,11 +111,12 @@ const Infobox: React.FunctionComponent<IProps> = (props) => {
       return;
   
     context.UpdateSelect(guid, {
+      axis: props.axis,
       onRelease: (_) => setSelected(false),
       onPlotLeave: (_) => setSelected(false),
       onClick
     } as IHandlers)
-  }, [onClick]);
+  }, [onClick, props.axis]);
   
   React.useEffect(() => {
     setPosition({x: props.x, y: props.y});
@@ -134,8 +136,8 @@ const Infobox: React.FunctionComponent<IProps> = (props) => {
   
   React.useEffect(() => {
     if (isSelected)
-      setPosition({x: context.XHover, y: context.YHover});
-  }, [context.XHover, context.YHover]);
+      setPosition({x: context.XHover, y: context.YHover[AxisMap.get(props.axis)]});
+  }, [context.XHover, context.YHover, props.axis]);
 
   return (
     <g>

@@ -23,7 +23,7 @@
 
 
 import * as React from 'react';
-import {GraphContext, IHandlers, LineStyle} from './GraphContext';
+import {AxisIdentifier, AxisMap, GraphContext, IHandlers, LineStyle} from './GraphContext';
 
 export interface IProps {
     start?: number,
@@ -32,7 +32,8 @@ export interface IProps {
     setValue?: (y: number) => void,
     color: string,
     lineStyle: LineStyle,
-    width: number
+    width: number,
+    axis?: AxisIdentifier,
 }
 
 function HorizontalMarker(props: IProps) {
@@ -44,8 +45,25 @@ function HorizontalMarker(props: IProps) {
   const [isSelected, setSelected] = React.useState<boolean>(false);
   const [guid, setGuid] = React.useState<string>("");
 
+  function generateData(v: number) {
+    const axis = AxisMap.get(props.axis);
+    const x1 = (props.start === undefined? context.XDomain[0] : props.start);
+    const x2 = (props.end === undefined? context.XDomain[1] : props.end);
+      
+    return `M ${context.XTransformation(x1)} ${context.YTransformation(v, axis)} L ${context.XTransformation(x2)} ${context.YTransformation(v, axis)}`;
+  }
+
+  const onClick = React.useCallback((_: number, y: number) => {
+    const axis = AxisMap.get(props.axis);
+    const yP = context.YTransformation(props.Value, axis);
+    const yT = context.YTransformation(y, axis);
+    if (yT <= yP + (props.width/2) && yT >= yP - (props.width/2))
+      setSelected(true);
+  }, [props.width, props.Value, props.axis]);
+
   React.useEffect(() => {
         const id = context.RegisterSelect({
+            axis: props.axis,
             onClick,
             onRelease: (_) => setSelected(false),
             onPlotLeave: (_) => setSelected(false)
@@ -59,11 +77,12 @@ function HorizontalMarker(props: IProps) {
             return;
 
         context.UpdateSelect(guid, {
+            axis: props.axis,
             onClick,
             onRelease: (_) => setSelected(false),
             onPlotLeave: (_) => setSelected(false)
         } as IHandlers)
-    }, [props.width, props.Value, ])
+    }, [onClick])
 
    React.useEffect(() => {
       setValue(props.Value);
@@ -74,31 +93,17 @@ function HorizontalMarker(props: IProps) {
             return;
         if (!isSelected && props.Value !== value)
             props.setValue(value);
-   }, [isSelected, value])
+   }, [isSelected, value]);
    
    React.useEffect(() => {
     if (context.CurrentMode !== 'select')
         setSelected(false);
-   },[context.CurrentMode])
+   },[context.CurrentMode]);
 
    React.useEffect(() => {
        if (isSelected)
-        setValue(context.YHover);
-   }, [context.YHover])
-
-   function generateData(v: number) {
-       const x1 = (props.start === undefined? context.XDomain[0] : props.start);
-       const x2 = (props.end === undefined? context.XDomain[1] : props.end);
-       
-       return `M ${context.XTransformation(x1)} ${context.YTransformation(v)} L ${context.XTransformation(x2)} ${context.YTransformation(v)}`;
-   }
-
-   function onClick(_: number, y: number) {
-        const yP = context.YTransformation(props.Value);
-        const yT = context.YTransformation(y);
-        if (yT <= yP + (props.width/2) && yT >= yP - (props.width/2))
-          setSelected(true);
-   }
+        setValue(context.YHover[AxisMap.get(props.axis)]);
+   }, [context.YHover, props.axis]);
 
    return (
        
