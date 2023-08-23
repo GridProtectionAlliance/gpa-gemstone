@@ -122,6 +122,7 @@ export default function Input<T>(props: IProps<T>) {
         value={heldVal}
         disabled={props.Disabled == null ? false : props.Disabled}
         onBlur={onBlur}
+        step='any'
       />
       <div className="invalid-feedback">
         {props.Feedback == null ? props.Field + ' is a required field.' : props.Feedback}
