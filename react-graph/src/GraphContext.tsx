@@ -80,15 +80,19 @@ export type LineStyle = '-'|':';
 
 export type AxisIdentifier = 'left'|'right'; 
 
-class AxisMapClass<T, U> extends Map<T, U> {
-  undefinedOverride: U; 
+class AxisMapClass<T, U> {
+  private mapBase: Map<T, U>;
+  private undefinedOverride: U; 
+  size: number;
   constructor(iterable: Iterable<[T,U]>, undefinedOverride: U) {
-    super(iterable);
+    this.mapBase = new Map<T,U>(iterable); 
     this.undefinedOverride = undefinedOverride;
+    // Note: if we ever allow mapBase to be mutated, the mutate methods should assign this
+    this.size = this.mapBase.size;
   }
-  get = (key: T): U => {
-    return this.get(key) ?? this.undefinedOverride;
-  }
+  get = (key: T): U => (this.mapBase.get(key) ?? this.undefinedOverride);
+  values = (): IterableIterator<U> => (this.mapBase.values());
+  keys = (): IterableIterator<T> => (this.mapBase.keys());
 };
 
 // Giving this undefined (such as when an axis for a component is not specfied), will return 0, same as making a default of 'left'
