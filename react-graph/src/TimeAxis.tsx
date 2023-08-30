@@ -394,7 +394,7 @@ function TimeAxis(props: IProps) {
          : null}
      {props.label !== undefined? <text fill={'black'} style={{ fontSize: '1em', textAnchor: 'middle', dominantBaseline: 'middle' }} x={props.offsetLeft + (( props.width- props.offsetLeft - props.offsetRight) / 2)}
       y={props.height - props.offsetBottom + hAxis}>{props.label + GetUnitLabel()}</text> : null}
-    {(dFormat !== '' && tick.length > 0) ? <text fill={'black'} style={{ fontSize: '1em', textAnchor: 'end', dominantBaseline: 'middle' }} x={props.width - props.offsetRight} y={props.height - props.offsetBottom + hAxis}>Date: {formatTS(tick[0], dFormat)}</text> : null}
+    {(dFormat !== '' && tick.length > 0) ? <text fill={'black'} style={{ fontSize: '1em', textAnchor: 'end', dominantBaseline: 'middle' }} x={props.width - props.offsetRight} y={props.height - props.offsetBottom + hAxis}>{formatTS(tick[0], dFormat)}</text> : null}
     </g>)
 }
 
