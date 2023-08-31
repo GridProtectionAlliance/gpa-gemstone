@@ -429,7 +429,8 @@ export default class GenericSlice<T extends U> {
                     state.TotalPages = action.payload.NumberOfPages
                     state.SearchResults = JSON.parse(action.payload.Data);
                     state.Filter = action.meta.arg.filter;
-                    state.CurrentPage = action.meta.arg.page;
+                    if (action.meta.arg.page !== undefined)
+                        state.CurrentPage = action.meta.arg.page;
                     if (this.actionFullfilledDependency !== null)
                         this.actionFullfilledDependency(state as IPagedState<T>,`${name}/Page${name}`, action.meta.arg, action.meta.requestId)
                 });
