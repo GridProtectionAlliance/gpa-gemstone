@@ -69,8 +69,9 @@ export interface IState<T extends U> {
 interface IPagedState< T extends U> extends IState<T> {
     PagedStatus: Application.Types.Status,
     ActivePagedID: string[],
-    CurrentPage: number
-    TotalPages: number
+    CurrentPage: number,
+    TotalPages: number,
+    TotalRecords: number,
     PagedData: T[],
     PagedSortField: keyof T,
     PagedAscending: boolean,
@@ -313,6 +314,7 @@ export default class GenericSlice<T extends U> {
                 ActivePagedID: [],
                 CurrentPage: 0,
                 TotalPages: 0,
+                TotalRecords: 0,
                 PagedData: [],
                 PagedSortField: defaultSort,
                 PagedAscending: ascending,
@@ -426,11 +428,12 @@ export default class GenericSlice<T extends U> {
                 builder.addCase(dBPage.fulfilled, (state: WritableDraft<IPagedState<T>>, action: PayloadAction<any, string,  {arg: { page?: number, filter:  Search.IFilter<T>[], sortfield?: keyof T, ascending?: boolean}, requestId: string},never>) => {
                     state.ActivePagedID = state.ActivePagedID.filter(id => id !== action.meta.requestId);
                     state.PagedStatus = 'idle';
-                    state.TotalPages = action.payload.NumberOfPages
+                    state.TotalPages = action.payload.NumberOfPages;
                     state.SearchResults = JSON.parse(action.payload.Data);
                     state.Filter = action.meta.arg.filter;
                     if (action.meta.arg.page !== undefined)
                         state.CurrentPage = action.meta.arg.page;
+                    state.TotalRecords = action.payload.TotalRecords;
                     if (this.actionFullfilledDependency !== null)
                         this.actionFullfilledDependency(state as IPagedState<T>,`${name}/Page${name}`, action.meta.arg, action.meta.requestId)
                 });
@@ -561,4 +564,5 @@ export default class GenericSlice<T extends U> {
     public PagedAscending = (state: any) => state[this.Name].PagedAscending as boolean;
     public CurrentPage = (state: any) => state[this.Name].CurrentPage as number;
     public TotalPages = (state: any) => state[this.Name].TotalPages as number;
+    public TotalRecords = (state: any) => state[this.Name].TotalRecords as number;
 }
