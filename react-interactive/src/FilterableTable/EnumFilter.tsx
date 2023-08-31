@@ -44,7 +44,7 @@ export function EnumFilter<T>(props: IProps<T>) {
     }, [props.Options])
 
     React.useEffect(() => {
-        if (props.Filter.length !== 0 && (options.filter((x) => x.Selected).length === options.length || options.filter((x) => !x.Selected).length === options.length)) {
+        if (props.Filter.length !== 0 && (options.filter((x) => x.Selected).length === options.length)) {
             props.SetFilter([]);
             return;
         }
@@ -74,7 +74,7 @@ export function EnumFilter<T>(props: IProps<T>) {
                 return false;
             })
             if (hasChanged)
-                setOptions((opt) => opt.map((item) => ({ ...item, Selected: list.findIndex(l => l === item.Value) >= 0 })));
+                setOptions((opt) => opt.map((item) => ({ ...item, Selected: list.findIndex(l => l == item.Value) >= 0 })));
         }
     }, [props.Filter])
 
@@ -95,7 +95,7 @@ export function EnumFilter<T>(props: IProps<T>) {
             <td>All</td>
         </tr>
         {options.map((f, i) => (
-            <tr key={i} onClick={(evt) => { setOptions((old) => old.map((o) => ({ ...o, Selected: (o.Value === f.Value ? !o.Selected : o.Selected) }))); }}>
+            <tr key={i} onClick={() => { setOptions((old) => old.map((o) => ({ ...o, Selected: (o.Value === f.Value ? !o.Selected : o.Selected) }))); }}>
                 <td>
                     <input type="checkbox" checked={f.Selected} onChange={() => null} />
                 </td>

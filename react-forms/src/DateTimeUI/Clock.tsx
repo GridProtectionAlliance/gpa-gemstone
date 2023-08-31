@@ -49,8 +49,13 @@ export default function Clock(props: IProps) {
     const m = parseInt(minute, 10);
     const s = parseInt(second, 10);
 
+    if (isNaN(h) || isNaN(m) || isNaN(s))
+      return;
+
     if (h !== props.DateTime.hour() || m !== props.DateTime.minute() || s !== props.DateTime.second()) {
-      const d = moment(props.DateTime);
+      let d = moment(props.DateTime);
+      if (!d.isValid())
+        d = moment.utc().startOf('d');
       d.hour(h).minute(m).second(s);
       props.Setter(d);
     }
@@ -144,8 +149,11 @@ const TimeInput = (props: {value: string, setValue: (v: string) => void, max: nu
   const [error, setError] = React.useState<boolean>(false);
 
   React.useEffect(() => { 
-    
-    setVal(props.value.toString())
+    if (props.value.length > 5) {
+      setVal("");
+      return;
+    }
+    setVal(props.value.toString());
   }, [props.value])
 
   
