@@ -37,7 +37,7 @@ export interface IProps {
     Label?: string,
     /** Icon that will show next to your NavLink */
     Icon?: React.ReactNode,
-    /** Name of the path or paths thats used for Dynamic Routing*/
+    /** Name of the path or paths thats used for Dynamic Routing with Name being the root of the path*/
     Paths?: string[]
 }
 
@@ -50,27 +50,11 @@ const Page: React.FunctionComponent<IProps> = (props) => {
 
     
     const isPathActive = () => {
-        // Use Name for a direct match if Paths isn't provided
-        if (location.pathname.startsWith(`${context.homePath}${props.Name}`)) {
-            return true;
-        }
-        
-        // Use Paths for a dynamic match
-        if(props.Paths){
-        for (let path of props.Paths) {
-            const matched = matchPath(
-                { path: `${context.homePath}${props.Name}${path}`},
-                location.pathname, 
-            );
-            
-            if (matched) return true;
-        }
-    }
-        
-        return false;
+        // Use Name as the base check and see if the current path starts with this base.
+        return location.pathname.startsWith(`${context.homePath}${props.Name}`);
     }
     
-
+    
     if (props.RequiredRoles !== undefined && props.RequiredRoles.filter(r => context.userRoles.findIndex(i => i === r) > -1).length === 0)
         return null;
 
