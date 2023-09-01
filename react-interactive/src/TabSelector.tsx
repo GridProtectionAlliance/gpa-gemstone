@@ -21,7 +21,6 @@
 // ******************************************************************************************************
 
 import * as React from 'react';
-import Modal from './Modal';
 import { CreateGuid, GetNodeSize, GetTextWidth } from '@gpa-gemstone/helper-functions';
 
 interface ITab {

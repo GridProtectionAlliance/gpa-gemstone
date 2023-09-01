@@ -29,18 +29,18 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Dispatch } from '@reduxjs/toolkit';
 
 interface IProps {
-	UserAccount: Application.Types.iUserAccount,
-	Setter: (record: Application.Types.iUserAccount) => void,
-	Edit: boolean,
-	SetErrors?: (e: string[]) => void
-	UserSlice: IUserAccountSlice,
-	}
+    UserAccount: Application.Types.iUserAccount,
+    Setter: (record: Application.Types.iUserAccount) => void,
+    Edit: boolean,
+    SetErrors?: (e: string[]) => void
+    UserSlice: IUserAccountSlice,
+    }
 
 function UserForm(props: IProps)  {
-	const dispatch = useDispatch<Dispatch<any>>();
+    const dispatch = useDispatch<Dispatch<any>>();
 
   const [updatedAD, setUpdatedAD] = React.useState<boolean>(false);
-	const userValidation: UserValidation = useSelector(props.UserSlice.ADValidation);
+    const userValidation: UserValidation = useSelector(props.UserSlice.ADValidation);
 
   const [userError, setUserError] = React.useState<string[]>([]);
 
@@ -55,8 +55,8 @@ function UserForm(props: IProps)  {
     }, [userError, props.SetErrors]);
 
     React.useEffect(() => {
-			if (props.UserAccount == null)
-				return
+            if (props.UserAccount == null)
+                return
         const e = [];
         if (props.UserAccount.Name == null || props.UserAccount.Name.length === 0)
             e.push('An AccountName is required.')
@@ -66,7 +66,7 @@ function UserForm(props: IProps)  {
         setUserError(e);
     }, [props.UserAccount, userValidation])
 
-		function validUserAccountField(user: Application.Types.iUserAccount,field: keyof (Application.Types.iUserAccount)): boolean {
+        function validUserAccountField(user: Application.Types.iUserAccount,field: keyof (Application.Types.iUserAccount)): boolean {
     if (field === 'Name')
         return user.Name != null && user.Name.length > 0 && user.Name.length <= 200;
     else if (field === 'Password')
@@ -95,7 +95,7 @@ function UserForm(props: IProps)  {
                 <div className="col">
                         <Input<Application.Types.iUserAccount> Record={props.UserAccount} Disabled={props.Edit} Field={'Name'} Feedback={'A Name of less than 200 characters is required.'} Valid={field => validUserAccountField(props.UserAccount, field)} Setter={(record) => {
                             setUpdatedAD(false);
-                        		props.Setter(record);
+                                props.Setter(record);
                         }} />
 
                         <div className="row" style={{ position: 'absolute', top: 0, left: 100 }} hidden={!props.UserAccount.UseADAuthentication}>

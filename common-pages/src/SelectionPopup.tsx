@@ -20,15 +20,12 @@
 //       Generated original version of source code.
 // ******************************************************************************************************
 
-import Table, { Column } from "@gpa-gemstone/react-table";
 import React = require("react");
-import { useDispatch, useSelector } from "react-redux";
-import { GenericSlice, Modal, SearchBar, Search} from "@gpa-gemstone/react-interactive";
-import _ = require("lodash");
-import { CrossMark } from "@gpa-gemstone/gpa-symbols";
+import { GenericSlice, Search} from "@gpa-gemstone/react-interactive";
 import { Application, OpenXDA, SystemCenter } from "@gpa-gemstone/application-typings";
 import SelectPopup from "./StandardSelectPopup";
 import {DefaultSearch} from './SearchBar';
+import { Column } from "@gpa-gemstone/react-table";
 
 interface U { ID: number|string }
 

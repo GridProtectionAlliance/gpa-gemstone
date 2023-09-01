@@ -26,41 +26,41 @@ import { Input } from '@gpa-gemstone/react-forms';
 import { IsInteger } from '@gpa-gemstone/helper-functions';
 
 interface IProps {
-	Record: SystemCenter.Types.ValueListItem,
-	 Setter: (record: SystemCenter.Types.ValueListItem) => void,
-	 ErrorSetter?: (errors: string[]) => void
-	}
+    Record: SystemCenter.Types.ValueListItem,
+     Setter: (record: SystemCenter.Types.ValueListItem) => void,
+     ErrorSetter?: (errors: string[]) => void
+    }
 
 export default function ItemForm(props: IProps) {
-	const [errors, setErrors] = React.useState<string[]>([]);
+    const [errors, setErrors] = React.useState<string[]>([]);
 
-	React.useEffect(() => {
-		const e = [];
+    React.useEffect(() => {
+        const e = [];
 
-		if (props.Record.Value == null || props.Record.Value.length === 0)
-			e.push('A Value is required.')
-		if (props.Record.Value != null && props.Record.Value.length > 200)
-			e.push('Value has to be less than 200 characters.')
-		if (props.Record.AltValue != null && props.Record.AltValue.length > 200)
-			e.push('Alt Value has to be less than 200 characters.')
-		if (props.Record.SortOrder != null && !IsInteger(props.Record.SortOrder))
-				e.push('Sort Order has to be an integer or be left blank.')
-		setErrors(e)
+        if (props.Record.Value == null || props.Record.Value.length === 0)
+            e.push('A Value is required.')
+        if (props.Record.Value != null && props.Record.Value.length > 200)
+            e.push('Value has to be less than 200 characters.')
+        if (props.Record.AltValue != null && props.Record.AltValue.length > 200)
+            e.push('Alt Value has to be less than 200 characters.')
+        if (props.Record.SortOrder != null && !IsInteger(props.Record.SortOrder))
+                e.push('Sort Order has to be an integer or be left blank.')
+        setErrors(e)
 
-	}, [props.Record])
+    }, [props.Record])
 
-	React.useEffect(() => {
-		if (props.ErrorSetter !== undefined)
-			props.ErrorSetter(errors);
-	}, [errors,props.ErrorSetter]);
+    React.useEffect(() => {
+        if (props.ErrorSetter !== undefined)
+            props.ErrorSetter(errors);
+    }, [errors,props.ErrorSetter]);
 
     function Valid(field: keyof (SystemCenter.Types.ValueListItem)): boolean {
         if (field === 'Value')
             return props.Record.Value != null && props.Record.Value.length > 0 && props.Record.Value.length <= 200;
         else if (field === 'AltValue')
             return props.Record.AltValue == null || props.Record.AltValue.length <= 200;
-				else if (field === 'SortOrder')
-					return props.Record.SortOrder == null ||  IsInteger(props.Record.SortOrder)
+                else if (field === 'SortOrder')
+                    return props.Record.SortOrder == null ||  IsInteger(props.Record.SortOrder)
         return true;
     }
 

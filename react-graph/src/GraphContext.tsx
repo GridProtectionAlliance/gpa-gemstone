@@ -40,7 +40,7 @@ export interface IGraphContext extends IHandlerRegistration, IDataRegistration {
   YInverseTransformation: (p: number, axis: AxisIdentifier|number) => number,
 
   SetXDomain: React.SetStateAction<[number,number]> | ((t: [number,number]) => void),
-  SetYDomain:  ((t: [number,number][]) => void),
+  SetYDomain:  React.SetStateAction<[number,number]> | ((t: [number,number][]) => void),
 };
 
 export const GraphContext = React.createContext({
@@ -74,7 +74,7 @@ export interface IDataSeries {
   getMax: (tDomain: [number, number]) => number|undefined,
   axis: AxisIdentifier|undefined,
   legend?: HTMLElement| React.ReactElement| JSX.Element,
-};
+}
 
 export type LineStyle = '-'|':';
 

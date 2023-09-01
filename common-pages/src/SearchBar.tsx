@@ -26,7 +26,6 @@ import * as React from 'react';
 import { GenericSlice, SearchBar as GenericSearchBar, Search } from '@gpa-gemstone/react-interactive';
 import { OpenXDA, SystemCenter, Application } from '@gpa-gemstone/application-typings';
 import { useDispatch, useSelector } from 'react-redux';
-import _ = require('lodash');
 import { Dispatch } from '@reduxjs/toolkit';
 
 interface U { ID: number|string }

@@ -38,6 +38,8 @@ namespace SystemCenter {
 		export interface AdditionalFieldValue { ID: number, ParentTableID: number, AdditionalFieldID: number, Value: string }
 		export interface ValueListGroup { ID: number, Name: string, Description: string, Items?: ValueListItem[]}
 		export interface ValueListItem { ID: number, GroupID: number, AltValue: string, Value: string, SortOrder: number}
+		export interface ChannelGroup { ID: number, Name: string, Description: string, Items?: ChannelGroupDetails[]}
+                export interface ChannelGroupDetails { ID: number, ChannelGroupID: number, ChannelGroup: string, MeasurementTypeID: number, MeasurementType: string, MeasurementCharacteristicID: number, MeasurementCharacteristic: string, DisplayName: string, Unit: string}
 		
 		export interface LocationDrawing { ID: number, LocationID: number, Name: string, Link: string, Description: string }
 

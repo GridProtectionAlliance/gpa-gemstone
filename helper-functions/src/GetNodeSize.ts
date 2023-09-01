@@ -30,12 +30,12 @@ interface INodeSize {height: number, width: number, left: number, top: number}
  */
 function GetNodeSize(node: HTMLElement | null): INodeSize {
   if (node === null)
-	  return {
-		height: 0,
-		width: 0,
-		top: 0,
-		left: 0,
-	  };
+    return {
+    height: 0,
+    width: 0,
+    top: 0,
+    left: 0,
+    };
   
   const { height, width, top, left } = node.getBoundingClientRect();
   return {

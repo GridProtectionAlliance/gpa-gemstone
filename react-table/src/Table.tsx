@@ -85,7 +85,7 @@ export default function Table<T>(props: TableProps<T>) {
     
     function handleSort(
         data: { colKey: string; colField?: keyof T; ascending: boolean },
-        event: React.MouseEvent<HTMLTableHeaderCellElement, MouseEvent>,
+        event: React.MouseEvent<HTMLElement, MouseEvent>,
     ) {
         if (data.colKey !== null)
             props.onSort(data,event);
@@ -98,7 +98,7 @@ interface IRowProps<T> {
     RowStyle?: React.CSSProperties,
     BodyStyle?: React.CSSProperties,
     BodyClass?: string,
-    Click: (data: { colKey: string, colField?: keyof T, row: T, data: T[keyof T] | null, index: number }, e: React.MouseEvent<HTMLTableHeaderCellElement, MouseEvent>) => void,
+    Click: (data: { colKey: string, colField?: keyof T, row: T, data: T[keyof T] | null, index: number }, e: React.MouseEvent<HTMLElement, MouseEvent>) => void,
     DragStart?:((data: { colKey: string, colField?: keyof T, row: T, data: T[keyof T] | null, index: number }, e: any) => void)
     Selected?: ((data: T) => boolean);
     KeySelector?: (data: T) => string;
@@ -146,7 +146,7 @@ interface ICellProps<T> {
     Object: T,
     RowIndex: number,
     Content?: ((item: T, key: string, field: keyof T | undefined, style: React.CSSProperties, index: number) => React.ReactNode),
-    Click: (data: { colKey: string, colField?: keyof T, row: T, data: T[keyof T] | null, index: number }, e: React.MouseEvent<HTMLTableHeaderCellElement, MouseEvent>) => void,
+    Click: (data: { colKey: string, colField?: keyof T, row: T, data: T[keyof T] | null, index: number }, e: React.MouseEvent<HTMLElement, MouseEvent>) => void,
     DragStart?: (data: { colKey: string, colField?: keyof T, row: T, data: T[keyof T] | null, index: number }, e: any) => void,
 }
 
@@ -165,7 +165,7 @@ function Cell<T>(props: ICellProps<T>) {
             draggable={props.DragStart !== undefined} 
             onDragStart={(e) => { if (props.DragStart !== undefined) props.DragStart({ colKey: props.DataKey, colField: props.DataField, row: props.Object, data: getFieldValue(), index: props.RowIndex }, e);}}
         >
-            {getFieldContent()}
+            {getFieldContent() as string}
         </td>
     );
 }
@@ -176,7 +176,7 @@ interface IHeaderProps<T> {
     Cols: Column<T>[],
     SortKey: string,
     Ascending: boolean,
-    Click: (data: { colKey: string; colField?: keyof T; ascending: boolean }, event: React.MouseEvent<HTMLTableHeaderCellElement, MouseEvent>) => void
+    Click: (data: { colKey: string; colField?: keyof T; ascending: boolean }, event: React.MouseEvent<HTMLElement, MouseEvent>) => void
 
 }
 export function Header<T>(props: IHeaderProps<T>) {
@@ -235,4 +235,4 @@ function RenderAngleIcon(props: IRenderAngleProps) {
     return  <div style={{position: 'absolute', width: 25}}>
         <AngleIcon ascending={props.Ascending} />
     </div>
-};
+}

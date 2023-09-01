@@ -1,6 +1,6 @@
 {
   "name": "@gpa-gemstone/helper-functions",
-  "version": "0.0.20",
+  "version": "0.0.21",
   "description": "Helper Functions for gpa-gemstone packages",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -9,7 +9,7 @@
     "test": "jest --config jestconfig.json",
     "build": "tsc",
     "format": "prettier --write \"src/**/*.tsx\"",
-    "lint": "tslint -p tsconfig.json",
+    "lint": "eslint . --ext .ts,.tsx",
     "prepare": "npm run build",
     "prepublishOnly": "npm test && npm run lint",
     "preversion": "npm run lint",
@@ -33,13 +33,13 @@
   "homepage": "https://github.com/GridProtectionAlliance/gpa-gemstone#readme",
   "devDependencies":   {
     "@types/jest": "^27.0.0",
+    "@typescript-eslint/eslint-plugin": "^5.60.0",
+    "@typescript-eslint/parser": "^5.60.0",
+    "eslint": "^8.43.0",
     "jest": "^27.0.6",
     "prettier": "^2.3.2",
     "ts-jest": "^27.0.4",
-    "tslint": "^6.1.3",
-    "tslint-config-prettier": "^1.18.0",
     "typescript": "4.4.4"
   },
-  "dependencies": {},
   "publishConfig": {"access": "public"}
 }

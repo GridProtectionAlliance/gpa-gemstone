@@ -29,7 +29,7 @@ import { GetNodeSize, CreateGuid } from '@gpa-gemstone/helper-functions'
 interface IProps {
     Show: boolean,
     Target?: string,
-	Zindex?: number,
+  Zindex?: number,
 }
 
 interface IWrapperProps {
@@ -55,7 +55,7 @@ const WrapperDiv = styled.div<IWrapperProps>`
     background: #0DCAF0;
     top: ${props => `${props.Top}px`};
     left: ${props => `${props.Left}px`};
-	width: ${props => `${props.Width}px`};
+  width: ${props => `${props.Width}px`};
     border: 1px solid transparent;
   }
   
@@ -76,27 +76,27 @@ const WrapperDiv = styled.div<IWrapperProps>`
   
   
   const HelperMessage: React.FunctionComponent<IProps> = (props) => {
-	  const [top, setTop] = React.useState<number>(0);
-	  const [left, setLeft] = React.useState<number>(0);
-	  const [width, setWidth] = React.useState<number>(0);
-	  const [guid, setGuid] = React.useState<string>("");
+    const [top, setTop] = React.useState<number>(0);
+    const [left, setLeft] = React.useState<number>(0);
+    const [width, setWidth] = React.useState<number>(0);
+    const [guid, setGuid] = React.useState<string>("");
 
-	  React.useEffect(() => {
-		setGuid(CreateGuid());
-	  }, []);
+    React.useEffect(() => {
+    setGuid(CreateGuid());
+    }, []);
 
-	  React.useLayoutEffect(() => {
-		const [t,l,w] = UpdatePosition();
+    React.useLayoutEffect(() => {
+    const [t,l,w] = UpdatePosition();
 
-		if (t !== top)
-		  setTop(t);
-		if (l !== left)
-			setLeft(l);
-		if (w !== width)
-			setWidth(w);
-	  })
+    if (t !== top)
+      setTop(t);
+    if (l !== left)
+      setLeft(l);
+    if (w !== width)
+      setWidth(w);
+    })
 
-	const zIndex = (props.Zindex === undefined? 2000: props.Zindex);
+  const zIndex = (props.Zindex === undefined? 2000: props.Zindex);
   
   function UpdatePosition() {
     const target = document.querySelectorAll(`[data-help${ props.Target === undefined? '' : `="${props.Target}"`}]`);
@@ -116,10 +116,10 @@ const WrapperDiv = styled.div<IWrapperProps>`
 
     const result: [number, number, number] = [0,0,0];
 
-	result[0] = targetLocation.top + targetLocation.height + offset;
-	result[1] = targetLocation.left;
-	result[2] = targetLocation.width;
-	
+  result[0] = targetLocation.top + targetLocation.height + offset;
+  result[1] = targetLocation.left;
+  result[2] = targetLocation.width;
+  
     return result;
   }
 

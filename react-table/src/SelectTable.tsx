@@ -46,7 +46,7 @@ export function SelectTable<T>(props: ISelectTableProps<T>) {
     const didMountRef = React.useRef(false);
 
     const [data, setData] = React.useState<T[]>(props.data);
-    const [selected, setSelected] = React.useState<any[]>([]);
+    const [selected, setSelected] = React.useState<(T[keyof T])[]>([]);
 
     const [sortKey, setSortKey] = React.useState<string>(props.sortKey);
     const [ascending, setAscending] = React.useState<boolean>(props.ascending);
@@ -81,10 +81,7 @@ export function SelectTable<T>(props: ISelectTableProps<T>) {
         props.onSelection(data.filter(item => selected.findIndex(key => key === item[props.KeyField]) > -1));
     }, [selected])
 
-    function handleClick(
-        d: { colKey: string; row: T; data: any },
-        event: React.MouseEvent < HTMLTableHeaderCellElement, MouseEvent >,
-    ) {
+    function handleClick(d: { colKey: string; row: T; data: T[keyof T]|null }) {
         const sIndex = selected.findIndex(item => item === d.row[props.KeyField]);
         if (sIndex === -1)
             setSelected((od) => [...od, d.row[props.KeyField]])
@@ -107,7 +104,7 @@ export function SelectTable<T>(props: ISelectTableProps<T>) {
 
     const tableProps: TableProps<T> = {
         cols: [
-            { key: 'gemstone-checkbox', field: props.KeyField, label: '', headerStyle: { width: '4em' }, rowStyle: { width: '4em' }, content: (item: T, key: string, field: keyof T|undefined, style: React.CSSProperties) => {
+            { key: 'gemstone-checkbox', field: props.KeyField, label: '', headerStyle: { width: '4em' }, rowStyle: { width: '4em' }, content: (item: T) => {
                 const index = selected.findIndex(i => i === item[props.KeyField])
                 if ( index > -1)
                     return <div style={{ marginTop: '16px', textAlign: 'center' }}><i className="fa fa-check-square-o fa-3x"></i></div>
