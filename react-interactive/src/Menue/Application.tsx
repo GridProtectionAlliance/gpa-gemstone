@@ -106,7 +106,7 @@ const Applications: React.FunctionComponent<IProps> = (props) => {
     }
 
     function CreateRoute(element: React.ReactElement): JSX.Element[] {
-        let routes: JSX.Element[] = [];
+        const routes: JSX.Element[] = [];
     
         // Generate a route for the Name prop
         if (element.props.RequiredRoles !== undefined && element.props.RequiredRoles.filter((r: Application.Types.SecurityRoleName) => GetContext().userRoles.findIndex(i => i === r) > -1).length === 0)
@@ -116,8 +116,8 @@ const Applications: React.FunctionComponent<IProps> = (props) => {
     
         // Generate additional routes for Paths prop if it exists
         if (element.props.Paths) {
-            for (let path of element.props.Paths) {
-                let fullPath = `${props.HomePath}${element.props.Name}${path}`;
+            for (const path of element.props.Paths) {
+                const fullPath = `${props.HomePath}${element.props.Name}${path}`;
                 if (element.props.RequiredRoles !== undefined && element.props.RequiredRoles.filter((r: Application.Types.SecurityRoleName) => GetContext().userRoles.findIndex(i => i === r) > -1).length === 0)
                     routes.push(<Route path={fullPath} element={<ServerErrorIcon Show={true} Label={'You are not authorized to view this page.'} />} />);
                 else
