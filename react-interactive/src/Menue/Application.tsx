@@ -105,11 +105,29 @@ const Applications: React.FunctionComponent<IProps> = (props) => {
         } as IContext
     }
 
-    function CreateRoute(element: React.ReactElement) {
+    function CreateRoute(element: React.ReactElement): JSX.Element[] {
+        let routes: JSX.Element[] = [];
+    
+        // Generate a route for the Name prop
         if (element.props.RequiredRoles !== undefined && element.props.RequiredRoles.filter((r: Application.Types.SecurityRoleName) => GetContext().userRoles.findIndex(i => i === r) > -1).length === 0)
-            return <Route path={`${props.HomePath}${element.props.Name}`} element={<ServerErrorIcon Show={true} Label={'You are not authorized to view this page.'} />} />;
-        return <Route path={`${props.HomePath}${element.props.Name}`} element={<Content>{element.props.children}</Content>} />
+            routes.push(<Route path={`${props.HomePath}${element.props.Name}`} element={<ServerErrorIcon Show={true} Label={'You are not authorized to view this page.'} />} />);
+        else
+            routes.push(<Route path={`${props.HomePath}${element.props.Name}`} element={<Content>{element.props.children}</Content>} />);
+    
+        // Generate additional routes for Paths prop if it exists
+        if (element.props.Paths) {
+            for (let path of element.props.Paths) {
+                let fullPath = `${props.HomePath}${element.props.Name}${path}`;
+                if (element.props.RequiredRoles !== undefined && element.props.RequiredRoles.filter((r: Application.Types.SecurityRoleName) => GetContext().userRoles.findIndex(i => i === r) > -1).length === 0)
+                    routes.push(<Route path={fullPath} element={<ServerErrorIcon Show={true} Label={'You are not authorized to view this page.'} />} />);
+                else
+                    routes.push(<Route path={fullPath} element={<Content>{element.props.children}</Content>} />);
+            }
+        }
+    
+        return routes;
     }
+    
 
     const hideSide = props.HideSideBar === undefined? false : props.HideSideBar;
 
