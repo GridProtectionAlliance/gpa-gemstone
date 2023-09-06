@@ -65,7 +65,7 @@ export const GraphContext = React.createContext({
   RemoveSelect: (_) => undefined,
   UpdateSelect: (_) => undefined,
   SetXDomain: (_) => undefined,
-  SetYDomain: (_) => undefined,
+  SetYDomain: (_: any) => undefined,
   UpdateFlag: 0
 } as IGraphContext);
 
