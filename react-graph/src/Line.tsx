@@ -68,7 +68,7 @@ function Line(props: IProps) {
          try {
             const point = data.GetPoint(context.XHover);
             if(point != null)
-               setHighlight(point);
+               setHighlight(point as [number,number]);
          } catch {
             setHighlight([NaN, NaN]);
          }
