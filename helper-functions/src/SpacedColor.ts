@@ -20,6 +20,7 @@
 //       Generated original version of source code.
 //
 // ******************************************************************************************************
+import { HsvToHex } from "./HsvToHex";
 
 import { HsvToHex } from "./HsvToHex";
 

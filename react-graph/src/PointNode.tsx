@@ -35,10 +35,18 @@ export class PointNode {
     avgV: number[];
     // Count of all dimensions (including time)
     dim: number;
+    minV: number[];
+    maxV: number[];
+    avgV: number[];
+    // Count of all dimensions (including time)
+    dim: number;
 
     private children: PointNode[] | null;
     private points: [...number[]][] | null;
+    private points: [...number[]][] | null;
 
+    constructor(data: [...number[]][]) {
+        this.dim = data[0].length;
     constructor(data: [...number[]][]) {
         this.dim = data[0].length;
         // That minimum time stamp that fits in this bucket
@@ -49,12 +57,19 @@ export class PointNode {
         this.avgV = Array(this.dim-1).fill(0);
         this.minV = Array(this.dim-1).fill(0);
         this.maxV = Array(this.dim-1).fill(0);
+        // Intializing other vars
+        this.avgV = Array(this.dim-1).fill(0);
+        this.minV = Array(this.dim-1).fill(0);
+        this.maxV = Array(this.dim-1).fill(0);
         this.children = null;
         this.points = null;
 
         if (data.length <= MaxPoints) {
             if (data.some((point)=> point.length != this.dim)) throw new TypeError(`Jagged data passed to PointNode. All points should all be ${this.dim} dimensions.`)
+            if (data.some((point)=> point.length != this.dim)) throw new TypeError(`Jagged data passed to PointNode. All points should all be ${this.dim} dimensions.`)
             this.points = data;
+            for (let index = 1; index < this.dim; index++) this.minV[index-1] = Math.min(...data.filter(pt => !isNaN(pt[index])).map(pt => pt[index]));
+            for (let index = 1; index < this.dim; index++) this.maxV[index-1] = Math.max(...data.filter(pt => !isNaN(pt[index])).map(pt => pt[index]));
             for (let index = 1; index < this.dim; index++) this.minV[index-1] = Math.min(...data.filter(pt => !isNaN(pt[index])).map(pt => pt[index]));
             for (let index = 1; index < this.dim; index++) this.maxV[index-1] = Math.max(...data.filter(pt => !isNaN(pt[index])).map(pt => pt[index]));
             return;
@@ -71,6 +86,8 @@ export class PointNode {
         }
         for (let index = 0; index < this.dim-1; index++) this.minV[index] = Math.min(...this.children.map(node => node.minV[index]));
         for (let index = 0; index < this.dim-1; index++) this.maxV[index] = Math.max(...this.children.map(node => node.maxV[index]));
+        for (let index = 0; index < this.dim-1; index++) this.minV[index] = Math.min(...this.children.map(node => node.minV[index]));
+        for (let index = 0; index < this.dim-1; index++) this.maxV[index] = Math.max(...this.children.map(node => node.maxV[index]));
     }
 
     public GetData(Tstart: number, Tend: number): [...number[]][] {
@@ -84,6 +101,7 @@ export class PointNode {
     }
 
     public GetFullData(): [...number[]][] {
+    public GetFullData(): [...number[]][] {
       return this.GetData(this.minT,this.maxT);
     }
 
@@ -96,19 +114,17 @@ export class PointNode {
 
     // Note: Dimension indexing does not include time, I.E. in (x,y), y would be dimension 0;
     public GetLimits(Tstart: number, Tend: number, dimension?: number): [number,number] {
-      const currentIndex = dimension ?? 0;
+      let currentIndex = dimension ?? 0;
       let max = this.maxV[currentIndex];
       let min = this.minV[currentIndex];
 
       if (this.points == null && !(Tstart <= this.minT && Tend > this.maxT)) {
-        // Array represents all limits of buckets
         const limits = this.children!.filter(n => n.maxT > Tstart && n.minT < Tend).map(n => n.GetLimits(Tstart,Tend,currentIndex));
         min = Math.min(...limits.map(pt => pt[0]));
         max = Math.max(...limits.map(pt => pt[1]));
       }
       if (this.points != null && !(Tstart <= this.minT && Tend > this.maxT)) {
-        // Array represents all numbers within this bucket that fall in range
-        const limits = this.points!.filter(pt => pt[0] > Tstart && pt[0] < Tend).map(pt => pt[currentIndex+1]);
+        const limits = this.points!.filter(pt => pt[0] > Tstart && pt[0] < Tend).map(pt => pt[currentIndex]);
         min = Math.min(...limits);
         max = Math.max(...limits);
       }
