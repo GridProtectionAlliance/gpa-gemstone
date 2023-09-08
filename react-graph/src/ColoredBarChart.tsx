@@ -39,7 +39,7 @@ export interface IProps {
     axis?: AxisIdentifier,
 }
 
-function HeatBars(props: IProps) {
+function ColoredBarChart(props: IProps) {
     /*
         Single Line with ability to turn off and on.
     */
@@ -97,4 +97,4 @@ function HeatBars(props: IProps) {
     );
 }
 
-export default HeatBars;
+export default ColoredBarChart;
