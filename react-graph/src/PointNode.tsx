@@ -101,12 +101,14 @@ export class PointNode {
       let min = this.minV[currentIndex];
 
       if (this.points == null && !(Tstart <= this.minT && Tend > this.maxT)) {
+        // Array represents all limits of buckets
         const limits = this.children!.filter(n => n.maxT > Tstart && n.minT < Tend).map(n => n.GetLimits(Tstart,Tend,currentIndex));
         min = Math.min(...limits.map(pt => pt[0]));
         max = Math.max(...limits.map(pt => pt[1]));
       }
       if (this.points != null && !(Tstart <= this.minT && Tend > this.maxT)) {
-        const limits = this.points!.filter(pt => pt[0] > Tstart && pt[0] < Tend).map(pt => pt[currentIndex]);
+        // Array represents all numbers within this bucket that fall in range
+        const limits = this.points!.filter(pt => pt[0] > Tstart && pt[0] < Tend).map(pt => pt[currentIndex+1]);
         min = Math.min(...limits);
         max = Math.max(...limits);
       }
