@@ -40,7 +40,7 @@ import SymbolicMarker from './SymbolicMarker';
 import Circle from './Circle';
 import AggregatingCircles from './AggregatingCircles';
 import Infobox from './Infobox';
-import HeatBars from './HeatBars';
+import ColoredBarChart from './ColoredBarChart';
 
 // A ZoomMode of AutoValue means it will zoom on time, and auto Adjust the Value to fit the data.
 export interface IProps {
@@ -648,7 +648,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
                                        return null;
                                    if ((element as React.ReactElement<any>).type === Line || (element as React.ReactElement<any>).type === LineWithThreshold || (element as React.ReactElement<any>).type === Infobox ||
                                    (element as React.ReactElement<any>).type === HorizontalMarker || (element as React.ReactElement<any>).type === VerticalMarker || (element as React.ReactElement<any>).type === SymbolicMarker
-                                   || (element as React.ReactElement<any>).type === Circle || (element as React.ReactElement<any>).type === AggregatingCircles || (element as React.ReactElement<any>).type === HeatBars
+                                   || (element as React.ReactElement<any>).type === Circle || (element as React.ReactElement<any>).type === AggregatingCircles || (element as React.ReactElement<any>).type === ColoredBarChart
                                     )
                                        return element;
                                    return null;
