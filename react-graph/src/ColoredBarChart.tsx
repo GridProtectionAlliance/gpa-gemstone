@@ -36,7 +36,7 @@ export interface IProps {
     hue: number,
     value: number,
     barStyle: BarStyle,
-    axis?: AxisIdentifier,
+    axis?: AxisIdentifier
 }
 
 function ColoredBarChart(props: IProps) {
@@ -85,7 +85,7 @@ function ColoredBarChart(props: IProps) {
 			const barTop =  context.YTransformation(pt[1], axis);
 			const saturation = (pt[2] - zLimits[0]) / (zLimits[1] - zLimits[0]);
 			const color = HsvToHex(props.hue, saturation, props.value);
-			return <rect key={i} x={context.XTransformation(pt[0])-0.5*barWidth} y={barTop} width={barWidth} height={Math.abs(barBottom-barTop)} fill={color} stroke='black'/>
+			return <rect key={i} x={context.XTransformation(pt[0])} y={barTop} width={barWidth} height={Math.abs(barTop-barBottom)} fill={color} stroke='black'/>
 		});
 	}, [data, context.XDomain, context.YDomain, context.XTransformation, context.YTransformation, props.axis]);
 
