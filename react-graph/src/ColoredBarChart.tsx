@@ -36,7 +36,9 @@ export interface IProps {
     hue: number,
     value: number,
     barStyle: BarStyle,
-    axis?: AxisIdentifier
+    axis?: AxisIdentifier,
+    // Aligns bars with timestamp associated (i.e. left aligns the timestamp to the left bar edge)
+    barAlign?: 'left'|'center'|'right'
 }
 
 function ColoredBarChart(props: IProps) {
@@ -81,13 +83,26 @@ function ColoredBarChart(props: IProps) {
         const axis = AxisMap.get(props.axis);
         const barBottom = context.YTransformation(context.YDomain[axis][0], axis);
 		const zLimits = data.GetLimits(context.XDomain[0], context.XDomain[1], 1);
+        let alignment: number;
+        switch(props.barAlign) {
+            default: case 'left':
+                alignment = 0;
+                break;
+            case 'center':
+                alignment = 0.5;
+                break;
+            case 'right':
+                alignment = 1;
+                break;
+        }
+        alignment *= barWidth;
 		return allData.map((pt, i) => {
 			const barTop =  context.YTransformation(pt[1], axis);
 			const saturation = (pt[2] - zLimits[0]) / (zLimits[1] - zLimits[0]);
 			const color = HsvToHex(props.hue, saturation, props.value);
-			return <rect key={i} x={context.XTransformation(pt[0])} y={barTop} width={barWidth} height={Math.abs(barTop-barBottom)} fill={color} stroke='black'/>
+			return <rect key={i} x={context.XTransformation(pt[0]) - alignment} y={barTop} width={barWidth} height={Math.abs(barTop-barBottom)} fill={color} stroke='black'/>
 		});
-	}, [data, context.XDomain, context.YDomain, context.XTransformation, context.YTransformation, props.axis]);
+	}, [data, context.XDomain, context.YDomain, context.XTransformation, context.YTransformation, props.axis, props.barAlign]);
 
 
     return (
