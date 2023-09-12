@@ -77,7 +77,7 @@ function ColoredBarChart(props: IProps) {
 	let generateData = React.useCallback(() => {
 		if (data == null) return null;
         const allData = data?.GetFullData();
-		const barWidth = (context.XTransformation(context.XDomain[1]) - context.XTransformation(context.XDomain[0])) / allData.length;
+		const barWidth = (context.XTransformation(data.maxT) - context.XTransformation(data.minT)) / allData.length;
         const axis = AxisMap.get(props.axis);
         const barBottom = context.YTransformation(context.YDomain[axis][0], axis);
 		const zLimits = data.GetLimits(context.XDomain[0], context.XDomain[1], 1);
@@ -85,7 +85,7 @@ function ColoredBarChart(props: IProps) {
 			const barTop =  context.YTransformation(pt[1], axis);
 			const saturation = (pt[2] - zLimits[0]) / (zLimits[1] - zLimits[0]);
 			const color = HsvToHex(props.hue, saturation, props.value);
-			return <rect key={i} x={context.XTransformation(pt[0])-0.5*barWidth} y={barTop} width={barWidth} height={barTop-barBottom} fill={color} stroke='black'/>
+			return <rect key={i} x={context.XTransformation(pt[0])-0.5*barWidth} y={barTop} width={barWidth} height={Math.abs(barBottom-barTop)} fill={color} stroke='black'/>
 		});
 	}, [data, context.XDomain, context.YDomain, context.XTransformation, context.YTransformation, props.axis]);
 
