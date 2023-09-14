@@ -23,6 +23,7 @@
 
 
 import * as React from 'react';
+import * as _ from 'lodash';
 import InteractiveButtons from './InteractiveButtons';
 import {IDataSeries, IHandlers, ContextWrapper, IActionFunctions, AxisIdentifier, AxisMap} from './GraphContext';
 import {CreateGuid} from '@gpa-gemstone/helper-functions';
@@ -109,7 +110,8 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
     const [mouseIn, setMouseIn] = React.useState<boolean>(false);
     const [mousePosition, setMousePosition] = React.useState<[number, number]>([0, 0]);
     const [mouseClick, setMouseClick] = React.useState<[number, number]>([0, 0]);
-    const [mouseStyle, setMouseStyle] = React.useState<string>("P");
+    const [mouseStyle, setMouseStyle] = React.useState<string>("default");
+    const moveRequested = React.useRef<boolean>(false);
 
     const [offsetTop, setOffsetTop] = React.useState<number>(10);
     const [offsetBottom, setOffsetBottom] = React.useState<number>(10);
@@ -480,6 +482,13 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
       }
 
     function handleMouseMove(evt: any) {
+      if (!moveRequested.current)
+        requestAnimationFrame(() => mouseMoveEvent(evt));
+      moveRequested.current = true;
+    }
+
+    function mouseMoveEvent(evt: any) {
+      moveRequested.current = false;
       if (SVGref.current == null)
         return;
       const pt = SVGref.current!.createSVGPoint();
@@ -515,12 +524,11 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
           applyToYDomain(zoomYAxis);
         }
       }
-
+      
       if (handlers.current.size > 0)
         handlers.current.forEach((v) => (v.onMove !== undefined? v.onMove(xInvTransform(ptTransform.x), yInvTransform(ptTransform.y, v.axis)) : null));
 
-      setMousePosition([ptTransform.x, ptTransform.y])
-
+      setMousePosition([ptTransform.x, ptTransform.y]);
     }
 
     function handleMouseDown(evt: any) {
