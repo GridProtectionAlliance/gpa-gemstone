@@ -65,6 +65,7 @@ export interface IProps {
     legendWidth?: number,
     useMetricFactors?: boolean,
     showDateOnTimeAxis?: boolean,
+    cursorOverride?: string,
     onSelect?: (x: number, y: number[], actions: IActionFunctions) => void,
     onDataInspect?: (tDomain: [number,number]) => void,
     Ymin?: number | number[],
@@ -108,6 +109,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
     const [mouseIn, setMouseIn] = React.useState<boolean>(false);
     const [mousePosition, setMousePosition] = React.useState<[number, number]>([0, 0]);
     const [mouseClick, setMouseClick] = React.useState<[number, number]>([0, 0]);
+    const [mouseStyle, setMouseStyle] = React.useState<string>("P");
 
     const [offsetTop, setOffsetTop] = React.useState<number>(10);
     const [offsetBottom, setOffsetBottom] = React.useState<number>(10);
@@ -303,6 +305,24 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
     }, [yDomain, offsetTop, offsetBottom, svgHeight]);
 
     React.useEffect(() => { setUpdateFlag((x) => x+1) }, [tScale,tOffset,yScale,yOffset])
+    
+    // Change mouse cursor
+    React.useEffect(() => {
+      let newCursor;
+      if (props.cursorOverride == null) {
+        switch (selectedMode){
+          case 'pan':
+            newCursor = 'grab';
+            break;
+          case 'select':
+            newCursor = 'pointer';
+            break;
+          default: case "zoom":
+          newCursor = 'default';
+        }
+      } else newCursor = props.cursorOverride;
+      setMouseStyle(newCursor);
+    }, [selectedMode, props.cursorOverride])
 
     // transforms from pixels into x value. result passed into onClick function 
     const xInvTransform = React.useCallback((p: number) =>  {
@@ -514,8 +534,10 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
         setMouseClick([ptTransform.x, ptTransform.y]);
         if (selectedMode === 'zoom' && (props.zoom === undefined || props.zoom))
             setMouseMode('zoom');
-        if (selectedMode === 'pan' && (props.pan === undefined || props.pan))
+        if (selectedMode === 'pan' && (props.pan === undefined || props.pan)) {
             setMouseMode('pan');
+            setMouseStyle('grabbing');
+        }
         if (selectedMode === 'select' && props.onSelect !== undefined)
           props.onSelect(
             xInvTransform(ptTransform.x),
@@ -529,33 +551,34 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
     }
 
     function handleMouseUp(_: any) {
-        if (mouseMode === 'zoom') {
+      if (selectedMode === 'pan' && (props.pan === undefined || props.pan))
+          setMouseStyle('grab');
+      if (mouseMode === 'zoom') {
 
-            if (Math.abs(mousePosition[0] - mouseClick[0]) < 10) {
-                setMouseMode('none');
-                return;
+          if (Math.abs(mousePosition[0] - mouseClick[0]) < 10) {
+              setMouseMode('none');
+              return;
+          }
+
+          const t0 = Math.min(xInvTransform(mousePosition[0]), xInvTransform(mouseClick[0]));
+          const t1 = Math.max(xInvTransform(mousePosition[0]), xInvTransform(mouseClick[0]));
+
+          setTdomain((curr) =>  [Math.max(curr[0], t0), Math.min(curr[1], t1)]);
+
+          if (zoomMode === 'Rect') {
+            const zoomYAxis = (domain: [number,number], axis: number, allDomains: [number, number][]): boolean => {
+              const y0 = Math.min(yInvTransform(mousePosition[1], axis), yInvTransform(mouseClick[1], axis));
+              const y1 = Math.max(yInvTransform(mousePosition[1], axis), yInvTransform(mouseClick[1], axis));
+              allDomains[axis] = [Math.max(domain[0], y0), Math.min(domain[1], y1)];
+              return true;
             }
+            applyToYDomain(zoomYAxis);
+          }
+      }
+      setMouseMode('none');
 
-            const t0 = Math.min(xInvTransform(mousePosition[0]), xInvTransform(mouseClick[0]));
-            const t1 = Math.max(xInvTransform(mousePosition[0]), xInvTransform(mouseClick[0]));
-
-            setTdomain((curr) =>  [Math.max(curr[0], t0), Math.min(curr[1], t1)]);
-
-            if (zoomMode === 'Rect') {
-              const zoomYAxis = (domain: [number,number], axis: number, allDomains: [number, number][]): boolean => {
-                const y0 = Math.min(yInvTransform(mousePosition[1], axis), yInvTransform(mouseClick[1], axis));
-                const y1 = Math.max(yInvTransform(mousePosition[1], axis), yInvTransform(mouseClick[1], axis));
-                allDomains[axis] = [Math.max(domain[0], y0), Math.min(domain[1], y1)];
-                return true;
-              }
-              applyToYDomain(zoomYAxis);
-            }
-        }
-        setMouseMode('none');
-
-        if (handlers.current.size > 0 && selectedMode === 'select')
-          handlers.current.forEach((v) => (v.onRelease !== undefined? v.onRelease(xTransform(mousePosition[0]), yTransform(mousePosition[1], v.axis)) : null));
-
+      if (handlers.current.size > 0 && selectedMode === 'select')
+        handlers.current.forEach((v) => (v.onRelease !== undefined? v.onRelease(xTransform(mousePosition[0]), yTransform(mousePosition[1], v.axis)) : null));
     }
 
     function handleMouseOut(_: any) {
@@ -620,7 +643,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
         UpdateSelect={updateSelect}
       >
           <div style={{ height: props.height, width: props.width, position: 'relative' }}>
-              <div style={{ height: svgHeight, width: svgWidth, position: 'absolute' }}
+              <div style={{ height: svgHeight, width: svgWidth, position: 'absolute', cursor: mouseStyle }}
                   onWheel={handleMouseWheel} onMouseMove={handleMouseMove} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} onMouseLeave={handleMouseOut} onMouseEnter={handleMouseIn} >
                   <svg ref={SVGref} width={svgWidth < 0? 0 : svgWidth} height={svgHeight < 0 ? 0 : svgHeight}
                    style={SvgStyle} viewBox={`0 0 ${svgWidth < 0? 0 : svgWidth} ${svgHeight < 0 ? 0 : svgHeight}`}>
