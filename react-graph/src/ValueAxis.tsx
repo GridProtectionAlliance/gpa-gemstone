@@ -22,7 +22,7 @@
 // ******************************************************************************************************
 
 import * as React from 'react';
-import {GraphContext} from './GraphContext'
+import {AxisIdentifier, AxisMap, GraphContext} from './GraphContext'
 import {GetTextHeight, GetTextWidth} from '@gpa-gemstone/helper-functions';
 
 interface IProps {
@@ -35,11 +35,11 @@ interface IProps {
   offsetLeft: number,
   offsetRight: number,
   height: number,
-  witdh: number,
+  width: number,
   useFactor: boolean,
   showGrid?: boolean,
   label?: string,
-
+  axis?: AxisIdentifier
 }
 
 function ValueAxis(props: IProps) {
@@ -50,16 +50,15 @@ function ValueAxis(props: IProps) {
   const [ftSizeLabel, setFtSizeLabel] = React.useState<number>(1);
   const [hAxis, setHAxis] = React.useState<number>(0);
 
-
   const [nDigits, setNdigits] = React.useState<number>(1);
   const [factor, setFactor] = React.useState<number>(1);
 
   React.useEffect(() => {
-
-    const dY = context.YDomain[1] - context.YDomain[0];
+    const axis = AxisMap.get(props.axis);
+    const dY = context.YDomain[axis][1] - context.YDomain[axis][0];
     let newTicks;
     if (dY === 0) {
-      newTicks = [context.YDomain[0]]
+      newTicks = [context.YDomain[axis][0]]
     }
     else {
 
@@ -79,15 +78,15 @@ function ValueAxis(props: IProps) {
       if (dY * Math.pow(10, exp) < 1.2)
           scale = 0.1 / Math.pow(10, exp);
 
-      const offset = Math.floor(context.YDomain[0]/scale)*scale;
+      const offset = Math.floor(context.YDomain[axis][0]/scale)*scale;
 
       newTicks = [offset + scale];
-      while (newTicks[newTicks.length - 1] < (context.YDomain[1] - scale))
+      while (newTicks[newTicks.length - 1] < (context.YDomain[axis][1] - scale))
           newTicks.push(newTicks[newTicks.length - 1] + scale);
     }
 
     let expF = 0;
-    const Ymax = Math.max(Math.abs(context.YDomain[0]),Math.abs(context.YDomain[1]));
+    const Ymax = Math.max(Math.abs(context.YDomain[axis][0]),Math.abs(context.YDomain[axis][1]));
     while ((Ymax*Math.pow(10,expF)) < 1) {
         expF = expF + 1;
     }
@@ -108,13 +107,14 @@ function ValueAxis(props: IProps) {
 
     setTick(newTicks);
 
-  }, [context.YDomain, props.useFactor]);
+  }, [context.YDomain, props.useFactor, props.axis]);
 
     React.useEffect(() => {
-      let dY = context.YDomain[1] - context.YDomain[0];
+      const axis = AxisMap.get(props.axis);
+      let dY = context.YDomain[axis][1] - context.YDomain[axis][0];
       dY = dY * factor;
       if (dY === 0)
-        dY = Math.abs(context.YDomain[0]*factor);
+        dY = Math.abs(context.YDomain[axis][0]*factor);
 
       if (dY >= 15)
           setNdigits(0);
@@ -131,7 +131,7 @@ function ValueAxis(props: IProps) {
       if (dY === 0)
         setNdigits(2);
 
-    }, [factor, context.YDomain])
+    }, [factor, context.YDomain, props.axis])
 
     React.useEffect(() => {
       let h = 0;
@@ -178,16 +178,30 @@ function ValueAxis(props: IProps) {
 
     }, [props.label, props.height]);
 
+    const leftPosition = React.useMemo(() => {
+      if (props.axis === undefined || props.axis === 'left')
+        return props.offsetLeft;
+      else
+        return props.width - props.offsetRight
+    }, [props.offsetLeft, props.offsetRight, props.width, props.axis]);
+
+    const tickDirection = React.useMemo(() => {
+      if (props.axis === undefined || props.axis === 'left')
+        return -1;
+      else
+        return 1
+    }, [props.axis]);
+
     return (<g>
-      <path stroke='black' style={{ strokeWidth: 1, transition: 'd 0.5s' }} d={`M ${props.offsetLeft} ${props.height - props.offsetBottom + 8} V ${props.offsetTop}`} />
-      <path stroke='black' style={{ strokeWidth: 1, transition: 'd 0.5s' }} d={`M ${props.offsetLeft - 8} ${props.offsetTop} h ${8}`} />
-      {tick.map((l, i) => <path key={i} stroke='lightgrey' strokeOpacity={props.showGrid? '0.8':'0.0'} style={{ strokeWidth: 1, transition: 'd 0.5s' }} d={`M ${props.offsetLeft} ${context.YTransformation(l)} h ${props.witdh - props.offsetLeft - props.offsetRight}`} />)}
-      {tick.map((l, i) => <path key={i} stroke='black' style={{ strokeWidth: 1, transition: 'd 1s' }} d={`M ${props.offsetLeft - 6} ${context.YTransformation(l)} h ${6}`} />)}
-      {tick.map((l, i) => <text fill={'black'} key={i} style={{ fontSize: '1em', textAnchor: 'end', transition: 'x 0.5s, y 0.5s' }} dominantBaseline={'middle'} x={props.offsetLeft - 8} y={context.YTransformation(l)}>{(l * factor).toFixed(nDigits)}</text>)}
+      <path stroke='black' style={{ strokeWidth: 1, transition: 'd 0.5s' }} d={`M ${leftPosition} ${props.height - props.offsetBottom + 8} V ${props.offsetTop}`} />
+      <path stroke='black' style={{ strokeWidth: 1, transition: 'd 0.5s' }} d={`M ${leftPosition} ${props.offsetTop} h ${tickDirection * 8}`} />
+      {tick.map((l, i) => <path key={i} stroke={((props.axis === undefined || props.axis === 'left') ? 'lightgrey' : 'darkgrey')} strokeOpacity={props.showGrid ? '0.8':'0.0'} style={{ strokeWidth: 1, transition: 'd 0.5s' }} d={`M ${props.offsetLeft} ${context.YTransformation(l, AxisMap.get(props.axis))} h ${props.width - props.offsetLeft - props.offsetRight}`} />)}
+      {tick.map((l, i) => <path key={i} stroke='black' style={{ strokeWidth: 1, transition: 'd 1s' }} d={`M ${leftPosition} ${context.YTransformation(l, AxisMap.get(props.axis))} h ${tickDirection * 6}`} />)}
+      {tick.map((l, i) => <text fill={'black'} key={i} style={{ fontSize: '1em', textAnchor: (props.axis === undefined || props.axis === 'left') ? 'end' : 'start', transition: 'x 0.5s, y 0.5s' }} dominantBaseline={'middle'} x={leftPosition + tickDirection * 8} y={context.YTransformation(l, AxisMap.get(props.axis))}>{(l * factor).toFixed(nDigits)}</text>)}
 
       {props.label !== undefined ? <text fill={'black'} style={{ fontSize: ftSizeLabel + 'em', textAnchor: 'middle'}} dominantBaseline={'text-bottom'}
-      transform={`rotate(-90,${props.offsetLeft - hAxis - 4},${(props.offsetTop  - props.offsetBottom + props.height)/ 2.0})`} x={props.offsetLeft - hAxis - 4} y={(props.offsetTop  - props.offsetBottom + props.height)/ 2.0}>{props.label}</text> : null}
-      {factor !== 1 ? <text fill={'black'} style={{ fontSize: '1em' }} x={props.offsetLeft} y={props.offsetTop - 5}>x{1/factor}</text> : null}
+      transform={`rotate(${tickDirection*90},${leftPosition + tickDirection*(hAxis + 4)},${(props.offsetTop  - props.offsetBottom + props.height)/ 2.0})`} x={leftPosition + tickDirection*(hAxis + 4)} y={(props.offsetTop  - props.offsetBottom + props.height)/ 2.0}>{props.label}</text> : null}
+      {factor !== 1 ? <text fill={'black'} style={{ fontSize: '1em' }} x={leftPosition} y={props.offsetTop - 5}>x{1/factor}</text> : null}
     </g>)
 }
 

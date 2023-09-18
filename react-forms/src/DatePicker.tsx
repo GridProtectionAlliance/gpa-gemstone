@@ -24,7 +24,8 @@
 import * as React from 'react';
 import * as moment from 'moment';
 import DateTimePopup from './DateTimeUI/DateTimePopup';
-import {GetNodeSize} from '@gpa-gemstone/helper-functions';
+import {CreateGuid, GetNodeSize} from '@gpa-gemstone/helper-functions';
+import HelperMessage from './HelperMessage';
 
 interface IProps<T> {
   Record: T;
@@ -36,6 +37,7 @@ interface IProps<T> {
   Feedback?: string;
   Format?: string;
   Type?: ('datetime-local' | 'date'); // Default to date
+  Help?: string|JSX.Element;
 }
 
 export default function DateTimePicker<T>(props: IProps<T>) {
@@ -44,6 +46,9 @@ export default function DateTimePicker<T>(props: IProps<T>) {
   const recordFormat = props.Format !== undefined ? props.Format : "YYYY-MM-DD" + (props.Type === undefined || props.Type === 'date' ? "" : "[T]HH:mm:ss.SSS[Z]");
   const parse = (r: T) => moment(props.Record[props.Field] as any, recordFormat);
   const divRef = React.useRef<any|null>(null);
+
+  const [guid, setGuid] = React.useState<string>("");
+  const [showHelp, setShowHelp] = React.useState<boolean>(false);
 
   // Adds a buffer between the outside props and what the box is reading to prevent box overwriting every render with a keystroke
   const [boxRecord, setBoxRecord] = React.useState<string>(parse(props.Record).format(boxFormat));
@@ -54,6 +59,10 @@ export default function DateTimePicker<T>(props: IProps<T>) {
   const [top, setTop] = React.useState<number>(0);
   const [left, setLeft] = React.useState<number>(0);
 
+  React.useEffect(() => {
+    setGuid(CreateGuid());
+  }, []);
+    
   React.useEffect(() => {
       setPickerRecord(parse(props.Record));
       setBoxRecord(parse(props.Record).format(boxFormat))
@@ -73,6 +82,11 @@ export default function DateTimePicker<T>(props: IProps<T>) {
   
   React.useLayoutEffect(() => {
     const node = (divRef.current !== null? GetNodeSize(divRef.current) : {top, left, height: 0, width: 0});
+    if ( node.height === 0 && node.width === 0) {
+      setLeft(0)
+      setTop(-9999)
+      return;
+    }
     setLeft(node.left + 0.5 * node.width);
     setTop(node.top + node.height + 10);
   })
@@ -88,11 +102,39 @@ export default function DateTimePicker<T>(props: IProps<T>) {
       setShowOverlay(false);
   }
 
+  const showLabel = props.Label !== "";
+  const showHelpIcon = props.Help !== undefined;
+  const label = props.Label === undefined ? props.Field : props.Label;
+
   return (
     <div className="form-group" ref={divRef}>
+      {showHelpIcon || showLabel ?
+    <label>{showLabel ? label : ''} 
+    {showHelpIcon? <div 
+      style={{ 
+        width: 20,
+        height: 20, 
+        borderRadius: '50%',
+        display: 'inline-block',
+        background: '#0D6EFD',
+        marginLeft: 10,
+        textAlign: 'center', 
+        fontWeight: 'bold' 
+      }}
+      onMouseEnter={() => setShowHelp(true)} 
+      onMouseLeave={() => setShowHelp(false)}> ? </div> : null}
+    </label> : null}
+    {showHelpIcon? 
+      <HelperMessage Show={showHelp} Target={guid}>
+        {props.Help}
+      </HelperMessage>
+    : null}
+
+
       {(props.Label !== "") ?
       <label>{props.Label == null ? props.Field : props.Label}</label> : null}
       <input
+        data-help={guid}
         className={"gpa-gemstone-datetime form-control" + (props.Valid(props.Field) ? '' : ' is-invalid')}
         type={props.Type === undefined ? 'date' : props.Type}
         onChange={(evt) => {

@@ -47,8 +47,8 @@ export default function Calender(props: IProps) {
   const [hover, setHover] = React.useState<('None'|'Center'|'Next'|'Previous')>('None')
 
   React.useEffect(() => {
-    setMonth(props.DateTime.month());
-    setYear(props.DateTime.year());
+    setMonth(isNaN(props.DateTime.month())? 0 : props.DateTime.month());
+    setYear(isNaN(props.DateTime.year())? moment.utc().year() : props.DateTime.year());
   }, [props.DateTime])
 
   React.useEffect(() => {
@@ -104,7 +104,10 @@ export default function Calender(props: IProps) {
   }
 
   function setDate(d: moment.Moment) {
-    const ud = moment(props.DateTime);
+    let ud = moment(props.DateTime);
+    if (!ud.isValid())
+      ud = moment.utc().startOf('d');
+      
     ud.year(d.year()).month(d.month()).date(d.date());
     props.Setter(ud);
   }

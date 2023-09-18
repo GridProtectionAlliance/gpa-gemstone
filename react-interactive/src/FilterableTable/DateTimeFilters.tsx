@@ -22,6 +22,7 @@
 
 import * as React from 'react';
 import { Search } from '../SearchBar'
+import { DatePicker } from '@gpa-gemstone/react-forms';
 
 interface IProps<T> {
     SetFilter: (evt: Search.IFilter<T>[]) => void;
@@ -29,8 +30,11 @@ interface IProps<T> {
     FieldName: string
 }
 
+const momentDateFormat = "MM/DD/YYYY";
+const momentTimeFormat = "HH:mm:ss.SSS"; // Also is the gemstone format
 
 type FilterTypes = 'before' | 'after' | 'between';
+interface IValue { Value: string }
 
 export function DateFilter<T>(props: IProps<T>) {
     const [date, setDate] = React.useState<string>('');
@@ -52,7 +56,14 @@ export function DateFilter<T>(props: IProps<T>) {
             if (f2 == null)
                 setSecondDate('')
             else
-                setSecondDate(f2.SearchText)
+                setSecondDate(f2.SearchText);
+                
+            if (f1 !== null && f2 !== null)
+                setOperator('between');
+            else if (f1 == null)
+                setOperator('before');
+            else 
+                setOperator('after')
         }
         if (props.Filter.length === 1) {
             setSecondDate('');
@@ -66,7 +77,7 @@ export function DateFilter<T>(props: IProps<T>) {
 
 
     React.useEffect(() => {
-        let handle:any = null;
+        let handle: NodeJS.Timeout|null = null;
 
         if (date === '' && secondDate === '' && props.Filter.length !== 0) 
             handle = setTimeout(() => props.SetFilter([]),500);
@@ -163,6 +174,14 @@ export function TimeFilter<T>(props: IProps<T>) {
                 setSecondTime('')
             else
                 setSecondTime(f2.SearchText)
+            
+            if (f1 !== null && f2 !== null)
+                setOperator('between');
+            else if (f1 == null)
+                setOperator('before');
+            else 
+                setOperator('after')
+                
         }
         if (props.Filter.length === 1) {
             setSecondTime('');
@@ -176,7 +195,7 @@ export function TimeFilter<T>(props: IProps<T>) {
 
 
     React.useEffect(() => {
-        let handle:any = null;
+        let handle: NodeJS.Timeout|null = null;
 
         if (time === '' && secondTime === '' && props.Filter.length !== 0)
             handle = setTimeout(() => props.SetFilter([]),500);
@@ -246,6 +265,131 @@ export function TimeFilter<T>(props: IProps<T>) {
                         const value = evt.target.value as string;
                         setSecondTime(value);
                     }} />
+                </td>
+            </tr>
+        </> : null}
+    </>
+}
+
+export function DateTimeFilter<T>(props: IProps<T>) {
+    const [dateTime, setDateTime] = React.useState<string>('');
+    const [secondDateTime, setSecondDateTime] = React.useState<string>('')
+
+    const val: IValue = React.useMemo(() => ({Value: dateTime}), [dateTime])
+    const val2: IValue = React.useMemo(() => ({Value: secondDateTime}), [secondDateTime])
+
+    const [operator, setOperator] = React.useState<FilterTypes>('after');
+
+    React.useEffect(() => {
+        if (props.Filter.length === 0) {
+            setDateTime('');
+            setSecondDateTime('');
+        }
+        if (props.Filter.length > 1) {
+            const f1 = props.Filter.find(f => f.Operator === '>' || f.Operator === '>=')
+            if (f1 == null)
+                setDateTime('')
+            else
+                setDateTime(f1.SearchText)
+            const f2 = props.Filter.find(f => f.Operator === '<' || f.Operator === '<=')
+            if (f2 == null)
+                setSecondDateTime('')
+            else
+                setSecondDateTime(f2.SearchText);
+
+            if (f1 !== null && f2 !== null)
+                setOperator('between');
+            else if (f1 == null)
+                setOperator('before');
+            else 
+                setOperator('after')
+        }
+        if (props.Filter.length === 1) {
+            setSecondDateTime('');
+            if (props.Filter[0].Operator === '>' || props.Filter[0].Operator === '>=')
+                setOperator('after');
+            else
+                setOperator('before');
+                setDateTime(props.Filter[0].SearchText);
+        }
+    }, [props.Filter])
+
+
+    React.useEffect(() => {
+        let handle: NodeJS.Timeout|null = null;
+
+        if (dateTime === '' && secondDateTime === '' && props.Filter.length !== 0)
+            handle = setTimeout(() => props.SetFilter([]),500);
+        if (dateTime === '' && secondDateTime === '')
+            return () => { if (handle !== null) clearTimeout(handle); };
+        if (operator === 'between') 
+            handle = setTimeout(() =>props.SetFilter([
+                {
+                    FieldName: props.FieldName,
+                    isPivotColumn: false,
+                    Operator: '>=',
+                    Type: 'datetime',
+                    SearchText: dateTime
+                },
+                {
+                    FieldName: props.FieldName,
+                    isPivotColumn: false,
+                    Operator: '<=',
+                    Type: 'datetime',
+                    SearchText: secondDateTime
+                }
+            ]),500);
+        
+        else 
+            handle = setTimeout(() => props.SetFilter([{
+                FieldName: props.FieldName,
+                isPivotColumn: false,
+                Operator: (operator === 'after' ? '>' : '<'),
+                Type: 'datetime',
+                SearchText: dateTime
+            }]),500)
+
+        return () => { if (handle !== null) clearTimeout(handle); };
+        
+    }, [operator, dateTime, secondDateTime])
+
+    return <>
+        <tr onClick={(evt) => { evt.preventDefault(); }}>
+            <td>
+                <select className='form-control' value={operator} onChange={(evt) => {
+                    const value = evt.target.value as FilterTypes;
+                    setOperator(value);
+                }}>
+                    <option value='before'>Before</option>
+                    <option value='after'>After</option>
+                    <option value='between'>Between</option>
+                </select>
+            </td>
+        </tr>
+        <tr onClick={(evt) => { evt.preventDefault(); }}>
+            <td>
+                <DatePicker<IValue> Record={val} Field="Value"
+                    Setter={(r) => setDateTime(r.Value)}
+                    Label=''
+                    Type='datetime-local'
+                    Valid={() => true} Format={momentDateFormat + ' ' + momentTimeFormat} 
+                />
+            </td>
+        </tr>
+        {operator === 'between' ? <>
+            <tr onClick={(evt) => { evt.preventDefault(); }}>
+                <td>
+                    and
+                </td>
+            </tr>
+            <tr onClick={(evt) => { evt.preventDefault(); }}>
+                <td>
+                <DatePicker<IValue> Record={val2} Field="Value"
+                    Setter={(r) => setSecondDateTime(r.Value)}
+                    Label=''
+                    Type='datetime-local'
+                    Valid={() => true} Format={momentDateFormat + ' ' + momentTimeFormat} 
+                />
                 </td>
             </tr>
         </> : null}

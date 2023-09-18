@@ -39,16 +39,17 @@ function Legend(props: IProps) {
   const itemHeight = 25;
 
   const itemsWhenBottom = 3;
+  const leftPadding = props.location === 'bottom' ? 39 : 0;
   const nLegends = [...context.Data.values()].reduce((s,c) => (c.legend ===undefined? 0 : 1) + s, 0)
   const scroll = Math.ceil(nLegends/ (props.location === 'bottom' ? itemsWhenBottom : 1)) * itemHeight > h;
   const position = (props.location === 'bottom'? 'absolute' : 'relative');
   const scrollBarSpace = (scroll === undefined || !scroll ? 0 : 6)
 
     return (
-      <div style={{ height: h, width: w, position, float:(props.location as any) ,display: 'flex', flexWrap: 'wrap', bottom: 0, 
+      <div style={{ height: h, width: w, paddingLeft: `${leftPadding}px`, position, float:(props.location as any), display: 'flex', flexWrap: 'wrap', bottom: 0, 
         overflowY: (scroll === undefined || !scroll ? 'visible' : 'scroll'), overflowX: (scroll === undefined || !scroll ? 'visible' : 'hidden')}}>
         {[...context.Data.values()].map((series, index) => (series.legend !== undefined ?
-              <div key={index} style={{width:(props.location === 'bottom' ? w/itemsWhenBottom - scrollBarSpace : w-scrollBarSpace), height: props.location === 'bottom'? itemHeight: Math.max(h/nLegends, itemHeight)}}>
+              <div key={index} style={{width:(props.location === 'bottom' ? (w - leftPadding) /itemsWhenBottom - scrollBarSpace : w - leftPadding - scrollBarSpace), height: props.location === 'bottom'? itemHeight: Math.max(h/nLegends, itemHeight)}}>
                   {series.legend}
           </div> : null))}
       </div>)
