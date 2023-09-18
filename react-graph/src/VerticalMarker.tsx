@@ -23,16 +23,18 @@
 
 
 import * as React from 'react';
-import {GraphContext, IHandlers, LineStyle} from './GraphContext';
+import {AxisIdentifier, AxisMap, GraphContext, IHandlers, LineStyle} from './GraphContext';
 
 export interface IProps {
     start?: number,
     end?: number,
     Value: number,
     setValue?: (x: number) => void,
+    onClick?: (x: number) => void,
     color: string,
     lineStyle: LineStyle,
-    width: number
+    width: number,
+    axis?: AxisIdentifier,
 }
 
 function VerticalMarker(props: IProps) {
@@ -44,11 +46,27 @@ function VerticalMarker(props: IProps) {
   const [isSelected, setSelected] = React.useState<boolean>(false);
   const [guid, setGuid] = React.useState<string>("");
 
+  function generateData(v: number) {
+      const axis = AxisMap.get(props.axis);
+      const y1 = (props.start === undefined? context.YDomain[axis][0] : props.start);
+      const y2 = (props.end === undefined? context.YDomain[axis][1] : props.end);
+      
+      return `M ${context.XTransformation(v)} ${context.YTransformation(y1, axis)} L ${context.XTransformation(v)} ${context.YTransformation(y2, axis)}`;
+  }
+
+  const onClick = React.useCallback((x: number, _: number) => {
+      const xP = context.XTransformation(props.Value);
+      const xT = context.XTransformation(x);
+       if (xT <= xP + (props.width/2) && xT >= xP - (props.width/2))
+         setSelected(true);
+  }, [props.width, props.Value]);
+
   React.useEffect(() => {
         const id = context.RegisterSelect({
             onClick,
             onRelease: (_) => setSelected(false),
-            onPlotLeave: (_) => setSelected(false)
+            onPlotLeave: (_) => setSelected(false),
+            axis: props.axis
         } as IHandlers)
         setGuid(id)
         return () => { context.RemoveSelect(id) }
@@ -61,44 +79,34 @@ function VerticalMarker(props: IProps) {
         context.UpdateSelect(guid, {
             onClick,
             onRelease: (_) => setSelected(false),
-            onPlotLeave: (_) => setSelected(false)
+            onPlotLeave: (_) => setSelected(false),
+            axis: props.axis
         } as IHandlers)
-    }, [props.width, props.Value])
+    }, [onClick])
 
    React.useEffect(() => {
       setValue(props.Value);
    }, [props.Value]);
 
    React.useEffect(() => {
-        if (props.setValue === undefined)
-            return;
-        if (!isSelected && props.Value !== value)
+        if (isSelected && props.setValue !== undefined && props.Value !== value)
             props.setValue(value);
-   }, [isSelected, value])
+   }, [isSelected, value]);
+
+   React.useEffect(() => {
+        if (isSelected && props.onClick !== undefined)
+            props.onClick(props.Value);
+   }, [isSelected]);
    
    React.useEffect(() => {
     if (context.CurrentMode !== 'select')
         setSelected(false);
-   },[context.CurrentMode])
+   },[context.CurrentMode]);
 
    React.useEffect(() => {
        if (isSelected)
         setValue(context.XHover);
-   }, [context.XHover])
-
-   function generateData(v: number) {
-       const y1 = (props.start === undefined? context.YDomain[0] : props.start);
-       const y2 = (props.end === undefined? context.YDomain[1] : props.end);
-       
-       return `M ${context.XTransformation(v)} ${context.YTransformation(y1)} L ${context.XTransformation(v)} ${context.YTransformation(y2)}`;
-   }
-
-   function onClick(x: number, _: number) {
-       const xP = context.XTransformation(props.Value);
-       const xT = context.XTransformation(x);
-        if (xT <= xP + (props.width/2) && xT >= xP - (props.width/2))
-          setSelected(true);
-   }
+   }, [context.XHover]);
 
    return (
        

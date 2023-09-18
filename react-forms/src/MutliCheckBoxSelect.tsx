@@ -27,8 +27,8 @@ import HelperMessage from './HelperMessage';
 
 interface IProps {
   Label?: string;
-  Options: { Value: number; Text: string; Selected: boolean }[];
-  OnChange: (evt: any, Options: { Value: number; Text: string; Selected: boolean }[]) => void;
+  Options: { Value: number | string; Text: string; Selected: boolean }[];
+  OnChange: (evt: any, Options: { Value: number | string; Text: string; Selected: boolean }[]) => void;
   Help?: string|JSX.Element;
 }
 const MultiSelect = (props: IProps) => {

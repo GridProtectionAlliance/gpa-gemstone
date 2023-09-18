@@ -40,7 +40,9 @@ export interface IProps {
     showGrid?: boolean,
     useFactor?: boolean,
     showTicks?: boolean,
-    label?: string
+    label?: string,
+    showRightMostTick?: boolean,
+    showLeftMostTick?: boolean
 }
 
 
@@ -52,9 +54,6 @@ function LogAxis(props: IProps) {
    const [tick,setTick] = React.useState<number[]>([]);
    const [hLabel, setHlabel] = React.useState<number>(0);
    const [hAxis, setHAxis] = React.useState<number>(0);
-
-   const [nDigits, setNdigits] = React.useState<number>(1);
-   const [factor, setFactor] = React.useState<number>(1);
    
    // Adjusting for x axis label
    React.useEffect(() => {
@@ -158,8 +157,9 @@ function LogAxis(props: IProps) {
     }
 
     return (<g>
-    <path stroke='black' style={{ strokeWidth: 1 }} d={`M ${props.offsetLeft - 8} ${props.height - props.offsetBottom} H ${props.width - props.offsetRight}`}/>
-    <path stroke='black' style={{ strokeWidth: 1 }} d={`M ${props.width - props.offsetRight} ${props.height - props.offsetBottom} v ${8}`} />
+    <path stroke='black' style={{ strokeWidth: 1 }} d={`M ${props.offsetLeft - (props.showLeftMostTick ?? true ? 0 : 8)} ${props.height - props.offsetBottom} H ${props.width - props.offsetRight + (props.showRightMostTick ?? true ? 0 : 8)}`}/>
+    {props.showLeftMostTick ?? true ? <path stroke='black' style={{ strokeWidth: 1 }} d={`M ${props.offsetLeft} ${props.height - props.offsetBottom} v ${8}`} /> : null}
+    {props.showRightMostTick ?? true ? <path stroke='black' style={{ strokeWidth: 1 }} d={`M ${props.width - props.offsetRight} ${props.height - props.offsetBottom} v ${8}`} /> : null}
     {props.showTicks === undefined || props.showTicks ?
         <>
             {tick.map((l, i) => <path key={(l.toFixed(50))} stroke='lightgrey' strokeOpacity={props.showGrid? '0.8':'0.0'} style={{ strokeWidth: 1, transition: 'd 0.5s' }} d={`M ${context.XTransformation(l)} ${props.height - props.offsetBottom} V ${props.offsetTop}`} />)}

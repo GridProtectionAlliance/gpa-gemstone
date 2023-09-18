@@ -24,7 +24,7 @@
 
 import { GetTextHeight, GetTextWidth } from '@gpa-gemstone/helper-functions';
 import * as React from 'react';
-import {IDataSeries, GraphContext, IGraphContext, IHandlers, IActionFunctions} from './GraphContext';
+import {IDataSeries, GraphContext, IGraphContext, IHandlers, IActionFunctions, AxisIdentifier, AxisMap} from './GraphContext';
 
 export interface IProps {
   data: [number, number],
@@ -34,6 +34,7 @@ export interface IProps {
   borderThickness?: number,
   text?: string,
   opacity?: number,
+  axis?: AxisIdentifier,
   onClick?: (actions: IActionFunctions) => void
 }
 
@@ -54,6 +55,7 @@ export function ContextlessCircle(props: IContextlessProps) {
            return;
 
        props.context.UpdateData(guid, {
+           axis: props.circleProps.axis,
            legend: undefined,
            getMax: (t) => (t[0] < props.circleProps.data[0] && t[1] > props.circleProps.data[0]? props.circleProps.data[1] : undefined ),
            getMin: (t) => (t[0] < props.circleProps.data[0] && t[1] > props.circleProps.data[0]? props.circleProps.data[1] : undefined ),
@@ -63,6 +65,7 @@ export function ContextlessCircle(props: IContextlessProps) {
 
    React.useEffect(() => {
        const id = props.context.AddData({
+           axis: props.circleProps.axis,
            legend: undefined,
            getMax: (t) => (t[0] < props.circleProps.data[0] && t[1] > props.circleProps.data[0]? props.circleProps.data[1] : undefined ),
            getMin: (t) => (t[0] < props.circleProps.data[0] && t[1] > props.circleProps.data[0]? props.circleProps.data[1] : undefined ),
@@ -102,33 +105,34 @@ export function ContextlessCircle(props: IContextlessProps) {
     function onClick(x: number, y: number) {
       if (props.circleProps.onClick === undefined)
         return;
+      const axis = AxisMap.get(props.circleProps.axis);
       const xP = props.context.XTransformation(x);
-      const yP = props.context.YTransformation(y);
+      const yP = props.context.YTransformation(y, axis);
       const xC = props.context.XTransformation(props.circleProps.data[0]);
-      const yC = props.context.YTransformation(props.circleProps.data[1]);
+      const yC = props.context.YTransformation(props.circleProps.data[1], axis);
 
       if (xP <= xC + props.circleProps.radius && xP >= xC - props.circleProps.radius &&
         yP <= yC + props.circleProps.radius && yP >= yC - props.circleProps.radius)
         props.circleProps.onClick( {
-          setYDomain: props.context.SetYDomain as React.SetStateAction<[number,number]>, 
+          setYDomain: props.context.SetYDomain as React.SetStateAction<[number,number][]>, 
           setTDomain: props.context.SetXDomain as React.SetStateAction<[number,number]>
           });
 
  }
  
-   if (!isFinite(props.context.XTransformation(props.circleProps.data[0])) || !isFinite(props.context.YTransformation(props.circleProps.data[1])))
+   if (!isFinite(props.context.XTransformation(props.circleProps.data[0])) || !isFinite(props.context.YTransformation(props.circleProps.data[1], AxisMap.get(props.circleProps.axis))))
     return null;
    return (
     <g>
        <circle r={props.circleProps.radius} 
        cx={props.context.XTransformation(props.circleProps.data[0])} 
-       cy={props.context.YTransformation(props.circleProps.data[1])} 
+       cy={props.context.YTransformation(props.circleProps.data[1], AxisMap.get(props.circleProps.axis))} 
        fill={props.circleProps.color}
        opacity={props.circleProps.opacity} 
        stroke={props.circleProps.borderColor} strokeWidth={props.circleProps.borderThickness} />
        {props.circleProps.text !== undefined? <text fill={'black'}
        style={{ fontSize: textSize + 'em', textAnchor: 'middle', dominantBaseline: 'middle' }} 
-       y={props.context.YTransformation(props.circleProps.data[1])} 
+       y={props.context.YTransformation(props.circleProps.data[1], AxisMap.get(props.circleProps.axis))} 
        x={props.context.XTransformation(props.circleProps.data[0])}>{props.circleProps.text}</text> : null}
     </g>
    );

@@ -8,6 +8,7 @@ import Button from './Button';
 import AggregatingCircles from './AggregatingCircles';
 import Circle from './Circle';
 import Infobox from './Infobox';
+import { AxisMap } from './GraphContext';
 
 export { 
     Plot,
@@ -19,5 +20,6 @@ export {
     SymbolicMarker,
     Circle,
     AggregatingCircles,
-    Infobox
+    Infobox,
+    AxisMap
  };

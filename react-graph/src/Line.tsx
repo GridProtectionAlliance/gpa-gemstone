@@ -23,7 +23,7 @@
 
 
 import * as React from 'react';
-import {IDataSeries, GraphContext, LineStyle} from './GraphContext';
+import {IDataSeries, GraphContext, LineStyle, AxisIdentifier, AxisMap} from './GraphContext';
 import * as moment from 'moment';
 import {PointNode} from './PointNode';
 import LineLegend from './LineLegend';
@@ -36,28 +36,29 @@ export interface IProps {
     data: [number, number][],
     color: string,
     lineStyle: LineStyle,
-    width?: number
+    width?: number,
+    axis?: AxisIdentifier,
 }
 
 function Line(props: IProps) {
-  /*
-    Single Line with ability to turn off and on.
-  */
-  const [guid, setGuid] = React.useState<string>("");
-  const [highlight, setHighlight] = React.useState<[number, number]>([NaN,NaN]);
-  const [enabled, setEnabled] = React.useState<boolean>(true);
-  const [data, setData] = React.useState<PointNode|null>(null);
-  const context = React.useContext(GraphContext)
+    /*
+        Single Line with ability to turn off and on.
+    */
+    const [guid, setGuid] = React.useState<string>("");
+    const [highlight, setHighlight] = React.useState<[number, number]>([NaN,NaN]);
+    const [enabled, setEnabled] = React.useState<boolean>(true);
+    const [data, setData] = React.useState<PointNode|null>(null);
+    const context = React.useContext(GraphContext);
 
    React.useEffect(() => {
        if (guid === "")
-           return;
-
-       context.UpdateData(guid, {
-           legend: createLegend(),
-           getMax: (t) => (data == null|| !enabled? -Infinity : data.GetLimits(t[0],t[1])[1]) ,
-           getMin: (t) => (data == null|| !enabled? Infinity : data.GetLimits(t[0],t[1])[0]),
-       } as IDataSeries)
+        return;
+      context.UpdateData(guid, {
+        legend: createLegend(),
+        axis: props.axis,
+        getMax: (t) => (data == null|| !enabled? -Infinity : data.GetLimits(t[0],t[1])[1]) ,
+        getMin: (t) => (data == null|| !enabled? Infinity : data.GetLimits(t[0],t[1])[0]),
+      } as IDataSeries)
    }, [props, data, enabled])
 
    React.useEffect(() => {
@@ -89,7 +90,8 @@ function Line(props: IProps) {
    React.useEffect(() => {
        const id = context.AddData({
            legend: createLegend(),
-           getMax: (t) => (data == null|| !enabled? -Infinity : data.GetLimits(t[0],t[1])[1]) ,
+           axis: props.axis,
+           getMax: (t) => (data == null|| !enabled? -Infinity : data.GetLimits(t[0],t[1])[1]),
            getMin: (t) => (data == null|| !enabled? Infinity : data.GetLimits(t[0],t[1])[0]),
        } as IDataSeries)
      setGuid(id)
@@ -118,8 +120,7 @@ function Line(props: IProps) {
         return ""
      result = result + data!.GetFullData().map((pt, _) => {
            const x = context.XTransformation(pt[0]);
-           const y = context.YTransformation(pt[1]);
-
+           const y = context.YTransformation(pt[1], AxisMap.get(props.axis));
            return `${x},${y}`
        }).join(" L ")
 
@@ -131,9 +132,9 @@ function Line(props: IProps) {
        enabled?
        <g>
            <path d={generateData()} style={{ fill: 'none', strokeWidth: props.width === undefined ? 3 : props.width, stroke: props.color, transition: 'd 0.5s' }} strokeDasharray={props.lineStyle === ':'? '10,5' : 'none'} />
-           {props.showPoints && data != null? data.GetFullData().map((pt, i) => <circle key={i} r={3} cx={context.XTransformation(pt[0])} cy={context.YTransformation(pt[1])} fill={props.color} stroke={'black'} style={{ opacity: 0.8/*, transition: 'cx 0.5s,cy 0.5s'*/ }} />) : null}
+           {props.showPoints && data != null? data.GetFullData().map((pt, i) => <circle key={i} r={3} cx={context.XTransformation(pt[0])} cy={context.YTransformation(pt[1], AxisMap.get(props.axis))} fill={props.color} stroke={'black'} style={{ opacity: 0.8/*, transition: 'cx 0.5s,cy 0.5s'*/ }} />) : null}
            {props.highlightHover && !isNaN(highlight[0]) && !isNaN(highlight[1])? 
-            <circle r={5} cx={context.XTransformation(highlight[0])} cy={context.YTransformation(highlight[1])} fill={props.color} stroke={'black'} style={{ opacity: 0.8/*, transition: 'cx 0.5s,cy 0.5s'*/ }} /> : null}
+            <circle r={5} cx={context.XTransformation(highlight[0])} cy={context.YTransformation(highlight[1], AxisMap.get(props.axis))} fill={props.color} stroke={'black'} style={{ opacity: 0.8/*, transition: 'cx 0.5s,cy 0.5s'*/ }} /> : null}
        </g > : null
    );
 }

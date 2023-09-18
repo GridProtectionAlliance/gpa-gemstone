@@ -23,14 +23,14 @@
 
 
 import * as React from 'react';
-import { GraphContext } from './GraphContext';
+import { AxisIdentifier, GraphContext } from './GraphContext';
 import { ContextlessCircle, IProps as ICircleProps} from './Circle';
 
 interface IAggregationFunctions {
   XTransformation: (x: number) => number,
-  YTransformation: (y: number) => number,
+  YTransformation: (y: number, a: AxisIdentifier) => number,
   XInverseTransformation: (p: number) => number,
-  YInverseTransformation: (p: number) => number,
+  YInverseTransformation: (p: number, a: AxisIdentifier) => number,
 }
 
 /*
