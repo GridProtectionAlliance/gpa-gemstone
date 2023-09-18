@@ -233,11 +233,11 @@ function ColumnSelection<T>(props: IColSelectionProps<T>) {
                     }}
                         onMouseEnter={() => setShowHelp(true)}
                         onMouseLeave={() => setShowHelp(false)}
-                        id={guid}
+                        data-tooltip={guid}
                     > ? </div> : null}
                 </label>
                 {<ToolTip Show={showHelp} Target={guid}>
-                    The Table is currenttly sorted by this collumn so it can not be hidden.
+                    The Table is currently sorted by this Column so it cannot be hidden.
                 </ToolTip>}
             </li>);
             j = j + 1;
