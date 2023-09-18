@@ -41,7 +41,7 @@ export interface IGraphContext extends IHandlerRegistration, IDataRegistration {
 
   SetXDomain: React.SetStateAction<[number,number]> | ((t: [number,number]) => void),
   SetYDomain:  React.SetStateAction<[number,number]> | ((t: [number,number][]) => void),
-};
+}
 
 export const GraphContext = React.createContext({
   XDomain: [0, 0],
@@ -93,7 +93,7 @@ class AxisMapClass<T, U> {
   get = (key: T): U => (this.mapBase.get(key) ?? this.undefinedOverride);
   values = (): IterableIterator<U> => (this.mapBase.values());
   keys = (): IterableIterator<T> => (this.mapBase.keys());
-};
+}
 
 // Giving this undefined (such as when an axis for a component is not specfied), will return 0, same as making a default of 'left'
 export const AxisMap = new AxisMapClass<AxisIdentifier|undefined, number>([
