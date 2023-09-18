@@ -237,7 +237,7 @@ function ColumnSelection<T>(props: IColSelectionProps<T>) {
                     > ? </div> : null}
                 </label>
                 {<ToolTip Show={showHelp} Target={guid}>
-                    The Table is currently sorted by this collumn so it can not be hidden.
+                    The Table is currently sorted by this Column so it cannot be hidden.
                 </ToolTip>}
             </li>);
             j = j + 1;
