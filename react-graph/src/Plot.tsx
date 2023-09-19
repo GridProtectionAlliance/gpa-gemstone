@@ -71,7 +71,8 @@ export interface IProps {
     onDataInspect?: (tDomain: [number,number]) => void,
     Ymin?: number | number[],
     Ymax?: number | number[],
-    zoomMode?: 'Time'|'Rect'|'AutoValue'
+    zoomMode?: 'Time'|'Rect'|'AutoValue',
+    snapMouse?: boolean
 }
 
 const SvgStyle: React.CSSProperties = {
@@ -524,9 +525,25 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
           applyToYDomain(zoomYAxis);
         }
       }
-      
+
+      let handlerPt = ptTransform;
+      if(props.snapMouse ?? false){
+        const findClosestPoint = (result: { x: number, y: number, distSqr: number|undefined }, series: IDataSeries) => {
+          if (series.getPoint != null) {
+            const pt = series.getPoint(ptTransform.x);
+            if (pt === undefined) return result;
+            const ptPixel = [xTransform(pt[0]), yTransform(pt[1], AxisMap.get(series.axis))];
+            const distSqr = (ptPixel[1]-ptTransform.y)^2+(ptPixel[0]-ptTransform.x)^2;
+            if (result.distSqr === undefined || distSqr < result.distSqr)
+              return {x: ptPixel[0], y: ptPixel[1], distSqr: distSqr};
+          }
+          return result;
+        }
+        handlerPt = [...data.values()].reduce((result: { x: number, y: number, distSqr: number|undefined }, series: IDataSeries) => findClosestPoint(result, series), { x: 0, y: 0, distSqr: undefined });
+      }
+
       if (handlers.current.size > 0)
-        handlers.current.forEach((v) => (v.onMove !== undefined? v.onMove(xInvTransform(ptTransform.x), yInvTransform(ptTransform.y, v.axis)) : null));
+        handlers.current.forEach((v) => (v.onMove !== undefined? v.onMove(xInvTransform(handlerPt.x), yInvTransform(handlerPt.y, v.axis)) : null));
 
       setMousePosition([ptTransform.x, ptTransform.y]);
     }
