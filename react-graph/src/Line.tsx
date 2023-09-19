@@ -56,8 +56,9 @@ function Line(props: IProps) {
       context.UpdateData(guid, {
         legend: createLegend(),
         axis: props.axis,
-        getMax: (t) => (data == null|| !enabled? -Infinity : data.GetLimits(t[0],t[1])[1]) ,
+        getMax: (t) => (data == null|| !enabled? -Infinity : data.GetLimits(t[0],t[1])[1]),
         getMin: (t) => (data == null|| !enabled? Infinity : data.GetLimits(t[0],t[1])[0]),
+        getPoint: (t) => (data == null|| !enabled? NaN : data.GetPoint(t)),
       } as IDataSeries)
    }, [props, data, enabled])
 
@@ -93,6 +94,7 @@ function Line(props: IProps) {
            axis: props.axis,
            getMax: (t) => (data == null|| !enabled? -Infinity : data.GetLimits(t[0],t[1])[1]),
            getMin: (t) => (data == null|| !enabled? Infinity : data.GetLimits(t[0],t[1])[0]),
+           getPoint: (t) => (data == null|| !enabled? NaN : data.GetPoint(t)),
        } as IDataSeries)
      setGuid(id)
        return () => { context.RemoveData(id) }

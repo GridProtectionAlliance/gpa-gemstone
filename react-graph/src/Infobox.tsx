@@ -105,8 +105,8 @@ const Infobox: React.FunctionComponent<IProps> = (props) => {
   
   // Note: this is the only function not effected by usePixelPositioning
   const onMove = props.onMouseMove === undefined ? undefined : React.useCallback((xArg: number, yArg: number) => {
-    if (props.onMouseMove !== undefined) props.onMouseMove(context.XTransformation(xArg), context.YTransformation(yArg, AxisMap.get(props.axis)));
-  }, [props.onMouseMove, context.XTransformation, context.YTransformation, props.axis]);
+    if (props.onMouseMove !== undefined) props.onMouseMove(xArg, yArg);
+  }, [props.onMouseMove]);
 
 
   // useEffect
