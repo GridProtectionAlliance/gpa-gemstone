@@ -1,6 +1,6 @@
 {
   "name": "@gpa-gemstone/react-graph",
-  "version": "1.0.32",
+  "version": "1.0.33",
   "description": "Interactive UI Components for GPA products",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -46,7 +46,7 @@
   },
   "dependencies":   {
     "@gpa-gemstone/gpa-symbols": "0.0.28",
-    "@gpa-gemstone/helper-functions": "0.0.21",
+    "@gpa-gemstone/helper-functions": "0.0.24",
     "lodash": "^4.17.21",
     "moment": "^2.29.4",
     "react": "^18.2.0"
