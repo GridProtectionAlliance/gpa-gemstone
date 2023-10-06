@@ -41,7 +41,7 @@ namespace SystemCenter {
 		export interface ChannelGroup { ID: number, Name: string, Description: string, Items?: ChannelGroupDetails[]}
                 export interface ChannelGroupDetails { ID: number, ChannelGroupID: number, ChannelGroup: string, MeasurementTypeID: number, MeasurementType: string, MeasurementCharacteristicID: number, MeasurementCharacteristic: string, DisplayName: string, Unit: string}
 		
-		export interface LocationDrawing { ID: number, LocationID: number, Name: string, Link: string, Description: string }
+		export interface LocationDrawing { ID: number, LocationID: number, Name: string, Link: string, Description: string, Number: string, Category: string }
 
 		export interface ExternalDB { name: string, lastupdate: Date }
 		export interface ExternalDBField { DisplayName: string, FieldValueID: number, OpenXDAParentTableID: number, AdditionalFieldID: number, Value: string, FieldName: string, PreviousValue: string, Error: boolean, Message: string, isXDAField: boolean, Changed: boolean }
