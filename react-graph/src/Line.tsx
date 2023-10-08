@@ -146,7 +146,7 @@ function Line(props: IProps) {
    return (
        enabled?
        <g>
-           <path d={generateData()} style={{ fill: 'none', strokeWidth: props.width === undefined ? 3 : props.width, stroke: props.color, transition: 'd 0.5s' }} strokeDasharray={props.lineStyle === ':'? '10,5' : 'none'} />
+           <path d={generateData()} style={{ fill: 'none', strokeWidth: props.width === undefined ? 3 : props.width, stroke: props.color }} strokeDasharray={props.lineStyle === ':'? '10,5' : 'none'} />
            {showPoints && data != null? visibleData.map((pt, i) => <circle key={i} r={3} cx={context.XTransformation(pt[0])} cy={context.YTransformation(pt[1], AxisMap.get(props.axis))} fill={props.color} stroke={'black'} style={{ opacity: 0.8/*, transition: 'cx 0.5s,cy 0.5s'*/ }} />) : null}
            {props.highlightHover && !isNaN(highlight[0]) && !isNaN(highlight[1])? 
             <circle r={5} cx={context.XTransformation(highlight[0])} cy={context.YTransformation(highlight[1], AxisMap.get(props.axis))} fill={props.color} stroke={'black'} style={{ opacity: 0.8/*, transition: 'cx 0.5s,cy 0.5s'*/ }} /> : null}
