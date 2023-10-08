@@ -94,7 +94,9 @@ export class PointNode {
         if (this.points != null && Tstart <= this.minT && Tend >= this.maxT)
             return this.points;
         if (this.points != null && IncludeEdges !== undefined && IncludeEdges)
-            return this.points.filter((pt,i) => (pt[0] >= Tstart && pt[0] <= Tend) || i < (this.points?.length -1) && points[i+1] >= Tstart || i > 0  && points[i-1] <= Tend);
+            return this.points.filter((pt,i) => (pt[0] >= Tstart && pt[0] <= Tend) || 
+                i < ((this.points?.length ?? 0) -1) && (this.points?[i+1][0] : 0) >= Tstart || 
+                i > 0  && (this.points?[i-1][0] : 0)<= Tend);
         if (this.points != null)
             return this.points.filter(pt => pt[0] >= Tstart && pt[0] <= Tend );
         
