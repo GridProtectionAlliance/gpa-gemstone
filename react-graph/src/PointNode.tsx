@@ -90,14 +90,17 @@ export class PointNode {
         for (let index = 0; index < this.dim-1; index++) this.maxV[index] = Math.max(...this.children.map(node => node.maxV[index]));
     }
 
-    public GetData(Tstart: number, Tend: number): [...number[]][] {
+    public GetData(Tstart: number, Tend: number, IncludeEdges?: boolean): [...number[]][] {
         if (this.points != null && Tstart <= this.minT && Tend >= this.maxT)
             return this.points;
+        if (this.points != null && IncludeEdges !== undefined && IncludeEdges)
+            return this.points.filter((pt,i) => (pt[0] >= Tstart && pt[0] <= Tend) || i < (this.points?.length -1) && points[i+1] >= Tstart || i > 0  && points[i-1] <= Tend);
         if (this.points != null)
-            return this.points.filter(pt => pt[0] >= Tstart && pt[0] <= Tend);
+            return this.points.filter(pt => pt[0] >= Tstart && pt[0] <= Tend );
+        
 
         const result: [...number[]][] = [];
-        return result.concat(...this.children!.filter(node => Tstart <= node.minT && Tend >= node.maxT).map(node => node.GetData(Tstart, Tend)));
+        return result.concat(...this.children!.filter(node => Tstart <= node.minT && Tend >= node.maxT).map(node => node.GetData(Tstart, Tend, IncludeEdges)));
     }
 
     public GetFullData(): [...number[]][] {
