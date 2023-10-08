@@ -31,6 +31,7 @@ import LineLegend from './LineLegend';
 
 export interface IProps {
     showPoints?: boolean,
+    autoShowPoints?: boolean,
     legend?: string,
     highlightHover?: boolean,
     data: [number, number][],
@@ -48,7 +49,9 @@ function Line(props: IProps) {
     const [highlight, setHighlight] = React.useState<[number, number]>([NaN,NaN]);
     const [enabled, setEnabled] = React.useState<boolean>(true);
     const [data, setData] = React.useState<PointNode|null>(null);
+    const [visibleData, setVisibleData] = React.useState<[...number[]][]>([]);
     const context = React.useContext(GraphContext);
+    const showPoints = React.useMemo(() => { return props.showPoints}, [props.showPoints, props.autoShowPoints, visibleData]);
 
    React.useEffect(() => {
        if (guid === "")
@@ -89,6 +92,14 @@ function Line(props: IProps) {
    }, [highlight, enabled]);
 
    React.useEffect(() => {
+        if (data == null) {
+            setVisibleData([]);
+            return;
+        }
+        setVisibleData(data.GetData(context.XDomain[0],context.XDomain[1],true));
+    },[data, context.XDomain[0], context.XDomain[1]])
+
+   React.useEffect(() => {
        const id = context.AddData({
            legend: createLegend(),
            axis: props.axis,
@@ -120,7 +131,7 @@ function Line(props: IProps) {
        let result = "M ";
        if (data == null)
         return ""
-     result = result + data!.GetData(context.XDomain[0],context.XDomain[1], true).map((pt, _) => {
+     result = result + visibleData.map((pt, _) => {
            const x = context.XTransformation(pt[0]);
            const y = context.YTransformation(pt[1], AxisMap.get(props.axis));
            return `${x},${y}`
@@ -134,7 +145,7 @@ function Line(props: IProps) {
        enabled?
        <g>
            <path d={generateData()} style={{ fill: 'none', strokeWidth: props.width === undefined ? 3 : props.width, stroke: props.color, transition: 'd 0.5s' }} strokeDasharray={props.lineStyle === ':'? '10,5' : 'none'} />
-           {props.showPoints && data != null? data.GetData(context.XDomain[0],context.XDomain[1],true).map((pt, i) => <circle key={i} r={3} cx={context.XTransformation(pt[0])} cy={context.YTransformation(pt[1], AxisMap.get(props.axis))} fill={props.color} stroke={'black'} style={{ opacity: 0.8/*, transition: 'cx 0.5s,cy 0.5s'*/ }} />) : null}
+           {showPoints && data != null? visibleData.map((pt, i) => <circle key={i} r={3} cx={context.XTransformation(pt[0])} cy={context.YTransformation(pt[1], AxisMap.get(props.axis))} fill={props.color} stroke={'black'} style={{ opacity: 0.8/*, transition: 'cx 0.5s,cy 0.5s'*/ }} />) : null}
            {props.highlightHover && !isNaN(highlight[0]) && !isNaN(highlight[1])? 
             <circle r={5} cx={context.XTransformation(highlight[0])} cy={context.YTransformation(highlight[1], AxisMap.get(props.axis))} fill={props.color} stroke={'black'} style={{ opacity: 0.8/*, transition: 'cx 0.5s,cy 0.5s'*/ }} /> : null}
        </g > : null
