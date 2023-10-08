@@ -51,7 +51,9 @@ function Line(props: IProps) {
     const [data, setData] = React.useState<PointNode|null>(null);
     const [visibleData, setVisibleData] = React.useState<[...number[]][]>([]);
     const context = React.useContext(GraphContext);
-    const showPoints = React.useMemo(() => { return props.showPoints}, [props.showPoints, props.autoShowPoints, visibleData]);
+    const showPoints = React.useMemo(() => (props.showPoints !== undefined && props.ShowPoints) || 
+        ((props.autoShowPoints === undefined || props.autoShowPoints) && visibleData.lenght <= 100), 
+        [props.showPoints, props.autoShowPoints, visibleData]);
 
    React.useEffect(() => {
        if (guid === "")
