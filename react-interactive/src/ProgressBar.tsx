@@ -95,7 +95,7 @@ function ProgressBar(props: IProps) {
         <div id='steps' style={stepsStyle}>
             <div style={stepsContainerStyle} />
             <div style={{
-                width: ((activeStep / (props.steps.length - 1)) * 100).toString() + '%',
+                width: ((((activeStep===0? 0 : ((activeStep === (props.steps.length -1))? 1 : 0.5))) + activeStep) * (100.0 / props.steps.length)).toString() + '%',
                 backgroundColor: '#5DC177',
                 height: 10,
                 top: '50%',
