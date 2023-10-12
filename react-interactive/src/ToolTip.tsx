@@ -130,42 +130,29 @@ const ToolTip: React.FunctionComponent<IProps> = (props) => {
   const [targetWidth, setTargetWidth] = React.useState<number>(0);
   const [targetHeight, setTargetHeight] = React.useState<number>(0);
 
-  const [x,setX] = React.useState<boolean>(false);
-
-
   React.useEffect(() => {
-    const target = document.querySelectorAll(`[data-tooltip${ props.Target === undefined? '' : `="${props.Target}"`}]`)
+    const target = document.querySelectorAll(`[data-tooltip${props.Target === undefined ? '' : `="${props.Target}"`}]`)
 
     if (target.length === 0) {
-      setTargetHeight(0);
-      setTargetWidth(0);
-      setTargetLeft(-999);
-      setTargetTop(-999);
+        setTargetHeight(0);
+        setTargetWidth(0);
+        setTargetLeft(-999);
+        setTargetTop(-999);
     }
-    else {
-      const targetLocation = GetNodeSize(target[0] as HTMLElement);
-      setTargetHeight(targetLocation.height);
-      setTargetWidth(targetLocation.width);
-      setTargetLeft(targetLocation.left);
-      setTargetTop(targetLocation.top);
+    else {  
+        const targetLocation = GetNodeSize(target[0] as HTMLElement);
+        setTargetHeight(targetLocation.height);
+        setTargetWidth(targetLocation.width);
+        setTargetLeft(targetLocation.left);
+        setTargetTop(targetLocation.top);
     }
+  }, [props.Show]);
 
-    const h = setTimeout(() => {
-      setX((a) => !a)
-    }, 500);
-
-    return () => { if (h !== null) clearTimeout(h); };
-
-  }, [x])
-
-  React.useEffect(() => {
-    const [t,l] = UpdatePosition();
-    if (t !== top)
-      setTop(t);
-    if (l !== left)
-        setLeft(l); 
-   }, [targetLeft,targetTop,targetWidth,targetHeight]);
-
+  React.useLayoutEffect(() => {
+    const [t, l] = UpdatePosition();
+    setTop(t);
+    setLeft(l);
+  });
    
   const zIndex = (props.Zindex === undefined? 2000: props.Zindex);
   
