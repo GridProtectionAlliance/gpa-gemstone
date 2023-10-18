@@ -116,7 +116,7 @@ const WrapperDiv = styled.div<IWrapperProps>`
   const zIndex = (props.Zindex === undefined? 9999: props.Zindex);
   
   function UpdatePosition() {
-    if (helpMessage.current === 0)
+    if (helpMessage.current === null)
       return [-999,-999];
 
     const offset = 5;
