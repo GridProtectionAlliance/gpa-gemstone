@@ -23,8 +23,8 @@
 
 import * as React from 'react';
 import styled from "styled-components";
-import { GetNodeSize, CreateGuid } from '@gpa-gemstone/helper-functions'
-
+import { GetNodeSize } from '@gpa-gemstone/helper-functions'
+import {Portal } from 'react-portal'
 
 interface IProps {
     Show: boolean,
@@ -76,57 +76,66 @@ const WrapperDiv = styled.div<IWrapperProps>`
   
   
   const HelperMessage: React.FunctionComponent<IProps> = (props) => {
+    const helpMessage = React.useRef(null);
+
     const [top, setTop] = React.useState<number>(0);
     const [left, setLeft] = React.useState<number>(0);
     const [width, setWidth] = React.useState<number>(0);
-    const [guid, setGuid] = React.useState<string>("");
+
+    const [targetLeft, setTargetLeft] = React.useState<number>(0);
+    const [targetTop, setTargetTop] = React.useState<number>(0);
+    const [targetWidth, setTargetWidth] = React.useState<number>(0);
+    const [targetHeight, setTargetHeight] = React.useState<number>(0);
 
     React.useEffect(() => {
-    setGuid(CreateGuid());
-    }, []);
+      const target = document.querySelectorAll(`[data-help${props.Target === undefined ? '' : `="${props.Target}"`}]`);
+
+      if (target.length === 0) {
+        setTargetHeight(0);
+        setTargetWidth(0);
+        setTargetLeft(-999);
+        setTargetTop(-999);
+    }
+    else {  
+        const targetLocation = GetNodeSize(target[0] as HTMLElement);
+        setTargetHeight(targetLocation.height);
+        setTargetWidth(targetLocation.width);
+        setTargetLeft(targetLocation.left);
+        setTargetTop(targetLocation.top);
+    }
+  }, [props.Show]);
+
 
     React.useLayoutEffect(() => {
     const [t,l,w] = UpdatePosition();
-
-    if (t !== top)
       setTop(t);
-    if (l !== left)
       setLeft(l);
-    if (w !== width)
       setWidth(w);
     })
 
-  const zIndex = (props.Zindex === undefined? 2000: props.Zindex);
+  const zIndex = (props.Zindex === undefined? 9999: props.Zindex);
   
   function UpdatePosition() {
-    const target = document.querySelectorAll(`[data-help${ props.Target === undefined? '' : `="${props.Target}"`}]`);
-
-    if (target.length === 0)
+    if (helpMessage.current === 0)
       return [-999,-999];
-
-    const targetLocation = GetNodeSize(target[0] as HTMLElement);
-
-    const message = document.getElementById(guid);
-
-    if (message === null)
-      return [-999,-999];
-    const msgLocation = GetNodeSize(message as HTMLElement);
 
     const offset = 5;
 
     const result: [number, number, number] = [0,0,0];
 
-  result[0] = targetLocation.top + targetLocation.height + offset;
-  result[1] = targetLocation.left;
-  result[2] = targetLocation.width;
-  
+    result[0] = targetTop + targetHeight + offset;
+    result[1] = targetLeft;
+    result[2] = targetWidth;
+    
     return result;
   }
 
     return (
-      <WrapperDiv Show={props.Show} Top={top} Left={left} Width={width} id={guid} Zindex={zIndex}>
+      <Portal>
+      <WrapperDiv Show={props.Show} Top={top} Left={left} Width={width} ref={helpMessage} Zindex={zIndex}>
         {props.children}
       </WrapperDiv>
+      </Portal>
     )
 }
 
