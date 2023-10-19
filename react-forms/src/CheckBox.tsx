@@ -32,7 +32,6 @@ Setter: (record: T) => void;
 Label?: string,
 Disabled?: boolean,
 Help?: string|JSX.Element;
-HelpMinWidth?: number
 }
 
 export default function CheckBox<T>(props: IProps<T>) {
@@ -48,9 +47,8 @@ export default function CheckBox<T>(props: IProps<T>) {
     }, []);
     
     return (
-      <div className="form-check">
+      <div className="form-check" data-help={guid}>
         <input
-          data-help={guid}
           type="checkbox"
           className="form-check-input"
           style={{ zIndex: 1 }}
@@ -74,7 +72,7 @@ export default function CheckBox<T>(props: IProps<T>) {
       </div> 
       : null}
     {showHelpIcon? 
-      <HelperMessage Show={showHelp} Target={guid} MinWidth={props.HelpMinWidth}>
+      <HelperMessage Show={showHelp} Target={guid}>
         {props.Help}
       </HelperMessage>
     : null}

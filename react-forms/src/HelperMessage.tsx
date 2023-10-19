@@ -29,8 +29,7 @@ import {Portal } from 'react-portal'
 interface IProps {
     Show: boolean,
     Target?: string,
-  Zindex?: number,
-    MinWidth?: number;
+    Zindex?: number,
 }
 
 interface IWrapperProps {
@@ -126,9 +125,6 @@ const WrapperDiv = styled.div<IWrapperProps>`
 
     result[0] = targetTop + targetHeight + offset;
     result[1] = targetLeft;
-    if(props.MinWidth && targetWidth < props.MinWidth){
-      setTargetWidth(props.MinWidth);
-    }
     result[2] = targetWidth;
     
     return result;
