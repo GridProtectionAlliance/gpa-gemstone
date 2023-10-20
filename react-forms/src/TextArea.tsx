@@ -21,36 +21,60 @@
 //
 // ******************************************************************************************************
 import * as React from 'react';
+import { CreateGuid } from '@gpa-gemstone/helper-functions'
+import HelperMessage from './HelperMessage';
 
-export default function TextArea<T>(props: {
-  Rows: number;
-  Record: T;
-  Field: keyof T;
-  Setter: (record: T) => void;
-  Valid: (field: keyof T) => boolean;
-  Label?: string;
-  Feedback?: string;
-  Disabled?: boolean;
-}) {
-  return (
-    <div className="form-group">
-    {(props.Label !== "") ? <label>{props.Label === undefined ? props.Field : props.Label} </label> : null}
-      <textarea
-        rows={props.Rows}
-        className={props.Valid(props.Field) ? 'form-control' : 'form-control is-invalid'}
-        onChange={(evt) => {
-          const record: T = { ...props.Record };
-          if (evt.target.value !== '') record[props.Field] = evt.target.value as any;
-          else record[props.Field] = null as any;
+interface IProps<T> {
+    Rows: number;
+    Record: T;
+    Field: keyof T;
+    Setter: (record: T) => void;
+    Valid: (field: keyof T) => boolean;
+    Label?: string;
+    Feedback?: string;
+    Disabled?: boolean;
+    Help?: string | JSX.Element;
+}
 
-          props.Setter(record);
-        }}
-        value={props.Record[props.Field] == null ? '' : (props.Record[props.Field] as any).toString()}
-        disabled={props.Disabled == null ? false : props.Disabled}
-      />
-      <div className="invalid-feedback">
-        {props.Feedback == null ? props.Field + ' is a required field.' : props.Feedback}
-      </div>
-    </div>
-  );
+export default function TextArea<T>(props: IProps<T>) {
+    const [guid, setGuid] = React.useState<string>("");
+    const [showHelp, setShowHelp] = React.useState<boolean>(false);
+
+    React.useEffect(() => {
+        setGuid(CreateGuid());
+    }, []);
+
+    const showLabel = props.Label !== "";
+    const showHelpIcon = props.Help !== undefined;
+    const label = props.Label === undefined ? props.Field : props.Label;
+
+    return (
+        <div className="form-group" data-help={guid}>
+            {showHelpIcon || showLabel ?
+                <label>{showLabel ? label : ''}
+                    {showHelpIcon ? <div style={{ width: 20, height: 20, borderRadius: '50%', display: 'inline-block', background: '#0D6EFD', marginLeft: 10, textAlign: 'center', fontWeight: 'bold' }} onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)}> ? </div> : null}
+                </label> : null}
+            {showHelpIcon ?
+                <HelperMessage Show={showHelp} Target={guid}>
+                    {props.Help}
+                </HelperMessage>
+                : null}
+            <textarea
+                rows={props.Rows}
+                className={props.Valid(props.Field) ? 'form-control' : 'form-control is-invalid'}
+                onChange={(evt) => {
+                    const record: T = { ...props.Record };
+                    if (evt.target.value !== '') record[props.Field] = evt.target.value as any;
+                    else record[props.Field] = null as any;
+
+                    props.Setter(record);
+                }}
+                value={props.Record[props.Field] == null ? '' : (props.Record[props.Field] as any).toString()}
+                disabled={props.Disabled == null ? false : props.Disabled}
+            />
+            <div className="invalid-feedback">
+                {props.Feedback == null ? props.Field + ' is a required field.' : props.Feedback}
+            </div>
+        </div>
+    );
 }
