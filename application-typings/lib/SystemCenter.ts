@@ -37,6 +37,7 @@ namespace SystemCenter {
 		export interface AdditionalField { ID: number, ParentTable: string, FieldName: string, Type: AdditionalFieldType, ExternalDBTableID?: number, IsSecure: boolean, IsInfo: boolean, IsKey: boolean, Searchable: boolean}
 		export interface AdditionalFieldView extends AdditionalField { ExternalDB: string }
 		export interface AdditionalFieldValue { ID: number, ParentTableID: number, AdditionalFieldID: number, Value: string }
+		export interface ExternalOpenXDAField { ID: number, ParentTable: string, FieldName: string, ExternalDBTableID: number }
 		export interface ValueListGroup { ID: number, Name: string, Description: string, Items?: ValueListItem[]}
 		export interface ValueListItem { ID: number, GroupID: number, AltValue: string, Value: string, SortOrder: number}
 		export interface ChannelGroup { ID: number, Name: string, Description: string, Items?: ChannelGroupDetails[]}
