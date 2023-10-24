@@ -41,8 +41,8 @@ interface IProps {
     TooltipContent?: JSX.Element,
     ShowToolTip?: boolean,
 }
-const BtnDropdown = (props: Iprops) => {
-    const guid = React.useRef<string>(createGuid());
+const BtnDropdown = (props: IProps) => {
+    const guid = React.useRef<string>(CreateGuid());
 
     const size = props.Size === undefined ? 'sm' : props.Size;
     const className = props.BtnClass === undefined ? 'btn-primary' : props.BtnClass;
