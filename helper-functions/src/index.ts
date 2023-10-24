@@ -32,5 +32,7 @@ import { IsNumber } from './IsNumber';
 import { IsInteger } from './IsInteger';
 import { IsCron } from './IsCron';
 import { SpacedColor } from './SpacedColor';
+import { HsvToHex } from "./HsvToHex";
+import { HexToHsv } from "./HexToHsv";
 
-export {CreateGuid, GetTextWidth, GetNodeSize, RandomColor, GetTextHeight, IsNumber, IsInteger, IsCron, SpacedColor}
+export {CreateGuid, GetTextWidth, GetNodeSize, RandomColor, GetTextHeight, IsNumber, IsInteger, IsCron, SpacedColor, HsvToHex, HexToHsv}
