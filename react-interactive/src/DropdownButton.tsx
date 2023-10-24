@@ -60,7 +60,7 @@ const BtnDropdown = (props: IProps) => {
                 onClick={() => {
                     if (disabled)
                         return;
-                   props.CallBack();
+                   props.Callback();
                 }}> {props.Label}
             </button>
             <button type="button"
@@ -78,7 +78,7 @@ const BtnDropdown = (props: IProps) => {
                     </a>
                 </>)}
             </div>
-            <ToolTip Show={hover && (props.ShowToolTip != undefined || props.ShowToolTip)}
+            <ToolTip Show={hover && props.ShowToolTip != undefined && props.ShowToolTip}
                 Position={'top'} Theme={'dark'} Target={guid.current}>
                 {props.TooltipContent}
             </ToolTip>
