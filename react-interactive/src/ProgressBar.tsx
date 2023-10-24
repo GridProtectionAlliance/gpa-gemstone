@@ -66,9 +66,9 @@ function ProgressBar(props: IProps) {
 
     /// Styles for overall div
     const stepsStyle: React.CSSProperties = {
-        height: props.height === undefined ? 'calc(100%-17px)' : (props.height-17),
+        height: props.height === undefined ? '100%' : props.height,
         width: props.width === undefined ? '100%' : props.width,
-        marginTop: 17,
+        paddingTop: 17,
         minWidth: '210px',
         justifyContent: 'space-evenly',
     }
