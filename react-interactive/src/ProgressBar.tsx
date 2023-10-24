@@ -113,7 +113,7 @@ function ProgressBar(props: IProps) {
                         height: '60px',
                         width: 'calc(' + (100/props.steps.length).toString() + '%)',
                         marginTop: -17
-                    }}>
+                    }} key={x.id}>
                     <span style={{
                         ...circleStyle,
                         borderColor: i <= activeStep ? '#5DC177' : '#D3D3D3',
