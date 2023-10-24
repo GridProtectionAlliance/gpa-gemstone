@@ -54,7 +54,37 @@ function LogAxis(props: IProps) {
    const [tick,setTick] = React.useState<number[]>([]);
    const [hLabel, setHlabel] = React.useState<number>(0);
    const [hAxis, setHAxis] = React.useState<number>(0);
-   
+   const [deltaW, setDeltaW] = React.useState<number>(0);
+   const [steps, setSteps] = React.useState<number>(0);
+  const  [tickStart, setTickStart] = React.useState<number>(0);
+
+   React.useEffect(() => {
+    if (context.XDomain[0] <= 0) {
+      context.XDomain[0] = Math.pow(10, Math.floor(Math.log10(Math.abs(context.XDomain[0])) * -1));
+    }
+    if (context.XDomain[1] <= 0) {
+      context.XDomain[1] = Math.pow(10, (Math.ceil(Math.log10(Math.abs(context.XDomain[1]))) * -1) + 1);
+    }
+    const WMax = Math.ceil(Math.max(Math.log10(context.XDomain[0]), Math.log10(context.XDomain[1])));
+    const WMin = Math.floor(Math.min(Math.log10(context.XDomain[0]), Math.log10(context.XDomain[1])));
+    setDeltaW(WMax - WMin);
+    setTickStart(WMin);
+   }, [context.XDomain])
+
+   React.useEffect(() => {
+    // Steps only change after 300 ms to avoid jumping
+    const h = setTimeout(() => {
+      if (deltaW < 3)
+        setSteps(0.25*(deltaW/2));
+      else if (deltaW >= 3 && deltaW < 6)
+        setSteps(0.5);
+      else
+        setSteps(Math.floor(deltaW / 4))
+    },500)
+    return () => { clearTimeout(h)}
+   }, [deltaW])
+
+
    // Adjusting for x axis label
    React.useEffect(() => {
     const dX = (props.label !== undefined ? GetTextHeight("Segoe UI", "1em", props.label) : 0);
@@ -76,44 +106,18 @@ function LogAxis(props: IProps) {
 
    React.useEffect(() => {
 
-    if (context.XDomain[0] <= 0) {
-      context.XDomain[0] = Math.pow(10, Math.floor(Math.log10(Math.abs(context.XDomain[0])) * -1));
-    }
-
-    if (context.XDomain[1] <= 0) {
-      context.XDomain[1] = Math.pow(10, (Math.ceil(Math.log10(Math.abs(context.XDomain[1]))) * -1) + 1);
-    }
     let newTicks;
-    const XMax = Math.ceil(Math.max(Math.log10(context.XDomain[0]), Math.log10(context.XDomain[1])));
-    const XMin = Math.floor(Math.min(Math.log10(context.XDomain[0]), Math.log10(context.XDomain[1])));
-    const dV = XMax - (XMin);
-
-    if (dV === 0){
+    if (deltaW === 0){
       if (context.XDomain[0] < 0)
         newTicks = [Math.pow(10, Math.floor(Math.log10(Math.abs(context.XDomain[0]))*-1)), Math.pow(10, Math.abs(Math.ceil(Math.log10(context.XDomain[1]))))];
-
       else 
         newTicks = [Math.pow(10, Math.log10(context.XDomain[0]))];
     }
     else {
-
-      // needs to scale 
-      let scale = 1.0;
-      if (dV < 3)
-        scale = 0.25;
-      if (dV >= 3 && dV < 6)
-        scale = 0.5;
-
-      const offset = Math.floor(dV / 4);
-      newTicks = [Math.pow(10, XMin)];
-      if (dV >= 6) {
-        for (let i = Math.floor(Math.log10(context.XDomain[0])) + (scale*offset); i <= Math.ceil(Math.log10(context.XDomain[1])) + scale; i+=(scale*offset)) {
-          newTicks.push(Math.pow(10, i));
-        }
-      }
-      if (dV < 6 && dV >= 3) {
-        for (let i = XMin + (scale); i <= XMax; i+=(scale)) {
-          if (!Number.isInteger(i) && i > 1) {
+      newTicks = [Math.pow(10, tickStart)];
+      if (deltaW >= 3) { // scale == 1
+        for (let i = tickStart + (steps); i <=  Math.log10(context.XDomain[1]) + steps; i+=(steps)) {
+          if (!Number.isInteger(i) && i > 1 && deltaW > 3) {
             const lower = Math.floor(Math.pow(10, i) / Math.pow(10, Math.ceil(i))) * Math.pow(10, Math.ceil(i));
             const upper = Math.ceil(Math.pow(10, i) / Math.pow(10, Math.floor(i))) * Math.pow(10, Math.floor(i));
             if (Math.abs(upper - Math.pow(10, i)) < Math.abs(lower - Math.pow(10, i)))
@@ -125,12 +129,6 @@ function LogAxis(props: IProps) {
             newTicks.push(Math.pow(10, i));
         }
       }
-      if (dV < 3) {
-        for (let i = XMin + (scale * (dV/2)); i <= XMax; i+=(scale*(dV/2))) {
-            newTicks.push(Math.pow(10, i))
-        }
-      }
-
       newTicks = newTicks.filter(t => t >= context.XDomain[0] && t <= context.XDomain[1]);
 
       // guarantee at least 3 ticks
@@ -138,12 +136,11 @@ function LogAxis(props: IProps) {
         const c = (Math.log10(context.XDomain[0]) + Math.log10(context.XDomain[1]))*0.5;
         newTicks = [context.XDomain[0],Math.pow(10,c),context.XDomain[1]];
       }
-
     }
     
     // If first Tick is outside visible move it to zero crossing
     setTick(newTicks.map(t => Math.max(t,context.XDomain[0])));
-    }, [context.XDomain]);
+    }, [context.XDomain, deltaW]);
 
     function getDigits(x: number): number {
       let d;
