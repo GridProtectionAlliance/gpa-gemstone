@@ -96,7 +96,7 @@ export class PointNode {
 
     // Note: Dimension indexing does not include time, I.E. in (x,y), y would be dimension 0;
     public GetLimits(Tstart: number, Tend: number, dimension?: number): [number,number] {
-      let currentIndex = dimension ?? 0;
+      const currentIndex = dimension ?? 0;
       let max = this.maxV[currentIndex];
       let min = this.minV[currentIndex];
 
