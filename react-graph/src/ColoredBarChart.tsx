@@ -23,11 +23,9 @@
 
 
 import * as React from 'react';
-import * as moment from 'moment';
 import {HsvToHex} from '@gpa-gemstone/helper-functions';
 import {IDataSeries, GraphContext, BarStyle, AxisIdentifier, AxisMap} from './GraphContext';
 import {PointNode} from './PointNode';
-import LineLegend from './LineLegend';
 
 
 export interface IProps {
@@ -45,7 +43,6 @@ function ColoredBarChart(props: IProps) {
     /*
         Single Line with ability to turn off and on.
     */
-    type tupleType = [number, number, number];
     const [guid, setGuid] = React.useState<string>("");
     const [data, setData] = React.useState<PointNode|null>(null);
     const context = React.useContext(GraphContext);
@@ -76,7 +73,7 @@ function ColoredBarChart(props: IProps) {
 
 
 
-	let generateData = React.useCallback(() => {
+	const generateData = React.useCallback(() => {
 		if (data == null) return null;
         const allData = data?.GetFullData();
 		const barWidth = (context.XTransformation(data.maxT) - context.XTransformation(data.minT)) / allData.length;
