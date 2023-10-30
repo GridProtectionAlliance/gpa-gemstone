@@ -1,5 +1,5 @@
 ﻿// ******************************************************************************************************
-//  HeatBars.tsx - Gbtc
+//  HeatMapChart.tsx - Gbtc
 //
 //  Copyright © 2020, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -24,7 +24,7 @@
 
 import * as React from 'react';
 import {HsvToHex} from '@gpa-gemstone/helper-functions';
-import {IDataSeries, GraphContext, BarStyle, AxisIdentifier, AxisMap} from './GraphContext';
+import {IDataSeries, GraphContext, FillStyle, AxisIdentifier, AxisMap} from './GraphContext';
 import {PointNode} from './PointNode';
 
 
@@ -33,7 +33,7 @@ export interface IProps {
     // Hue/Value are part of color, HSV. Both values are assumed [0-1] and saturation is determined by z-value.
     hue: number,
     value: number,
-    barStyle: BarStyle,
+    fillStyle?: FillStyle,
     axis?: AxisIdentifier,
     // Aligns bars with timestamp associated (i.e. left aligns the timestamp to the left bar edge)
     barAlign?: 'left'|'center'|'right'
@@ -46,6 +46,28 @@ function HeatMapChart(props: IProps) {
     const [guid, setGuid] = React.useState<string>("");
     const [data, setData] = React.useState<PointNode|null>(null);
     const context = React.useContext(GraphContext);
+
+    const axisIndex = React.useMemo<number>(() => AxisMap.get(props.axis), [props.axis]);
+    const allBarBottoms = React.useMemo<number>(() => context.YTransformation(context.YDomain[axisIndex][0], axisIndex), [context.YTransformation, context.YDomain, axisIndex]);
+    const barWidth = React.useMemo(() => {
+        if (data == null) return 0;
+        return (context.XTransformation(data.maxT) - context.XTransformation(data.minT)) / data.GetFullData().length;
+    }, [data, context.XTransformation]);
+    const zLimits = React.useMemo(() => {
+        if (data == null) return [0, 1];
+        return data.GetLimits(context.XDomain[0], context.XDomain[1], 1);
+    }, [data, context.XDomain]);
+    const allBarOffset = React.useMemo(() => {
+        switch(props.barAlign) {
+            case 'left':
+                return 0;
+            case 'center':
+                return 0.5 * barWidth;
+            case 'right':
+                return barWidth;
+        }
+        return 0;
+    }, [props.barAlign, barWidth]);
 
    React.useEffect(() => {
         if (guid === "")
@@ -71,42 +93,18 @@ function HeatMapChart(props: IProps) {
         return () => { context.RemoveData(id) }
     }, []);
 
-
-
-	const generateData = React.useCallback(() => {
-		if (data == null) return null;
-        const allData = data?.GetFullData();
-		const barWidth = (context.XTransformation(data.maxT) - context.XTransformation(data.minT)) / allData.length;
-        const axis = AxisMap.get(props.axis);
-        const barBottom = context.YTransformation(context.YDomain[axis][0], axis);
-		const zLimits = data.GetLimits(context.XDomain[0], context.XDomain[1], 1);
-        let alignment: number;
-        switch(props.barAlign) {
-            default: case 'left':
-                alignment = 0;
-                break;
-            case 'center':
-                alignment = 0.5;
-                break;
-            case 'right':
-                alignment = 1;
-                break;
-        }
-        alignment *= barWidth;
-		return allData.map((pt, i) => {
-			const barTop =  context.YTransformation(pt[1], axis);
-			const saturation = (pt[2] - zLimits[0]) / (zLimits[1] - zLimits[0]);
-			const color = HsvToHex(props.hue, saturation, props.value);
-			return <rect key={i} x={context.XTransformation(pt[0]) - alignment} y={barTop} width={barWidth} height={Math.abs(barTop-barBottom)} fill={color} stroke='black'/>
-		});
-	}, [data, context.XDomain, context.YDomain, context.XTransformation, context.YTransformation, props.axis, props.barAlign]);
-
-
     return (
         <g>
-            {generateData()}
+            {data == null ? null : 
+                data.GetFullData().map((pt, i) => {
+                    const barTop =  context.YTransformation(pt[1], axisIndex);
+                    const saturation = (pt[2] - zLimits[0]) / (zLimits[1] - zLimits[0]);
+                    const color = HsvToHex(props.hue, saturation, props.value);
+                    return <rect key={i} x={context.XTransformation(pt[0]) - allBarOffset} y={barTop} width={barWidth} height={Math.abs(barTop-allBarBottoms)} fill={color} stroke='black'/>
+                })
+            }
         </g>
     );
 }
 
-export default ColoredBarChart;
+export default HeatMapChart;
