@@ -78,7 +78,7 @@ export interface IDataSeries {
 }
 
 export type LineStyle = '-'|':';
-export type BarStyle = 'fill';
+export type FillStyle = 'fill';
 export type AxisIdentifier = 'left'|'right'; 
 
 class AxisMapClass<T, U> {
