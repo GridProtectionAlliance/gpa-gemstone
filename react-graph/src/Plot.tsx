@@ -320,8 +320,8 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
           case 'select':
             newCursor = 'pointer';
             break;
-          default: case "zoom":
-          newCursor = 'default';
+          default:
+            newCursor = 'default';
         }
       } else newCursor = props.cursorOverride;
       setMouseStyle(newCursor);
