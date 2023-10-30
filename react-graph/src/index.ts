@@ -1,6 +1,6 @@
 import Plot from './Plot';
 import Line from './Line';
-import ColoredBarChart from './ColoredBarChart';
+import HeatMapChart from './HeatMapChart';
 import LineWithThreshold from './LineWithThreshold';
 import HorizontalMarker from './HorizontalMarker';
 import VerticalMarker from './VerticalMarker';
@@ -14,7 +14,7 @@ import { AxisMap } from './GraphContext';
 export { 
     Plot,
     Line,
-    ColoredBarChart,
+    HeatMapChart,
     LineWithThreshold,
     Button,
     HorizontalMarker,
