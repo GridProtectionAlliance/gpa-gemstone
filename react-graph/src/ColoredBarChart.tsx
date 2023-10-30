@@ -39,7 +39,7 @@ export interface IProps {
     barAlign?: 'left'|'center'|'right'
 }
 
-function ColoredBarChart(props: IProps) {
+function HeatMapChart(props: IProps) {
     /*
         Single Line with ability to turn off and on.
     */
