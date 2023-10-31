@@ -65,7 +65,8 @@ const SymbolicMarker: React.FunctionComponent<IProps> = (props) => {
       onPlotLeave: (_) => setSelected(false),
       onClick,
       onMove,
-      axis: props.axis
+      axis: props.axis,
+      allowSnapping: false
     } as IHandlers)
     setGuid(id)
     return () => { context.RemoveSelect(id) }
@@ -80,7 +81,8 @@ const SymbolicMarker: React.FunctionComponent<IProps> = (props) => {
       onPlotLeave: (_) => setSelected(false),
       onClick,
       onMove,
-      axis: props.axis
+      axis: props.axis,
+      allowSnapping: false
     } as IHandlers)
   }, [onClick, onMove]);
 
@@ -102,8 +104,8 @@ const SymbolicMarker: React.FunctionComponent<IProps> = (props) => {
 
   React.useEffect(() => {
     if (isSelected)
-      setPosition({x: context.XHover, y: context.YHover[AxisMap.get(props.axis)]});
-  }, [context.XHover, context.YHover]);
+      setPosition({x: context.XHoverSnap, y: context.YHoverSnap[AxisMap.get(props.axis)]});
+  }, [context.XHoverSnap, context.YHoverSnap]);
 
   return (
     <>

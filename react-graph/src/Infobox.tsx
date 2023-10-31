@@ -29,6 +29,7 @@ interface IProps {
   x: number,
   y: number,
   usePixelPositioning?: boolean,
+  disallowSnapping?: boolean,
   axis?: AxisIdentifier,
   origin?: "upper-right" | "upper-left" | "upper-center" | "lower-right" | "lower-left" | "lower-center",
   // Specifies the offset of the pox from the origin point, In pixels
@@ -113,6 +114,7 @@ const Infobox: React.FunctionComponent<IProps> = (props) => {
   React.useEffect(() => {
     const id = context.RegisterSelect({
       axis: props.axis,
+      allowSnapping: false,
       onRelease: (_) => setSelected(false),
       onPlotLeave: (_) => setSelected(false),
       onClick,
@@ -128,6 +130,7 @@ const Infobox: React.FunctionComponent<IProps> = (props) => {
   
     context.UpdateSelect(guid, {
       axis: props.axis,
+      allowSnapping: false,
       onRelease: (_) => setSelected(false),
       onPlotLeave: (_) => setSelected(false),
       onClick,
@@ -152,8 +155,13 @@ const Infobox: React.FunctionComponent<IProps> = (props) => {
   },[context.CurrentMode]);
   
   React.useEffect(() => {
-    if (isSelected)
-      setPosition({x: context.XHover, y: context.YHover[AxisMap.get(props.axis)]});
+    if (isSelected && !(props.disallowSnapping ?? false))
+        setPosition({x: context.XHoverSnap, y: context.YHoverSnap[AxisMap.get(props.axis)]});
+  }, [context.XHoverSnap, context.YHoverSnap, props.axis]);
+  
+  React.useEffect(() => {
+    if (isSelected && (props.disallowSnapping ?? false))
+        setPosition({x: context.XHover, y: context.YHover[AxisMap.get(props.axis)]});
   }, [context.XHover, context.YHover, props.axis]);
   
   // Get Heights and Widths

@@ -110,6 +110,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
     const [selectedMode, setSelectedMode] = React.useState<'pan' | 'zoom' | 'select'>('zoom');
     const [mouseIn, setMouseIn] = React.useState<boolean>(false);
     const [mousePosition, setMousePosition] = React.useState<[number, number]>([0, 0]);
+    const [mousePositionSnap, setMousePositionSnap] = React.useState<[number, number]>([0, 0]);
     const [mouseClick, setMouseClick] = React.useState<[number, number]>([0, 0]);
     const [mouseStyle, setMouseStyle] = React.useState<string>("default");
     const moveRequested = React.useRef<boolean>(false);
@@ -401,6 +402,21 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
         });
     }, []);
 
+    function snapMouseToClosestSeries(pixelPt: {x: number, y: number}) {
+      const findClosestPoint = (result: { x: number, y: number, distSqr: number|undefined }, series: IDataSeries) => {
+        if (series.getPoint != null) {
+          const pt = series.getPoint(xInvTransform(pixelPt.x));
+          if (pt === undefined) return result;
+          const ptPixel = [xTransform(pt[0]), yTransform(pt[1], AxisMap.get(series.axis))];
+          const distSqr = (ptPixel[1]-pixelPt.y)^2+(ptPixel[0]-pixelPt.x)^2;
+          if (result.distSqr === undefined || distSqr < result.distSqr)
+            return {x: ptPixel[0], y: ptPixel[1], distSqr: distSqr};
+        }
+        return result;
+      }
+      return [...data.values()].reduce((result: { x: number, y: number, distSqr: number|undefined }, series: IDataSeries) => findClosestPoint(result, series), { x: 0, y: 0, distSqr: undefined });
+    }
+
     const registerSelect = React.useCallback((handler: IHandlers) => {
       const key = CreateGuid();
       handlers.current.set(key,handler)
@@ -495,7 +511,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
       const pt = SVGref.current!.createSVGPoint();
       pt.x = evt.clientX;
       pt.y = evt.clientY;
-      const ptTransform = pt.matrixTransform(SVGref.current!.getScreenCTM().inverse());
+      let ptTransform = pt.matrixTransform(SVGref.current!.getScreenCTM().inverse());
 
       if (mouseMode === 'pan') {
           const dP = mousePosition[0] - ptTransform.x;
@@ -525,27 +541,14 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
           applyToYDomain(zoomYAxis);
         }
       }
-
-      let handlerPt = ptTransform;
-      if(props.snapMouse ?? false){
-        const findClosestPoint = (result: { x: number, y: number, distSqr: number|undefined }, series: IDataSeries) => {
-          if (series.getPoint != null) {
-            const pt = series.getPoint(ptTransform.x);
-            if (pt === undefined) return result;
-            const ptPixel = [xTransform(pt[0]), yTransform(pt[1], AxisMap.get(series.axis))];
-            const distSqr = (ptPixel[1]-ptTransform.y)^2+(ptPixel[0]-ptTransform.x)^2;
-            if (result.distSqr === undefined || distSqr < result.distSqr)
-              return {x: ptPixel[0], y: ptPixel[1], distSqr: distSqr};
-          }
-          return result;
-        }
-        handlerPt = [...data.values()].reduce((result: { x: number, y: number, distSqr: number|undefined }, series: IDataSeries) => findClosestPoint(result, series), { x: 0, y: 0, distSqr: undefined });
-      }
-
-      if (handlers.current.size > 0)
-        handlers.current.forEach((v) => (v.onMove !== undefined? v.onMove(xInvTransform(handlerPt.x), yInvTransform(handlerPt.y, v.axis)) : null));
-
       setMousePosition([ptTransform.x, ptTransform.y]);
+      // Here on mouse is snapped (if neccessary)
+      let ptFinal: {x: number, y: number};
+      if (props.snapMouse ?? false) ptFinal = snapMouseToClosestSeries(ptTransform);
+      else ptFinal = ptTransform;
+      setMousePositionSnap([ptFinal.x, ptFinal.y]);
+      if (handlers.current.size > 0)
+        handlers.current.forEach((v) => (v.onMove !== undefined? v.onMove(xInvTransform(v.allowSnapping ? ptFinal.x : ptTransform.x), yInvTransform(v.allowSnapping ? ptFinal.y : ptTransform.y, v.axis)) : null));
     }
 
     function handleMouseDown(evt: any) {
@@ -555,7 +558,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
         const pt = SVGref.current!.createSVGPoint();
         pt.x = evt.clientX;
         pt.y = evt.clientY;
-        const ptTransform = pt.matrixTransform(SVGref.current!.getScreenCTM().inverse())
+        let ptTransform = pt.matrixTransform(SVGref.current!.getScreenCTM().inverse())
         setMouseClick([ptTransform.x, ptTransform.y]);
         if (selectedMode === 'zoom' && (props.zoom === undefined || props.zoom))
             setMouseMode('zoom');
@@ -563,16 +566,22 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
             setMouseMode('pan');
             setMouseStyle('grabbing');
         }
+
+        // Todo: Review question: can we just use mousePosition and mousePositionSnap here? 
+        // Here on mouse is snapped (if neccessary)
+        let ptFinal: {x: number, y: number};
+        if (props.snapMouse ?? false) ptFinal = snapMouseToClosestSeries(ptTransform);
+        else ptFinal = ptTransform;
         if (selectedMode === 'select' && props.onSelect !== undefined)
           props.onSelect(
-            xInvTransform(ptTransform.x),
-            [...AxisMap.values()].map(axis => yInvTransform(ptTransform.y, axis)),
+            xInvTransform(ptFinal.x),
+            [...AxisMap.values()].map(axis => yInvTransform(ptFinal.y, axis)),
             {
             setTDomain: updateXDomain as React.SetStateAction<[number,number]>, 
             setYDomain: updateYDomain as React.SetStateAction<[number,number][]>
             });
         if (handlers.current.size > 0 && selectedMode === 'select')
-          handlers.current.forEach((v) => (v.onClick !== undefined? v.onClick(xInvTransform(ptTransform.x), yInvTransform(ptTransform.y, v.axis)) : null));
+          handlers.current.forEach((v) => (v.onClick !== undefined? v.onClick(xInvTransform(v.allowSnapping ? ptFinal.x : ptTransform.x), yInvTransform(v.allowSnapping ? ptFinal.y : ptTransform.y, v.axis)) : null));
     }
 
     function handleMouseUp(_: any) {
@@ -603,7 +612,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
       setMouseMode('none');
 
       if (handlers.current.size > 0 && selectedMode === 'select')
-        handlers.current.forEach((v) => (v.onRelease !== undefined? v.onRelease(xTransform(mousePosition[0]), yTransform(mousePosition[1], v.axis)) : null));
+        handlers.current.forEach((v) => (v.onRelease !== undefined? v.onRelease(xInvTransform(v.allowSnapping ? mousePositionSnap[0] : mousePosition[0]), yInvTransform(v.allowSnapping ? mousePositionSnap[1] : mousePosition[1], v.axis)) : null));
     }
 
     function handleMouseOut(_: any) {
@@ -612,7 +621,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
             setMouseMode('none');
 
         if (handlers.current.size > 0 && selectedMode === 'select')
-          handlers.current.forEach((v) => (v.onPlotLeave !== undefined? v.onPlotLeave(xTransform(mousePosition[0]), yTransform(mousePosition[1], v.axis)) : null));
+          handlers.current.forEach((v) => (v.onPlotLeave !== undefined? v.onPlotLeave(xInvTransform(v.allowSnapping ? mousePositionSnap[0] : mousePosition[0]), yInvTransform(v.allowSnapping ? mousePositionSnap[1] : mousePosition[1], v.axis)) : null));
   
     }
 
@@ -648,6 +657,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
       <ContextWrapper 
         XDomain ={tDomain}
         MousePosition={mousePosition}
+        MousePositionSnap={mousePositionSnap}
         YDomain={yDomain}
         CurrentMode={selectedMode}
         MouseIn={mouseIn}

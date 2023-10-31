@@ -26,8 +26,10 @@ import * as React from 'react';
 export interface IGraphContext extends IHandlerRegistration, IDataRegistration {
   XDomain: [number, number],
   XHover: number,
+  XHoverSnap: number,
 
   YHover: number[],
+  YHoverSnap: number[],
   YDomain: [number, number][],
 
   CurrentMode: 'zoom'|'pan'|'select',
@@ -46,8 +48,10 @@ export interface IGraphContext extends IHandlerRegistration, IDataRegistration {
 export const GraphContext = React.createContext({
   XDomain: [0, 0],
   XHover: NaN,
+  XHoverSnap: NaN,
 
   YHover: [NaN, NaN],
+  YHoverSnap: [NaN, NaN],
   YDomain: [[0, 0]],
   CurrentMode: 'select',
 
@@ -107,7 +111,8 @@ export interface IHandlers {
   onRelease?: (x: number, y: number) => void,
   onPlotLeave?: (x: number, y:number) => void,
   onMove?: (x: number, y: number) => void,
-  axis: number|AxisIdentifier
+  axis: number|AxisIdentifier,
+  allowSnapping: boolean
 }
 
 export interface IDataRegistration {
@@ -131,6 +136,7 @@ export interface IActionFunctions {
 interface IContextWrapperProps extends IHandlerRegistration, IDataRegistration {
   XDomain: [number, number],
   MousePosition: [number,number],
+  MousePositionSnap: [number,number],
   YDomain: [number,number][],
   CurrentMode:  'zoom'|'pan'|'select',
   MouseIn: boolean,
@@ -149,6 +155,7 @@ export const ContextWrapper: React.FC<IContextWrapperProps> = (props) => {
   const context = React.useMemo(GetContext, [
     props.XDomain,
     props.MousePosition,
+    props.MousePositionSnap,
     props.YDomain,
     props.CurrentMode,
     props.MouseIn,
@@ -172,8 +179,10 @@ export const ContextWrapper: React.FC<IContextWrapperProps> = (props) => {
   function GetContext(): IGraphContext {
     return {
         XDomain: props.XDomain,
-        XHover: props.MouseIn? props.XInvTransform(props.MousePosition[0]) : NaN,
+        XHover: props.MouseIn ? props.XInvTransform(props.MousePosition[0]) : NaN,
         YHover: props.MouseIn ? [...AxisMap.values()].map(axis => props.YInvTransform(props.MousePosition[1], axis)) : Array<number>(AxisMap.size).fill(NaN),
+        XHoverSnap: props.MouseIn ? props.XInvTransform(props.MousePositionSnap[0]) : NaN,
+        YHoverSnap: props.MouseIn ? [...AxisMap.values()].map(axis => props.YInvTransform(props.MousePositionSnap[1], axis)) : Array<number>(AxisMap.size).fill(NaN),
         YDomain: props.YDomain,
         CurrentMode: props.CurrentMode,
         Data: props.Data,
