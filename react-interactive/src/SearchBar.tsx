@@ -304,11 +304,11 @@ function FilterCreator<T>(props: IPropsFilterCreator<T> ) {
                             props.Setter((prevState) => ({ ...prevState, Operator: value }));
                         }}>
                             {/*<option value='='>=</option>*/}
-                            <option value='<>'>{`<>`}</option>
+                            {/*<option value='<>'>{`<>`}</option>*/}
                             <option value='>'>{`>`}</option>
                             <option value='>='>{`>=`}</option>
                             <option value='<'>{`<`}</option>
-                            <option value='>='>{`>=`}</option>
+                            <option value='<='>{`<=`}</option>
                         </select>
                     </div>
                     <div className='col'>
