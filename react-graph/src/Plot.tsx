@@ -60,6 +60,7 @@ export interface IProps {
     Tlabel?: string,
     Ylabel?: string|string[],
     holdMenuOpen?: boolean,
+    moveMenuLeft?: boolean,
     legend?: 'hidden'| 'bottom' | 'right',
     showMouse: boolean,
     legendHeight?: number,
@@ -729,7 +730,8 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
                         currentSelection={selectedMode}
                         setSelection={setSelection}
                         holdOpen={props.holdMenuOpen}
-                        x={svgWidth - offsetRight - 12}
+                        openTowardsRight={props.moveMenuLeft ?? false}
+                        x={(props.moveMenuLeft ?? false) ? (offsetLeft + 12) : (svgWidth - offsetRight - 12)}
                         y={22} > 
                         {React.Children.map(props.children, (element) => {
                                    if (!React.isValidElement(element))

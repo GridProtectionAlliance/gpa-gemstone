@@ -35,6 +35,7 @@ interface IProps {
     setSelection: (selection: ButtonType) => void,
     x: number,
     y: number,
+    openTowardsRight: boolean,
     holdOpen?: boolean
 }
 
@@ -49,6 +50,8 @@ const InteractiveButtons: React.FunctionComponent<IProps> = (props) => {
 
     const nChildren = (props.children == null) ? 0 : React.Children.count(props.children);
     const nButtons = (props.holdOpen? 1 : 0) + (props.showZoom? 1 : 0) + (props.showPan? 1 : 0) + (props.showReset? 1 : 0) + (props.showSelect? 1 : 0) + (props.showDownload? 1 : 0) + nChildren;
+
+    const direction = React.useMemo<number>(() => {return props.openTowardsRight ? 1 : -1}, [props.openTowardsRight]);
 
     const setBtnAndSelect = React.useCallback((newIcon: React.ReactElement, id?: string) => {
       setSelectIcon(newIcon);
@@ -123,9 +126,9 @@ const InteractiveButtons: React.FunctionComponent<IProps> = (props) => {
 
     return (
      <g>
-         <path d={`M ${props.x} ${props.y - 10} A 10 10 180 0 1 ${props.x} ${props.y + 10} h -${width} A 10 10 180 0 1 ${props.x - width} ${props.y - 10} h ${width}`} style={{
+         <path d={`M ${props.x} ${props.y + 10 * direction} A 10 10 180 0 1 ${props.x} ${props.y - 10 * direction} h ${width * direction} A 10 10 180 0 1 ${props.x + width * direction} ${props.y + 10 * direction} h ${-width * direction}`} style={{
              fill: '#1e90ff'}} />
-          {symbols.map((s,i) => <CircleButton key={i} x={props.x - i*25} 
+          {symbols.map((s,i) => <CircleButton key={i} x={props.x + i*25*direction} 
             y={props.y} active={props.currentSelection === symbolNames[i] && (props.currentSelection !== 'select' || currentSelect === 'regular')} button={s}
             btnCleanup={btnCleanup} setSelectIcon={setSelectIcon}
           />)}
@@ -136,14 +139,14 @@ const InteractiveButtons: React.FunctionComponent<IProps> = (props) => {
                                     if ((element as React.ReactElement<any>).type === Button) {
                                         const id = `custom_${i}`;
                                         return <CircleButton key={id} active={props.currentSelection === 'select' && currentSelect === id}
-                                          x={props.x - (i+symbols.length)*25} y={props.y}
+                                          x={props.x + (i+symbols.length)*25*direction} y={props.y}
                                           button={element} setSelectIcon={setBtnAndSelect} selectName={id}
                                           btnCleanup={btnCleanup} />
                                         }
                                     return null;
                                 })}
 
-         <path d={`M ${props.x} ${props.y - 10} A 10 10 180 0 1 ${props.x} ${props.y + 10} h -${width} A 10 10 180 0 1 ${props.x - width} ${props.y - 10} h ${width}`} stroke={'black'} />
+         <path d={`M ${props.x} ${props.y + 10 * direction} A 10 10 180 0 1 ${props.x} ${props.y - 10 * direction} h ${width * direction} A 10 10 180 0 1 ${props.x + width * direction} ${props.y + 10 * direction} h ${-width * direction}`} stroke={'black'} />
      </g>)
 
 }
