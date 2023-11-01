@@ -101,7 +101,7 @@ const InteractiveButtons: React.FunctionComponent<IProps> = (props) => {
     const symbolNames = [] as ButtonType[];
     if (props.holdOpen ?? false) {
       symbolNames.push('collaspe' as ButtonType);
-      symbols.push(<Button onClick={() => setExpand(false)}>{">"}</Button>)
+      symbols.push(<Button onClick={() => setExpand(false)}>{(props.openTowardsRight ?? false) ? "<" : ">"}</Button>)
     }
     if (props.showZoom) {
       symbolNames.push('zoom' as ButtonType);
