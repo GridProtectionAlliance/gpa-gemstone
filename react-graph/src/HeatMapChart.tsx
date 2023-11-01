@@ -64,7 +64,7 @@ function HeatMapChart(props: IProps) {
                 return barWidth;
         }
         return 0;
-    };
+    }
     const allBarOffset = getAllBarOffset();
 
     React.useEffect(() => {
