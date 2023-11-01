@@ -93,6 +93,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
     */
     const SVGref = React.useRef<any>(null);
     const handlers = React.useRef<Map<string,IHandlers>>(new Map<string, IHandlers>());
+    const wheelTimeout = React.useRef<{timeout?: NodeJS.Timeout, stopScroll: boolean}>({timeout: undefined, stopScroll: false});
     
     const guid = React.useMemo(() => CreateGuid(),[]);
     const [data, setData] = React.useState<Map<string, IDataSeries>>(new Map<string, IDataSeries>());
@@ -329,6 +330,13 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
       setMouseStyle(newCursor);
     }, [selectedMode, props.cursorOverride])
 
+    // Stop scrolling while zooming
+    React.useEffect(() => {
+      const cancelWheel = (e: WheelEvent) => { if (wheelTimeout.current.stopScroll) e.preventDefault() }
+      document.body.addEventListener('wheel', cancelWheel, {passive:false});
+      return () => document.body.removeEventListener('wheel', cancelWheel);
+  }, []);
+
     // transforms from pixels into x value. result passed into onClick function 
     const xInvTransform = React.useCallback((p: number) =>  {
       let xT = (p - tOffset) / tScale;
@@ -446,8 +454,14 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
           if (!mouseIn)
               return;
 
-          evt.stopPropagation();
-          evt.preventDefault({ passive: false });
+          // while wheel is moving, do not release the lock
+          clearTimeout(wheelTimeout.current.timeout);
+          wheelTimeout.current.stopScroll = true;
+
+          // flag indicating to lock page scrolling
+          wheelTimeout.current.timeout = setTimeout(() => {
+            wheelTimeout.current.stopScroll = false;
+          }, 200);
 
           let multiplier = 1.25;
 
