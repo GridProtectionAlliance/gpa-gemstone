@@ -45,19 +45,16 @@ function HeatMapChart(props: IProps) {
     */
     const [guid, setGuid] = React.useState<string>("");
     const [data, setData] = React.useState<PointNode|null>(null);
+    const [barWidth, setBarWidth] = React.useState<number>(0);
     const context = React.useContext(GraphContext);
-
-    const axisIndex = React.useMemo<number>(() => AxisMap.get(props.axis), [props.axis]);
-    const allBarBottoms = React.useMemo<number>(() => context.YTransformation(context.YDomain[axisIndex][0], axisIndex), [context.YTransformation, context.YDomain, axisIndex]);
-    const barWidth = React.useMemo(() => {
-        if (data == null) return 0;
-        return (context.XTransformation(data.maxT) - context.XTransformation(data.minT)) / data.GetFullData().length;
-    }, [data, context.XTransformation]);
+    
+    const allBarBottoms = React.useMemo<number>(() => context.YTransformation(context.YDomain[AxisMap.get(props.axis)][0], AxisMap.get(props.axis)), [context.YTransformation, context.YDomain, props.axis]);
     const zLimits = React.useMemo(() => {
         if (data == null) return [0, 1];
         return data.GetLimits(context.XDomain[0], context.XDomain[1], 1);
     }, [data, context.XDomain]);
-    const allBarOffset = React.useMemo(() => {
+
+    function getAllBarOffset() {
         switch(props.barAlign) {
             case 'left':
                 return 0;
@@ -67,7 +64,13 @@ function HeatMapChart(props: IProps) {
                 return barWidth;
         }
         return 0;
-    }, [props.barAlign, barWidth]);
+    };
+    const allBarOffset = getAllBarOffset();
+
+    React.useEffect(() => {
+        if (data == null) return;
+        setBarWidth((context.XTransformation(data.maxT) - context.XTransformation(data.minT)) / data.GetFullData().length);
+    }, [data, context.XTransformation]);
 
    React.useEffect(() => {
         if (guid === "")
@@ -97,7 +100,7 @@ function HeatMapChart(props: IProps) {
         <g>
             {data == null ? null : 
                 data.GetFullData().map((pt, i) => {
-                    const barTop =  context.YTransformation(pt[1], axisIndex);
+                    const barTop =  context.YTransformation(pt[1], AxisMap.get(props.axis));
                     const saturation = (pt[2] - zLimits[0]) / (zLimits[1] - zLimits[0]);
                     const color = HsvToHex(props.hue, saturation, props.value);
                     return <rect key={i} x={context.XTransformation(pt[0]) - allBarOffset} y={barTop} width={barWidth} height={Math.abs(barTop-allBarBottoms)} fill={color} stroke='black'/>
