@@ -44,6 +44,7 @@ import Infobox from './Infobox';
 import HeatMapChart from './HeatMapChart';
 
 // A ZoomMode of AutoValue means it will zoom on time, and auto Adjust the Value to fit the data.
+// HalfAutoValue is the same as AutoValue except it "pins" either max or min at zero
 export interface IProps {
     defaultTdomain: [number, number],
     defaultYdomain?: [number,number] | [number,number][],
@@ -72,7 +73,7 @@ export interface IProps {
     onDataInspect?: (tDomain: [number,number]) => void,
     Ymin?: number | number[],
     Ymax?: number | number[],
-    zoomMode?: 'Time'|'Rect'|'AutoValue',
+    zoomMode?: 'Time'|'Rect'|'AutoValue'|'HalfAutoValue',
     snapMouse?: boolean
 }
 
@@ -243,7 +244,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
     // Adjust Y domain
     React.useEffect(() => {
       const mutateDomain = (domain: [number,number], axis: number, allDomains: [number, number][]): boolean => {
-        if (zoomMode === 'AutoValue') {
+        if (zoomMode === 'AutoValue' || zoomMode === 'HalfAutoValue') {
           const dataReducerFunc = (result: number[], series: IDataSeries, func: (tDomain: [number, number]) => number|undefined) => {
             // This part of the data may not belong to the axis we care about at the moment
             const dataAxis = AxisMap.get(series.axis);
@@ -256,7 +257,10 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
           const yMin = Math.min(...[...data.values()].reduce((result: number[], series: IDataSeries) => dataReducerFunc(result, series, series.getMin), []));
           const yMax = Math.max(...[...data.values()].reduce((result: number[], series: IDataSeries) => dataReducerFunc(result, series, series.getMax), []));
           if (!isNaN(yMin) && !isNaN(yMax) && isFinite(yMin) && isFinite(yMax)) {
-            allDomains[axis] = [yMin, yMax];
+            if (zoomMode === 'AutoValue') allDomains[axis] = [yMin, yMax];
+            // If this condition is satisfied, it means our series is mostly positive range
+            else if (Math.abs(yMax) >= Math.abs(yMin)) allDomains[axis] = [0, yMax];
+            else allDomains[axis] = [yMin, 0];
             return true;
           }
         }
@@ -360,7 +364,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
       const mutateDomain = (domain: [number,number], axis: number, allDomains: [number, number][]): boolean => {
         // Need to type correct our arguements
         const defaults: [number, number] | undefined = typeCorrectDomain(defaultYdomain, axis);
-        if (defaults !== undefined && zoomMode !== 'AutoValue') {
+        if (defaults !== undefined && zoomMode !== 'AutoValue' && zoomMode !== 'HalfAutoValue') {
           allDomains[axis] = defaults;
           return true;
         }
