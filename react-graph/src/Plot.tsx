@@ -385,6 +385,22 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
       return value * yScale[axis] + yOffset[axis];
     }, [yScale,yOffset]);
 
+    // applies offset and contraints to x Pixel value to get something that is plotable
+    const xApplyOffset = React.useCallback((value: number) => {
+      if (value >= 0)
+        return Math.min(value + offsetLeft, svgWidth - offsetRight);
+      else
+        return Math.max(offsetLeft, svgWidth - offsetRight + value);
+    }, [offsetLeft,offsetRight,svgWidth]);
+
+    // applies offset and contraints to y Pixel value to get something that is plotable
+    const yApplyOffset = React.useCallback((value: number) => {
+      if (value >= 0)
+        return Math.min(value + offsetTop, svgHeight - offsetBottom);
+      else
+        return Math.max(offsetTop, svgHeight - offsetBottom + value);
+    }, [offsetTop,offsetBottom,svgHeight]);
+
     const addData = React.useCallback((d: IDataSeries) => {
       const key = CreateGuid();
       setData((fld) => { const updated = cloneDeep(fld); updated.set(key, d); return updated; });
@@ -678,6 +694,8 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
         MouseIn={mouseIn}
         UpdateFlag={updateFlag}
         Data={data}
+        XApplyPixelOffset={xApplyOffset}
+        YApplyPixelOffset={yApplyOffset}
         XTransform={xTransform}
         YTransform={yTransform}
         XInvTransform={xInvTransform}

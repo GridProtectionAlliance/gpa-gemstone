@@ -52,7 +52,7 @@ const Infobox: React.FunctionComponent<IProps> = (props) => {
   
   // Functions
   const calculateX = React.useCallback((xArg: number) => {
-    let x: number = (props.usePixelPositioning ?? false) ? xArg : context.XTransformation(xArg);
+    let x: number = (props.usePixelPositioning ?? false) ? context.XApplyPixelOffset(xArg) : context.XTransformation(xArg);
     // Convert x/y to upper-left corner
     switch(props.origin) {
       case "lower-right":
@@ -73,10 +73,10 @@ const Infobox: React.FunctionComponent<IProps> = (props) => {
         break;
     }
     return x;
-  }, [context.XTransformation, props.origin, props.offset, props.usePixelPositioning, dimension]);
+  }, [context.XApplyPixelOffset, context.XTransformation, props.origin, props.offset, props.usePixelPositioning, dimension]);
   
   const calculateY = React.useCallback((yArg: number) => {
-    let y: number = (props.usePixelPositioning ?? false) ? yArg : context.YTransformation(yArg, AxisMap.get(props.axis));
+    let y: number = (props.usePixelPositioning ?? false) ? context.YApplyPixelOffset(yArg) : context.YTransformation(yArg, AxisMap.get(props.axis));
     // Convert x/y to upper-left corner
     switch(props.origin) {
       case undefined: 
@@ -92,7 +92,7 @@ const Infobox: React.FunctionComponent<IProps> = (props) => {
         break;
     }
     return y;
-  }, [context.YTransformation, props.origin, props.offset, props.axis, props.usePixelPositioning, dimension]);
+  }, [context.YApplyPixelOffset, context.YTransformation, props.origin, props.offset, props.usePixelPositioning, props.axis, dimension]);
   
   const onClick = React.useCallback((xArg: number, yArg: number) => {
     const xP = calculateX(props.x);

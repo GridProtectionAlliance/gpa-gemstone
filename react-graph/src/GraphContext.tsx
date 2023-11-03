@@ -34,6 +34,8 @@ export interface IGraphContext extends IHandlerRegistration, IDataRegistration {
 
   CurrentMode: 'zoom'|'pan'|'select',
   Data: Map<string, IDataSeries>,
+  XApplyPixelOffset: (x: number) => number,
+  YApplyPixelOffset: (y: number) => number,
   XTransformation: (x: number) => number,
   YTransformation: (y: number, axis: AxisIdentifier|number) => number,
   
@@ -57,6 +59,8 @@ export const GraphContext = React.createContext({
 
 
   Data: new Map<string, IDataSeries>(),
+  XApplyPixelOffset: (_: number) => _,
+  YApplyPixelOffset: (_: number) => _,
   XTransformation: (_: number) => 0,
   YTransformation: (_: number, __: AxisIdentifier|number) => 0,
   XInverseTransformation: (_: number) => 0,
@@ -142,6 +146,8 @@ interface IContextWrapperProps extends IHandlerRegistration, IDataRegistration {
   MouseIn: boolean,
   UpdateFlag: number,
   Data: Map<string, IDataSeries>,
+  XApplyPixelOffset: (_: number) => number,
+  YApplyPixelOffset: (_: number) => number, 
   XTransform: (x: number) => number,
   YTransform: (y: number, axis: AxisIdentifier|number) => number,
   XInvTransform: (p: number) => number,
@@ -161,6 +167,8 @@ export const ContextWrapper: React.FC<IContextWrapperProps> = (props) => {
     props.MouseIn,
     props.UpdateFlag,
     props.Data,
+    props.XApplyPixelOffset,
+    props.YApplyPixelOffset,
     props.XTransform,
     props.XInvTransform,
     props.YInvTransform,
@@ -186,6 +194,8 @@ export const ContextWrapper: React.FC<IContextWrapperProps> = (props) => {
         YDomain: props.YDomain,
         CurrentMode: props.CurrentMode,
         Data: props.Data,
+        XApplyPixelOffset: props.XApplyPixelOffset,
+        YApplyPixelOffset: props.YApplyPixelOffset,
         XTransformation: props.XTransform,
         YTransformation: props.YTransform,
         XInverseTransformation: props.XInvTransform,

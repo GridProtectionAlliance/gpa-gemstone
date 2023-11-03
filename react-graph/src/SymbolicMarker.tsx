@@ -28,6 +28,7 @@ import {AxisIdentifier, AxisMap, GraphContext, IHandlers} from './GraphContext';
 export interface IProps {
   xPos: number,
   yPos: number,
+  usePixelPositioning?: {x?: boolean, y?: boolean},
   radius: number,
   setPosition?: (x: number, y: number) => void,
   onHover?: () => void,
@@ -41,13 +42,13 @@ const SymbolicMarker: React.FunctionComponent<IProps> = (props) => {
   const [guid, setGuid] = React.useState<string>("");
 
   const isInBounds = React.useCallback((xArg: number, yArg: number) => {
-    const xP = context.XTransformation(props.xPos);
+    const xP = (props.usePixelPositioning?.x ?? false) ? context.XApplyPixelOffset(props.xPos) : context.XTransformation(props.xPos);
     const xT = context.XTransformation(xArg);
-    const yP = context.YTransformation(props.yPos, AxisMap.get(props.axis));
+    const yP = (props.usePixelPositioning?.y ?? false) ? context.YApplyPixelOffset(props.yPos) : context.YTransformation(props.yPos, AxisMap.get(props.axis));
     const yT = context.YTransformation(yArg, AxisMap.get(props.axis));
     // Note: This is actually a rectangular box
     return (xT <= xP + props.radius && xT >= xP - props.radius && yT <= yP + props.radius && yT >= yP - props.radius);
-  }, [props.axis, props.yPos, props.yPos, props.radius, AxisMap]);
+  }, [props.axis, props.yPos, props.yPos, props.radius, AxisMap, props.usePixelPositioning, context.XTransformation, context.YTransformation, context.XApplyPixelOffset, context.YApplyPixelOffset]);
 
   const onClick = React.useCallback((xArg: number, yArg: number) => {
     if (isInBounds(xArg,yArg))
@@ -109,9 +110,9 @@ const SymbolicMarker: React.FunctionComponent<IProps> = (props) => {
 
   return (
     <>
-      <SymbolicGraphic x={props.xPos} y={props.yPos} r={props.radius} a={AxisMap.get(props.axis)}>{props.children}</SymbolicGraphic>
+      <SymbolicGraphic x={props.xPos} y={props.yPos} r={props.radius} a={AxisMap.get(props.axis)} inPixels={props.usePixelPositioning}>{props.children}</SymbolicGraphic>
       {props.setPosition !== undefined && (props.xPos !== position.x || props.yPos !== position.y) ?
-        <SymbolicGraphic x={position.x} y={position.y} r={props.radius} a={AxisMap.get(props.axis)}>{props.children}</SymbolicGraphic>
+        <SymbolicGraphic x={position.x} y={position.y} r={props.radius} a={AxisMap.get(props.axis)} inPixels={props.usePixelPositioning}>{props.children}</SymbolicGraphic>
         : null}
     </>);
 }
@@ -120,12 +121,13 @@ interface IGraphicProps {
   x: number,
   y: number,
   r: number,
-  a: number|AxisIdentifier
+  a: number|AxisIdentifier,
+  inPixels?: {x?: boolean, y?: boolean}
 }
 const SymbolicGraphic: React.FunctionComponent<IGraphicProps> = (props) => {
   const context = React.useContext(GraphContext);
-  const xPixels: number = context.XTransformation(props.x); 
-  const yPixels: number = context.YTransformation(props.y, props.a); 
+  const xPixels: number = (props.inPixels?.x ?? false) ? context.XApplyPixelOffset(props.x) : context.XTransformation(props.x); 
+  const yPixels: number = (props.inPixels?.y ?? false) ? context.YApplyPixelOffset(props.y) : context.YTransformation(props.y, props.a); 
   return (
     <foreignObject x={xPixels-props.r} y={yPixels-props.r} width={2*props.r} height={2*props.r}>
       {props.children}
