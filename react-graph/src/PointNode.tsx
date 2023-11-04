@@ -71,7 +71,7 @@ export class PointNode {
         }
         for (let index = 0; index < this.dim-1; index++) this.minV[index] = Math.min(...this.children.map(node => node.minV[index]));
         for (let index = 0; index < this.dim-1; index++) this.maxV[index] = Math.max(...this.children.map(node => node.maxV[index]));
-    }
+            }
 
     public GetData(Tstart: number, Tend: number, IncludeEdges?: boolean): [...number[]][] {
         if (this.points != null && Tstart <= this.minT && Tend >= this.maxT)
