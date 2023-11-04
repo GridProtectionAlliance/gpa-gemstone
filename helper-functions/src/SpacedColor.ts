@@ -21,6 +21,7 @@
 //
 // ******************************************************************************************************
 
+import { HsvToHex } from './HsvToHex'
 // Spacing values
 let currentHue: number = Math.random();
 const GOLDEN_RATIO_CONJUGATE = 0.618033988749895;
