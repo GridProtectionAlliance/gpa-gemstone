@@ -23,6 +23,7 @@
 
 
 import * as React from 'react';
+import * as _ from 'lodash';
 import InteractiveButtons from './InteractiveButtons';
 import {IDataSeries, IHandlers, ContextWrapper, IActionFunctions, AxisIdentifier, AxisMap} from './GraphContext';
 import {CreateGuid} from '@gpa-gemstone/helper-functions';
@@ -40,6 +41,7 @@ import SymbolicMarker from './SymbolicMarker';
 import Circle from './Circle';
 import AggregatingCircles from './AggregatingCircles';
 import Infobox from './Infobox';
+import HeatMapChart from './HeatMapChart';
 
 // A ZoomMode of AutoValue means it will zoom on time, and auto Adjust the Value to fit the data.
 export interface IProps {
@@ -63,11 +65,14 @@ export interface IProps {
     legendHeight?: number,
     legendWidth?: number,
     useMetricFactors?: boolean,
+    showDateOnTimeAxis?: boolean,
+    cursorOverride?: string,
     onSelect?: (x: number, y: number[], actions: IActionFunctions) => void,
     onDataInspect?: (tDomain: [number,number]) => void,
     Ymin?: number | number[],
     Ymax?: number | number[],
-    zoomMode?: 'Time'|'Rect'|'AutoValue'
+    zoomMode?: 'Time'|'Rect'|'AutoValue',
+    snapMouse?: boolean
 }
 
 const SvgStyle: React.CSSProperties = {
@@ -106,6 +111,8 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
     const [mouseIn, setMouseIn] = React.useState<boolean>(false);
     const [mousePosition, setMousePosition] = React.useState<[number, number]>([0, 0]);
     const [mouseClick, setMouseClick] = React.useState<[number, number]>([0, 0]);
+    const [mouseStyle, setMouseStyle] = React.useState<string>("default");
+    const moveRequested = React.useRef<boolean>(false);
 
     const [offsetTop, setOffsetTop] = React.useState<number>(10);
     const [offsetBottom, setOffsetBottom] = React.useState<number>(10);
@@ -301,6 +308,24 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
     }, [yDomain, offsetTop, offsetBottom, svgHeight]);
 
     React.useEffect(() => { setUpdateFlag((x) => x+1) }, [tScale,tOffset,yScale,yOffset])
+    
+    // Change mouse cursor
+    React.useEffect(() => {
+      let newCursor;
+      if (props.cursorOverride == null) {
+        switch (selectedMode){
+          case 'pan':
+            newCursor = 'grab';
+            break;
+          case 'select':
+            newCursor = 'pointer';
+            break;
+          default:
+            newCursor = 'default';
+        }
+      } else newCursor = props.cursorOverride;
+      setMouseStyle(newCursor);
+    }, [selectedMode, props.cursorOverride])
 
     // transforms from pixels into x value. result passed into onClick function 
     const xInvTransform = React.useCallback((p: number) =>  {
@@ -458,6 +483,13 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
       }
 
     function handleMouseMove(evt: any) {
+      if (!moveRequested.current)
+        requestAnimationFrame(() => mouseMoveEvent(evt));
+      moveRequested.current = true;
+    }
+
+    function mouseMoveEvent(evt: any) {
+      moveRequested.current = false;
       if (SVGref.current == null)
         return;
       const pt = SVGref.current!.createSVGPoint();
@@ -494,11 +526,26 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
         }
       }
 
+      let handlerPt = ptTransform;
+      if(props.snapMouse ?? false){
+        const findClosestPoint = (result: { x: number, y: number, distSqr: number|undefined }, series: IDataSeries) => {
+          if (series.getPoint != null) {
+            const pt = series.getPoint(ptTransform.x);
+            if (pt === undefined) return result;
+            const ptPixel = [xTransform(pt[0]), yTransform(pt[1], AxisMap.get(series.axis))];
+            const distSqr = (ptPixel[1]-ptTransform.y)^2+(ptPixel[0]-ptTransform.x)^2;
+            if (result.distSqr === undefined || distSqr < result.distSqr)
+              return {x: ptPixel[0], y: ptPixel[1], distSqr: distSqr};
+          }
+          return result;
+        }
+        handlerPt = [...data.values()].reduce((result: { x: number, y: number, distSqr: number|undefined }, series: IDataSeries) => findClosestPoint(result, series), { x: 0, y: 0, distSqr: undefined });
+      }
+
       if (handlers.current.size > 0)
-        handlers.current.forEach((v) => (v.onMove !== undefined? v.onMove(xInvTransform(ptTransform.x), yInvTransform(ptTransform.y, v.axis)) : null));
+        handlers.current.forEach((v) => (v.onMove !== undefined? v.onMove(xInvTransform(handlerPt.x), yInvTransform(handlerPt.y, v.axis)) : null));
 
-      setMousePosition([ptTransform.x, ptTransform.y])
-
+      setMousePosition([ptTransform.x, ptTransform.y]);
     }
 
     function handleMouseDown(evt: any) {
@@ -512,8 +559,10 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
         setMouseClick([ptTransform.x, ptTransform.y]);
         if (selectedMode === 'zoom' && (props.zoom === undefined || props.zoom))
             setMouseMode('zoom');
-        if (selectedMode === 'pan' && (props.pan === undefined || props.pan))
+        if (selectedMode === 'pan' && (props.pan === undefined || props.pan)) {
             setMouseMode('pan');
+            setMouseStyle('grabbing');
+        }
         if (selectedMode === 'select' && props.onSelect !== undefined)
           props.onSelect(
             xInvTransform(ptTransform.x),
@@ -527,33 +576,34 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
     }
 
     function handleMouseUp(_: any) {
-        if (mouseMode === 'zoom') {
+      if (selectedMode === 'pan' && (props.pan === undefined || props.pan))
+          setMouseStyle('grab');
+      if (mouseMode === 'zoom') {
 
-            if (Math.abs(mousePosition[0] - mouseClick[0]) < 10) {
-                setMouseMode('none');
-                return;
+          if (Math.abs(mousePosition[0] - mouseClick[0]) < 10) {
+              setMouseMode('none');
+              return;
+          }
+
+          const t0 = Math.min(xInvTransform(mousePosition[0]), xInvTransform(mouseClick[0]));
+          const t1 = Math.max(xInvTransform(mousePosition[0]), xInvTransform(mouseClick[0]));
+
+          setTdomain((curr) =>  [Math.max(curr[0], t0), Math.min(curr[1], t1)]);
+
+          if (zoomMode === 'Rect') {
+            const zoomYAxis = (domain: [number,number], axis: number, allDomains: [number, number][]): boolean => {
+              const y0 = Math.min(yInvTransform(mousePosition[1], axis), yInvTransform(mouseClick[1], axis));
+              const y1 = Math.max(yInvTransform(mousePosition[1], axis), yInvTransform(mouseClick[1], axis));
+              allDomains[axis] = [Math.max(domain[0], y0), Math.min(domain[1], y1)];
+              return true;
             }
+            applyToYDomain(zoomYAxis);
+          }
+      }
+      setMouseMode('none');
 
-            const t0 = Math.min(xInvTransform(mousePosition[0]), xInvTransform(mouseClick[0]));
-            const t1 = Math.max(xInvTransform(mousePosition[0]), xInvTransform(mouseClick[0]));
-
-            setTdomain((curr) =>  [Math.max(curr[0], t0), Math.min(curr[1], t1)]);
-
-            if (zoomMode === 'Rect') {
-              const zoomYAxis = (domain: [number,number], axis: number, allDomains: [number, number][]): boolean => {
-                const y0 = Math.min(yInvTransform(mousePosition[1], axis), yInvTransform(mouseClick[1], axis));
-                const y1 = Math.max(yInvTransform(mousePosition[1], axis), yInvTransform(mouseClick[1], axis));
-                allDomains[axis] = [Math.max(domain[0], y0), Math.min(domain[1], y1)];
-                return true;
-              }
-              applyToYDomain(zoomYAxis);
-            }
-        }
-        setMouseMode('none');
-
-        if (handlers.current.size > 0 && selectedMode === 'select')
-          handlers.current.forEach((v) => (v.onRelease !== undefined? v.onRelease(xTransform(mousePosition[0]), yTransform(mousePosition[1], v.axis)) : null));
-
+      if (handlers.current.size > 0 && selectedMode === 'select')
+        handlers.current.forEach((v) => (v.onRelease !== undefined? v.onRelease(xTransform(mousePosition[0]), yTransform(mousePosition[1], v.axis)) : null));
     }
 
     function handleMouseOut(_: any) {
@@ -618,14 +668,14 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
         UpdateSelect={updateSelect}
       >
           <div style={{ height: props.height, width: props.width, position: 'relative' }}>
-              <div style={{ height: svgHeight, width: svgWidth, position: 'absolute' }}
+              <div style={{ height: svgHeight, width: svgWidth, position: 'absolute', cursor: mouseStyle }}
                   onWheel={handleMouseWheel} onMouseMove={handleMouseMove} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} onMouseLeave={handleMouseOut} onMouseEnter={handleMouseIn} >
                   <svg ref={SVGref} width={svgWidth < 0? 0 : svgWidth} height={svgHeight < 0 ? 0 : svgHeight}
                    style={SvgStyle} viewBox={`0 0 ${svgWidth < 0? 0 : svgWidth} ${svgHeight < 0 ? 0 : svgHeight}`}>
                       { props.showBorder !== undefined && props.showBorder ? < path stroke='black' d={`M ${offsetLeft} ${offsetTop} H ${svgWidth- offsetRight} V ${svgHeight - offsetBottom} H ${offsetLeft} Z`} /> : null}
                       { props.XAxisType === 'time' || props.XAxisType === undefined ?
                       <TimeAxis label={props.Tlabel} offsetBottom={offsetBottom} offsetLeft={offsetLeft} offsetRight={offsetRight} width={svgWidth} height={svgHeight} setHeight={setHeightXLabel} 
-                        heightAxis={heightXLabel} showLeftMostTick={!yHasData[0]}  showRightMostTick={!yHasData[1]} /> :
+                        heightAxis={heightXLabel} showLeftMostTick={!yHasData[0]}  showRightMostTick={!yHasData[1]} showDate={props.showDateOnTimeAxis} /> :
                       <LogAxis offsetTop={offsetTop} showGrid={props.showGrid} label={props.Tlabel} offsetBottom={offsetBottom} offsetLeft={offsetLeft} offsetRight={offsetRight} width={svgWidth} 
                         height={svgHeight} setHeight={setHeightXLabel} heightAxis={heightXLabel} showLeftMostTick={!yHasData[0]}  showRightMostTick={!yHasData[1]} /> }
                       {yHasData[0] ? <ValueAxis offsetRight={offsetRight} showGrid={props.showGrid} label={typeCorrect<string>(props.Ylabel, 0)} offsetTop={offsetTop} offsetLeft={offsetLeft} offsetBottom={offsetBottom}
@@ -646,7 +696,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
                                        return null;
                                    if ((element as React.ReactElement<any>).type === Line || (element as React.ReactElement<any>).type === LineWithThreshold || (element as React.ReactElement<any>).type === Infobox ||
                                    (element as React.ReactElement<any>).type === HorizontalMarker || (element as React.ReactElement<any>).type === VerticalMarker || (element as React.ReactElement<any>).type === SymbolicMarker
-                                   || (element as React.ReactElement<any>).type === Circle || (element as React.ReactElement<any>).type === AggregatingCircles
+                                   || (element as React.ReactElement<any>).type === Circle || (element as React.ReactElement<any>).type === AggregatingCircles || (element as React.ReactElement<any>).type === HeatMapChart
                                     )
                                        return element;
                                    return null;

@@ -72,12 +72,13 @@ export const GraphContext = React.createContext({
 export interface IDataSeries {
   getMin: (tDomain: [number, number]) => number| undefined,
   getMax: (tDomain: [number, number]) => number|undefined,
+  getPoint: (xValue: number) => [...number[]]|undefined,
   axis: AxisIdentifier|undefined,
-  legend?: HTMLElement| React.ReactElement| JSX.Element,
+  legend?: HTMLElement| React.ReactElement| JSX.Element
 }
 
 export type LineStyle = '-'|':';
-
+export type FillStyle = 'fill';
 export type AxisIdentifier = 'left'|'right'; 
 
 class AxisMapClass<T, U> {

@@ -69,7 +69,7 @@ function LineWithThreshold(props: IProps) {
        else {
            const point = data.GetPoint(context.XHover);
            if (point != null)
-               setHighlight(point);
+               setHighlight(point as [number, number]);
        }
    }, [data, context.XHover])
 
