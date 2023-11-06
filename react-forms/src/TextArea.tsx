@@ -39,24 +39,22 @@ interface IProps<T> {
 }
 
 export default function TextArea<T>(props: IProps<T>) {
-  const [guid, setGuid] = React.useState<string>("");
+  const internal = React.useRef<boolean>(false)
+  const guid = React.useRef<string>(CreateGuid())
+  
   const [showHelp, setShowHelp] = React.useState<boolean>(false);
-  const [internal, setInternal] = React.useState<boolean>(false);
   const [heldVal, setHeldVal] = React.useState<string>('');
   
   React.useEffect(() => {
-    if (!internal) {
+    if (!internal.current) {
       setHeldVal(props.Record[props.Field] == null ? '' : (props.Record[props.Field] as any).toString());
     }
-    setInternal(false);
+    internal.current = false;
+
    }, [props.Record[props.Field]]);
 
-  React.useEffect(() => {
-      setGuid(CreateGuid());
-  }, []);
-
   function valueChange(value: string) {
-    setInternal(true);
+    internal.current = true;
     props.Setter({ ...props.Record, [props.Field]: value !== '' ? value : null });
     setHeldVal(value);
    }
@@ -72,7 +70,7 @@ export default function TextArea<T>(props: IProps<T>) {
             {showHelpIcon ? <div style={{ width: 20, height: 20, borderRadius: '50%', display: 'inline-block', background: '#0D6EFD', marginLeft: 10, textAlign: 'center', fontWeight: 'bold' }} onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)}> ? </div> : null}
         </label> : null}
     {showHelpIcon ?
-        <HelperMessage Show={showHelp} Target={guid}>
+        <HelperMessage Show={showHelp} Target={guid.current}>
             {props.Help}
         </HelperMessage>
         : null}
