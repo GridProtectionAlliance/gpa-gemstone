@@ -79,11 +79,17 @@ export interface TableProps<T> {
      * Minimum width of a collumn when allowResize is true
      */
     MinColWidth?: number;
+    /**
+     * Function that updates the width of the Table - primary use is for collumn counting in Cnfigurable Table
+     * @param w - the width of the table in px
+     * @returns - void
+     */
+        UpdateWidth?: (w:number) => void
 }
 
 interface IWidth { header: number|undefined, row: number|undefined }
 
-function Table<T>(props: TableProps<T>) {
+export function Table<T>(props: TableProps<T>) {
     const measuredWidth = React.useRef(new Map<string, IWidth>());
     const incWidthChange = React.useRef(0);
 
@@ -94,6 +100,41 @@ function Table<T>(props: TableProps<T>) {
     const [fixedWidths, setFixedWidths] = React.useState<Map<string, IWidth>>(new Map<string, IWidth>());
     const [positionX, setPositionX] = React.useState<number>(0);
     const [totalWidth, setTotalWidth] = React.useState<number>(0);
+
+    const nRow = React.useMemo(() => props.cols.length, [props.cols])
+
+    React.useEffect(() => { if (props.UpdateWidth !== undefined) props.UpdateWidth(totalWidth); }, [totalWidth])
+
+    ReactExtension.useEffectWithPrevious((r: number) => {
+        if (r == 0 || r === undefined) return;
+        const updatedWidth = _.cloneDeep(fixedWidths);
+        const measuredPrevTotal = Array.from(measuredWidth.current.keys()).reduce((s, k) => {
+            return s + Math.max((measuredWidth.current.get(k)?.header ?? 0), minimumColWidth);
+        }, 0);
+
+        let diff = measuredPrevTotal - totalWidth;
+
+        props.cols.forEach((c) => {
+            if (!measuredWidth.current.has(c.key))
+                updatedWidth.set(c.key, { row: minimumColWidth, header: minimumColWidth })
+        })
+        let keys = props.cols
+            .filter(c => (c.allowResize ?? true) && updatedWidth.has(c.key) &&
+                updatedWidth.get(c.key).header > minimumColWidth && updatedWidth.get(c.key).row > minimumColWidth).map(c => c.key);
+
+        while (keys.length > 0 && Math.abs(diff) > 1) {
+            const deltaCol = diff / keys.length;
+            keys.forEach(k => {
+                const dCol = determineMaxMovement(updatedWidth.get(k), deltaCol);
+                updatedWidth.get(k).header -= dCol;
+                updatedWidth.get(k).row -= dCol;
+                diff = diff - dCol;
+            });
+            keys = keys.filter(c => updatedWidth.get(c).header > minimumColWidth && updatedWidth.get(c).row > minimumColWidth)
+        }
+        setFixedWidths(updatedWidth);
+
+    }, nRow)
 
     ReactExtension.useEffectWithPrevious((prevWidth: number) => {
         if (totalWidth === 0 || prevWidth === 0) return;
