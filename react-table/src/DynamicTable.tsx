@@ -24,6 +24,9 @@
 
 import * as React from 'react';
 import { Column, Header, Rows } from './Table';
+import { noop } from 'lodash';
+
+const empty = new Map<string,any>();
 
 export interface DynamicTableProps<T> {
   /**
@@ -53,7 +56,7 @@ export interface DynamicTableProps<T> {
 
 export function DynamicTable<T>(props: DynamicTableProps<T>) {
     if (props.data.length <= 0) return null;
-
+    
     const cols: Column<T>[] = [];
     const keys = Object.keys(props.data[0]);
     for (const key of keys) {
@@ -62,8 +65,14 @@ export function DynamicTable<T>(props: DynamicTableProps<T>) {
 
   return (
     <table className={props.tableClass !== undefined ? props.tableClass : ''} style={props.tableStyle}>
-      <Header<T> Class={props.theadClass} Style={props.theadStyle} Cols={cols} SortKey={props.sortKey} Ascending={props.ascending} Click={(d) => handleSort(d)} />
-      <Rows<T> Data={props.data} Cols={cols} RowStyle={props.rowStyle} BodyStyle={props.tbodyStyle} BodyClass={props.tbodyClass} Click={(data,e) => props.onClick(data, e)} Selected={props.selected} KeySelector={props.keySelector} />
+      <Header<T> Class={props.theadClass} Style={props.theadStyle} 
+        Cols={cols} SortKey={props.sortKey} Ascending={props.ascending}
+        Click={(d) => handleSort(d)} SetResizeColIndex={() => { noop }} 
+        AllowResize={false} Width={empty} MeasureWidth={() => {noop }} />
+      <Rows<T> Data={props.data} Cols={cols} RowStyle={props.rowStyle}
+       BodyStyle={props.tbodyStyle} BodyClass={props.tbodyClass} 
+       Click={(data, e) => props.onClick(data, e)} Selected={props.selected} KeySelector={props.keySelector}
+        Width={empty} MeasureWidth={() => { noop }} SetTBodyWidth={() => { noop }} />
     </table>
   );
 
