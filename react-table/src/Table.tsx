@@ -22,8 +22,9 @@
 //  ******************************************************************************************************
 
 import { SVGIcons } from '@gpa-gemstone/gpa-symbols';
-import { GetNodeSize, findLastIndex, React as ReactExtension} from '@gpa-gemstone/helper-functions';
+import { GetNodeSize, findLastIndex, useEffectWithPrevious } from '@gpa-gemstone/helper-functions';
 import * as React from 'react';
+import * as _ from 'lodash';
 
 export interface Column<T> {
     key: string;
@@ -89,7 +90,7 @@ export interface TableProps<T> {
 
 interface IWidth { header: number|undefined, row: number|undefined }
 
-export function Table<T>(props: TableProps<T>) {
+export default function Table<T>(props: TableProps<T>) {
     const measuredWidth = React.useRef(new Map<string, IWidth>());
     const incWidthChange = React.useRef(0);
 
@@ -105,8 +106,8 @@ export function Table<T>(props: TableProps<T>) {
 
     React.useEffect(() => { if (props.UpdateWidth !== undefined) props.UpdateWidth(totalWidth); }, [totalWidth])
 
-    ReactExtension.useEffectWithPrevious((r: number) => {
-        if (r == 0 || r === undefined) return;
+    useEffectWithPrevious((r: number|undefined) => {
+        if (r === 0 || r === undefined) return;
         const updatedWidth = _.cloneDeep(fixedWidths);
         const measuredPrevTotal = Array.from(measuredWidth.current.keys()).reduce((s, k) => {
             return s + Math.max((measuredWidth.current.get(k)?.header ?? 0), minimumColWidth);
@@ -120,24 +121,26 @@ export function Table<T>(props: TableProps<T>) {
         })
         let keys = props.cols
             .filter(c => (c.allowResize ?? true) && updatedWidth.has(c.key) &&
-                updatedWidth.get(c.key).header > minimumColWidth && updatedWidth.get(c.key).row > minimumColWidth).map(c => c.key);
+                (updatedWidth?.get(c.key)?.header ?? 0) > minimumColWidth && (updatedWidth?.get(c.key)?.row ?? 0) > minimumColWidth).map(c => c.key);
 
         while (keys.length > 0 && Math.abs(diff) > 1) {
             const deltaCol = diff / keys.length;
             keys.forEach(k => {
-                const dCol = determineMaxMovement(updatedWidth.get(k), deltaCol);
-                updatedWidth.get(k).header -= dCol;
-                updatedWidth.get(k).row -= dCol;
+                const dCol = determineMaxMovement(updatedWidth?.get(k), deltaCol);
+                
+                updatedWidth.get(k)!.header = (updatedWidth.get(k)?.header ?? 0) - dCol;
+                updatedWidth.get(k)!.row = (updatedWidth.get(k)?.row ?? 0) - dCol;
+                
                 diff = diff - dCol;
             });
-            keys = keys.filter(c => updatedWidth.get(c).header > minimumColWidth && updatedWidth.get(c).row > minimumColWidth)
+            keys = keys.filter(c => (updatedWidth?.get(c)?.header ?? 0) > minimumColWidth && (updatedWidth?.get(c)?.row ?? 0) > minimumColWidth)
         }
         setFixedWidths(updatedWidth);
 
     }, nRow)
 
-    ReactExtension.useEffectWithPrevious((prevWidth: number) => {
-        if (totalWidth === 0 || prevWidth === 0) return;
+    useEffectWithPrevious((prevWidth: number|undefined) => {
+        if (totalWidth === 0 || prevWidth === 0 || prevWidth === undefined) return;
         if (props.allowResize === undefined || !props.allowResize) return;
         const change = prevWidth - totalWidth;
         if (Math.abs(change + incWidthChange.current) < 10) {
@@ -156,17 +159,17 @@ export function Table<T>(props: TableProps<T>) {
         //return;
         let keys = props.cols
             .filter(c => (c.allowResize ?? true) && updatedWidth.has(c.key) &&
-                updatedWidth.get(c.key).header > minimumColWidth && updatedWidth.get(c.key).row > minimumColWidth).map(c => c.key);
+                (updatedWidth?.get(c.key)?.header ?? 0) > minimumColWidth && (updatedWidth?.get(c.key)?.row ?? 0)> minimumColWidth).map(c => c.key);
 
         while (keys.length > 0 && Math.abs(diff) > 1) {
             const deltaCol = diff / keys.length;
             keys.forEach(k => {
                 const dCol = determineMaxMovement(updatedWidth.get(k), deltaCol);
-                updatedWidth.get(k).header -= dCol;
-                updatedWidth.get(k).row -= dCol;
+                updatedWidth.get(k)!.header = (updatedWidth.get(k)?.header ?? 0) - dCol;
+                updatedWidth.get(k)!.row = (updatedWidth.get(k)?.row ?? 0) - dCol;
                 diff = diff - dCol;
             });
-            keys = keys.filter(c => updatedWidth.get(c).header > minimumColWidth && updatedWidth.get(c).row > minimumColWidth)
+            keys = keys.filter(c => (updatedWidth?.get(c)?.header ?? 0) > minimumColWidth && (updatedWidth?.get(c)?.row ?? 0) > minimumColWidth)
         }
         setFixedWidths(updatedWidth);
     }, totalWidth)
@@ -207,10 +210,10 @@ export function Table<T>(props: TableProps<T>) {
             return;
 
         
-        whLeft = measuredWidth.current.get(props.cols[resizingCol - 1].key).header;
-        whRight = measuredWidth.current.get(props.cols[resizingCol].key).header;
-        wLeft = measuredWidth.current.get(props.cols[resizingCol - 1].key).row;
-        wRight = measuredWidth.current.get(props.cols[resizingCol].key).row;
+        whLeft = measuredWidth.current.get(props.cols[resizingCol - 1].key)?.header ?? 0;
+        whRight = measuredWidth.current.get(props.cols[resizingCol].key)?.header ?? 0;
+        wLeft = measuredWidth.current.get(props.cols[resizingCol - 1].key)?.row ?? 0;
+        wRight = measuredWidth.current.get(props.cols[resizingCol].key)?.row ?? 0;
 
         if (dW > 0)
             dW = determineMaxMovement(measuredWidth.current.get(props.cols[resizingCol - 1].key), dW);
@@ -228,37 +231,39 @@ export function Table<T>(props: TableProps<T>) {
             if (!u.has(props.cols[resizingCol - 1].key))
                 u.set(props.cols[resizingCol - 1].key, { header: undefined, row: undefined });
             else {
-                whLeft = u.get(props.cols[resizingCol - 1].key).header;
-                wLeft = u.get(props.cols[resizingCol - 1].key).row;
+                whLeft = u.get(props.cols[resizingCol - 1].key)?.header ?? 0;
+                wLeft = u.get(props.cols[resizingCol - 1].key)?.row ?? 0;
             } 
             if (!u.has(props.cols[resizingCol].key))
                 u.set(props.cols[resizingCol].key, { header: undefined, row: undefined });
             else {
-                whRight = u.get(props.cols[resizingCol].key).header;
-                wRight = u.get(props.cols[resizingCol].key).row;
+                whRight = u.get(props.cols[resizingCol].key)?.header ?? 0;
+                wRight = u.get(props.cols[resizingCol].key)?.row ?? 0;
             } 
 
-            u.get(props.cols[resizingCol - 1].key).header = whLeft - dW;
-            u.get(props.cols[resizingCol].key).header = whRight + dW;
-            u.get(props.cols[resizingCol - 1].key).row = wLeft - dW;
-            u.get(props.cols[resizingCol].key).row = wRight + dW;
+            u.get(props.cols[resizingCol - 1].key)!.header = whLeft - dW;
+            u.get(props.cols[resizingCol].key)!.header = whRight + dW;
+            u.get(props.cols[resizingCol - 1].key)!.row = wLeft - dW;
+            u.get(props.cols[resizingCol].key)!.row = wRight + dW;
 
             return u;
         });
 
     }, [resizingCol, positionX]);
 
-    const determineMaxMovement = (w: IWidth, dW: number) => {
+    const determineMaxMovement = (w: IWidth|undefined, dW: number) => {
         if (dW < 0)
             return dW;
-        if (w.header <= minimumColWidth || w.row <= minimumColWidth)
+        if (w === undefined)
+            return 0;
+        if ((w.header ?? 0) <= minimumColWidth || (w.row ?? 0) <= minimumColWidth)
             return 0;
         if (w.row === undefined || w.row === 0)
-            return Math.min(dW, (w.header - minimumColWidth))
+            return Math.min(dW, ((w.header ?? 0)- minimumColWidth))
         if (w.header === undefined || w.header === 0)
             return Math.min(dW, (w.row - minimumColWidth))
 
-        let ratio = w.header / w.row;
+        const ratio = w.header / w.row;
         if (ratio > 1)
             return Math.min(dW, (w.row - minimumColWidth))
         return Math.min(dW, (w.header - minimumColWidth))
@@ -266,12 +271,12 @@ export function Table<T>(props: TableProps<T>) {
 
     const measureRowWidth = React.useCallback((key: string, width: number) => {
         if (measuredWidth.current.has(key))
-            measuredWidth.current.get(key).row = width;
+            measuredWidth.current.get(key)!.row = width;
         else
             measuredWidth.current.set(key, { header: undefined, row: width });
 
         const canResize = props.cols.find(c => c.key === key)?.allowResize ?? true;
-        if ((!fixedWidths.has(key) || fixedWidths.get(key).row === undefined))
+        if ((!fixedWidths.has(key) || (fixedWidths.get(key)?.row === undefined)))
             setFixedWidths((d) => {
                 const u = new Map<string, IWidth>(d);
                 u.set(key, { header: u.get(key)?.header, row: width })
@@ -282,11 +287,11 @@ export function Table<T>(props: TableProps<T>) {
 
     const measureHeaderWidth = React.useCallback((key: string, width: number) => {
         if (measuredWidth.current.has(key))
-            measuredWidth.current.get(key).header = width;
+            measuredWidth.current.get(key)!.header = width;
         else
             measuredWidth.current.set(key, { header: width, row: undefined });
 
-        if ((!fixedWidths.has(key) || fixedWidths.get(key).header === undefined))
+        if ((!fixedWidths.has(key) || fixedWidths.get(key)!.header === undefined))
             setFixedWidths((d) => {
                 const u = new Map<string, IWidth>(d);
                 u.set(key, { row: u.get(key)?.row, header: width })
@@ -342,7 +347,7 @@ interface IRowProps<T> {
     MeasureWidth: (key: string, width: number,) => void;
     SetTBodyWidth: (w: number) => void;
 }
-function Rows<T>(props: IRowProps<T>) {
+export function Rows<T>(props: IRowProps<T>) {
     const tbody = React.useRef(null);
 
     React.useLayoutEffect(() => {
