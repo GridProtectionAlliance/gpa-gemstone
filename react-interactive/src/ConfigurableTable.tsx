@@ -200,7 +200,7 @@ export default function ConfigurableTable<T>(props: IProps<T>) {
                     ConfirmBtnClass={'btn-primary float-left'}
                 >
                     {maxCollumns ? <div className="alert alert-primary">
-                        Due to the size of the browser window only {tblWidth / minWidth} collumns can be displayed. Please remove some collumns before adding more.
+                        Due to the size of the browser window only {Math.floor(tblWidth / minWidth)} columns can be displayed. Please remove some columns before adding more.
                     </div> : null}
                     <ColumnSelection<T> requiredColumns={props.requiredColumns}
                         columns={columns}
@@ -217,7 +217,7 @@ export default function ConfigurableTable<T>(props: IProps<T>) {
                         </div>
                         <div className="card-body" style={{ maxHeight: 'calc(100% - 210px)', overflowY: 'auto' }}>
                             {maxCollumns ? <div className="alert alert-primary">
-                                Due to the size of the browser window only {tblWidth / minWidth} collumns can be displayed. Please remove some collumns before adding more.
+                                Due to the size of the browser window only {Math.floor(tblWidth / minWidth)} columns can be displayed. Please remove some columns before adding more.
                             </div> : null}
                             <ColumnSelection<T>
                                 requiredColumns={props.requiredColumns}
@@ -263,7 +263,7 @@ function ColumnSelection<T>(props: IColSelectionProps<T>) {
                     Label={c.label.toString() ?? c.field.toString()}
                     Field={'selected'} Record={c} Setter={(r) => props.onChange(i)} key={c.key}
                     Disabled={c.key == props.sortKey || (props.disableAdd && !c.selected)}
-                    Help={c.key == props.sortKey ? 'The Table is currently sorted by this collumn so it can not be hidden.' : undefined}
+                    Help={c.key == props.sortKey ? 'The Table is currently sorted by this column so it cannot be hidden.' : undefined}
                 /> : null))}
             </div>
             <div className='col-4'>
@@ -271,7 +271,7 @@ function ColumnSelection<T>(props: IColSelectionProps<T>) {
                     Label={c.label.toString() ?? c.field.toString()}
                     Field={'selected'} Record={c} Setter={(r) => props.onChange(i)} key={c.key}
                     Disabled={c.key == props.sortKey || (props.disableAdd && !c.selected)}
-                    Help={c.key == props.sortKey ? 'The Table is currently sorted by this collumn so it can not be hidden.' : undefined}
+                    Help={c.key == props.sortKey ? 'The Table is currently sorted by this column so it cannot be hidden.' : undefined}
                 /> : null))}
             </div>
             <div className='col-4'>
@@ -279,7 +279,7 @@ function ColumnSelection<T>(props: IColSelectionProps<T>) {
                     Label={c.label.toString() ?? c.field.toString()}
                     Field={'selected'} Record={c} Setter={(r) => props.onChange(i)} key={c.key}
                     Disabled={c.key == props.sortKey || (props.disableAdd && !c.selected)}
-                    Help={c.key == props.sortKey ? 'The Table is currently sorted by this collumn so it can not be hidden.' : undefined}
+                    Help={c.key == props.sortKey ? 'The Table is currently sorted by this column so it cannot be hidden.' : undefined}
                 /> : null))}
             </div>
         </div>
