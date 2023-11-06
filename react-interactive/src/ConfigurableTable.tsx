@@ -28,7 +28,7 @@ import {Portal} from 'react-portal';
 import ToolTip from './ToolTip';
 import { CreateGuid } from '@gpa-gemstone/helper-functions';
 import { CheckBox } from '@gpa-gemstone/react-forms';
-
+import * as _ from 'lodash';
 
 interface IProps<T> extends TableProps<T> {
     /**
@@ -260,7 +260,7 @@ function ColumnSelection<T>(props: IColSelectionProps<T>) {
         <div className='row'>
             <div className='col-4'>
                 {cols.map((c, i) => (i%3 ==0? <CheckBox
-                    Label={c.label.toString() ?? c.field.toString()}
+                    Label={c.label?.toString() ?? c.field?.toString()}
                     Field={'selected'} Record={c} Setter={(r) => props.onChange(i)} key={c.key}
                     Disabled={c.key == props.sortKey || (props.disableAdd && !c.selected)}
                     Help={c.key == props.sortKey ? 'The Table is currently sorted by this column so it cannot be hidden.' : undefined}
@@ -268,7 +268,7 @@ function ColumnSelection<T>(props: IColSelectionProps<T>) {
             </div>
             <div className='col-4'>
                 {cols.map((c, i) => (i % 3 == 1 ? <CheckBox
-                    Label={c.label.toString() ?? c.field.toString()}
+                    Label={c.label?.toString() ?? c.field?.toString()}
                     Field={'selected'} Record={c} Setter={(r) => props.onChange(i)} key={c.key}
                     Disabled={c.key == props.sortKey || (props.disableAdd && !c.selected)}
                     Help={c.key == props.sortKey ? 'The Table is currently sorted by this column so it cannot be hidden.' : undefined}
@@ -276,7 +276,7 @@ function ColumnSelection<T>(props: IColSelectionProps<T>) {
             </div>
             <div className='col-4'>
                 {cols.map((c, i) => (i % 3 == 2 ? <CheckBox
-                    Label={c.label.toString() ?? c.field.toString()}
+                    Label={c.label?.toString() ?? c.field?.toString()}
                     Field={'selected'} Record={c} Setter={(r) => props.onChange(i)} key={c.key}
                     Disabled={c.key == props.sortKey || (props.disableAdd && !c.selected)}
                     Help={c.key == props.sortKey ? 'The Table is currently sorted by this column so it cannot be hidden.' : undefined}
