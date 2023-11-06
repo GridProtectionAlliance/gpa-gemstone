@@ -38,4 +38,4 @@ import { useEffectWithPrevious } from './React/useEffectWithPrevious';
 import { findLastIndex } from './FindLastIndex'
 namespace  React {useEffectWithPrevious}
 
-export {CreateGuid, GetTextWidth, GetNodeSize, RandomColor, GetTextHeight, IsNumber, IsInteger, IsCron, SpacedColor, HsvToHex, HexToHsv, React}
+export {CreateGuid, GetTextWidth, GetNodeSize, RandomColor, GetTextHeight, IsNumber, IsInteger, IsCron, SpacedColor, HsvToHex, HexToHsv, findLastIndex, React}
