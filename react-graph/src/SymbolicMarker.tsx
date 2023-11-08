@@ -32,7 +32,8 @@ export interface IProps {
   radius: number,
   setPosition?: (x: number, y: number) => void,
   onHover?: () => void,
-  axis?: AxisIdentifier
+  axis?: AxisIdentifier,
+  style?: React.CSSProperties
 }
 
 const SymbolicMarker: React.FunctionComponent<IProps> = (props) => {
@@ -110,9 +111,9 @@ const SymbolicMarker: React.FunctionComponent<IProps> = (props) => {
 
   return (
     <>
-      <SymbolicGraphic x={props.xPos} y={props.yPos} r={props.radius} a={AxisMap.get(props.axis)} inPixels={props.usePixelPositioning}>{props.children}</SymbolicGraphic>
+      <SymbolicGraphic style={props.style} x={props.xPos} y={props.yPos} r={props.radius} a={AxisMap.get(props.axis)} inPixels={props.usePixelPositioning}>{props.children}</SymbolicGraphic>
       {props.setPosition !== undefined && (props.xPos !== position.x || props.yPos !== position.y) ?
-        <SymbolicGraphic x={position.x} y={position.y} r={props.radius} a={AxisMap.get(props.axis)} inPixels={props.usePixelPositioning}>{props.children}</SymbolicGraphic>
+        <SymbolicGraphic style={props.style} x={position.x} y={position.y} r={props.radius} a={AxisMap.get(props.axis)} inPixels={props.usePixelPositioning}>{props.children}</SymbolicGraphic>
         : null}
     </>);
 }
@@ -122,6 +123,7 @@ interface IGraphicProps {
   y: number,
   r: number,
   a: number|AxisIdentifier,
+  style?: React.CSSProperties, 
   inPixels?: {x?: boolean, y?: boolean}
 }
 const SymbolicGraphic: React.FunctionComponent<IGraphicProps> = (props) => {
@@ -129,7 +131,7 @@ const SymbolicGraphic: React.FunctionComponent<IGraphicProps> = (props) => {
   const xPixels: number = (props.inPixels?.x ?? false) ? context.XApplyPixelOffset(props.x) : context.XTransformation(props.x); 
   const yPixels: number = (props.inPixels?.y ?? false) ? context.YApplyPixelOffset(props.y) : context.YTransformation(props.y, props.a); 
   return (
-    <foreignObject x={xPixels-props.r} y={yPixels-props.r} width={2*props.r} height={2*props.r}>
+    <foreignObject style={props.style} x={xPixels-props.r} y={yPixels-props.r} width={2*props.r} height={2*props.r}>
       {props.children}
     </foreignObject>
   );
