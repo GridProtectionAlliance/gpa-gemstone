@@ -1,7 +1,7 @@
 // ******************************************************************************************************
-//  index.ts - Gbtc
+//  IsRegex.tsx - Gbtc
 //
-//  Copyright � 2021, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2023, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -14,28 +14,26 @@
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
 //  License for the specific language governing permissions and limitations.
 //
-//  https://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid
-//
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  01/04/2021 - Billy Ernest
+//  11/09/2023 - Preston Crawford
 //       Generated original version of source code.
 //
 // ******************************************************************************************************
 
-import {CreateGuid} from './CreateGuid';
-import {GetTextWidth} from './GetTextWidth';
-import {GetTextHeight} from './GetTextHeight';
-import {GetNodeSize} from './GetNodeSize';
-import { RandomColor } from './RandomColor';
-import { IsNumber } from './IsNumber';
-import { IsInteger } from './IsInteger';
-import { IsCron } from './IsCron';
-import { SpacedColor } from './SpacedColor';
-import { HsvToHex } from "./HsvToHex";
-import { HexToHsv } from "./HexToHsv";
-import { useEffectWithPrevious } from './React/useEffectWithPrevious';
-import { findLastIndex } from './FindLastIndex'
-import { IsRegex } from './IsRegex';
-
-export {CreateGuid, GetTextWidth, GetNodeSize, RandomColor, GetTextHeight, IsNumber, IsInteger, IsCron, SpacedColor, HsvToHex, HexToHsv, findLastIndex, useEffectWithPrevious, IsRegex}
+/**
+ * This function checks if any regex is valid regex, returning true or false
+ * @param regex: regex is the string passed through the IsRegex function
+ * @returns Function will return true if regex is valid, false otherwise
+ */
+function IsRegex(regex: string): boolean {
+    try {
+        new RegExp(regex);
+        return true;
+    }
+    catch {
+        return false;
+    }
+  }
+  
+  export {IsRegex};

@@ -21,6 +21,7 @@
 //
 // ******************************************************************************************************
 
+import { HsvToHex } from './HsvToHex'
 // Spacing values
 let currentHue: number = Math.random();
 const GOLDEN_RATIO_CONJUGATE = 0.618033988749895;
@@ -38,44 +39,6 @@ const GOLDEN_RATIO_CONJUGATE = 0.618033988749895;
 function SpacedColor(saturation: number, value: number){
     currentHue = (currentHue + GOLDEN_RATIO_CONJUGATE) % 1;
     return HsvToHex(currentHue, saturation, value)
-}
-
-/**
- * Converts an HSV color value to RGB hex code. Conversion formula
- * adapted from http://en.wikipedia.org/wiki/HSV_color_space.
- * code from https://axonflux.com/handy-rgb-to-hsl-and-rgb-to-hsv-color-model-c.
- * Assumes h, s, and v are contained in the set [0, 1] and
- * returns color in hex code.
- *
- * @param   Number  h       The hue
- * @param   Number  s       The saturation
- * @param   Number  v       The value
- * @returns String          Spaced color in hex code.
- */
-function HsvToHex(h: number, s: number, v: number){
-    // tslint:disable-next-line
-    let r, g, b: number;
-
-    const i: number = Math.floor(h * 6);
-    const f: number = h * 6 - i;
-    const p: number = v * (1 - s);
-    const q: number = v * (1 - f * s);
-    const t: number = v * (1 - (1 - f) * s);
-
-    switch(i % 6){
-        case 0: r = v, g = t, b = p; break;
-        case 1: r = q, g = v, b = p; break;
-        case 2: r = p, g = v, b = t; break;
-        case 3: r = p, g = q, b = v; break;
-        case 4: r = t, g = p, b = v; break;
-        default: r = v, g = p, b = q; break;
-    }
-
-    function convertHex(deci: number) {
-        return ("00" + Math.floor(deci * 255).toString(16)).slice(-2);
-    }
-
-    return "#" + convertHex(r) + convertHex(g) + convertHex(b);
 }
 
 export {SpacedColor}

@@ -30,27 +30,33 @@ const MaxPoints = 20;
 export class PointNode {
     minT: number;
     maxT: number;
-    minY: number;
-    maxY: number;
-    avgY: number;
+    minV: number[];
+    maxV: number[];
+    avgV: number[];
+    // Count of all dimensions (including time)
+    dim: number;
 
     private children: PointNode[] | null;
-    private points: [number,number][] | null;
+    private points: [...number[]][] | null;
 
-    constructor(data: [number,number][]) {
+    constructor(data: [...number[]][]) {
+        this.dim = data[0].length;
         // That minimum time stamp that fits in this bucket
         this.minT = data[0][0];
         // The maximum time stamp that might fit in this bucket
         this.maxT = data[data.length - 1][0];
-        this.avgY = 0;
+        // Intializing other vars
+        this.avgV = Array(this.dim-1).fill(0);
+        this.minV = Array(this.dim-1).fill(0);
+        this.maxV = Array(this.dim-1).fill(0);
         this.children = null;
         this.points = null;
 
         if (data.length <= MaxPoints) {
+            if (data.some((point)=> point.length != this.dim)) throw new TypeError(`Jagged data passed to PointNode. All points should all be ${this.dim} dimensions.`)
             this.points = data;
-            this.minY = Math.min(...data.filter(pt => !isNaN(pt[1])).map(pt => pt[1]));
-            this.maxY = Math.max(...data.filter(pt => !isNaN(pt[1])).map(pt => pt[1]));
-            this.avgY = 0;
+            for (let index = 1; index < this.dim; index++) this.minV[index-1] = Math.min(...data.filter(pt => !isNaN(pt[index])).map(pt => pt[index]));
+            for (let index = 1; index < this.dim; index++) this.maxV[index-1] = Math.max(...data.filter(pt => !isNaN(pt[index])).map(pt => pt[index]));
             return;
         }
 
@@ -63,37 +69,51 @@ export class PointNode {
             this.children.push(new PointNode(data.slice(index, index + blockSize)));
             index = index + blockSize;
         }
+        for (let index = 0; index < this.dim-1; index++) this.minV[index] = Math.min(...this.children.map(node => node.minV[index]));
+        for (let index = 0; index < this.dim-1; index++) this.maxV[index] = Math.max(...this.children.map(node => node.maxV[index]));
+            }
 
-        this.avgY = 0;
-        this.maxY = Math.max(...this.children.map(node => node.maxY));
-        this.minY = Math.min(...this.children.map(node => node.minY));
-    }
-
-    public GetData(Tstart: number, Tend: number): [number,number][] {
+    public GetData(Tstart: number, Tend: number, IncludeEdges?: boolean): [...number[]][] {
         if (this.points != null && Tstart <= this.minT && Tend >= this.maxT)
             return this.points;
+        if (this.points != null && IncludeEdges !== undefined && IncludeEdges)
+            return this.points.filter((pt,i) => (pt[0] >= Tstart && pt[0] <= Tend) || 
+                i < ((this.points?.length ?? 0) -1) && (this.points?[i+1][0] : 0) >= Tstart || 
+                i > 0  && (this.points?[i-1][0] : 0)<= Tend);
         if (this.points != null)
-            return this.points.filter(pt => pt[0] >= Tstart && pt[1] <= Tend);
+            return this.points.filter(pt => pt[0] >= Tstart && pt[0] <= Tend );
+        
 
-        const result: [number,number][] = [];
-        return result.concat(...this.children!.filter(node => Tstart <= node.minT && Tend >= node.maxT).map(node => node.GetData(Tstart, Tend)));
+        const result: [...number[]][] = [];
+        return result.concat(...this.children!.filter(node => Tstart <= node.minT && Tend >= node.maxT).map(node => node.GetData(Tstart, Tend, IncludeEdges)));
     }
 
-    public GetFullData(): [number,number][] {
+    public GetFullData(): [...number[]][] {
       return this.GetData(this.minT,this.maxT);
     }
 
-    public GetLimits(Tstart: number, Tend: number): [number,number] {
-      let max = this.maxY;
-      let min = this.minY;
+    public GetAllLimits(Tstart: number, Tend: number): [number,number][] {
+        const result: [number, number][] = Array(this.dim-1); 
+        for(let index = 0; index < this.dim-1; index++)
+            result[index] = this.GetLimits(Tstart, Tend, index);
+        return result;
+    }
+
+    // Note: Dimension indexing does not include time, I.E. in (x,y), y would be dimension 0;
+    public GetLimits(Tstart: number, Tend: number, dimension?: number): [number,number] {
+      const currentIndex = dimension ?? 0;
+      let max = this.maxV[currentIndex];
+      let min = this.minV[currentIndex];
 
       if (this.points == null && !(Tstart <= this.minT && Tend > this.maxT)) {
-        const limits = this.children!.filter(n => n.maxT > Tstart && n.minT < Tend).map(n => n.GetLimits(Tstart,Tend));
+        // Array represents all limits of buckets
+        const limits = this.children!.filter(n => n.maxT > Tstart && n.minT < Tend).map(n => n.GetLimits(Tstart,Tend,currentIndex));
         min = Math.min(...limits.map(pt => pt[0]));
         max = Math.max(...limits.map(pt => pt[1]));
       }
       if (this.points != null && !(Tstart <= this.minT && Tend > this.maxT)) {
-        const limits = this.points!.filter(pt => pt[0] > Tstart && pt[0] < Tend).map(pt => pt[1]);
+        // Array represents all numbers within this bucket that fall in range
+        const limits = this.points!.filter(pt => pt[0] > Tstart && pt[0] < Tend).map(pt => pt[currentIndex+1]);
         min = Math.min(...limits);
         max = Math.max(...limits);
       }
@@ -105,9 +125,9 @@ export class PointNode {
      * Retrieves a point from the PointNode tree
      * @param {number} point - The point to retrieve from the tree
      */
-    public GetPoint(point: number): [number, number] {
+    public GetPoint(point: number): [...number[]] {
         // round point back to whole integer 
-        point = Math.round(point)
+        point = Math.round(point);
 
         // if the point is less than the minimum value of the subsection, return the first point
         if (point < this.minT && this.points !== null)

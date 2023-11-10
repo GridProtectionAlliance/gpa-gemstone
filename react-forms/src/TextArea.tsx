@@ -18,11 +18,15 @@
 //  ----------------------------------------------------------------------------------------------------
 //  01/22/2020 - Billy Ernest
 //       Generated original version of source code.
+//  11/03/2023 - C Lackner
+//       Added internal state to avoid cursor jumping.
 //
 // ******************************************************************************************************
 import * as React from 'react';
+import { CreateGuid } from '@gpa-gemstone/helper-functions'
+import HelperMessage from './HelperMessage';
 
-export default function TextArea<T>(props: {
+interface IProps<T> {
   Rows: number;
   Record: T;
   Field: keyof T;
@@ -31,26 +35,55 @@ export default function TextArea<T>(props: {
   Label?: string;
   Feedback?: string;
   Disabled?: boolean;
-}) {
+  Help?: string | JSX.Element;
+}
+
+export default function TextArea<T>(props: IProps<T>) {
+  const internal = React.useRef<boolean>(false)
+  const guid = React.useRef<string>(CreateGuid())
+  
+  const [showHelp, setShowHelp] = React.useState<boolean>(false);
+  const [heldVal, setHeldVal] = React.useState<string>('');
+  
+  React.useEffect(() => {
+    if (!internal.current) {
+      setHeldVal(props.Record[props.Field] == null ? '' : (props.Record[props.Field] as any).toString());
+    }
+    internal.current = false;
+
+   }, [props.Record[props.Field]]);
+
+  function valueChange(value: string) {
+    internal.current = true;
+    props.Setter({ ...props.Record, [props.Field]: value !== '' ? value : null });
+    setHeldVal(value);
+   }
+
+  const showLabel = props.Label !== "";
+  const showHelpIcon = props.Help !== undefined;
+  const label = props.Label === undefined ? props.Field : props.Label;
+
   return (
-    <div className="form-group">
-    {(props.Label !== "") ? <label>{props.Label === undefined ? props.Field : props.Label} </label> : null}
-      <textarea
+    <div className="form-group" data-help={guid}>
+    {showHelpIcon || showLabel ?
+        <label>{showLabel ? label : ''}
+            {showHelpIcon ? <div style={{ width: 20, height: 20, borderRadius: '50%', display: 'inline-block', background: '#0D6EFD', marginLeft: 10, textAlign: 'center', fontWeight: 'bold' }} onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)}> ? </div> : null}
+        </label> : null}
+    {showHelpIcon ?
+        <HelperMessage Show={showHelp} Target={guid.current}>
+            {props.Help}
+        </HelperMessage>
+        : null}
+    <textarea
         rows={props.Rows}
         className={props.Valid(props.Field) ? 'form-control' : 'form-control is-invalid'}
-        onChange={(evt) => {
-          const record: T = { ...props.Record };
-          if (evt.target.value !== '') record[props.Field] = evt.target.value as any;
-          else record[props.Field] = null as any;
-
-          props.Setter(record);
-        }}
-        value={props.Record[props.Field] == null ? '' : (props.Record[props.Field] as any).toString()}
+        onChange={(evt) => valueChange(evt.target.value)}
+        value={heldVal == null ? '' : heldVal}
         disabled={props.Disabled == null ? false : props.Disabled}
-      />
-      <div className="invalid-feedback">
+    />
+    <div className="invalid-feedback">
         {props.Feedback == null ? props.Field + ' is a required field.' : props.Feedback}
-      </div>
     </div>
-  );
+</div>
+);
 }

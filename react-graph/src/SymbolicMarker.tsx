@@ -40,6 +40,25 @@ const SymbolicMarker: React.FunctionComponent<IProps> = (props) => {
   const [isSelected, setSelected] = React.useState<boolean>(false);
   const [guid, setGuid] = React.useState<string>("");
 
+  const isInBounds = React.useCallback((xArg: number, yArg: number) => {
+    const xP = context.XTransformation(props.xPos);
+    const xT = context.XTransformation(xArg);
+    const yP = context.YTransformation(props.yPos, AxisMap.get(props.axis));
+    const yT = context.YTransformation(yArg, AxisMap.get(props.axis));
+    // Note: This is actually a rectangular box
+    return (xT <= xP + props.radius && xT >= xP - props.radius && yT <= yP + props.radius && yT >= yP - props.radius);
+  }, [props.axis, props.yPos, props.yPos, props.radius, AxisMap]);
+
+  const onClick = React.useCallback((xArg: number, yArg: number) => {
+    if (isInBounds(xArg,yArg))
+      setSelected(true);
+  }, [setSelected, isInBounds]);
+
+  const onMove = React.useCallback((xArg: number, yArg: number) => {
+    if (props.onHover !== undefined && isInBounds(xArg,yArg))
+      props.onHover();
+  }, [props.onHover, isInBounds]);
+
   React.useEffect(() => {
     const id = context.RegisterSelect({
       onRelease: (_) => setSelected(false),
@@ -63,7 +82,7 @@ const SymbolicMarker: React.FunctionComponent<IProps> = (props) => {
       onMove,
       axis: props.axis
     } as IHandlers)
-  }, [props.radius, props.xPos, props.yPos, props.axis]);
+  }, [onClick, onMove]);
 
   React.useEffect(() => {
     setPosition({x: props.xPos, y: props.yPos});
@@ -85,25 +104,6 @@ const SymbolicMarker: React.FunctionComponent<IProps> = (props) => {
     if (isSelected)
       setPosition({x: context.XHover, y: context.YHover[AxisMap.get(props.axis)]});
   }, [context.XHover, context.YHover]);
-
-  function isInBounds(xArg: number, yArg: number) {
-    const xP = context.XTransformation(props.xPos);
-    const xT = context.XTransformation(xArg);
-    const yP = context.YTransformation(props.yPos, AxisMap.get(props.axis));
-    const yT = context.YTransformation(yArg, AxisMap.get(props.axis));
-    // Note: This is actually a rectangular box
-    return (xT <= xP + props.radius && xT >= xP - props.radius && yT <= yP + props.radius && yT >= yP - props.radius);
-  }
-
-  function onClick(xArg: number, yArg: number): void {
-    if (isInBounds(xArg,yArg))
-      setSelected(true);
-  }
-
-  function onMove(xArg: number, yArg: number) {
-    if (props.onHover !== undefined && isInBounds(xArg,yArg))
-      props.onHover();
-  }
 
   return (
     <>

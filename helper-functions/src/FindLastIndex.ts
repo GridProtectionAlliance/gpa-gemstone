@@ -1,7 +1,7 @@
 // ******************************************************************************************************
-//  index.ts - Gbtc
+//  FindLastIndex.tsx - Gbtc
 //
-//  Copyright � 2021, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2023, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -14,28 +14,26 @@
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
 //  License for the specific language governing permissions and limitations.
 //
-//  https://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid
-//
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  01/04/2021 - Billy Ernest
+//  11/03/2023 - C. Lackner
 //       Generated original version of source code.
 //
 // ******************************************************************************************************
 
-import {CreateGuid} from './CreateGuid';
-import {GetTextWidth} from './GetTextWidth';
-import {GetTextHeight} from './GetTextHeight';
-import {GetNodeSize} from './GetNodeSize';
-import { RandomColor } from './RandomColor';
-import { IsNumber } from './IsNumber';
-import { IsInteger } from './IsInteger';
-import { IsCron } from './IsCron';
-import { SpacedColor } from './SpacedColor';
-import { HsvToHex } from "./HsvToHex";
-import { HexToHsv } from "./HexToHsv";
-import { useEffectWithPrevious } from './React/useEffectWithPrevious';
-import { findLastIndex } from './FindLastIndex'
-import { IsRegex } from './IsRegex';
+/**
+ * This function finds the last index where predicate is true
+ * @param array: array to e searched
+ * @param predicate: the function to be called on every element
+ * @returns Function will return the last index where predictae returns true or -1 if not found
+ */
+function findLastIndex<T>(array: Array<T>, predicate: (value: T, index: number, obj: T[]) => boolean): number {
+  let l = array.length;
+  while (l--) {
+      if (predicate(array[l], l, array))
+          return l;
+  }
+  return -1;
+}
 
-export {CreateGuid, GetTextWidth, GetNodeSize, RandomColor, GetTextHeight, IsNumber, IsInteger, IsCron, SpacedColor, HsvToHex, HexToHsv, findLastIndex, useEffectWithPrevious, IsRegex}
+export {findLastIndex};

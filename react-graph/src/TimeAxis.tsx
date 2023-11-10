@@ -37,6 +37,7 @@ export interface IProps {
   setHeight: (h: number) => void,
   label?: string,
   showTicks?: boolean,
+  showDate?: boolean,
   showRightMostTick?: boolean,
   showLeftMostTick?: boolean
 }
@@ -58,6 +59,7 @@ function TimeAxis(props: IProps) {
     const [hLabel, setHlabel] = React.useState<number>(0);
     const [hAxis, setHAxis] = React.useState<number>(0);
     const [tFormat, setTformat] = React.useState<string>('YYYY');
+    const [dFormat, setDformat] = React.useState<string>('');
 
     // Adjust space for X Axis labels
     React.useEffect(() => {
@@ -67,7 +69,7 @@ function TimeAxis(props: IProps) {
 
     // Adjust space for X Tick labels
     React.useEffect(() => {
-      let dX = Math.max(...tick.map(t => GetTextHeight("Segoe UI", '1em', formatTS(t))));
+      let dX = Math.max(...tick.map(t => GetTextHeight("Segoe UI", '1em', formatTS(t, tFormat))));
       dX = (isFinite(dX) ? dX : 0) + 12
       setHAxis(dX);
     },[tick,tFormat]);
@@ -82,25 +84,44 @@ function TimeAxis(props: IProps) {
       if (deltaT === 0)
         return;
 
-      let format = 'YYYY'
-      if (deltaT < msPerYear*15 && deltaT >= msPerYear)
+      let format = 'YYYY';
+      let dateFormat = '';
+      if (deltaT < msPerYear*15 && deltaT >= msPerYear) {
         format = 'MM YY';
-      if (deltaT < msPerYear && deltaT >= 30 * msPerDay)
+        dateFormat = '';
+      }
+      if (deltaT < msPerYear && deltaT >= 30 * msPerDay) {
         format = 'MM/DD';
-      if (deltaT < 30 * msPerDay && deltaT >=  2* msPerDay)
+        dateFormat = 'YY';
+      }
+      if (deltaT < 30 * msPerDay && deltaT >=  2* msPerDay) {
         format = 'MM/DD HH';
-      if (deltaT < 2* msPerDay && deltaT >=  30* msPerHour)
+        dateFormat = 'YY';
+      }
+      if (deltaT < 2* msPerDay && deltaT >=  30* msPerHour) {
         format = 'HH';
-      if (deltaT < 30* msPerHour && deltaT >=  msPerHour)
+        dateFormat = 'MM/DD';
+      }
+      if (deltaT < 30* msPerHour && deltaT >=  msPerHour) {
         format = 'HH:mm';
-      if (deltaT < msPerHour && deltaT >=  30* msPerMinute)
+        dateFormat = 'MM/DD';
+      }
+      if (deltaT < msPerHour && deltaT >=  30* msPerMinute) {
         format = 'mm';
-      if (deltaT < 30* msPerMinute && deltaT >=   msPerMinute)
+        dateFormat = 'MM/DD HH';
+      }
+      if (deltaT < 30* msPerMinute && deltaT >=   msPerMinute) {
         format = 'mm:ss';
-      if (deltaT < 30*msPerSecond && deltaT >=  msPerSecond)
+        dateFormat = 'MM/DD HH';
+      }
+      if (deltaT < 30*msPerSecond && deltaT >=  msPerSecond) {
         format = 'ss.SS';
-      if (deltaT < msPerSecond)
+        dateFormat = 'MM/DD HH:mm';
+      }
+      if (deltaT < msPerSecond) {
         format = 'SSS';
+        dateFormat = 'MM/DD HH:mm:ss';
+      }
 
       const Tstart = moment.utc(context.XDomain[0]);
       const Tend = moment.utc(context.XDomain[1]);
@@ -294,7 +315,10 @@ function TimeAxis(props: IProps) {
       setTick(newTicks.map(t => t.valueOf()));
 
       setTformat(format);
-    }, [context.XDomain]);
+
+      if (props.showDate ?? false) setDformat(dateFormat);
+      else setDformat('');
+    }, [context.XDomain, props.showDate]);
 
     function GetUnitLabel(): string {
       if (tFormat === 'SSS')
@@ -353,9 +377,9 @@ function TimeAxis(props: IProps) {
     }
 
 
-    function formatTS(t: number): string {
+    function formatTS(t: number, f: string): string {
       const TS = moment.utc(t);
-      return TS.format(tFormat);
+      return TS.format(f);
     }
 
     return (<g>
@@ -365,12 +389,12 @@ function TimeAxis(props: IProps) {
       {props.showTicks === undefined || props.showTicks ?
          <>
              {tick.map((l, i) => <path key={i} stroke='black' style={{ strokeWidth: 1, transition: 'd 0.5s' }} d={`M ${context.XTransformation(l)} ${props.height - props.offsetBottom + 6} v ${-6}`} />)}
-             {tick.map((l, i) => <text fill={'black'} key={i} style={{ fontSize: '1em', textAnchor: 'middle', dominantBaseline: 'hanging', transition: 'x 0.5s, y 0.5s' }} y={props.height - props.offsetBottom + 8} x={context.XTransformation(l)}>{formatTS(l)}</text>)}
+             {tick.map((l, i) => <text fill={'black'} key={i} style={{ fontSize: '1em', textAnchor: 'middle', dominantBaseline: 'hanging', transition: 'x 0.5s, y 0.5s' }} y={props.height - props.offsetBottom + 8} x={context.XTransformation(l)}>{formatTS(l, tFormat)}</text>)}
          </>
          : null}
      {props.label !== undefined? <text fill={'black'} style={{ fontSize: '1em', textAnchor: 'middle', dominantBaseline: 'middle' }} x={props.offsetLeft + (( props.width- props.offsetLeft - props.offsetRight) / 2)}
       y={props.height - props.offsetBottom + hAxis}>{props.label + GetUnitLabel()}</text> : null}
-
+    {(dFormat !== '' && tick.length > 0) ? <text fill={'black'} style={{ fontSize: '1em', textAnchor: 'end', dominantBaseline: 'middle' }} x={props.width - props.offsetRight} y={props.height - props.offsetBottom + hAxis}>{formatTS(tick[0], dFormat)}</text> : null}
     </g>)
 }
 

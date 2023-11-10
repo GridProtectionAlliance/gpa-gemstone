@@ -28,49 +28,54 @@ interface IProps {
   // Specifies the upper left corner of the box (or other spots depending on origin)
   x: number,
   y: number,
+  usePixelPositioning?: boolean,
   axis?: AxisIdentifier,
-  origin?: "upper-right" | "upper-left" | "upper-center",
+  origin?: "upper-right" | "upper-left" | "upper-center" | "lower-right" | "lower-left" | "lower-center",
   // Specifies the offset of the pox from the origin point, In pixels
   offset?: number,
-  // Specifies the dimensions of the box (in pixels)
-  width: number,
-  height: number,
+  // Dom ID of child, used for sizing of child
+  childId: string,
   opacity?: number,
   // Function to move box
-  setPosition?: (x: number, y: number) => void
+  setPosition?: (x: number, y: number) => void,
+  onMouseMove?: (x: number, y: number) => void
 }
 
 const Infobox: React.FunctionComponent<IProps> = (props) => {
   const context = React.useContext(GraphContext);
   const [isSelected, setSelected] = React.useState<boolean>(false);
   const [position, setPosition] = React.useState<{x: number, y: number}>({x: props.x, y: props.y});
+  const [dimension, setDimensions] = React.useState<{width: number, height: number}>({width: 100, height: 100});
   const [guid, setGuid] = React.useState<string>("");
   const offsetDefault = 0;
   
   // Functions
   const calculateX = React.useCallback((xArg: number) => {
-    let x: number = context.XTransformation(xArg);
+    let x: number = (props.usePixelPositioning ?? false) ? xArg : context.XTransformation(xArg);
     // Convert x/y to upper-left corner
     switch(props.origin) {
+      case "lower-right":
       case "upper-right": {
-        x -= (props.width + (props.offset ?? offsetDefault));
+        x -= (dimension.width + (props.offset ?? offsetDefault));
         break;
       }
+      case "lower-center":
       case "upper-center": {
-        x -= Math.floor(props.width / 2);
+        x -= Math.floor(dimension.width / 2);
         break;
       }
       // Do-nothing case
       case undefined: 
+      case "lower-left":
       case "upper-left":
         x += props.offset ?? offsetDefault;
         break;
     }
     return x;
-  }, [context.XTransformation, props.origin, props.offset]);
+  }, [context.XTransformation, props.origin, props.offset, props.usePixelPositioning, dimension]);
   
   const calculateY = React.useCallback((yArg: number) => {
-    let y: number = context.YTransformation(yArg, AxisMap.get(props.axis));
+    let y: number = (props.usePixelPositioning ?? false) ? yArg : context.YTransformation(yArg, AxisMap.get(props.axis));
     // Convert x/y to upper-left corner
     switch(props.origin) {
       case undefined: 
@@ -79,19 +84,29 @@ const Infobox: React.FunctionComponent<IProps> = (props) => {
       case "upper-center":
         y += props.offset ?? offsetDefault;
         break;
+      case "lower-left":
+      case "lower-right":
+      case "lower-center":
+        y -= (dimension.height + (props.offset ?? offsetDefault));
+        break;
     }
     return y;
-  }, [context.YTransformation, props.origin, props.offset, props.axis]);
+  }, [context.YTransformation, props.origin, props.offset, props.axis, props.usePixelPositioning, dimension]);
   
   const onClick = React.useCallback((xArg: number, yArg: number) => {
     const xP = calculateX(props.x);
     const xT = context.XTransformation(xArg);
     const yP = calculateY(props.y);
     const yT = context.YTransformation(yArg, AxisMap.get(props.axis));
-    if (xT <= xP + props.width && xT >= xP && yT <= yP + props.height && yT >= yP) {
+    if (xT <= xP + dimension.width && xT >= xP && yT <= yP + dimension.height && yT >= yP) {
       setSelected(true);
     }
-  }, [props.x, props.y, calculateX, calculateY, props.width, props.height, setSelected, context.XTransformation, context.YTransformation, props.axis]);
+  }, [props.x, props.y, calculateX, calculateY, dimension, setSelected, context.XTransformation, context.YTransformation, props.axis]);
+  
+  // Note: this is the only function not effected by usePixelPositioning
+  const onMove = props.onMouseMove === undefined ? undefined : React.useCallback((xArg: number, yArg: number) => {
+    if (props.onMouseMove !== undefined) props.onMouseMove(xArg, yArg);
+  }, [props.onMouseMove]);
 
 
   // useEffect
@@ -100,7 +115,8 @@ const Infobox: React.FunctionComponent<IProps> = (props) => {
       axis: props.axis,
       onRelease: (_) => setSelected(false),
       onPlotLeave: (_) => setSelected(false),
-      onClick
+      onClick,
+      onMove
     } as IHandlers)
     setGuid(id)
     return () => { context.RemoveSelect(id) }
@@ -114,9 +130,10 @@ const Infobox: React.FunctionComponent<IProps> = (props) => {
       axis: props.axis,
       onRelease: (_) => setSelected(false),
       onPlotLeave: (_) => setSelected(false),
-      onClick
+      onClick,
+      onMove
     } as IHandlers)
-  }, [onClick, props.axis]);
+  }, [onClick, onMove, props.axis]);
   
   React.useEffect(() => {
     setPosition({x: props.x, y: props.y});
@@ -138,15 +155,27 @@ const Infobox: React.FunctionComponent<IProps> = (props) => {
     if (isSelected)
       setPosition({x: context.XHover, y: context.YHover[AxisMap.get(props.axis)]});
   }, [context.XHover, context.YHover, props.axis]);
+  
+  // Get Heights and Widths
+  React.useEffect(() => {
+    const domEle = document.getElementById(props.childId);
+    if (domEle == null) {
+      console.error(`Invalid element id passed for child element in infobox ${props.childId}`);
+      setDimensions({width: 100, height: 100});
+      return;
+    }
+    if (dimension.width === Math.ceil(domEle.clientWidth) && dimension.height === Math.ceil(domEle.clientHeight)) return;
+    setDimensions({width: Math.ceil(domEle.clientWidth), height: Math.ceil(domEle.clientHeight)});
+  }, [props.children, props.childId]);
 
   return (
     <g>
-      <InfoGraphic x={calculateX(props.x)} y={calculateY(props.y)} width={props.width} height={props.height} opacity={props.opacity} />
-      <foreignObject x={calculateX(props.x)} y={calculateY(props.y)} width={props.width} height={props.height}>
+      <InfoGraphic x={calculateX(props.x)} y={calculateY(props.y)} width={dimension.width} height={dimension.height} opacity={props.opacity} />
+      <foreignObject x={calculateX(props.x)} y={calculateY(props.y)} width={dimension.width} height={dimension.height}>
         {props.children}
       </foreignObject>
       {props.setPosition !== undefined && (props.x !== position.x || props.y !== position.y) ?
-        <InfoGraphic x={calculateX(position.x)} y={calculateY(position.y)} width={props.width} height={props.height} opacity={props.opacity} />
+        <InfoGraphic x={calculateX(position.x)} y={calculateY(position.y)} width={dimension.width} height={dimension.height} opacity={props.opacity} />
         : null}
     </g>);
 }

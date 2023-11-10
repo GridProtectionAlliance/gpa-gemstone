@@ -67,11 +67,10 @@ function ProgressBar(props: IProps) {
     /// Styles for overall div
     const stepsStyle: React.CSSProperties = {
         height: props.height === undefined ? '100%' : props.height,
-        minHeight: '210px',
         width: props.width === undefined ? '100%' : props.width,
+        paddingTop: 17,
         minWidth: '210px',
         justifyContent: 'space-evenly',
-
     }
 
     /// Styles for gray bar
@@ -114,7 +113,7 @@ function ProgressBar(props: IProps) {
                         height: '60px',
                         width: 'calc(' + (100/props.steps.length).toString() + '%)',
                         marginTop: -17
-                    }}>
+                    }} key={x.id}>
                     <span style={{
                         ...circleStyle,
                         borderColor: i <= activeStep ? '#5DC177' : '#D3D3D3',
