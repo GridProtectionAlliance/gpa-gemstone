@@ -38,13 +38,13 @@ export interface IGraphContext extends IHandlerRegistration, IDataRegistration {
   YApplyPixelOffset: (y: number) => number,
   XTransformation: (x: number) => number,
   YTransformation: (y: number, axis: AxisIdentifier|number) => number,
-  
   UpdateFlag: number,
   XInverseTransformation: (p: number) => number,
   YInverseTransformation: (p: number, axis: AxisIdentifier|number) => number,
-
   SetXDomain: React.SetStateAction<[number,number]> | ((t: [number,number]) => void),
   SetYDomain:  React.SetStateAction<[number,number]> | ((t: [number,number][]) => void),
+  RequestLegendWidth: (width: number, requesterID: string) => void,
+  RequestLegendHeight: (height: number) => void
 }
 
 export const GraphContext = React.createContext({
@@ -74,6 +74,8 @@ export const GraphContext = React.createContext({
   UpdateSelect: (_) => undefined,
   SetXDomain: (_) => undefined,
   SetYDomain: (_: any) => undefined,
+  RequestLegendWidth: (_: number, __: string) => undefined,
+  RequestLegendHeight: (_: number) => undefined,
   UpdateFlag: 0
 } as IGraphContext);
 
@@ -154,6 +156,8 @@ interface IContextWrapperProps extends IHandlerRegistration, IDataRegistration {
   YInvTransform: (p: number, axis: AxisIdentifier|number) => number,
   SetXDomain: (x: [number,number]) => void,
   SetYDomain: (y: [number, number][]) => void,
+  RequestLegendWidth: (width: number, requesterID: string) => void,
+  RequestLegendHeight: (height: number) => void
 }
 
 export const ContextWrapper: React.FC<IContextWrapperProps> = (props) => {
@@ -182,6 +186,8 @@ export const ContextWrapper: React.FC<IContextWrapperProps> = (props) => {
     props.RegisterSelect,
     props.RemoveSelect,
     props.UpdateSelect,
+    props.RequestLegendWidth,
+    props.RequestLegendHeight,
   ]);
 
   function GetContext(): IGraphContext {
@@ -209,7 +215,9 @@ export const ContextWrapper: React.FC<IContextWrapperProps> = (props) => {
         UpdateSelect: props.UpdateSelect,
         UpdateFlag: props.UpdateFlag,
         SetXDomain: props.SetXDomain,
-        SetYDomain: props.SetYDomain
+        SetYDomain: props.SetYDomain,
+        RequestLegendWidth: props.RequestLegendWidth,
+        RequestLegendHeight: props.RequestLegendHeight,
     } as IGraphContext
   }
 

@@ -88,6 +88,9 @@ const SvgStyle: React.CSSProperties = {
     pointerEvents: 'none',
 };
 
+const defaultLegendHeight = 50;
+const defaultLegendWidth = 100;
+
 const Plot: React.FunctionComponent<IProps> = (props) => {
     /*
       Actual plot that will handle Axis etc.
@@ -95,6 +98,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
     const SVGref = React.useRef<any>(null);
     const handlers = React.useRef<Map<string,IHandlers>>(new Map<string, IHandlers>());
     const wheelTimeout = React.useRef<{timeout?: NodeJS.Timeout, stopScroll: boolean}>({timeout: undefined, stopScroll: false});
+    const widthTimeout = React.useRef<{timeout?: NodeJS.Timeout, requesterMap: Map<string,number>}>({timeout: undefined, requesterMap: new Map<string,number>()});
     
     const guid = React.useMemo(() => CreateGuid(),[]);
     const [data, setData] = React.useState<Map<string, IDataSeries>>(new Map<string, IDataSeries>());
@@ -133,8 +137,10 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
     const [defaultYdomain, setDefaultYdomain] = React.useState<[number,number]|[number,number][]|undefined>(props.defaultYdomain);
     const [updateFlag, setUpdateFlag] = React.useState<number>(0);
 
-    const [svgHeight, setSVGheight] = React.useState<number>(props.height - (props.legend === 'bottom'? (props.legendHeight !== undefined? props.legendHeight : 50) : 0));
-    const [svgWidth, setSVGwidth] = React.useState<number>(props.width - (props.legend === 'right'? (props.legendWidth !== undefined? props.legendWidth : 100) : 0));
+    const [legendHeight, setLegendHeight] = React.useState<number>(props.legendHeight ?? defaultLegendHeight);
+    const [legendWidth, setLegendWidth] = React.useState<number>(props.legendWidth ?? defaultLegendWidth);
+    const [svgHeight, setSVGheight] = React.useState<number>(props.height);
+    const [svgWidth, setSVGwidth] = React.useState<number>(props.width);
     
     const zoomMode = props.zoomMode === undefined? 'AutoValue' : props.zoomMode;
 
@@ -160,15 +166,24 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
         setYdomain(newDomain);
       }
     }
+
+    // Effect to Reset the legend width/height
+    React.useEffect(() => {
+      if (props.legendHeight !== undefined) setLegendHeight(props.legendHeight);
+    }, [props.legendHeight]);
+
+    React.useEffect(()=>{
+      if (props.legendWidth !== undefined) setLegendWidth(props.legendWidth);
+    }, [props.legendWidth]);
     
     // Recompute height and width
     React.useEffect(() => {
-      setSVGheight(props.height - (props.legend === 'bottom'? (props.legendHeight !== undefined? props.legendHeight : 50) : 0));
-    }, [props.height, props.legend, props.legendHeight])
+      setSVGheight(props.height - (props.legend === 'bottom'? legendHeight : 0));
+    }, [props.height, props.legend, legendHeight]);
 
     React.useEffect(()=>{
-      setSVGwidth(props.width - (props.legend === 'right'? (props.legendWidth !== undefined? props.legendWidth : 100) : 0));
-    }, [props.width, props.legend, props.legendWidth])
+      setSVGwidth(props.width - (props.legend === 'right'? legendWidth : 0));
+    }, [props.width, props.legend, legendWidth]);
 
     // enforce T limits
     React.useEffect(() => {
@@ -340,6 +355,31 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
       document.body.addEventListener('wheel', cancelWheel, {passive:false});
       return () => document.body.removeEventListener('wheel', cancelWheel);
   }, []);
+
+  // requests new legend height/width upto a defined maximum set by props
+  const requestLegendHeightChange = React.useCallback((newHeight: number) =>  {
+    if (props.legend !== 'bottom') return;
+    const limitedHeight = Math.min(newHeight, props.legendHeight ?? defaultLegendHeight);
+    if (legendHeight !== limitedHeight) setLegendHeight(limitedHeight);
+  },[props.legendHeight, setLegendHeight, legendHeight, props.legend]);
+
+  const requestLegendWidthChange = React.useCallback((newWidth: number, requesterID: string) =>  {
+    if (newWidth < 0) {
+      widthTimeout.current.requesterMap.delete(requesterID);
+      return;
+    }
+    if (props.legend !== 'right') return;
+    const limitedWidth = Math.min(newWidth, props.legendWidth ?? defaultLegendWidth);
+    // we can't immediately complete the request, since there are multiple legend items trying to adjust this at a time sometimes
+    clearTimeout(widthTimeout.current.timeout);
+    widthTimeout.current.requesterMap.set(requesterID, limitedWidth);
+
+    // timeout to set if we don't see any more requests within 0.05 seconds
+    widthTimeout.current.timeout = setTimeout(() => {
+      const largestRequested = Math.max(...widthTimeout.current.requesterMap.values());
+      if (legendWidth !== largestRequested) setLegendWidth(largestRequested);
+    }, 50);
+  },[props.legendWidth, setLegendWidth, legendWidth, props.legend]);
 
     // transforms from pixels into x value. result passed into onClick function 
     const xInvTransform = React.useCallback((p: number) =>  {
@@ -713,6 +753,8 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
         RegisterSelect={registerSelect}
         RemoveSelect={removeSelect}
         UpdateSelect={updateSelect}
+        RequestLegendWidth={requestLegendWidthChange}
+        RequestLegendHeight={requestLegendHeightChange}
       >
           <div style={{ height: props.height, width: props.width, position: 'relative' }}>
               <div style={{ height: svgHeight, width: svgWidth, position: 'absolute', cursor: mouseStyle }}
@@ -779,7 +821,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
                         </InteractiveButtons>
                   </svg>
               </div>
-            {props.legend  !== undefined && props.legend !== 'hidden' ? <Legend location={props.legend} height={props.legendHeight !== undefined? props.legendHeight : 50} width={props.legendWidth !== undefined? props.legendWidth : 100} graphWidth={svgWidth} graphHeight={svgHeight} /> : null}
+            {props.legend  !== undefined && props.legend !== 'hidden' ? <Legend location={props.legend} height={legendHeight} width={legendWidth} graphWidth={svgWidth} graphHeight={svgHeight} /> : null}
            </div>
       </ContextWrapper>
   )

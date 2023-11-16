@@ -126,7 +126,8 @@ function Line(props: IProps) {
         label={txt} color={props.color}
         lineStyle={props.lineStyle}
         onClick={() => setEnabled((e) => !e)} 
-        opacity={(enabled? 1 : 0.5)}/>;
+        opacity={(enabled? 1 : 0.5)}
+        requestWidth={context.RequestLegendWidth}/>;
    }
 
    function generateData() {
