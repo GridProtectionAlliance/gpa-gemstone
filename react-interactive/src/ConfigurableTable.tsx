@@ -128,14 +128,19 @@ export default function ConfigurableTable<T>(props: IProps<T>) {
         if (currentState !== null)
             currentKeys = currentState.split(",");
 
-        const allKeys = columns.map((c) => c.key); 
+        const allKeys = columns.map((c) => c.key);
         currentKeys = currentKeys.filter(k => !allKeys.includes(k));
         currentKeys.push(...columns.filter((c) => c.selected).map(c => c.key));
         localStorage.setItem(props.localStorageKey, currentKeys.join(","));
     }
 
-    function changeCollums(index: number) {
-        setColumns((d) => { const u = _.cloneDeep(d); u[index].selected = !u[index].selected; return u; });
+    function changeCollums(key: string) {
+        setColumns((d) => {
+            const u = _.cloneDeep(d);
+            const col = u.find(c => c.key === key);
+            col!.selected = !col?.selected
+            return u;
+        });
     }
 
     function checkLocal(key: string): boolean {
@@ -248,7 +253,7 @@ export default function ConfigurableTable<T>(props: IProps<T>) {
 interface IColSelectionProps<T> {
     requiredColumns?: string[],
     columns: ISelecteableCollumn<T>[],
-    onChange: (index: number) => void,
+    onChange: (key: string) => void,
     sortKey: string,
     disableAdd: boolean
 }
@@ -259,9 +264,9 @@ function ColumnSelection<T>(props: IColSelectionProps<T>) {
     return <>
         <div className='row'>
             <div className='col-4'>
-                {cols.map((c, i) => (i%3 ==0? <CheckBox
+                {cols.map((c, i) => (i % 3 == 0 ? <CheckBox
                     Label={c.label?.toString() ?? c.field?.toString()}
-                    Field={'selected'} Record={c} Setter={(r) => props.onChange(i)} key={c.key}
+                    Field={'selected'} Record={c} Setter={(r) => props.onChange(c.key)} key={c.key}
                     Disabled={c.key == props.sortKey || (props.disableAdd && !c.selected)}
                     Help={c.key == props.sortKey ? 'The Table is currently sorted by this column so it cannot be hidden.' : undefined}
                 /> : null))}
@@ -269,7 +274,7 @@ function ColumnSelection<T>(props: IColSelectionProps<T>) {
             <div className='col-4'>
                 {cols.map((c, i) => (i % 3 == 1 ? <CheckBox
                     Label={c.label?.toString() ?? c.field?.toString()}
-                    Field={'selected'} Record={c} Setter={(r) => props.onChange(i)} key={c.key}
+                    Field={'selected'} Record={c} Setter={(r) => props.onChange(c.key)} key={c.key}
                     Disabled={c.key == props.sortKey || (props.disableAdd && !c.selected)}
                     Help={c.key == props.sortKey ? 'The Table is currently sorted by this column so it cannot be hidden.' : undefined}
                 /> : null))}
@@ -277,7 +282,7 @@ function ColumnSelection<T>(props: IColSelectionProps<T>) {
             <div className='col-4'>
                 {cols.map((c, i) => (i % 3 == 2 ? <CheckBox
                     Label={c.label?.toString() ?? c.field?.toString()}
-                    Field={'selected'} Record={c} Setter={(r) => props.onChange(i)} key={c.key}
+                    Field={'selected'} Record={c} Setter={(r) => props.onChange(c.key)} key={c.key}
                     Disabled={c.key == props.sortKey || (props.disableAdd && !c.selected)}
                     Help={c.key == props.sortKey ? 'The Table is currently sorted by this column so it cannot be hidden.' : undefined}
                 /> : null))}
