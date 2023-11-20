@@ -31,7 +31,7 @@ import ToolTip from './ToolTip';
 import TabSelector from './TabSelector';
 import ServerErrorIcon from './ServerErrorIcon';
 import GenericSlice from './GenericSlice';
-import ConfigurableTable from './ConfigurableTable';
+import ConfigurableTable from './ConfigurableTable/ConfigurableTable';
 import { IState as IGenericSliceState } from './GenericSlice';
 import Application from './Menue/Application';
 import Page from './Menue/Page';
@@ -43,6 +43,12 @@ import SplitDrawer from './Layout/SplitDrawer';
 import OverlayDrawer from './Layout/OverlayDrawer';
 import ProgressBar from './ProgressBar';
 import BtnDropdown from './DropdownButton';
+import ConfigurableColumn from './ConfigurableTable/ConfigurableColumn';
+
+const ConfigTable = {
+  Table: ConfigurableTable,
+  Configurable: ConfigurableColumn,
+}
 
 export {
   Modal,
@@ -56,7 +62,7 @@ export {
   ServerErrorIcon,
   GenericSlice,
   IGenericSliceState,
-  ConfigurableTable,
+  ConfigTable,
   Application,
   Page,
   Section,
