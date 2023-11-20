@@ -284,7 +284,7 @@ interface IRowProps<T> {
     KeySelector: (data: T) => string|number;
     AdjWidth: Map<string,IAdjustedWidths>,
     FixedWidth: Map<string,number>,
-    FixedLayout: Boolean
+    FixedLayout: boolean
 }
 
 function Rows<T>(props: React.PropsWithChildren<IRowProps<T>>) {
