@@ -67,12 +67,11 @@ export function DynamicTable<T>(props: DynamicTableProps<T>) {
     <table className={props.tableClass !== undefined ? props.tableClass : ''} style={props.tableStyle}>
       <Header<T> Class={props.theadClass} Style={props.theadStyle} 
         Cols={cols} SortKey={props.sortKey} Ascending={props.ascending}
-        Click={(d) => handleSort(d)} SetResizeColIndex={() => { noop }} 
-        AllowResize={false} Width={empty} MeasureWidth={() => {noop }} />
+        Click={(d) => handleSort(d)}
+       />
       <Rows<T> Data={props.data} Cols={cols} RowStyle={props.rowStyle}
        BodyStyle={props.tbodyStyle} BodyClass={props.tbodyClass} 
-       Click={(data, e) => props.onClick(data, e)} Selected={props.selected} KeySelector={props.keySelector}
-        Width={empty} MeasureWidth={() => { noop }} SetTBodyWidth={() => { noop }} />
+       Click={(data, e) => props.onClick(data, e)} Selected={props.selected} KeySelector={props.keySelector} />
     </table>
   );
 
