@@ -108,11 +108,11 @@ function HeatLegend(props: IProps) {
           `M ${0.1*wLegend} ${0.05*hLegend} H ${0.9*wLegend} V ${0.5*hLegend} H ${0.1*wLegend} V ${0.05*hLegend}`}/>
         <text fill={'black'} style={TextStyle} x={wLegend*(wLegend < hLegend ? 0.5 : 0.1)} y={hLegend*(wLegend < hLegend ? 0.1 : 0.5)}
         transform={`rotate(${wLegend < hLegend ? 90 : 0},${wLegend*(wLegend < hLegend ? 0.5 : 0.1)},${hLegend*(wLegend < hLegend ? 0.1 : 0.5)})`}>
-          {`${props.minValue.toFixed(nDigits)}${props.unitLabel !== undefined ? ` (${props.unitLabel})` : ''}`}
+          {`${props.minValue.toFixed(nDigits)}${props.unitLabel !== undefined ? `${props.unitLabel}` : ''}`}
         </text>
         <text fill={'black'} style={TextStyle} x={wLegend*(wLegend < hLegend ? 0.5 : 0.9)} y={hLegend*(wLegend < hLegend ? 0.9 : 0.5)}
         transform={`rotate(${wLegend < hLegend ? 90 : 0},${wLegend*(wLegend < hLegend ? 0.5 : 0.9)},${hLegend*(wLegend < hLegend ? 0.9 : 0.5)})`}>
-          {`${props.maxValue.toFixed(nDigits)}${props.unitLabel !== undefined ? ` (${props.unitLabel})` : ''}`}
+          {`${props.maxValue.toFixed(nDigits)}${props.unitLabel !== undefined ? `${props.unitLabel}` : ''}`}
         </text>
       </svg>
     </div>
