@@ -40,7 +40,8 @@ export interface IProps {
     // Aligns bars with timestamp associated (i.e. left aligns the timestamp to the left bar edge)
     barAlign?: 'left'|'center'|'right',
     // Makes bars this size, so that multiple can be dispalyed on the same time value
-    binSize?: number
+    binSize?: number,
+    sampleTicks?: number
 }
 
 function HeatMapChart(props: IProps) {
@@ -77,7 +78,6 @@ function HeatMapChart(props: IProps) {
     }, [data, context.XTransformation]);
 
    const createLegend = React.useCallback(() => {
-        if (props.legendUnit === undefined) return undefined;
         return <HeatLegend 
             unitLabel={props.legendUnit}
             minColor={HsvToHex(props.hue, 0, props.value)} maxColor={HsvToHex(props.hue, 1, props.value)}
@@ -109,7 +109,7 @@ function HeatMapChart(props: IProps) {
             getMin: (t) => (data == null ?  Infinity : data.GetLimits(t[0],t[1],0)[0]),
         } as IDataSeries);
         setGuid(id);
-        return () => { context.RemoveData(id) }
+        return () => { context.RemoveData(id); }
     }, []);
 
     return (

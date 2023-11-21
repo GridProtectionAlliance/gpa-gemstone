@@ -39,7 +39,7 @@ function Legend(props: IProps) {
   const context = React.useContext(GraphContext);
   const [width, setWidth] = React.useState<number>(props.location === 'bottom'? props.graphWidth : props.width);
   const [height, setHeight] = React.useState<number>(props.location === 'right'? props.graphHeight : props.height);
-  const [nLegends, setNLegends] = React.useState<number>(0);
+  const [nLegends, setNLegends] = React.useState<{sm: number, lg: number}>({sm: 0, lg: 0});
   const [hasScroll, setHasScroll] = React.useState<boolean>(false);
 
   const leftPad = React.useMemo(() => (props.location === 'bottom' ? 39 : 0), [props.location]);
@@ -56,12 +56,17 @@ function Legend(props: IProps) {
   }, [props.height, props.graphHeight, props.location]);
 
   React.useEffect(() => {
-    const newNLegends = [...context.Data.values()].reduce((s,c) => (c.legend === undefined ? 0 : 1) + s, 0);
-    if (newNLegends !== nLegends) setNLegends(newNLegends);
+    const newNLegends = [...context.Data.values()].reduce((s,c) => {
+      if (c.legend === undefined) return s;
+      if (c.legendSize === 'lg') s.lg = s.lg + 1;
+      else s.sm = s.sm + 1;
+      return s;
+    }, {sm: 0, lg: 0});
+    if (newNLegends.sm !== nLegends.sm || newNLegends.lg !== nLegends.lg) setNLegends(newNLegends);
   }, [context.Data]);
 
   React.useEffect(() => {
-    const requiredHeight = Math.ceil(nLegends/ (props.location === 'bottom' ? itemsWhenBottom : 1)) * itemHeight;
+    const requiredHeight = Math.ceil(nLegends.sm/ (props.location === 'bottom' ? itemsWhenBottom : 1)) * itemHeight + nLegends.lg * 2*itemHeight;
     if (props.location === 'bottom' && context.RequestLegendHeight !== undefined) context.RequestLegendHeight(requiredHeight);
     setHasScroll(requiredHeight > height);
   }, [nLegends, props.location, height, context.RequestLegendHeight]);
@@ -72,7 +77,7 @@ function Legend(props: IProps) {
       {[...context.Data.values()].map((series, index) => (series.legend !== undefined ?
             <div key={index} style={
               {width: ((width - leftPad) / ((props.location === 'bottom' && (series.legendSize ?? 'sm') === 'sm') ? itemsWhenBottom : 1) - scrollBarSpace),
-               height: props.location === 'bottom'? ((series.legendSize ?? 'sm') === 'lg' ? 2 : 1) * itemHeight : Math.max(height/nLegends, itemHeight)}}>
+               height: props.location === 'bottom'? ((series.legendSize ?? 'sm') === 'lg' ? 2 : 1) * itemHeight : Math.max(height/(nLegends.sm + nLegends.lg), itemHeight)}}>
                 {series.legend}
         </div> : null))}
     </div>);
