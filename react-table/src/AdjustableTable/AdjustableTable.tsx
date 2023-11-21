@@ -388,7 +388,6 @@ function Header<T>(props: React.PropsWithChildren<IHeaderProps<T>>) {
         if (adjKeys === undefined)
             return;
         const w = limitMovement(adjKeys[0], adjKeys[1], mouseDown - e.screenX);
-        console.log(w)
         setDeltaX(w);
     }, [mouseDown, adjKeys ])
 
@@ -404,7 +403,7 @@ function Header<T>(props: React.PropsWithChildren<IHeaderProps<T>>) {
             w = (leftWidth ?? 100) - leftMin;
         }
         if ((rightWidth ?? 100) + w < rightMin) {
-            w = (rightWidth ?? 100) - rightMin;
+            w = -(rightWidth ?? 100) - rightMin;
         }
 
         return w;
