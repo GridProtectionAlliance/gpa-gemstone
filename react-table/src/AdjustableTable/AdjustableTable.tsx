@@ -365,21 +365,24 @@ function Header<T>(props: React.PropsWithChildren<IHeaderProps<T>>) {
     const [mouseDown, setMouseDown] = React.useState<number>(0)
     const [deltaX, setDeltaX] = React.useState<number>(0);
 
-    const finishAdjustment = React.useCallback((e: MouseEvent) => {
+    const finishAdjustment = (e: MouseEvent) => {
         const d = deltaX;
         if (adjKeys === undefined)
             return;
    
         const w = limitMovement(adjKeys[0], adjKeys[1], d);
+       
         const leftWidth = props.GetWidth(adjKeys[0],'adjustable') ?? 100;
         const rightWidth = props.GetWidth(adjKeys[1],'adjustable') ?? 100;
-
-        props.SetWidth(adjKeys[0], (leftWidth - w), 'adjustable')
-        props.SetWidth(adjKeys[1], (rightWidth + w), 'adjustable')
+        if (Math.abs(w) > 5) {
+            props.SetWidth(adjKeys[0], (leftWidth - w), 'adjustable')
+            props.SetWidth(adjKeys[1], (rightWidth + w), 'adjustable')
+        }
+      
         setMouseDown(0);
         setAdjKeys(undefined);
         setDeltaX(0);
-    }, [adjKeys]);
+    }
 
     const onMove = React.useCallback((e: MouseEvent) => {
         if (adjKeys === undefined)
@@ -400,7 +403,7 @@ function Header<T>(props: React.PropsWithChildren<IHeaderProps<T>>) {
             w = (leftWidth ?? 100) - leftMin;
         }
         if ((rightWidth ?? 100) + w < rightMin) {
-            w = (rightWidth ?? 100) - rightMin;
+            w = -(rightWidth ?? 100) - rightMin;
         }
 
         return w;
@@ -415,6 +418,7 @@ function Header<T>(props: React.PropsWithChildren<IHeaderProps<T>>) {
             return w - deltaX;
         if (key === adjKeys[1])
             return w + deltaX;
+        return w;
     }
 
     return (<thead

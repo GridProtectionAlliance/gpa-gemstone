@@ -100,6 +100,7 @@ export function AdjColumnHeaderWrapper<T>(props: React.PropsWithChildren<IHeader
                 ref={thref}
                 style={style}
                 onClick={onClick}
+                onDrag={(e) => {e.stopPropagation()}}
             >
                 <div style={{
                 width: 5,

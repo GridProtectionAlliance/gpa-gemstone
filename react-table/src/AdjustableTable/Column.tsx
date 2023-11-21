@@ -109,6 +109,7 @@ export function ColumnHeaderWrapper<T>(props: React.PropsWithChildren<IHeaderWra
                 ref={thref}
                 style={style}
                 onClick={onClick}
+                onDrag={(e) => {e.stopPropagation()}}
             >
             {props.sorted && props.asc ? <div 
                 style={{ position: 'absolute', width: 25 }}>
