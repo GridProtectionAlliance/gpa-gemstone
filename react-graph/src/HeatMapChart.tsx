@@ -36,7 +36,9 @@ export interface IProps {
     fillStyle?: FillStyle,
     axis?: AxisIdentifier,
     // Aligns bars with timestamp associated (i.e. left aligns the timestamp to the left bar edge)
-    barAlign?: 'left'|'center'|'right'
+    barAlign?: 'left'|'center'|'right',
+    // Makes bars this size, so that multiple can be dispalyed on the same time value
+    binSize?: number
 }
 
 function HeatMapChart(props: IProps) {
@@ -100,10 +102,10 @@ function HeatMapChart(props: IProps) {
         <g>
             {data == null ? null : 
                 data.GetFullData().map((pt, i) => {
-                    const barTop =  context.YTransformation(pt[1], AxisMap.get(props.axis));
+                    const barTop =  context.YTransformation(pt[1] + (props.binSize ?? 0), AxisMap.get(props.axis));
                     const saturation = (pt[2] - zLimits[0]) / (zLimits[1] - zLimits[0]);
                     const color = HsvToHex(props.hue, saturation, props.value);
-                    return <rect key={i} x={context.XTransformation(pt[0]) - allBarOffset} y={barTop} width={barWidth} height={Math.abs(barTop-allBarBottoms)} fill={color} stroke='black'/>
+                    return <rect key={i} x={context.XTransformation(pt[0]) - allBarOffset} y={barTop} width={barWidth} height={props.binSize !== undefined ? context.YTransformation(pt[1], AxisMap.get(props.axis)) : Math.abs(barTop-allBarBottoms)} fill={color} stroke='black'/>
                 })
             }
         </g>
