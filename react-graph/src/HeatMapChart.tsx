@@ -26,6 +26,7 @@ import * as React from 'react';
 import {HsvToHex} from '@gpa-gemstone/helper-functions';
 import {IDataSeries, GraphContext, FillStyle, AxisIdentifier, AxisMap} from './GraphContext';
 import {PointNode} from './PointNode';
+import HeatLegend from './HeatLegend';
 
 
 export interface IProps {
@@ -35,6 +36,7 @@ export interface IProps {
     value: number,
     fillStyle?: FillStyle,
     axis?: AxisIdentifier,
+    legendUnit?: string,
     // Aligns bars with timestamp associated (i.e. left aligns the timestamp to the left bar edge)
     barAlign?: 'left'|'center'|'right',
     // Makes bars this size, so that multiple can be dispalyed on the same time value
@@ -74,23 +76,35 @@ function HeatMapChart(props: IProps) {
         setBarWidth((context.XTransformation(data.maxT) - context.XTransformation(data.minT)) / data.GetFullData().length);
     }, [data, context.XTransformation]);
 
-   React.useEffect(() => {
-        if (guid === "")
-            return;
-        context.UpdateData(guid, {
-            axis: props.axis,
-            getMax: (t) => (data == null ? -Infinity : data.GetLimits(t[0],t[1],0)[1]),
-            getMin: (t) => (data == null ?  Infinity : data.GetLimits(t[0],t[1],0)[0]),
-        } as IDataSeries);
-    }, [props, data]);
+   const createLegend = React.useCallback(() => {
+        if (props.legendUnit === undefined) return undefined;
+        return <HeatLegend 
+            unitLabel={props.legendUnit}
+            minColor={HsvToHex(props.hue, 0, props.value)} maxColor={HsvToHex(props.hue, 1, props.value)}
+            minValue={zLimits[0]} maxValue={zLimits[1]}/>;
+    }, [props.legendUnit, zLimits, props.hue, props.value]);
 
     React.useEffect(() => {
         setData(new PointNode(props.data));
     },[props.data]);
 
+   React.useEffect(() => {
+        if (guid === "")
+            return;
+        context.UpdateData(guid, {
+            axis: props.axis,
+            legend: createLegend(),
+            legendSize: 'lg',
+            getMax: (t) => (data == null ? -Infinity : data.GetLimits(t[0],t[1],0)[1]),
+            getMin: (t) => (data == null ?  Infinity : data.GetLimits(t[0],t[1],0)[0]),
+        } as IDataSeries);
+    }, [props, data, createLegend]);
+
     React.useEffect(() => {
         const id = context.AddData({
             axis: props.axis,
+            legend: createLegend(),
+            legendSize: 'lg',
             getMax: (t) => (data == null ? -Infinity : data.GetLimits(t[0],t[1],0)[1]),
             getMin: (t) => (data == null ?  Infinity : data.GetLimits(t[0],t[1],0)[0]),
         } as IDataSeries);

@@ -58,7 +58,7 @@ function LineLegend(props: IProps) {
     return () => {
       if (props.requestWidth !== undefined) props.requestWidth(-1, guid);
     }
-  }, [])
+  }, []);
 
   React.useEffect(() => {
     let t = 1;

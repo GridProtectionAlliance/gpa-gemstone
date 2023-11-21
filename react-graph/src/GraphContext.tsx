@@ -84,6 +84,7 @@ export interface IDataSeries {
   getMax: (tDomain: [number, number]) => number|undefined,
   getPoint: (xValue: number) => [...number[]]|undefined,
   axis: AxisIdentifier|undefined,
+  legendSize?: 'sm'|'lg',
   legend?: HTMLElement| React.ReactElement| JSX.Element
 }
 

@@ -70,7 +70,9 @@ function Legend(props: IProps) {
     <div style={{ height, width, paddingLeft: `${leftPad}px`, position: (props.location === 'bottom'? 'absolute' : 'relative'), float:(props.location as any), display: 'flex', flexWrap: 'wrap', bottom: 0, 
       overflowY: hasScroll ? 'scroll' : 'hidden', overflowX: hasScroll ? 'visible' : 'hidden'}}>
       {[...context.Data.values()].map((series, index) => (series.legend !== undefined ?
-            <div key={index} style={{width:(props.location === 'bottom' ? (width - leftPad) /itemsWhenBottom - scrollBarSpace : width - leftPad - scrollBarSpace), height: props.location === 'bottom'? itemHeight : Math.max(height/nLegends, itemHeight)}}>
+            <div key={index} style={
+              {width: ((width - leftPad) / ((props.location === 'bottom' && (series.legendSize ?? 'sm') === 'sm') ? itemsWhenBottom : 1) - scrollBarSpace),
+               height: props.location === 'bottom'? ((series.legendSize ?? 'sm') === 'lg' ? 2 : 1) * itemHeight : Math.max(height/nLegends, itemHeight)}}>
                 {series.legend}
         </div> : null))}
     </div>);
