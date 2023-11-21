@@ -23,8 +23,7 @@
 
 
 import * as React from 'react';
-import { AxisIdentifier, AxisMap, GraphContext, LineStyle} from './GraphContext';
-import { GetTextWidth, GetTextHeight } from '@gpa-gemstone/helper-functions';
+import { GraphContext} from './GraphContext';
 import { CreateGuid } from '@gpa-gemstone/helper-functions';
 
 
