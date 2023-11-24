@@ -78,8 +78,8 @@ const Modal: React.FunctionComponent<IProps> = (props) => {
     const showConfirmToolTip = (props.ConfirmShowToolTip !== undefined && props.ConfirmShowToolTip) && hover === 'confirm';
     const showCxnToolTip = (props.CancelShowToolTip !== undefined && props.CancelShowToolTip) && hover === 'cancel';
 
-    const bodyStyle = (props.BodyStyle === undefined? { maxHeight: 'calc(100vh - 210px)', overflowY: 'auto' } : props.BodyStyle);
-    const headerStyle = (props.HeaderStyle === undefined? {} : props.HeaderStyle)
+    const bodyStyle: React.CSSProperties = (props.BodyStyle === undefined ? { maxHeight: 'calc(100vh - 210px)', overflowY: 'auto' } : props.BodyStyle);
+    const headerStyle: React.CSSProperties = (props.HeaderStyle === undefined ? {} : props.HeaderStyle)
 
     return (
         <Portal>
