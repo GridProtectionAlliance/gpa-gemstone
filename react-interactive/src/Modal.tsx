@@ -43,6 +43,8 @@ interface IProps {
     CancelShowToolTip?: boolean,
     ConfirmToolTipContent?: React.ReactNode,
     CancelToolTipContent?: React.ReactNode,
+    BodyStyle?: React.CSSProperties;
+    HeaderStyle?: React.CSSProperties;
 }
 
 // Props Description:
@@ -76,16 +78,19 @@ const Modal: React.FunctionComponent<IProps> = (props) => {
     const showConfirmToolTip = (props.ConfirmShowToolTip !== undefined && props.ConfirmShowToolTip) && hover === 'confirm';
     const showCxnToolTip = (props.CancelShowToolTip !== undefined && props.CancelShowToolTip) && hover === 'cancel';
 
+    const bodyStyle: React.CSSProperties = (props.BodyStyle === undefined ? { maxHeight: 'calc(100vh - 210px)', overflowY: 'auto' } : props.BodyStyle);
+    const headerStyle: React.CSSProperties = (props.HeaderStyle === undefined ? {} : props.HeaderStyle)
+
     return (
         <Portal>
         <div className={"modal" + (props.Show ? " show" : '')} style={props.Show ? {display: 'block', zIndex: 9990} : {}}>
             <div className={"modal-dialog" + (props.Size === undefined? '' : props.Size === 'xlg'? '' :(" modal-"  + props.Size))} style={props.Size === 'xlg'? {maxWidth: window.innerWidth - 100} : {}}>
                 <div className="modal-content">
-                    <div className="modal-header">
+                    <div className="modal-header" style={headerStyle}>
                         <h4 className="modal-title">{props.Title}</h4>
                         {props.ShowX? <button type="button" className="close" onClick={() => props.CallBack(false,false) }>&times;</button> : null}
                     </div>
-                    <div className="modal-body" style={{ maxHeight: 'calc(100vh - 210px)', overflowY: 'auto' }}>
+                    <div className="modal-body" style={bodyStyle}>
                         {props.Show? props.children : null}
                     </div>
                     <div className="modal-footer">
