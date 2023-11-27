@@ -45,7 +45,9 @@ interface IProps {
     ShowCard?: boolean,
     DefaultApplication?: OpenXDA.Types.NoteApplication,
     Filter?: (note: OpenXDA.Types.Note) => boolean,
-    AdditionalCollumns?: Column<OpenXDA.Types.Note>[]
+    AdditionalCollumns?: Column<OpenXDA.Types.Note>[],
+    CardStyle?: React.CSSProperties,
+    CardBodyStyle?: React.CSSProperties
 }
 
 
@@ -200,8 +202,10 @@ function Note(props: IProps)  {
 
     
 
+    const cardCSS = props.CardStyle === undefined? { marginBottom: 10, maxHeight: props.MaxHeight, width: '100%'} : props.CardStyle;
+    const cardBodyStyle = props.CardBodyStyle === undefined? { maxHeight: props.MaxHeight - 100, overflowY: 'auto', width: '100%' } : props.CardBodyStyle;
     return (
-                <div className={showCard? "card" : ""} style={{ marginBottom: 10, maxHeight: props.MaxHeight, width: '100%'}}>
+                <div className={showCard? "card" : ""} style={cardStyle}>
                 <LoadingScreen Show={dataStatus === 'loading'}/>
                     <div className={props.ShowCard === undefined || props.ShowCard? "card-header" : ""}>
                 <div className="row">
@@ -211,7 +215,7 @@ function Note(props: IProps)  {
                 </div>
             </div>
                         <div className={showCard? "card-body" : ""} 
-                        style={{ maxHeight: props.MaxHeight - 100, overflowY: 'auto', width: '100%' }}>
+                        style={cardBodyStyle}>
                         {allowAdd && !showCard?
                         <>
                             <NoteOptions 
@@ -220,21 +224,22 @@ function Note(props: IProps)  {
                             NoteApplications={props.NoteApplications}
                             ShowApplications={!useFixedApp}
                             />
-                            
-                            <div className="btn-group mr-2">
-                            <button className={"btn btn-primary" + (note.Note === null ||note.Note.length === 0 ? ' disabled' : '')} onClick={() => { if (note.Note !== null && note.Note.length > 0) handleAdd(note); }} data-tooltip={"Add"} style={{ cursor: note.Note === null || note.Note.length === 0 ? 'not-allowed' : 'pointer' }} onMouseOver={() => setHover('add')} onMouseOut={() => setHover('none')}>Add Note</button>
-                            <ToolTip Show={hover === 'add' && ( note.Note === null || note.Note.length === 0 )} Position={'top'} Theme={'dark'} Target={"Add"}>
-                                <p>{CrossMark} A note needs to be entered. </p>
-                            </ToolTip>
-                        </div>
-                        <div className="btn-group mr-2">
-                            <button className={"btn btn-default" + (note.Note === null || note.Note.length === 0  ? ' disabled' : '')} onClick={() => setNote((n) => ({...n, Note: ''}))} style={{ cursor: note.Note === null || note.Note.length === 0 ? 'not-allowed' : 'pointer' }} data-tooltip={"Remove"} onMouseOver={() => setHover('clear')} onMouseOut={() => setHover('none')} >Clear</button>
-                            <ToolTip Show={hover === 'clear' && (note.Note === null || note.Note.length === 0)} Position={'top'} Theme={'dark'} Target={"Remove"}>
-                                <p>{CrossMark} The note field is already empty. </p>
-                            </ToolTip>
-                        </div>
+                            <div className="row">
+                                <div className="btn-group mr-2">
+                                    <button className={"btn btn-primary" + (note.Note === null ||note.Note.length === 0 ? ' disabled' : '')} onClick={() => { if (note.Note !== null && note.Note.length > 0) handleAdd(note); }} data-tooltip={"Add"} style={{ cursor: note.Note === null || note.Note.length === 0 ? 'not-allowed' : 'pointer' }} onMouseOver={() => setHover('add')} onMouseOut={() => setHover('none')}>Add Note</button>
+                                    <ToolTip Show={hover === 'add' && ( note.Note === null || note.Note.length === 0 )} Position={'top'} Theme={'dark'} Target={"Add"}>
+                                        <p>{CrossMark} A note needs to be entered. </p>
+                                    </ToolTip>
+                                </div>
+                                <div className="btn-group mr-2">
+                                    <button className={"btn btn-default" + (note.Note === null || note.Note.length === 0  ? ' disabled' : '')} onClick={() => setNote((n) => ({...n, Note: ''}))} style={{ cursor: note.Note === null || note.Note.length === 0 ? 'not-allowed' : 'pointer' }} data-tooltip={"Remove"} onMouseOver={() => setHover('clear')} onMouseOut={() => setHover('none')} >Clear</button>
+                                    <ToolTip Show={hover === 'clear' && (note.Note === null || note.Note.length === 0)} Position={'top'} Theme={'dark'} Target={"Remove"}>
+                                        <p>{CrossMark} The note field is already empty. </p>
+                                    </ToolTip>
+                                </div>
+                            </div>
                         </> : null }
-            <div>
+                        <div className="row">
                             <Table<OpenXDA.Types.Note>
                                         cols={collumns}
                                         tableClass="table table-hover"
@@ -256,7 +261,7 @@ function Note(props: IProps)  {
                                         rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
                                         selected={() => false}
                                 />
-            </div>
+                        </div>
                         {allowAdd && showCard?
                             <NoteOptions 
                             Record={note} Setter={(n) => setNote(n)} 
@@ -317,7 +322,7 @@ function NoteOptions(props: OptionProps) {
 
     const showOptions = props.NoteTags.length > 1 || props.NoteTypes.length > 1 || props.NoteApplications.length > 1;
     return (
-    <div className="row" style={{marginRight: 0, marginLeft: 0}}>
+    <div className="row">
         <div className={showOptions? "col-6" : 'col-12'}>
             <TextArea<OpenXDA.Types.Note> Record={props.Record} Rows={4} Field={'Note'} Setter={(n) => props.Setter(n)} Valid={() => props.Record.Note != null && props.Record.Note.length > 0} Label={''} />
         </div>
