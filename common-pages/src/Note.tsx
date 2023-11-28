@@ -47,7 +47,10 @@ interface IProps {
     Filter?: (note: OpenXDA.Types.Note) => boolean,
     AdditionalCollumns?: Column<OpenXDA.Types.Note>[],
     CardStyle?: React.CSSProperties,
-    CardBodyStyle?: React.CSSProperties
+    CardBodyStyle?: React.CSSProperties,
+    TableStyle?: React.CSSProperties,
+    TableHeadStyle?: React.CSSProperties,
+    TableBodyStyle?: React.CSSProperties,
 }
 
 
@@ -75,15 +78,15 @@ function Note(props: IProps)  {
     const defaultApplication = props.DefaultApplication !== undefined ? props.DefaultApplication : props.NoteApplications[0];
     const showCard = props.ShowCard === undefined || props.ShowCard;
 
-      const [showEdit, setEdit] = React.useState<boolean>(false);
+    const [showEdit, setEdit] = React.useState<boolean>(false);
     const [hover, setHover] = React.useState<'add'|'clear'|'none'>('none')
     const [collumns, setCollumns] = React.useState<Column<OpenXDA.Types.Note>[]>(standardCollumns)
 
-      const data: OpenXDA.Types.Note[] = useSelector(props.NoteSlice.Data)
+    const data: OpenXDA.Types.Note[] = useSelector(props.NoteSlice.Data)
     const dataStatus: Application.Types.Status =  useSelector(props.NoteSlice.Status)
     const parentID: number|string|undefined = useSelector((props.NoteSlice.ParentID === undefined? (state: any) => props.ReferenceTableID : props.NoteSlice.ParentID))
     const sortField: keyof OpenXDA.Types.Note = useSelector(props.NoteSlice.SortField)
-      const ascending: boolean = useSelector(props.NoteSlice.Ascending)
+    const ascending: boolean = useSelector(props.NoteSlice.Ascending)
 
     const [note, setNote] = React.useState<OpenXDA.Types.Note>(CreateNewNote());
     const [notes, setNotes] = React.useState<OpenXDA.Types.Note[]>([]);
@@ -204,6 +207,10 @@ function Note(props: IProps)  {
 
     const cardCSS = props.CardStyle === undefined? { marginBottom: 10, maxHeight: props.MaxHeight, width: '100%'} : props.CardStyle;
     const cardBodyStyle = props.CardBodyStyle === undefined? { maxHeight: props.MaxHeight - 100, overflowY: 'auto', width: '100%' } : props.CardBodyStyle;
+    const tableStyle = props.TableStyle === undefined? undefined : props.TableStyle;
+    const theadStyle = props.TableHeadStyle === undefined? { fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' } : props.TableHeadStyle;
+    const tbodyStyle = props.TableBodyStyle === undefined? { display: 'block', overflowY: 'scroll', maxHeight: props.MaxHeight - 300, width: '100%' } : props.TableBodyStyle;
+
     return (
                 <div className={showCard? "card" : ""} style={cardStyle}>
                 <LoadingScreen Show={dataStatus === 'loading'}/>
@@ -214,8 +221,7 @@ function Note(props: IProps)  {
                     </div>
                 </div>
             </div>
-                        <div className={showCard? "card-body" : ""} 
-                        style={cardBodyStyle}>
+                        <div className={showCard? "card-body" : ""} style={cardBodyStyle}>
                         {allowAdd && !showCard?
                         <>
                             <NoteOptions 
@@ -256,8 +262,9 @@ function Note(props: IProps)  {
 
                                         }}
                                         onClick={() => { return;}}
-                                        theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                                        tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: props.MaxHeight - 300, width: '100%' }}
+                                        theadStyle={theadStyle}
+                                        tbodyStyle={tbodyStyle}
+                                        tableStyle={tableStyle}
                                         rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
                                         selected={() => false}
                                 />
