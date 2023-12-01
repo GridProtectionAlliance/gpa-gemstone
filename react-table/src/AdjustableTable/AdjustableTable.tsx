@@ -453,7 +453,7 @@ function Header<T>(props: React.PropsWithChildren<IHeaderProps<T>>) {
                 if ((element as React.ReactElement<any>).type === AdjustableCol)
                      return <AdjColumnHeaderWrapper
                          {...element.props}
-                         setWidth={(w,min) => props.SetWidth(element.props.Key,w,'adjustable', min)}
+                         setWidth={(w,min) => props.SetWidth(element.props.Key,Math.floor(w),'adjustable', min)}
                          onSort={(key, e, fld) => props.OnSort({colKey: key, colField: fld, ascending: props.Ascending},e)}
                          sorted={props.SortKey === element.props.Key && (element.props.AllowSort ?? true)}
                          asc={props.Ascending}
