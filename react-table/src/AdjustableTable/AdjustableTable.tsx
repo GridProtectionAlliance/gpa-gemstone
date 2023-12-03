@@ -326,7 +326,7 @@ function Rows<T>(props: React.PropsWithChildren<IRowProps<T>>) {
                     style.backgroundColor = 'yellow';
                 
                 const key = props.KeySelector(d);
-                return <tr key={key} style={{ display: (props.FixedLayout ? 'block' : undefined)}}>
+                return <tr key={key} style={{ display: (props.FixedLayout ? 'block' : undefined), ...style}}>
                  {React.Children.map(props.children, (element) => {
                     if (!React.isValidElement(element))
                         return null;
@@ -339,6 +339,7 @@ function Rows<T>(props: React.PropsWithChildren<IRowProps<T>>) {
                             key={element.key}
                             fixedLayout={props.FixedLayout}
                             onClick={props.OnClick}
+                            sel
                          />
                     return null;
                 })}
