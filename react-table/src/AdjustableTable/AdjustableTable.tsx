@@ -338,6 +338,7 @@ function Rows<T>(props: React.PropsWithChildren<IRowProps<T>>) {
                             index={i}
                             key={element.key}
                             fixedLayout={props.FixedLayout}
+                            onClick={props.OnClick}
                          />
                     return null;
                 })}
@@ -352,6 +353,7 @@ function Rows<T>(props: React.PropsWithChildren<IRowProps<T>>) {
                             index={i}
                             key={element.key}
                             fixedLayout={props.FixedLayout}
+                            onClick={props.OnClick}
                          />
                     return null;
                 })}
