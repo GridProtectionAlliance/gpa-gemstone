@@ -476,7 +476,7 @@ function Header<T>(props: React.PropsWithChildren<IHeaderProps<T>>) {
                 if ((element as React.ReactElement<any>).type === Column)
                     return <ColumnHeaderWrapper 
                         {...element.props}
-                        setWidth={(w) => props.SetWidth(element.props.Key,w,'fixed')}
+                        setWidth={(w) => props.SetWidth(element.props.Key,Math.floor(w),'fixed')}
                         onSort={(key, e, fld) => props.OnSort({colKey: key, colField: fld, ascending: props.Ascending},e)}
                         sorted={props.SortKey === element.props.Key && (element.props.AllowSort ?? true)}
                         asc={props.Ascending}
