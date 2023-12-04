@@ -115,12 +115,13 @@ interface IAdjustedWidths {width: number, minWidth: number}
 
 export default function AdjustableTable<T>(props: React.PropsWithChildren<TableProps<T>>) {
 
-    const [fixLayout, setFixLayout] = React.useState<boolean>(false);
+    const tblref = React.useRef<HTMLTableElement>(null);
 
+    const [fixLayout, setFixLayout] = React.useState<boolean>(false);
+    const [currentTableWidth, setCurrentTableWidth] = React.useState<number>(0);
     const [fixedWidths, setFixedWidths] = React.useState<Map<string, number>>(new Map<string, number>())
     const [adjustedWidths, setAdjustedWidths] = React.useState<Map<string, IAdjustedWidths>>(new Map<string, IAdjustedWidths>())
-    const [fixedkeys, setFixedKeys] = React.useState<string[]>(React.Children.map(props.children,
-        (element) => {
+    const [fixedkeys, setFixedKeys] = React.useState<string[]>(React.Children.map(props.children, (element) => {
             if (!React.isValidElement(element))
                 return undefined
             if ((element as React.ReactElement<any>).type === Column)
@@ -136,6 +137,23 @@ export default function AdjustableTable<T>(props: React.PropsWithChildren<TableP
                 return element.props.Key
             return undefined; 
         })?.filter(d => d !== undefined) ?? [])
+
+        const setTableWidth = React.useCallback(_.debounce(() => {setCurrentTableWidth(tblref.current?.offsetWidth ?? 0)}, 500),[])
+
+        React.useEffect(() => {
+            const element = tblref?.current;
+        
+            if (!element) return;
+        
+            const observer = new ResizeObserver(() => {
+                setTableWidth()
+            });
+        
+            observer.observe(element);
+            return () => {
+              observer.disconnect();
+            };
+          }, [])
 
     React.useEffect(() => {
         const keysFixed = React.Children.map(props.children,
@@ -176,7 +194,7 @@ export default function AdjustableTable<T>(props: React.PropsWithChildren<TableP
         setFixLayout(false);
         setFixedWidths(new Map<string,number>())
         setAdjustedWidths(new Map<string,IAdjustedWidths>())
-    }, [fixedkeys.length, adjKeys.length])
+    }, [fixedkeys.length, adjKeys.length, currentTableWidth])
 
     React.useEffect(() => {
         const fixed = fixedkeys.length == fixedWidths.size
@@ -236,7 +254,7 @@ export default function AdjustableTable<T>(props: React.PropsWithChildren<TableP
     return (
         <table
             className={props.TableClass !== undefined ? props.TableClass : ''}
-            style={props.TableStyle}
+            style={props.TableStyle} ref={tblref}
         >
             <Header<T> Class={props.TheadClass}
                 Style={props.TheadStyle}
@@ -308,7 +326,7 @@ function Rows<T>(props: React.PropsWithChildren<IRowProps<T>>) {
                     style.backgroundColor = 'yellow';
                 
                 const key = props.KeySelector(d);
-                return <tr key={key} style={{ display: (props.FixedLayout ? 'block' : undefined)}}>
+                return <tr key={key} style={{ display: (props.FixedLayout ? 'block' : undefined), ...style}}>
                  {React.Children.map(props.children, (element) => {
                     if (!React.isValidElement(element))
                         return null;
@@ -320,6 +338,8 @@ function Rows<T>(props: React.PropsWithChildren<IRowProps<T>>) {
                             index={i}
                             key={element.key}
                             fixedLayout={props.FixedLayout}
+                            onClick={props.OnClick}
+                            sel
                          />
                     return null;
                 })}
@@ -334,6 +354,7 @@ function Rows<T>(props: React.PropsWithChildren<IRowProps<T>>) {
                             index={i}
                             key={element.key}
                             fixedLayout={props.FixedLayout}
+                            onClick={props.OnClick}
                          />
                     return null;
                 })}
@@ -435,7 +456,7 @@ function Header<T>(props: React.PropsWithChildren<IHeaderProps<T>>) {
                 if ((element as React.ReactElement<any>).type === AdjustableCol)
                      return <AdjColumnHeaderWrapper
                          {...element.props}
-                         setWidth={(w,min) => props.SetWidth(element.props.Key,w,'adjustable', min)}
+                         setWidth={(w,min) => props.SetWidth(element.props.Key,Math.floor(w),'adjustable', min)}
                          onSort={(key, e, fld) => props.OnSort({colKey: key, colField: fld, ascending: props.Ascending},e)}
                          sorted={props.SortKey === element.props.Key && (element.props.AllowSort ?? true)}
                          asc={props.Ascending}
@@ -456,7 +477,7 @@ function Header<T>(props: React.PropsWithChildren<IHeaderProps<T>>) {
                 if ((element as React.ReactElement<any>).type === Column)
                     return <ColumnHeaderWrapper 
                         {...element.props}
-                        setWidth={(w) => props.SetWidth(element.props.Key,w,'fixed')}
+                        setWidth={(w) => props.SetWidth(element.props.Key,Math.floor(w),'fixed')}
                         onSort={(key, e, fld) => props.OnSort({colKey: key, colField: fld, ascending: props.Ascending},e)}
                         sorted={props.SortKey === element.props.Key && (element.props.AllowSort ?? true)}
                         asc={props.Ascending}

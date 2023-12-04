@@ -38,6 +38,7 @@ interface IProps<T> {
   Format?: string;
   Type?: ('datetime-local' | 'date'); // Default to date
   Help?: string|JSX.Element;
+  AllowEmpty?: boolean
 }
 
 export default function DateTimePicker<T>(props: IProps<T>) {
@@ -59,6 +60,8 @@ export default function DateTimePicker<T>(props: IProps<T>) {
   const [top, setTop] = React.useState<number>(0);
   const [left, setLeft] = React.useState<number>(0);
 
+  const allowEmpty = props.AllowEmpty ?? false;
+
   React.useEffect(() => {
     setGuid(CreateGuid());
   }, []);
@@ -70,6 +73,10 @@ export default function DateTimePicker<T>(props: IProps<T>) {
 
   React.useEffect(() => {
     const valid = moment(boxRecord,boxFormat).isValid();
+    
+    if (allowEmpty && boxRecord.length === 0 && !valid && props.Record !== null) {
+      props.Setter({...props.Record, [props.Field]: null});
+    }
 
     if (valid && parse(props.Record).format(boxFormat) !== boxRecord)
       props.Setter({...props.Record, [props.Field]: moment(boxRecord,boxFormat).format(recordFormat)});
@@ -138,7 +145,7 @@ export default function DateTimePicker<T>(props: IProps<T>) {
         className={"gpa-gemstone-datetime form-control" + (props.Valid(props.Field) ? '' : ' is-invalid')}
         type={props.Type === undefined ? 'date' : props.Type}
         onChange={(evt) => {
-          setBoxRecord(evt.target.value);
+          setBoxRecord(evt.target.value ?? "");
         }}
         onFocus={() => {setShowOverlay(true)}}
         value={boxRecord}
