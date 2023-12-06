@@ -63,8 +63,8 @@ const SymbolicMarker: React.FunctionComponent<IProps> = (props) => {
 
   React.useEffect(() => {
     const id = context.RegisterSelect({
-      onRelease: (_) => setSelected(false),
-      onPlotLeave: (_) => setSelected(false),
+      onRelease: () => setSelected(false),
+      onPlotLeave: () => setSelected(false),
       onClick,
       onMove,
       axis: props.axis,
@@ -79,8 +79,8 @@ const SymbolicMarker: React.FunctionComponent<IProps> = (props) => {
       return;
 
     context.UpdateSelect(guid, {
-      onRelease: (_) => setSelected(false),
-      onPlotLeave: (_) => setSelected(false),
+      onRelease: () => setSelected(false),
+      onPlotLeave: () => setSelected(false),
       onClick,
       onMove,
       axis: props.axis,

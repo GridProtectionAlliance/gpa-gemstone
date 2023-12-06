@@ -586,7 +586,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
       const pt = SVGref.current!.createSVGPoint();
       pt.x = evt.clientX;
       pt.y = evt.clientY;
-      let ptTransform = pt.matrixTransform(SVGref.current!.getScreenCTM().inverse());
+      const ptTransform = pt.matrixTransform(SVGref.current!.getScreenCTM().inverse());
 
       if (mouseMode === 'pan') {
           const dP = mousePosition[0] - ptTransform.x;
@@ -633,7 +633,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
         const pt = SVGref.current!.createSVGPoint();
         pt.x = evt.clientX;
         pt.y = evt.clientY;
-        let ptTransform = pt.matrixTransform(SVGref.current!.getScreenCTM().inverse())
+        const ptTransform = pt.matrixTransform(SVGref.current!.getScreenCTM().inverse())
         setMouseClick([ptTransform.x, ptTransform.y]);
         if (selectedMode === 'zoom' && (props.zoom === undefined || props.zoom))
             setMouseMode('zoom');
