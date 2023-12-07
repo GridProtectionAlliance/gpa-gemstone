@@ -41,7 +41,7 @@ export interface IProps {
     barAlign?: 'left'|'center'|'right',
     // Makes bars this size, so that multiple can be dispalyed on the same time value
     binSize?: number,
-    sampleTicks?: number
+    sampleMs?: number
 }
 
 function HeatMapChart(props: IProps) {
@@ -74,8 +74,12 @@ function HeatMapChart(props: IProps) {
 
     React.useEffect(() => {
         if (data == null) return;
+        if (props.sampleMs !== undefined) {
+            setBarWidth(context.XTransformation(data.minT + props.sampleMs) - context.XTransformation(data.minT));
+            return;
+        }
         setBarWidth((context.XTransformation(data.maxT) - context.XTransformation(data.minT)) / data.GetFullData().length);
-    }, [data, context.XTransformation]);
+    }, [data, context.XTransformation, props.sampleMs]);
 
    const createLegend = React.useCallback(() => {
         return <HeatLegend 
