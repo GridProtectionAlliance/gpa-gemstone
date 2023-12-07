@@ -33,7 +33,7 @@ export interface IProps {
     data: [number, number, number][],
     // Hue/Value are part of color, HSV. Both values are assumed [0-1] and saturation is determined by z-value.
     hue: number,
-    value: number,
+    saturation: number,
     fillStyle?: FillStyle,
     axis?: AxisIdentifier,
     legendUnit?: string,
@@ -80,9 +80,9 @@ function HeatMapChart(props: IProps) {
    const createLegend = React.useCallback(() => {
         return <HeatLegend 
             unitLabel={props.legendUnit}
-            minColor={HsvToHex(props.hue, 0, props.value)} maxColor={HsvToHex(props.hue, 1, props.value)}
+            minColor={HsvToHex(props.hue, props.saturation, 1)} maxColor={HsvToHex(props.hue, props.saturation, 0)}
             minValue={zLimits[0]} maxValue={zLimits[1]}/>;
-    }, [props.legendUnit, zLimits, props.hue, props.value]);
+    }, [props.legendUnit, zLimits, props.hue, props.saturation]);
 
     React.useEffect(() => {
         setData(new PointNode(props.data));
@@ -117,10 +117,10 @@ function HeatMapChart(props: IProps) {
             {data == null ? null : 
                 data.GetFullData().map((pt, i) => {
                     const barTop =  context.YTransformation(pt[1] + (props.binSize ?? 0), AxisMap.get(props.axis));
-                    const saturation = (pt[2] - zLimits[0]) / (zLimits[1] - zLimits[0]);
-                    const color = HsvToHex(props.hue, saturation, props.value);
+                    const value = 1 - (pt[2] - zLimits[0]) / (zLimits[1] - zLimits[0]);
+                    const color = HsvToHex(props.hue, props.saturation, value);
                     return <rect key={i} x={context.XTransformation(pt[0]) - allBarOffset} y={barTop} width={barWidth} 
-                    height={Math.abs(barTop-(props.binSize !== undefined ? context.YTransformation(pt[1], AxisMap.get(props.axis)) : allBarBottoms))} fill={color} stroke='black'/>
+                    height={Math.abs(barTop-(props.binSize !== undefined ? context.YTransformation(pt[1], AxisMap.get(props.axis)) : allBarBottoms))} fill={color} stroke={color}/>
                 })
             }
         </g>
