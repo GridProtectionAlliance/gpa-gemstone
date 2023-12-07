@@ -339,6 +339,7 @@ function Rows<T>(props: React.PropsWithChildren<IRowProps<T>>) {
                             key={element.key}
                             fixedLayout={props.FixedLayout}
                             onClick={props.OnClick}
+                            dragStart={props.DragStart}
                             sel
                          />
                     return null;
@@ -355,6 +356,7 @@ function Rows<T>(props: React.PropsWithChildren<IRowProps<T>>) {
                             key={element.key}
                             fixedLayout={props.FixedLayout}
                             onClick={props.OnClick}
+                            dragStart={props.DragStart}
                          />
                     return null;
                 })}
