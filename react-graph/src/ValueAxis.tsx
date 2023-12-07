@@ -163,6 +163,11 @@ function ValueAxis(props: IProps) {
 
     },[hAxis, hLabel, props.hAxis]);
 
+    // use effect resets us in case this becomes unmounted
+    React.useEffect(() => {
+      return () => props.setWidthAxis(0);
+    },[]);
+
     React.useEffect(() => {
       if (props.label === undefined)
         return;

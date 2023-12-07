@@ -64,6 +64,7 @@ function HorizontalMarker(props: IProps) {
   React.useEffect(() => {
         const id = context.RegisterSelect({
             axis: props.axis,
+            allowSnapping: false,
             onClick,
             onRelease: (_) => setSelected(false),
             onPlotLeave: (_) => setSelected(false)
@@ -78,6 +79,7 @@ function HorizontalMarker(props: IProps) {
 
         context.UpdateSelect(guid, {
             axis: props.axis,
+            allowSnapping: false,
             onClick,
             onRelease: (_) => setSelected(false),
             onPlotLeave: (_) => setSelected(false)
@@ -102,8 +104,8 @@ function HorizontalMarker(props: IProps) {
 
    React.useEffect(() => {
        if (isSelected)
-        setValue(context.YHover[AxisMap.get(props.axis)]);
-   }, [context.YHover, props.axis]);
+        setValue(context.YHoverSnap[AxisMap.get(props.axis)]);
+   }, [context.YHoverSnap, props.axis]);
 
    return (
        

@@ -26,33 +26,41 @@ import * as React from 'react';
 export interface IGraphContext extends IHandlerRegistration, IDataRegistration {
   XDomain: [number, number],
   XHover: number,
+  XHoverSnap: number,
 
   YHover: number[],
+  YHoverSnap: number[],
   YDomain: [number, number][],
 
   CurrentMode: 'zoom'|'pan'|'select',
   Data: Map<string, IDataSeries>,
+  XApplyPixelOffset: (x: number) => number,
+  YApplyPixelOffset: (y: number) => number,
   XTransformation: (x: number) => number,
   YTransformation: (y: number, axis: AxisIdentifier|number) => number,
-  
   UpdateFlag: number,
   XInverseTransformation: (p: number) => number,
   YInverseTransformation: (p: number, axis: AxisIdentifier|number) => number,
-
   SetXDomain: React.SetStateAction<[number,number]> | ((t: [number,number]) => void),
   SetYDomain:  React.SetStateAction<[number,number]> | ((t: [number,number][]) => void),
+  RequestLegendWidth: (width: number, requesterID: string) => void,
+  RequestLegendHeight: (height: number) => void
 }
 
 export const GraphContext = React.createContext({
   XDomain: [0, 0],
   XHover: NaN,
+  XHoverSnap: NaN,
 
   YHover: [NaN, NaN],
+  YHoverSnap: [NaN, NaN],
   YDomain: [[0, 0]],
   CurrentMode: 'select',
 
 
   Data: new Map<string, IDataSeries>(),
+  XApplyPixelOffset: (_: number) => _,
+  YApplyPixelOffset: (_: number) => _,
   XTransformation: (_: number) => 0,
   YTransformation: (_: number, __: AxisIdentifier|number) => 0,
   XInverseTransformation: (_: number) => 0,
@@ -66,6 +74,8 @@ export const GraphContext = React.createContext({
   UpdateSelect: (_) => undefined,
   SetXDomain: (_) => undefined,
   SetYDomain: (_: any) => undefined,
+  RequestLegendWidth: (_: number, __: string) => undefined,
+  RequestLegendHeight: (_: number) => undefined,
   UpdateFlag: 0
 } as IGraphContext);
 
@@ -74,6 +84,7 @@ export interface IDataSeries {
   getMax: (tDomain: [number, number]) => number|undefined,
   getPoint: (xValue: number) => [...number[]]|undefined,
   axis: AxisIdentifier|undefined,
+  legendSize?: 'sm'|'lg',
   legend?: HTMLElement| React.ReactElement| JSX.Element
 }
 
@@ -107,7 +118,8 @@ export interface IHandlers {
   onRelease?: (x: number, y: number) => void,
   onPlotLeave?: (x: number, y:number) => void,
   onMove?: (x: number, y: number) => void,
-  axis: number|AxisIdentifier
+  axis: number|AxisIdentifier,
+  allowSnapping: boolean
 }
 
 export interface IDataRegistration {
@@ -131,17 +143,22 @@ export interface IActionFunctions {
 interface IContextWrapperProps extends IHandlerRegistration, IDataRegistration {
   XDomain: [number, number],
   MousePosition: [number,number],
+  MousePositionSnap: [number,number],
   YDomain: [number,number][],
   CurrentMode:  'zoom'|'pan'|'select',
   MouseIn: boolean,
   UpdateFlag: number,
   Data: Map<string, IDataSeries>,
+  XApplyPixelOffset: (_: number) => number,
+  YApplyPixelOffset: (_: number) => number, 
   XTransform: (x: number) => number,
   YTransform: (y: number, axis: AxisIdentifier|number) => number,
   XInvTransform: (p: number) => number,
   YInvTransform: (p: number, axis: AxisIdentifier|number) => number,
   SetXDomain: (x: [number,number]) => void,
   SetYDomain: (y: [number, number][]) => void,
+  RequestLegendWidth: (width: number, requesterID: string) => void,
+  RequestLegendHeight: (height: number) => void
 }
 
 export const ContextWrapper: React.FC<IContextWrapperProps> = (props) => {
@@ -149,11 +166,14 @@ export const ContextWrapper: React.FC<IContextWrapperProps> = (props) => {
   const context = React.useMemo(GetContext, [
     props.XDomain,
     props.MousePosition,
+    props.MousePositionSnap,
     props.YDomain,
     props.CurrentMode,
     props.MouseIn,
     props.UpdateFlag,
     props.Data,
+    props.XApplyPixelOffset,
+    props.YApplyPixelOffset,
     props.XTransform,
     props.XInvTransform,
     props.YInvTransform,
@@ -167,16 +187,22 @@ export const ContextWrapper: React.FC<IContextWrapperProps> = (props) => {
     props.RegisterSelect,
     props.RemoveSelect,
     props.UpdateSelect,
+    props.RequestLegendWidth,
+    props.RequestLegendHeight,
   ]);
 
   function GetContext(): IGraphContext {
     return {
         XDomain: props.XDomain,
-        XHover: props.MouseIn? props.XInvTransform(props.MousePosition[0]) : NaN,
+        XHover: props.MouseIn ? props.XInvTransform(props.MousePosition[0]) : NaN,
         YHover: props.MouseIn ? [...AxisMap.values()].map(axis => props.YInvTransform(props.MousePosition[1], axis)) : Array<number>(AxisMap.size).fill(NaN),
+        XHoverSnap: props.MouseIn ? props.XInvTransform(props.MousePositionSnap[0]) : NaN,
+        YHoverSnap: props.MouseIn ? [...AxisMap.values()].map(axis => props.YInvTransform(props.MousePositionSnap[1], axis)) : Array<number>(AxisMap.size).fill(NaN),
         YDomain: props.YDomain,
         CurrentMode: props.CurrentMode,
         Data: props.Data,
+        XApplyPixelOffset: props.XApplyPixelOffset,
+        YApplyPixelOffset: props.YApplyPixelOffset,
         XTransformation: props.XTransform,
         YTransformation: props.YTransform,
         XInverseTransformation: props.XInvTransform,
@@ -190,7 +216,9 @@ export const ContextWrapper: React.FC<IContextWrapperProps> = (props) => {
         UpdateSelect: props.UpdateSelect,
         UpdateFlag: props.UpdateFlag,
         SetXDomain: props.SetXDomain,
-        SetYDomain: props.SetYDomain
+        SetYDomain: props.SetYDomain,
+        RequestLegendWidth: props.RequestLegendWidth,
+        RequestLegendHeight: props.RequestLegendHeight,
     } as IGraphContext
   }
 

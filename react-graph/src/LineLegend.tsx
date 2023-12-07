@@ -25,6 +25,7 @@
 import * as React from 'react';
 import { LineStyle} from './GraphContext';
 import { GetTextWidth, GetTextHeight } from '@gpa-gemstone/helper-functions';
+import { CreateGuid } from '@gpa-gemstone/helper-functions';
 
 
 export interface IProps {
@@ -32,30 +33,39 @@ export interface IProps {
     color: string,
     lineStyle: LineStyle,
     onClick: () => void,
-    opacity: number
+    opacity: number,
+    requestWidth?: (newWidth: number, guid: string) => void
 }
 
+const nonTextualWidth = 45;
+const textFont = "Segoe UI";
 function LineLegend(props: IProps) {
   const ref = React.useRef(null);
   const [wLegend, setWLegend] = React.useState<number>(0);
   const [hLegend, setHLegend] = React.useState<number>(0);
   const [textSize, setTextSize] = React.useState<number>(1);
   const [useMultiLine, setUseMultiLine] = React.useState<boolean>(false);
-  const nonTextualWidth = 45;
-  const textFont = "Segoe UI";
+  const [guid, setGuid] = React.useState<string>('');
 
-  
   React.useLayoutEffect(() => {
-    
     setWLegend(((ref?.current as any)?.offsetWidth) ?? 0);
-    setHLegend((ref?.current as any)?.offsetHeight ?? 0)
-  })
+    setHLegend((ref?.current as any)?.offsetHeight ?? 0);
+  });
+
+  React.useEffect(() => {
+    const generatedID = CreateGuid();
+    setGuid(generatedID);
+    return () => {
+      if (props.requestWidth !== undefined) props.requestWidth(-1, guid);
+    }
+  }, []);
 
   React.useEffect(() => {
     let t = 1;
     let w = GetTextWidth(textFont, `${t}em`, props.label);
     let h = GetTextWidth(textFont, `${t}em`, props.label);
     let useML = false;
+    if (props.requestWidth !== undefined) props.requestWidth(h, guid);
 
     while (t > 0.4 &&  ( w > wLegend - nonTextualWidth || h > hLegend)) {
       t = t - 0.05;

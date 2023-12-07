@@ -60,6 +60,7 @@ function Line(props: IProps) {
         return;
       context.UpdateData(guid, {
         legend: createLegend(),
+        legendSize: 'sm',
         axis: props.axis,
         getMax: (t) => (data == null|| !enabled? -Infinity : data.GetLimits(t[0],t[1])[1]),
         getMin: (t) => (data == null|| !enabled? Infinity : data.GetLimits(t[0],t[1])[0]),
@@ -104,6 +105,7 @@ function Line(props: IProps) {
    React.useEffect(() => {
        const id = context.AddData({
            legend: createLegend(),
+           legendSize: 'sm',
            axis: props.axis,
            getMax: (t) => (data == null|| !enabled? -Infinity : data.GetLimits(t[0],t[1])[1]),
            getMin: (t) => (data == null|| !enabled? Infinity : data.GetLimits(t[0],t[1])[0]),
@@ -126,7 +128,8 @@ function Line(props: IProps) {
         label={txt} color={props.color}
         lineStyle={props.lineStyle}
         onClick={() => setEnabled((e) => !e)} 
-        opacity={(enabled? 1 : 0.5)}/>;
+        opacity={(enabled? 1 : 0.5)}
+        requestWidth={context.RequestLegendWidth}/>;
    }
 
    function generateData() {

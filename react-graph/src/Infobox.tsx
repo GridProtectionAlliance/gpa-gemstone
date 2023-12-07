@@ -29,6 +29,7 @@ interface IProps {
   x: number,
   y: number,
   usePixelPositioning?: boolean,
+  disallowSnapping?: boolean,
   axis?: AxisIdentifier,
   origin?: "upper-right" | "upper-left" | "upper-center" | "lower-right" | "lower-left" | "lower-center",
   // Specifies the offset of the pox from the origin point, In pixels
@@ -51,7 +52,7 @@ const Infobox: React.FunctionComponent<IProps> = (props) => {
   
   // Functions
   const calculateX = React.useCallback((xArg: number) => {
-    let x: number = (props.usePixelPositioning ?? false) ? xArg : context.XTransformation(xArg);
+    let x: number = (props.usePixelPositioning ?? false) ? context.XApplyPixelOffset(xArg) : context.XTransformation(xArg);
     // Convert x/y to upper-left corner
     switch(props.origin) {
       case "lower-right":
@@ -72,10 +73,10 @@ const Infobox: React.FunctionComponent<IProps> = (props) => {
         break;
     }
     return x;
-  }, [context.XTransformation, props.origin, props.offset, props.usePixelPositioning, dimension]);
+  }, [context.XApplyPixelOffset, context.XTransformation, props.origin, props.offset, props.usePixelPositioning, dimension]);
   
   const calculateY = React.useCallback((yArg: number) => {
-    let y: number = (props.usePixelPositioning ?? false) ? yArg : context.YTransformation(yArg, AxisMap.get(props.axis));
+    let y: number = (props.usePixelPositioning ?? false) ? context.YApplyPixelOffset(yArg) : context.YTransformation(yArg, AxisMap.get(props.axis));
     // Convert x/y to upper-left corner
     switch(props.origin) {
       case undefined: 
@@ -91,7 +92,7 @@ const Infobox: React.FunctionComponent<IProps> = (props) => {
         break;
     }
     return y;
-  }, [context.YTransformation, props.origin, props.offset, props.axis, props.usePixelPositioning, dimension]);
+  }, [context.YApplyPixelOffset, context.YTransformation, props.origin, props.offset, props.usePixelPositioning, props.axis, dimension]);
   
   const onClick = React.useCallback((xArg: number, yArg: number) => {
     const xP = calculateX(props.x);
@@ -113,6 +114,7 @@ const Infobox: React.FunctionComponent<IProps> = (props) => {
   React.useEffect(() => {
     const id = context.RegisterSelect({
       axis: props.axis,
+      allowSnapping: false,
       onRelease: (_) => setSelected(false),
       onPlotLeave: (_) => setSelected(false),
       onClick,
@@ -128,6 +130,7 @@ const Infobox: React.FunctionComponent<IProps> = (props) => {
   
     context.UpdateSelect(guid, {
       axis: props.axis,
+      allowSnapping: false,
       onRelease: (_) => setSelected(false),
       onPlotLeave: (_) => setSelected(false),
       onClick,
@@ -152,8 +155,13 @@ const Infobox: React.FunctionComponent<IProps> = (props) => {
   },[context.CurrentMode]);
   
   React.useEffect(() => {
-    if (isSelected)
-      setPosition({x: context.XHover, y: context.YHover[AxisMap.get(props.axis)]});
+    if (isSelected && !(props.disallowSnapping ?? false))
+        setPosition({x: context.XHoverSnap, y: context.YHoverSnap[AxisMap.get(props.axis)]});
+  }, [context.XHoverSnap, context.YHoverSnap, props.axis]);
+  
+  React.useEffect(() => {
+    if (isSelected && (props.disallowSnapping ?? false))
+        setPosition({x: context.XHover, y: context.YHover[AxisMap.get(props.axis)]});
   }, [context.XHover, context.YHover, props.axis]);
   
   // Get Heights and Widths

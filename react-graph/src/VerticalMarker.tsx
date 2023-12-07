@@ -66,7 +66,8 @@ function VerticalMarker(props: IProps) {
             onClick,
             onRelease: (_) => setSelected(false),
             onPlotLeave: (_) => setSelected(false),
-            axis: props.axis
+            axis: props.axis,
+            allowSnapping: false
         } as IHandlers)
         setGuid(id)
         return () => { context.RemoveSelect(id) }
@@ -80,7 +81,8 @@ function VerticalMarker(props: IProps) {
             onClick,
             onRelease: (_) => setSelected(false),
             onPlotLeave: (_) => setSelected(false),
-            axis: props.axis
+            axis: props.axis,
+            allowSnapping: false
         } as IHandlers)
     }, [onClick])
 
@@ -105,8 +107,8 @@ function VerticalMarker(props: IProps) {
 
    React.useEffect(() => {
        if (isSelected)
-        setValue(context.XHover);
-   }, [context.XHover]);
+        setValue(context.XHoverSnap);
+   }, [context.XHoverSnap]);
 
    return (
        
