@@ -30,6 +30,9 @@ import { Accuracy } from './DateTimeUI/Clock'
 
 export type TimeUnit = ('datetime-local' | 'date' | 'time');
 
+type TimeUnit = ('datetime-local' | 'date' | 'time') | undefined;
+type Accuracy = ('minute' | 'second' | 'millisecond') | undefined;
+
 interface IProps<T> {
     Record: T;
     Field: keyof T;
