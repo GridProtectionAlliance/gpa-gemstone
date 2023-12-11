@@ -36,14 +36,17 @@ interface IProps<T> {
   Disabled?: boolean;
   Feedback?: string;
   Format?: string;
-  Type?: ('datetime-local' | 'date'); // Default to date
+  Type?: ('datetime-local' | 'date' | 'time'); // Default to date
   Help?: string|JSX.Element;
-  AllowEmpty?: boolean
+  AllowEmpty?: boolean,
+  ShowMS?: boolean
 }
 
 export default function DateTimePicker<T>(props: IProps<T>) {
   // Formats that will be used for dateBoxes
-  const boxFormat = "YYYY-MM-DD" + (props.Type === undefined || props.Type === 'date' ? "" : "[T]HH:mm:ss");
+  const boxFormat = props.Type === 'time' ? "HH:mm:ss.SSS" 
+  : (props.Type === 'datetime-local' ? "YYYY-MM-DD[T]HH:mm:ss" : "YYYY-MM-DD");
+
   const recordFormat = props.Format !== undefined ? props.Format : "YYYY-MM-DD" + (props.Type === undefined || props.Type === 'date' ? "" : "[T]HH:mm:ss.SSS[Z]");
   const parse = (r: T) => moment(props.Record[props.Field] as any, recordFormat);
   const divRef = React.useRef<any|null>(null);
@@ -151,7 +154,7 @@ export default function DateTimePicker<T>(props: IProps<T>) {
         value={boxRecord}
         disabled={props.Disabled === undefined ? false : props.Disabled}
         onClick={(e) => {e.preventDefault()}}
-        step="1"
+        step={props.ShowMS ? '0.001' : "1"}
       />
       <div className="invalid-feedback">
       {props.Feedback == null ? props.Field.toString() + ' is a required field.' : props.Feedback}
@@ -162,7 +165,8 @@ export default function DateTimePicker<T>(props: IProps<T>) {
         DateTime={pickerRecord} 
         Valid={props.Valid(props.Field)}
         Top={top} Center={left}
-        Type={props.Type === undefined || props.Type === 'date' ? 'date' : 'datetime'}
+        Type={props.Type === 'time' ? 'time' : (props.Type === 'datetime-local' ? 'datetime' : 'date')}
+        ShowMS={props.ShowMS}
         />
     </div>
   );

@@ -71,6 +71,7 @@ interface IProps {
   Show: boolean,
   Top: number,
   Center: number,
+  ShowMS?: boolean
 }
 
 export default function DateTimePopup(props: IProps) {
@@ -98,7 +99,7 @@ export default function DateTimePopup(props: IProps) {
     <Portal>
     <WrapperDiv Top={props.Top} Left={l} Indicator={50} ref={divRef} className='gpa-gemstone-datetime'>
       {showDate? <Calender DateTime={props.DateTime} Setter={props.Setter}/> : null}
-      {showTime? <Clock DateTime={props.DateTime} Setter={props.Setter}/> : null}
+      {showTime? <Clock DateTime={props.DateTime} Setter={props.Setter} ShowMS={props.ShowMS}/> : null}
     </WrapperDiv>
     </Portal>
   );
