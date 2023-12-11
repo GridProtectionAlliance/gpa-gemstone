@@ -29,9 +29,9 @@ import Calender from './Calender';
 import Clock from './Clock';
 
 interface IWrapperProps {
-  Top: number,
-  Left: number,
-  Indicator: number
+    Top: number,
+    Left: number,
+    Indicator: number
 }
 
 const WrapperDiv = styled.div<IWrapperProps>`
@@ -63,46 +63,46 @@ const WrapperDiv = styled.div<IWrapperProps>`
   }`
 
 interface IProps {
-  DateTime: moment.Moment
-  Setter: (record: moment.Moment) => void;
-  Valid: boolean;
-  Feedback?: string;
-  Type: ('datetime' | 'date' | 'time' );
-  Show: boolean,
-  Top: number,
-  Center: number,
-  ShowMS?: boolean
+    DateTime: moment.Moment
+    Setter: (record: moment.Moment) => void;
+    Valid: boolean;
+    Feedback?: string;
+    Type: ('datetime' | 'date' | 'time');
+    Show: boolean,
+    Top: number,
+    Center: number,
+    Accuracy?: ('minute' | 'second' | 'millisecond')
 }
 
 export default function DateTimePopup(props: IProps) {
-  const divRef = React.useRef<HTMLDivElement|null>(null);
-  const [showTime, setShowTime] = React.useState<boolean>(props.Type !== 'date');
-  const [showDate, setShowDate] = React.useState<boolean>(props.Type !== 'time');
+    const divRef = React.useRef<HTMLDivElement | null>(null);
+    const [showTime, setShowTime] = React.useState<boolean>(props.Type !== 'date');
+    const [showDate, setShowDate] = React.useState<boolean>(props.Type !== 'time');
 
-  const [width, setWidth] = React.useState<number>(0);
-  const [height, setHeight] = React.useState<number>(0);
+    const [width, setWidth] = React.useState<number>(0);
+    const [height, setHeight] = React.useState<number>(0);
 
-  React.useLayoutEffect(() => {
-    setWidth(divRef.current?.offsetWidth ?? width);
-    setHeight(divRef.current?.offsetHeight ?? height);
-  })
-  React.useEffect(() => {
-      setShowTime(props.Type !== 'date');
-      setShowDate(props.Type !== 'time');
-  }, [props.Type])
+    React.useLayoutEffect(() => {
+        setWidth(divRef.current?.offsetWidth ?? width);
+        setHeight(divRef.current?.offsetHeight ?? height);
+    })
+    React.useEffect(() => {
+        setShowTime(props.Type !== 'date');
+        setShowDate(props.Type !== 'time');
+    }, [props.Type])
 
-  if (!props.Show)
-    return null;
+    if (!props.Show)
+        return null;
 
-  const l = Math.max(props.Center - 0.5*width, 0)
-  return (
-    <Portal>
-    <WrapperDiv Top={props.Top} Left={l} Indicator={50} ref={divRef} className='gpa-gemstone-datetime'>
-      {showDate? <Calender DateTime={props.DateTime} Setter={props.Setter}/> : null}
-      {showTime? <Clock DateTime={props.DateTime} Setter={props.Setter} ShowMS={props.ShowMS}/> : null}
-    </WrapperDiv>
-    </Portal>
-  );
+    const l = Math.max(props.Center - 0.5 * width, 0)
+    return (
+        <Portal>
+            <WrapperDiv Top={props.Top} Left={l} Indicator={50} ref={divRef} className='gpa-gemstone-datetime'>
+                {showDate ? <Calender DateTime={props.DateTime} Setter={props.Setter} /> : null}
+                {showTime ? <Clock DateTime={props.DateTime} Setter={props.Setter} Accuracy={props.Accuracy} /> : null}
+            </WrapperDiv>
+        </Portal>
+    );
 }
 
 
