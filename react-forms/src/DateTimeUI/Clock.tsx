@@ -26,10 +26,11 @@ import * as moment from 'moment';
 import { IsInteger } from '@gpa-gemstone/helper-functions'
 
 interface IProps {
-    DateTime: moment.Moment
-    Setter: (record: moment.Moment) => void;
-    Accuracy?: ('minute' | 'second' | 'millisecond')
+    DateTime: moment.Moment,
+    Setter: (record: moment.Moment) => void,
+    Accuracy?: Accuracy
 }
+export type Accuracy = ('minute' | 'second' | 'millisecond');
 
 type Parameter = ('h' | 'm' | 's' | 'ms');
 

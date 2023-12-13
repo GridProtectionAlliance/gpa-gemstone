@@ -26,9 +26,9 @@ import * as moment from 'moment';
 import DateTimePopup from './DateTimeUI/DateTimePopup';
 import { CreateGuid, GetNodeSize } from '@gpa-gemstone/helper-functions';
 import HelperMessage from './HelperMessage';
+import { Accuracy } from './DateTimeUI/Clock'
 
-type TimeUnit = ('datetime-local' | 'date' | 'time') | undefined;
-type Accuracy = ('minute' | 'second' | 'millisecond') | undefined;
+export type TimeUnit = ('datetime-local' | 'date' | 'time');
 
 interface IProps<T> {
     Record: T;
@@ -47,7 +47,7 @@ interface IProps<T> {
 
 export default function DateTimePicker<T>(props: IProps<T>) {
     // Formats that will be used for dateBoxes
-    const boxFormat = determineBoxFormat(props.Type, props.Accuracy)
+    const boxFormat = getBoxFormat(props.Type, props.Accuracy)
     const recordFormat = props.Format !== undefined ? props.Format : "YYYY-MM-DD" + (props.Type === undefined || props.Type === 'date' ? "" : "[T]HH:mm:ss.SSS[Z]");
     const parse = (r: T) => moment(props.Record[props.Field] as any, recordFormat);
     const divRef = React.useRef<any | null>(null);
@@ -113,7 +113,7 @@ export default function DateTimePicker<T>(props: IProps<T>) {
             setShowOverlay(false);
     }
    
-    function determineBoxFormat(type: TimeUnit, accuracy: Accuracy) {
+    function getBoxFormat(type?: TimeUnit, accuracy?: Accuracy) {
         let timeUnit;
         let dateTime;
 
@@ -200,7 +200,7 @@ export default function DateTimePicker<T>(props: IProps<T>) {
                 DateTime={pickerRecord}
                 Valid={props.Valid(props.Field)}
                 Top={top} Center={left}
-                Type={props.Type === 'time' ? 'time' : (props.Type === 'datetime-local' ? 'datetime' : 'date')}
+                Type={props.Type === 'time' ? 'time' : (props.Type === 'datetime-local' ? 'datetime-local' : 'date')}
                 Accuracy={props.Accuracy}
             />
         </div>
