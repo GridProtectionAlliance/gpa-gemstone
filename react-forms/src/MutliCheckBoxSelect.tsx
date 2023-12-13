@@ -92,6 +92,7 @@ const MultiSelect = (props: IProps) => {
           display: show ? 'block' : 'none',
           position: 'absolute',
           backgroundColor: '#fff',
+          color: 'black',
           boxShadow: '0px 8px 16px 0px rgba(0,0,0,0.2)',
           zIndex: 401,
           minWidth: '100%',

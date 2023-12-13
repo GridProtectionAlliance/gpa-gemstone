@@ -41,7 +41,7 @@ interface IProps<T> {
 export default function TextArea<T>(props: IProps<T>) {
   const internal = React.useRef<boolean>(false)
   const guid = React.useRef<string>(CreateGuid())
-  
+
   const [showHelp, setShowHelp] = React.useState<boolean>(false);
   const [heldVal, setHeldVal] = React.useState<string>('');
   
@@ -62,9 +62,9 @@ export default function TextArea<T>(props: IProps<T>) {
   const showLabel = props.Label !== "";
   const showHelpIcon = props.Help !== undefined;
   const label = props.Label === undefined ? props.Field : props.Label;
-
+  
   return (
-    <div className="form-group" data-help={guid}>
+    <div className="form-group" data-help={guid.current}>
     {showHelpIcon || showLabel ?
         <label>{showLabel ? label : ''}
             {showHelpIcon ? <div style={{ width: 20, height: 20, borderRadius: '50%', display: 'inline-block', background: '#0D6EFD', marginLeft: 10, textAlign: 'center', fontWeight: 'bold' }} onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)}> ? </div> : null}
