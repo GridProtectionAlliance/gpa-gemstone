@@ -27,6 +27,8 @@ import { Portal } from 'react-portal';
 import styled from 'styled-components';
 import Calender from './Calender';
 import Clock from './Clock';
+import { TimeUnit } from '../DatePicker'
+import { Accuracy } from './Clock'
 
 interface IWrapperProps {
     Top: number,
@@ -63,15 +65,15 @@ const WrapperDiv = styled.div<IWrapperProps>`
   }`
 
 interface IProps {
-    DateTime: moment.Moment
-    Setter: (record: moment.Moment) => void;
-    Valid: boolean;
-    Feedback?: string;
-    Type: ('datetime' | 'date' | 'time');
+    DateTime: moment.Moment,
+    Setter: (record: moment.Moment) => void,
+    Valid: boolean,
+    Feedback?: string,
+    Type: TimeUnit,
     Show: boolean,
     Top: number,
     Center: number,
-    Accuracy?: ('minute' | 'second' | 'millisecond')
+    Accuracy?: Accuracy
 }
 
 export default function DateTimePopup(props: IProps) {
@@ -86,6 +88,7 @@ export default function DateTimePopup(props: IProps) {
         setWidth(divRef.current?.offsetWidth ?? width);
         setHeight(divRef.current?.offsetHeight ?? height);
     })
+
     React.useEffect(() => {
         setShowTime(props.Type !== 'date');
         setShowDate(props.Type !== 'time');
