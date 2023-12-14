@@ -241,9 +241,9 @@ const VerticalSplit: React.FunctionComponent<IProps> = (props) => {
             if (e.IsDrawer && !e.Open)
                 return;
             if (e.IsDrawer)
-                result.push(<div style={{width: isNaN(w)? 0 : w, float: 'left', minHeight: 1}} key={'draw-'+ drawer[e.Index].key}>{drawer[e.Index]}</div>)
+                result.push(<div style={{width: isNaN(w)? 0 : w, float: 'left', minHeight: 1, height: '100%'}} key={'draw-'+ drawer[e.Index].key}>{drawer[e.Index]}</div>)
             else
-                result.push(<div style={{width: isNaN(w)? 0 : w, float: 'left', minHeight: 1}} key={'sec-'+ sections[e.Index].key}>{sections[e.Index]}</div>)
+                result.push(<div style={{width: isNaN(w)? 0 : w, float: 'left', minHeight: 1, height: '100%'}} key={'sec-'+ sections[e.Index].key}>{sections[e.Index]}</div>)
 
             if (e.IsDrawer)
                 result.push(<DrawerHeader 
