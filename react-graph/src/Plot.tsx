@@ -70,6 +70,7 @@ export interface IProps {
     showDateOnTimeAxis?: boolean,
     cursorOverride?: string,
     onSelect?: (x: number, y: number[], actions: IActionFunctions) => void,
+    hideUiDuringInspect?: boolean,
     onDataInspect?: (tDomain: [number,number]) => void,
     Ymin?: number | number[],
     Ymax?: number | number[],
@@ -121,6 +122,8 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
     const [mouseClick, setMouseClick] = React.useState<[number, number]>([0, 0]);
     const [mouseStyle, setMouseStyle] = React.useState<string>("default");
     const moveRequested = React.useRef<boolean>(false);
+
+    const [photoReady, setPhotoReady] = React.useState<boolean>(false);
 
     const [offsetTop, setOffsetTop] = React.useState<number>(10);
     const [offsetBottom, setOffsetBottom] = React.useState<number>(10);
@@ -356,6 +359,14 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
       return () => document.body.removeEventListener('wheel', cancelWheel);
   }, []);
 
+  // Execute Data Inspect and leave photo mode
+  React.useEffect(() => {
+    if (photoReady){
+      if (props.onDataInspect !== undefined) props.onDataInspect(tDomain);
+      setPhotoReady(false);
+    }
+}, [photoReady]);
+
   // requests new legend height/width upto a defined maximum set by props
   const requestLegendHeightChange = React.useCallback((newHeight: number) =>  {
     if (props.legend !== 'bottom') return;
@@ -502,9 +513,12 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
 
     const setSelection = React.useCallback((s) => {
       if (s === "reset") Reset();
-      else if (s === "download") props.onDataInspect!(tDomain);
+      else if (s === "download" && props.onDataInspect !== undefined) {
+        if (props.hideUiDuringInspect ?? false) setPhotoReady(true);
+        else props.onDataInspect(tDomain);
+      }
       else setSelectedMode(s as ('zoom'|'pan'|'select'))
-    }, [tDomain]);
+    }, [tDomain, Reset]);
 
     function handleMouseWheel(evt: any) {
           if (props.zoom !== undefined && !props.zoom)
@@ -790,7 +804,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
                                        return element;
                                    return null;
                                })}
-                         {props.showMouse === undefined || props.showMouse ?
+                         {!photoReady && (props.showMouse === undefined || props.showMouse) ?
                               <path stroke='black' style={{ strokeWidth: 2, opacity: mouseIn? 0.8: 0.0 }} d={`M ${mousePosition[0]} ${offsetTop} V ${svgHeight - offsetBottom}`} />
                               : null}
                           {(props.zoom === undefined || props.zoom) && mouseMode === 'zoom' ?
@@ -800,6 +814,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
                                height={zoomMode === 'Rect'?  Math.abs(mouseClick[1] - mousePosition[1]) : (svgHeight - offsetTop - offsetBottom)} />
                               : null}
                       </g>
+                      {(photoReady) ? <></> :
                        <InteractiveButtons showPan={(props.pan === undefined || props.pan)}
                         showZoom={props.zoom === undefined || props.zoom}
                         showReset={!(props.pan !== undefined && props.zoom !== undefined && !props.zoom && !props.pan)}
@@ -819,6 +834,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
                                    return null;
                                })} 
                         </InteractiveButtons>
+                      }
                   </svg>
               </div>
             {props.legend  !== undefined && props.legend !== 'hidden' ? <Legend location={props.legend} height={legendHeight} width={legendWidth} graphWidth={svgWidth} graphHeight={svgHeight} /> : null}
