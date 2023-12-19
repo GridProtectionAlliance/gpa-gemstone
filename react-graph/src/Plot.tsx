@@ -42,9 +42,12 @@ import Circle from './Circle';
 import AggregatingCircles from './AggregatingCircles';
 import Infobox from './Infobox';
 import HeatMapChart from './HeatMapChart';
+import * as _html2canvas from "html2canvas";
+const html2canvas: any = _html2canvas;
 
 // A ZoomMode of AutoValue means it will zoom on time, and auto Adjust the Value to fit the data.
 // HalfAutoValue is the same as AutoValue except it "pins" either max or min at zero
+// divCaptureId allows the div to be captured to be external to this plot
 export interface IProps {
     defaultTdomain: [number, number],
     defaultYdomain?: [number,number] | [number,number][],
@@ -70,7 +73,8 @@ export interface IProps {
     showDateOnTimeAxis?: boolean,
     cursorOverride?: string,
     onSelect?: (x: number, y: number[], actions: IActionFunctions) => void,
-    hideUiDuringInspect?: boolean,
+    showDivCapture?: boolean,
+    divCaptureId?: string,
     onDataInspect?: (tDomain: [number,number]) => void,
     Ymin?: number | number[],
     Ymax?: number | number[],
@@ -359,13 +363,31 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
       return () => document.body.removeEventListener('wheel', cancelWheel);
   }, []);
 
-  // Execute Data Inspect and leave photo mode
+  // Execute Plot Capture and leave photo mode
   React.useEffect(() => {
     if (photoReady){
-      if (props.onDataInspect !== undefined) props.onDataInspect(tDomain);
-      setPhotoReady(false);
+      const id = props.divCaptureId ?? guid;
+      const element = document.getElementById(id);
+      if (element == null) {
+        console.error(`Could not find document element with id ${id}`);
+      } else {
+        html2canvas(element).then((canvas: HTMLCanvasElement) => {
+          document.body.appendChild(canvas);
+          const imageData = canvas.toDataURL("image/png").replace(/^data:image\/png/, "data:application/octet-stream");
+          const anchorElement = document.createElement(`a`);
+          anchorElement.href = imageData;
+          anchorElement.download = `${id}.png`;
+          document.body.appendChild(anchorElement);
+          anchorElement.click();
+          // Removing children created/cleanup
+          window.URL.revokeObjectURL(imageData);
+          document.body.removeChild(anchorElement);
+          document.body.removeChild(canvas);
+        });
+      }
+    setPhotoReady(false);
     }
-}, [photoReady]);
+  }, [photoReady]);
 
   // requests new legend height/width upto a defined maximum set by props
   const requestLegendHeightChange = React.useCallback((newHeight: number) =>  {
@@ -511,14 +533,12 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
       handlers.current.set(key,handler)
     },[]);
 
-    const setSelection = React.useCallback((s) => {
+    const setSelection = React.useCallback((s: string) => {
       if (s === "reset") Reset();
-      else if (s === "download" && props.onDataInspect !== undefined) {
-        if (props.hideUiDuringInspect ?? false) setPhotoReady(true);
-        else props.onDataInspect(tDomain);
-      }
+      else if (s === "download") { if (props.onDataInspect !== undefined) props.onDataInspect(tDomain); }
+      else if (s === "capture") setPhotoReady(true);
       else setSelectedMode(s as ('zoom'|'pan'|'select'))
-    }, [tDomain, Reset]);
+    }, [tDomain, Reset, props.onDataInspect]);
 
     function handleMouseWheel(evt: any) {
           if (props.zoom !== undefined && !props.zoom)
@@ -770,7 +790,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
         RequestLegendWidth={requestLegendWidthChange}
         RequestLegendHeight={requestLegendHeightChange}
       >
-          <div style={{ height: props.height, width: props.width, position: 'relative' }}>
+          <div id={guid} style={{ height: props.height, width: props.width, position: 'relative' }}>
               <div style={{ height: svgHeight, width: svgWidth, position: 'absolute', cursor: mouseStyle }}
                   onWheel={handleMouseWheel} onMouseMove={handleMouseMove} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} onMouseLeave={handleMouseOut} onMouseEnter={handleMouseIn} >
                   <svg ref={SVGref} width={svgWidth < 0? 0 : svgWidth} height={svgHeight < 0 ? 0 : svgHeight}
@@ -820,6 +840,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
                         showReset={!(props.pan !== undefined && props.zoom !== undefined && !props.zoom && !props.pan)}
                         showSelect={props.onSelect !== undefined || handlers.current.size > 0}
                         showDownload={props.onDataInspect !== undefined}
+                        showCapture={props.showDivCapture ?? false}
                         currentSelection={selectedMode}
                         setSelection={setSelection}
                         holdOpen={props.holdMenuOpen}
