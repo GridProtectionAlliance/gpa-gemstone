@@ -200,7 +200,7 @@ export default function DateTimePicker<T>(props: IProps<T>) {
                 DateTime={pickerRecord}
                 Valid={props.Valid(props.Field)}
                 Top={top} Center={left}
-                Type={props.Type === 'time' ? 'time' : (props.Type === 'datetime-local' ? 'datetime-local' : 'date')}
+                Type={props.Type === undefined ? 'date' : props.Type}
                 Accuracy={props.Accuracy}
             />
         </div>

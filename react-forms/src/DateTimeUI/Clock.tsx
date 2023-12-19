@@ -98,7 +98,7 @@ export default function Clock(props: IProps) {
                     <tr style={{ height: 20, lineHeight: '20px' }}>
                         {/* Hour */}
                         <td
-                            style={{ width: 50, padding: 5, cursor: 'pointer', background: (hover === 'increase_h' ? '#d3d3d3' : undefined) }}
+                            style={{ width: 52, padding: 5, cursor: 'pointer', background: (hover === 'increase_h' ? '#d3d3d3' : undefined) }}
                             onClick={() => increase('h')}
                             onMouseEnter={() => setHover('increase_h')}
                             onMouseLeave={() => setHover('none')}
@@ -106,7 +106,7 @@ export default function Clock(props: IProps) {
                         {/* Minute */}
                         <td style={{ width: 20, padding: 5 }}></td>
                         <td
-                            style={{ width: 50, padding: 5, cursor: 'pointer', background: (hover === 'increase_m' ? '#d3d3d3' : undefined) }}
+                            style={{ width: 52, padding: 5, cursor: 'pointer', background: (hover === 'increase_m' ? '#d3d3d3' : undefined) }}
                             onClick={() => increase('m')}
                             onMouseEnter={() => setHover('increase_m')}
                             onMouseLeave={() => setHover('none')}
@@ -116,7 +116,7 @@ export default function Clock(props: IProps) {
                             <>
                                 <td style={{ width: 20, padding: 5, }}></td>
                                 <td
-                                    style={{ width: 50, padding: 5, cursor: 'pointer', background: (hover === 'increase_s' ? '#d3d3d3' : undefined) }}
+                                    style={{ width: 52, padding: 5, cursor: 'pointer', background: (hover === 'increase_s' ? '#d3d3d3' : undefined) }}
                                     onClick={() => increase('s')}
                                     onMouseEnter={() => setHover('increase_s')}
                                     onMouseLeave={() => setHover('none')}
@@ -128,7 +128,7 @@ export default function Clock(props: IProps) {
                             <>
                                 <td style={{ width: 20, padding: 5 }}></td>
                                 <td
-                                    style={{ width: 50, padding: 5, cursor: 'pointer', background: (hover === 'increase_ms' ? '#d3d3d3' : undefined) }}
+                                    style={{ width: 52, padding: 5, cursor: 'pointer', background: (hover === 'increase_ms' ? '#d3d3d3' : undefined) }}
                                     onClick={() => increase('ms')}
                                     onMouseEnter={() => setHover('increase_ms')}
                                     onMouseLeave={() => setHover('none')}
@@ -138,29 +138,29 @@ export default function Clock(props: IProps) {
                     </tr>
                     <tr style={{ height: 20, lineHeight: '20px' }}>
                         {/* Hour */}
-                        <td style={{ width: 50, padding: 5, }}> <TimeInput value={hour} setValue={setHour} max={23} /> </td>
+                        <td style={{ width: 52, padding: 5, }}> <TimeInput value={hour} setValue={setHour} max={23} /> </td>
                         {/* Minute */}
                         <td style={{ width: 20, padding: 5, }}> : </td>
-                        <td style={{ width: 50, padding: 5, }}> <TimeInput value={minute} setValue={setMinute} max={59} /> </td>
+                        <td style={{ width: 52, padding: 5, }}> <TimeInput value={minute} setValue={setMinute} max={59} /> </td>
                         {/* Second */}
                         {(props.Accuracy === 'second' || props.Accuracy === 'millisecond') && (
                             <>
                                 <td style={{ width: 20, padding: 5, }}> : </td>
-                                <td style={{ width: 50, padding: 5, }}> <TimeInput value={second} setValue={setSecond} max={59} /> </td>
+                                <td style={{ width: 52, padding: 5, }}> <TimeInput value={second} setValue={setSecond} max={59} /> </td>
                             </>
                         )}
                         {/* Millisecond */}
                         {props.Accuracy === 'millisecond' && (
                             <>
                                 <td style={{ width: 20, padding: 5, }}> : </td>
-                                <td style={{ width: 50, padding: 5, }}> <TimeInput value={millisecond} setValue={setMilliSecond} max={999} /> </td>
+                                <td style={{ width: 52, padding: 5, }}> <TimeInput value={millisecond} setValue={setMilliSecond} max={999} /> </td>
                             </>
                         )}
                     </tr>
                     <tr style={{ height: 20, lineHeight: '20px' }}>
                         {/* Hour */}
                         <td
-                            style={{ width: 50, padding: 5, cursor: 'pointer', background: (hover === 'decrease_h' ? '#d3d3d3' : undefined) }}
+                            style={{ width: 52, padding: 5, cursor: 'pointer', background: (hover === 'decrease_h' ? '#d3d3d3' : undefined) }}
                             onClick={() => decrease('h')}
                             onMouseEnter={() => setHover('decrease_h')}
                             onMouseLeave={() => setHover('none')}
@@ -168,7 +168,7 @@ export default function Clock(props: IProps) {
                         {/* Minute */}
                         <td style={{ width: 20, padding: 5, }}></td>
                         <td
-                            style={{ width: 50, padding: 5, cursor: 'pointer', background: (hover === 'decrease_m' ? '#d3d3d3' : undefined) }}
+                            style={{ width: 52, padding: 5, cursor: 'pointer', background: (hover === 'decrease_m' ? '#d3d3d3' : undefined) }}
                             onClick={() => decrease('m')}
                             onMouseEnter={() => setHover('decrease_m')}
                             onMouseLeave={() => setHover('none')}
@@ -178,7 +178,7 @@ export default function Clock(props: IProps) {
                             <>
                                 <td style={{ width: 20, padding: 5, }}></td>
                                 <td
-                                    style={{ width: 50, padding: 5, cursor: 'pointer', background: (hover === 'decrease_s' ? '#d3d3d3' : undefined) }}
+                                    style={{ width: 52, padding: 5, cursor: 'pointer', background: (hover === 'decrease_s' ? '#d3d3d3' : undefined) }}
                                     onClick={() => decrease('s')}
                                     onMouseEnter={() => setHover('decrease_s')}
                                     onMouseLeave={() => setHover('none')}
@@ -190,7 +190,7 @@ export default function Clock(props: IProps) {
                             <>
                                 <td style={{ width: 20, padding: 5, }}></td>
                                 <td
-                                    style={{ width: 50, padding: 5, cursor: 'pointer', background: (hover === 'decrease_ms' ? '#d3d3d3' : undefined) }}
+                                    style={{ width: 52, padding: 5, cursor: 'pointer', background: (hover === 'decrease_ms' ? '#d3d3d3' : undefined) }}
                                     onClick={() => decrease('ms')}
                                     onMouseEnter={() => setHover('decrease_ms')}
                                     onMouseLeave={() => setHover('none')}
@@ -229,7 +229,7 @@ const TimeInput = (props: { value: string, setValue: (v: string) => void, max: n
         props.setValue(val)
     }, [val, error])
 
-    return <div className={"form-group form-group-sm"} style={{ width: 50 }}>
+    return <div className={"form-group form-group-sm"} style={{ width: 52 }}>
         <input
             type={"text"}
             className={!error ? 'form-control' : 'form-control is-invalid'}
