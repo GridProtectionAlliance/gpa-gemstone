@@ -107,7 +107,7 @@ function LogAxis(props: IProps) {
    React.useEffect(() => {
 
     let newTicks;
-    if (deltaW === 0){
+    if (deltaW === 0 || steps === 0){
       if (context.XDomain[0] < 0)
         newTicks = [Math.pow(10, Math.floor(Math.log10(Math.abs(context.XDomain[0]))*-1)), Math.pow(10, Math.abs(Math.ceil(Math.log10(context.XDomain[1]))))];
       else 
