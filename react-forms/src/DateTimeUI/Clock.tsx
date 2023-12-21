@@ -26,162 +26,222 @@ import * as moment from 'moment';
 import { IsInteger } from '@gpa-gemstone/helper-functions'
 
 interface IProps {
-  DateTime: moment.Moment
-  Setter: (record: moment.Moment) => void;
+    DateTime: moment.Moment,
+    Setter: (record: moment.Moment) => void,
+    Accuracy?: Accuracy
 }
+export type Accuracy = ('minute' | 'second' | 'millisecond');
 
-type Parameter = ('h'|'m'|'s');
+type Parameter = ('h' | 'm' | 's' | 'ms');
 
 export default function Clock(props: IProps) {
-  const [hour, setHour] = React.useState<string>(props.DateTime.format("HH"));
-  const [minute, setMinute] = React.useState<string>(props.DateTime.format("mm"));
-  const [second, setSecond] = React.useState<string>(props.DateTime.format("ss"));
-  const [hover, setHover] = React.useState<'increase_s'|'increase_m'|'increase_h'|'decrease_s'|'decrease_m'|'decrease_h'|'none'>('none');
-  
-  React.useEffect(() => {
-    setHour(props.DateTime.format("HH"));
-    setMinute(props.DateTime.format("mm"))
-    setSecond(props.DateTime.format("ss"))
-  }, [props.DateTime])
+    const [hour, setHour] = React.useState<string>(props.DateTime.format("HH"));
+    const [minute, setMinute] = React.useState<string>(props.DateTime.format("mm"));
+    const [second, setSecond] = React.useState<string>(props.DateTime.format("ss"));
+    const [millisecond, setMilliSecond] = React.useState<string>(props.DateTime.format("SSS"));
+    const [hover, setHover] = React.useState<'increase_ms' | 'increase_s' | 'increase_m' | 'increase_h' | 'decrease_ms' | 'decrease_s' | 'decrease_m' | 'decrease_h' | 'none'>('none');
 
-  React.useEffect(() => {
-    const h = parseInt(hour, 10);
-    const m = parseInt(minute, 10);
-    const s = parseInt(second, 10);
+    React.useEffect(() => {
+        setHour(props.DateTime.format("HH"));
+        setMinute(props.DateTime.format("mm"))
+        setSecond(props.DateTime.format("ss"))
+        setMilliSecond(props.DateTime.format("SSS"))
+    }, [props.DateTime])
 
-    if (isNaN(h) || isNaN(m) || isNaN(s))
-      return;
+    React.useEffect(() => {
+        const h = parseInt(hour, 10);
+        const m = parseInt(minute, 10);
+        const s = parseInt(second, 10);
+        const ms = parseInt(millisecond, 10)
 
-    if (h !== props.DateTime.hour() || m !== props.DateTime.minute() || s !== props.DateTime.second()) {
-      let d = moment(props.DateTime);
-      if (!d.isValid())
-        d = moment.utc().startOf('d');
-      d.hour(h).minute(m).second(s);
-      props.Setter(d);
+        if (isNaN(h) || isNaN(m) || isNaN(s) || isNaN(ms))
+            return;
+
+        if (h !== props.DateTime.hour() || m !== props.DateTime.minute() || s !== props.DateTime.second() || ms !== props.DateTime.millisecond()) {
+            let d = moment(props.DateTime);
+            if (!d.isValid())
+                d = moment.utc().startOf('d');
+            d.hour(h).minute(m).second(s).millisecond(ms);
+            props.Setter(d);
+        }
+
+    }, [hour, minute, second, millisecond])
+
+    function increase(type: Parameter) {
+        const d = moment(props.DateTime).add(1, type);
+        if (type === 'h')
+            setHour(d.format("HH"));
+        if (type === 'm')
+            setMinute(d.format("mm"));
+        if (type === 's')
+            setSecond(d.format("ss"))
+        if (type === 'ms')
+            setMilliSecond(d.format("SSS"))
     }
 
-  }, [hour, minute,second])
+    function decrease(type: Parameter) {
+        const d = moment(props.DateTime).subtract(1, type);
+        if (type === 'h')
+            setHour(d.format("HH"));
+        if (type === 'm')
+            setMinute(d.format("mm"));
+        if (type === 's')
+            setSecond(d.format("ss"))
+        if (type === 'ms')
+            setMilliSecond(d.format("SSS"))
+    }
 
-  function increase(type: Parameter) {
-    const d = moment(props.DateTime).add(1,type);
-    if (type ==='h')
-      setHour(d.format("HH"));
-    if (type === 'm')
-      setMinute(d.format("mm"));
-    if (type === 's')
-      setSecond(d.format("ss"))
-    
-  }
-
-  function decrease(type: Parameter) {
-    const d = moment(props.DateTime).subtract(1,type);
-    if (type ==='h')
-    setHour(d.format("HH"));
-    if (type === 'm')
-      setMinute(d.format("mm"));
-    if (type === 's')
-      setSecond(d.format("ss"))
-  }
-
-  return (
-    <div style={{ background: '#f0f0f0', marginTop: 10, opacity: 1}}>
-    <table style={{textAlign: 'center'}}>
-      <tbody>
-        <tr style={{height: 20, lineHeight: '20px'}}>
-          <td 
-            style={{ width: 50, padding: 5, cursor: 'pointer', background: (hover === 'increase_h'? '#d3d3d3' : undefined) }}
-            onClick={() => increase('h')}
-            onMouseEnter={() => setHover('increase_h')}
-            onMouseLeave={() => setHover('none')}
-            > ^ </td>
-          <td style={{ width: 20, padding: 5 }}></td>
-          <td 
-            style={{ width: 50, padding: 5, cursor: 'pointer', background: (hover === 'increase_m'? '#d3d3d3' : undefined) }}
-            onClick={() => increase('m')}
-            onMouseEnter={() => setHover('increase_m')}
-            onMouseLeave={() => setHover('none')}
-          > ^ </td>
-          <td style={{ width: 20, padding: 5, }}></td>
-          <td 
-            style={{ width: 50, padding: 5, cursor: 'pointer', background: (hover === 'increase_s'? '#d3d3d3' : undefined) }}
-            onClick={() => increase('s')}
-            onMouseEnter={() => setHover('increase_s')}
-            onMouseLeave={() => setHover('none')}
-            > ^ </td>
-        </tr>
-        <tr style={{height: 20, lineHeight: '20px'}}>
-          <td style={{ width: 50, padding: 5, }}> <TimeInput value={hour} setValue={setHour} max={23} /> </td>
-          <td style={{ width: 20, padding: 5, }}> : </td>
-          <td style={{ width: 50, padding: 5, }}> <TimeInput value={minute} setValue={setMinute} max={59} /> </td>
-          <td style={{ width: 20, padding: 5, }}> : </td>
-          <td style={{ width: 50, padding: 5, }}> <TimeInput value={second} setValue={setSecond} max={59} /> </td>
-        </tr>
-        <tr style={{height: 20, lineHeight: '20px'}}>
-          <td 
-            style={{ width: 50, padding: 5, cursor: 'pointer', background: (hover === 'decrease_h'? '#d3d3d3' : undefined) }}
-            onClick={() => decrease('h')}
-            onMouseEnter={() => setHover('decrease_h')}
-            onMouseLeave={() => setHover('none')}
-            > v </td>
-          <td style={{ width: 20, padding: 5, }}></td>
-          <td 
-            style={{ width: 50, padding: 5, cursor: 'pointer', background: (hover === 'decrease_m'? '#d3d3d3' : undefined) }}
-            onClick={() => decrease('m')}
-            onMouseEnter={() => setHover('decrease_m')}
-            onMouseLeave={() => setHover('none')}
-            > v </td>
-          <td style={{ width: 20, padding: 5, }}></td>
-          <td 
-            style={{ width: 50, padding: 5, cursor: 'pointer', background: (hover === 'decrease_s'? '#d3d3d3' : undefined) }}
-            onClick={() => decrease('s')}
-            onMouseEnter={() => setHover('decrease_s')}
-            onMouseLeave={() => setHover('none')}
-            > v </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-  );
+    return (
+        <div style={{ background: '#f0f0f0', marginTop: 10, opacity: 1 }}>
+            <table style={{ textAlign: 'center' }}>
+                <tbody>
+                    <tr style={{ height: 20, lineHeight: '20px' }}>
+                        {/* Hour */}
+                        <td
+                            style={{ width: 52, padding: 5, cursor: 'pointer', background: (hover === 'increase_h' ? '#d3d3d3' : undefined) }}
+                            onClick={() => increase('h')}
+                            onMouseEnter={() => setHover('increase_h')}
+                            onMouseLeave={() => setHover('none')}
+                        > ^ </td>
+                        {/* Minute */}
+                        <td style={{ width: 20, padding: 5 }}></td>
+                        <td
+                            style={{ width: 52, padding: 5, cursor: 'pointer', background: (hover === 'increase_m' ? '#d3d3d3' : undefined) }}
+                            onClick={() => increase('m')}
+                            onMouseEnter={() => setHover('increase_m')}
+                            onMouseLeave={() => setHover('none')}
+                        > ^ </td>
+                        {/* Second */}
+                        {(props.Accuracy === 'second' || props.Accuracy === 'millisecond') && (
+                            <>
+                                <td style={{ width: 20, padding: 5, }}></td>
+                                <td
+                                    style={{ width: 52, padding: 5, cursor: 'pointer', background: (hover === 'increase_s' ? '#d3d3d3' : undefined) }}
+                                    onClick={() => increase('s')}
+                                    onMouseEnter={() => setHover('increase_s')}
+                                    onMouseLeave={() => setHover('none')}
+                                > ^ </td>
+                            </>
+                        )}
+                        {/* Millisecond */}
+                        {props.Accuracy === 'millisecond' && (
+                            <>
+                                <td style={{ width: 20, padding: 5 }}></td>
+                                <td
+                                    style={{ width: 52, padding: 5, cursor: 'pointer', background: (hover === 'increase_ms' ? '#d3d3d3' : undefined) }}
+                                    onClick={() => increase('ms')}
+                                    onMouseEnter={() => setHover('increase_ms')}
+                                    onMouseLeave={() => setHover('none')}
+                                > ^ </td>
+                            </>
+                        )}
+                    </tr>
+                    <tr style={{ height: 20, lineHeight: '20px' }}>
+                        {/* Hour */}
+                        <td style={{ width: 52, padding: 5, }}> <TimeInput value={hour} setValue={setHour} max={23} /> </td>
+                        {/* Minute */}
+                        <td style={{ width: 20, padding: 5, }}> : </td>
+                        <td style={{ width: 52, padding: 5, }}> <TimeInput value={minute} setValue={setMinute} max={59} /> </td>
+                        {/* Second */}
+                        {(props.Accuracy === 'second' || props.Accuracy === 'millisecond') && (
+                            <>
+                                <td style={{ width: 20, padding: 5, }}> : </td>
+                                <td style={{ width: 52, padding: 5, }}> <TimeInput value={second} setValue={setSecond} max={59} /> </td>
+                            </>
+                        )}
+                        {/* Millisecond */}
+                        {props.Accuracy === 'millisecond' && (
+                            <>
+                                <td style={{ width: 20, padding: 5, }}> : </td>
+                                <td style={{ width: 52, padding: 5, }}> <TimeInput value={millisecond} setValue={setMilliSecond} max={999} /> </td>
+                            </>
+                        )}
+                    </tr>
+                    <tr style={{ height: 20, lineHeight: '20px' }}>
+                        {/* Hour */}
+                        <td
+                            style={{ width: 52, padding: 5, cursor: 'pointer', background: (hover === 'decrease_h' ? '#d3d3d3' : undefined) }}
+                            onClick={() => decrease('h')}
+                            onMouseEnter={() => setHover('decrease_h')}
+                            onMouseLeave={() => setHover('none')}
+                        > v </td>
+                        {/* Minute */}
+                        <td style={{ width: 20, padding: 5, }}></td>
+                        <td
+                            style={{ width: 52, padding: 5, cursor: 'pointer', background: (hover === 'decrease_m' ? '#d3d3d3' : undefined) }}
+                            onClick={() => decrease('m')}
+                            onMouseEnter={() => setHover('decrease_m')}
+                            onMouseLeave={() => setHover('none')}
+                        > v </td>
+                        {/* Second */}
+                        {(props.Accuracy === 'second' || props.Accuracy === 'millisecond') && (
+                            <>
+                                <td style={{ width: 20, padding: 5, }}></td>
+                                <td
+                                    style={{ width: 52, padding: 5, cursor: 'pointer', background: (hover === 'decrease_s' ? '#d3d3d3' : undefined) }}
+                                    onClick={() => decrease('s')}
+                                    onMouseEnter={() => setHover('decrease_s')}
+                                    onMouseLeave={() => setHover('none')}
+                                > v </td>
+                            </>
+                        )}
+                        {/* Millisecond */}
+                        {props.Accuracy === 'millisecond' && (
+                            <>
+                                <td style={{ width: 20, padding: 5, }}></td>
+                                <td
+                                    style={{ width: 52, padding: 5, cursor: 'pointer', background: (hover === 'decrease_ms' ? '#d3d3d3' : undefined) }}
+                                    onClick={() => decrease('ms')}
+                                    onMouseEnter={() => setHover('decrease_ms')}
+                                    onMouseLeave={() => setHover('none')}
+                                > v </td>
+                            </>
+                        )}
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    );
 }
 
-const TimeInput = (props: {value: string, setValue: (v: string) => void, max: number}) => { 
-  const [val, setVal] = React.useState<string>(props.value.toString());
-  const [error, setError] = React.useState<boolean>(false);
+const TimeInput = (props: { value: string, setValue: (v: string) => void, max: number }) => {
+    const [val, setVal] = React.useState<string>(props.value.toString());
+    const [error, setError] = React.useState<boolean>(false);
 
-  React.useEffect(() => { 
-    if (props.value.length > 5) {
-      setVal("");
-      return;
-    }
-    setVal(props.value.toString());
-  }, [props.value])
+    React.useEffect(() => {
+        if (props.value.length > 5) {
+            setVal("");
+            return;
+        }
+        setVal(props.value.toString());
+    }, [props.value])
 
-  
-  React.useEffect(() => {
-    if (!IsInteger(val))
-      return;
-    const v = parseInt(val,10)
-    if (v > props.max || v < 0) {
-      setError(true);
-      return;
-    }
-    setError(false);
-    props.setValue(val)
-  }, [val, error])
 
-  return <div className={"form-group form-group-sm"} style={{width: 45}}>
-    <input
-      type={"text"}
-      className={!error ? 'form-control' : 'form-control is-invalid'}
-      onChange={(evt) => {
-        if (IsInteger(evt.target.value))
-        setVal(evt.target.value)
-      }}
-      value={val}
-    />
-  </div>
-  
- 
- }
+    React.useEffect(() => {
+        if (!IsInteger(val))
+            return;
+        const v = parseInt(val, 10)
+        if (v > props.max || v < 0) {
+            setError(true);
+            return;
+        }
+        setError(false);
+        props.setValue(val)
+    }, [val, error])
+
+    return <div className={"form-group form-group-sm"} style={{ width: 52 }}>
+        <input
+            type={"text"}
+            className={!error ? 'form-control' : 'form-control is-invalid'}
+            onChange={(evt) => {
+                if (IsInteger(evt.target.value))
+                    setVal(evt.target.value)
+            }}
+            value={val}
+        />
+    </div>
+
+
+}
 
 
