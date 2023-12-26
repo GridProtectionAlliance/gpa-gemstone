@@ -88,12 +88,10 @@ export function AdjColumnHeaderWrapper<T>(props: React.PropsWithChildren<IHeader
     const onClick = React.useCallback((e) => { 
         props.onSort(props.Key, e, props.Field);
         e.stopPropagation();
-        console.log('onCLick th')
         }, [props.onSort])
 
     const onClickBorder = React.useCallback((e) => { 
         props.startAdjustment(e);
-        console.log('onCLick border div')
     }, [props.startAdjustment])
 
     return <th
