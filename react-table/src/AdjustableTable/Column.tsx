@@ -52,7 +52,7 @@ export interface IColumnProps<T> {
      * @param d the data to be turned into content
      * @returns the content displayed
      */
-    Content?: (d: { item: T, key: string, field: keyof T | undefined, index: number }) => React.ReactNode;   
+    Content?: (d: { item: T, key: string, field: keyof T | undefined, index: number, style?: React.CSSProperties }) => React.ReactNode;   
 }
 
 
@@ -154,6 +154,7 @@ export function ColumnDataWrapper<T>(props: IDataWrapperProps<T>) {
         item: props.item, 
         key: props.Key, 
         field: props.Field, 
+        style: css,
         index: props.index}) : getFieldValue();
 
     const onClick = React.useCallback((e) => {
