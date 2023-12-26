@@ -86,7 +86,7 @@ export function AdjColumnHeaderWrapper<T>(props: React.PropsWithChildren<IHeader
     })
     
     const onClick = React.useCallback((e) => { 
-        props.onSort(props.Key, e, props.Field);
+        if (props.AllowSort ?? true) props.onSort(props.Key, e, props.Field);
         e.stopPropagation();
         }, [props.onSort])
 

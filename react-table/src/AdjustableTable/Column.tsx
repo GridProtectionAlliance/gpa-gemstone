@@ -102,8 +102,8 @@ export function ColumnHeaderWrapper<T>(props: React.PropsWithChildren<IHeaderWra
     })
     
     const onClick = React.useCallback((e) => { 
-        props.onSort(props.Key, e, props.Field);
-        }, [props.onSort])
+        if (props.AllowSort ?? true) props.onSort(props.Key, e, props.Field);
+        }, [props.onSort, props.AllowSort])
 
     return <th
                 ref={thref}
