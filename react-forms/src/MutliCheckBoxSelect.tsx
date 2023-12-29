@@ -36,6 +36,8 @@ const MultiSelect = (props: IProps) => {
   const [showHelp, setShowHelp] = React.useState<boolean>(false);
   const [guid, setGuid] = React.useState<string>("");
   const multiSelect = React.useRef<HTMLDivElement>(null);
+  const showLabel = React.useMemo(() => props.Label !== "", [props.Label]);
+  const showHelpIcon = React.useMemo(() => props.Help !== undefined, [props.Help]);
 
   React.useEffect(() => {
     setGuid(CreateGuid());
@@ -54,14 +56,12 @@ const MultiSelect = (props: IProps) => {
     };
   }, []);
 
-  const showLabel = props.Label !== "";
-  const showHelpIcon = props.Help !== undefined;
-  const label = props.Label === undefined ? 'Select' : props.Label;
-  
   return (
     <div className="form-group">
     {showLabel || showHelpIcon ?
-    <label>{showLabel? label : ''} 
+    <label>{showLabel ? 
+      (props.Label === undefined ? 'Select' : props.Label) 
+      : ''} 
     {showHelpIcon? <div 
     style={{ width: 20, height: 20, borderRadius: '50%', display: 'inline-block', background: '#0D6EFD', marginLeft: 10, textAlign: 'center', fontWeight: 'bold' }}
      onMouseEnter={() => setShowHelp(true)} 
