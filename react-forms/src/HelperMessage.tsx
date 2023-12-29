@@ -30,6 +30,8 @@ interface IProps {
     Show: boolean,
     Target?: string,
     Zindex?: number,
+    Color?: string,
+    Background?: string
 }
 
 interface IWrapperProps {
@@ -38,6 +40,8 @@ interface IWrapperProps {
   Left: number,
   Width: number,
   Zindex: number,
+  Color?: string,
+  Background?: string
 }
 
 const WrapperDiv = styled.div<IWrapperProps>`
@@ -51,8 +55,8 @@ const WrapperDiv = styled.div<IWrapperProps>`
     transition: opacity 0.3s ease-out;
     z-index: ${props => props.Zindex};
     opacity: ${props => props.Show ? "1.0" : "0"};
-    color: #000;
-    background: #0DCAF0;
+    color: ${props => props.Color ?? '#000'};;
+    background: ${props => props.Background ?? '#0DCAF0'};
     top: ${props => `${props.Top}px`};
     left: ${props => `${props.Left}px`};
   width: ${props => `${props.Width}px`};
@@ -63,7 +67,7 @@ const WrapperDiv = styled.div<IWrapperProps>`
     &::before {
      border-left: 8px solid transparent;
      border-right: 8px solid transparent;
-     border-bottom: 8px solid #0DCAF0;
+     border-bottom: 8px solid ${props.Background ?? '#0DCAF0'};
      left: 50%;
      top: -6px;
      margin-left: -8px;
@@ -132,7 +136,7 @@ const WrapperDiv = styled.div<IWrapperProps>`
 
     return (
       <Portal>
-      <WrapperDiv Show={props.Show} Top={top} Left={left} Width={width} ref={helpMessage} Zindex={zIndex}>
+      <WrapperDiv Show={props.Show} Top={top} Left={left} Width={width} ref={helpMessage} Zindex={zIndex} Color={props.Color} Background={props.Background}>
         {props.children}
       </WrapperDiv>
       </Portal>
