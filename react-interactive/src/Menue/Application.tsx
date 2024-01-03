@@ -31,7 +31,6 @@ import ServerErrorIcon from '../ServerErrorIcon';
 import styled from "styled-components";
 import { SVGIcons } from "@gpa-gemstone/gpa-symbols";
 import { Application } from '@gpa-gemstone/application-typings';
-import Content from "./Content";
 
 interface IProps {
     HomePath: string,
