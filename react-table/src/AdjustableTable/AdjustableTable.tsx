@@ -98,7 +98,7 @@ interface TableProps<T> {
      * @param data the item to be turned into a key
      * @returns a unique Key
      */
-    KeySelector: (data: T) => string|number;
+    KeySelector: (data: T, index?: number) => string|number;
 
     /**
      * Optional Element to display in the last row of the Table
@@ -299,7 +299,7 @@ interface IRowProps<T> {
     OnClick?: (data: { colKey: string, colField?: keyof T, row: T, data: T[keyof T] | null, index: number }, e: React.MouseEvent<HTMLElement, MouseEvent>) => void,
     DragStart?: ((data: { colKey: string, colField?: keyof T, row: T, data: T[keyof T] | null, index: number }, e: any) => void)
     Selected?: ((data: T) => boolean);
-    KeySelector: (data: T) => string|number;
+    KeySelector: (data: T, index?: number) => string|number;
     AdjWidth: Map<string,IAdjustedWidths>,
     FixedWidth: Map<string,number>,
     FixedLayout: boolean
@@ -325,7 +325,7 @@ function Rows<T>(props: React.PropsWithChildren<IRowProps<T>>) {
                 if (props.Selected !== undefined && props.Selected(d))
                     style.backgroundColor = 'yellow';
                 
-                const key = props.KeySelector(d);
+                const key = props.KeySelector(d, i);
                 return <tr key={key} style={{ display: (props.FixedLayout ? 'block' : undefined), ...style}}>
                  {React.Children.map(props.children, (element) => {
                     if (!React.isValidElement(element))
