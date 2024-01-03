@@ -112,7 +112,7 @@ const Applications: React.FunctionComponent<IProps> = (props) => {
         if (element.props.RequiredRoles !== undefined && element.props.RequiredRoles.filter((r: Application.Types.SecurityRoleName) => GetContext().userRoles.findIndex(i => i === r) > -1).length === 0)
             routes.push(<Route path={`${props.HomePath}${element.props.Name}`} element={<ServerErrorIcon Show={true} Label={'You are not authorized to view this page.'} />} />);
         else
-            routes.push(<Route path={`${props.HomePath}${element.props.Name}`} element={<Content>{element.props.children}</Content>} />);
+            routes.push(<Route path={`${props.HomePath}${element.props.Name}`} element={element.props.children} />);
     
         // Generate additional routes for Paths prop if it exists
         if (element.props.Paths) {
@@ -121,7 +121,7 @@ const Applications: React.FunctionComponent<IProps> = (props) => {
                 if (element.props.RequiredRoles !== undefined && element.props.RequiredRoles.filter((r: Application.Types.SecurityRoleName) => GetContext().userRoles.findIndex(i => i === r) > -1).length === 0)
                     routes.push(<Route path={fullPath} element={<ServerErrorIcon Show={true} Label={'You are not authorized to view this page.'} />} />);
                 else
-                    routes.push(<Route path={fullPath} element={<Content>{element.props.children}</Content>} />);
+                    routes.push(<Route path={fullPath} element={element.props.children} />);
             }
         }
     
