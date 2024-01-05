@@ -28,6 +28,11 @@ interface IProps {
     Size?: number,
 }
 
+/**
+ * Component for rendering the icon that appears during server error.
+ * @param props renders and manages the details of the server error icon.
+ * @returns a center aligned dark red server error icon.
+ */
 function ServerErrorIcon(props: IProps) {
 	const h = (props.Size === undefined? 25 : props.Size);
 	return <div>

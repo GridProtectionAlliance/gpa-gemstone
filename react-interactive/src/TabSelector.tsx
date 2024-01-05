@@ -34,18 +34,24 @@ interface IProps {
     CurrentTab: string,
 }
 
-
+/**
+ * Component for rendering a dropdown tab selector.
+ * @param props - configures and manages tab selector.
+ */
 const TabSelector = (props: IProps) => {
 
+    // State to manage things like visible tabs and container width.
     const [nVisible, setNVisible] = React.useState<number>(1);
     const [width, setWidth] = React.useState<number>(100);
     const [guid, setGuid] = React.useState<string>(CreateGuid());
     const [dropDownOpen, setDropDownOpen] = React.useState<boolean>(false);
 
+    // Resets dropdown state with the CurrentTab changes.
     React.useEffect(() => {
         setDropDownOpen(false);
     }, [props.CurrentTab]);
 
+    // Calculates and sets width for the tab container.
     React.useLayoutEffect(() => {
         const target = document.getElementById(guid);
         let w = 100;
@@ -55,6 +61,7 @@ const TabSelector = (props: IProps) => {
             setWidth(w);        
     });
 
+    // Dynamically calculates number of visible tabs.
     React.useEffect(() => {
         let Wtext = 40;
 		
@@ -70,6 +77,7 @@ const TabSelector = (props: IProps) => {
 
     }, [width, props.Tabs]);
 
+    // Determines if there are more tabs to show in dropdown option.
     const showExp = nVisible < props.Tabs.length;
 
 	if (width < 50)
