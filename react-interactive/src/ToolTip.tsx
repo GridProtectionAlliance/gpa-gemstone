@@ -33,6 +33,7 @@ interface IProps {
     Zindex?: number,
 }
 
+// Props to style wrapper div around tooltip content.
 interface IWrapperProps {
   Show: boolean,
   Theme: ('dark'|'light'),
@@ -43,7 +44,7 @@ interface IWrapperProps {
   
 }
 
-
+// The styled tooltip wrapper component.
 const WrapperDiv = styled.div<IWrapperProps>`
   & {
     border-radius: 3px;

@@ -28,6 +28,7 @@ import ToolTip from './ToolTip';
  * Represents the structure of a button used within the application.
  */
 interface IButton { 
+    /** text label that appears on the button*/
     Label: string,
     Callback: () => void,
     Group?: number,
