@@ -48,7 +48,7 @@ interface IProps<T> extends TableProps<T> {
 }
 
 /**
- * Table with Filters in the column Headers
+ * Table with Filters in the column headers
  */
 export default function FilterableTable<T>(props: IProps<T>) {
     const [filters, setFilters] = React.useState<Search.IFilter<T>[]>((props.DefaultFilter === undefined ? [] : props.DefaultFilter));

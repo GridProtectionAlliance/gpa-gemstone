@@ -22,10 +22,18 @@
 
 import * as React from 'react';
 import LoadingIcon from './LoadingIcon'
+
+/**
+ * Props interface for LoadingScreen.
+ */
 interface IProps {
   Show: boolean
 }
 
+/**
+ * Functional component for rendering loading screen.
+ * @param props Properties for the loading screen component.
+ */
 const LoadingScreen: React.FunctionComponent<IProps> = (props) => {
 
   const x = window.innerHeight /2 - 20;
