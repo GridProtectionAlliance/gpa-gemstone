@@ -29,7 +29,7 @@ interface IProps {
 }
 
 /**
- * Wrapper to make any Collumn Configurable
+ * Wrapper to make any column configurable
  */
 export default function ConfigurableColumn(props: React.PropsWithChildren<IProps>) {
     return <>{props.children}</>
