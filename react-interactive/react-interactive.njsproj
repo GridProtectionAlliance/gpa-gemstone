@@ -37,16 +37,45 @@
     <Content Include="jestconfig.json" />
     <Content Include="package.json" />
     <Content Include="README.md" />
+    <Content Include="src\ConfigurableTable\.vs\ConfigurableTable\FileContentIndex\3d44bd4e-a563-4a4c-8a95-9115541a6c4c.vsidx" />
+    <Content Include="src\ConfigurableTable\.vs\ProjectSettings.json" />
+    <Content Include="src\ConfigurableTable\.vs\slnx.sqlite" />
+    <Content Include="src\ConfigurableTable\.vs\VSWorkspaceState.json" />
     <Content Include="tsconfig.json" />
     <Content Include="tslint.json" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="img\" />
     <Folder Include="src\" />
+    <Folder Include="src\ConfigurableTable\" />
+    <Folder Include="src\ConfigurableTable\.vs\" />
+    <Folder Include="src\ConfigurableTable\.vs\ConfigurableTable\" />
+    <Folder Include="src\ConfigurableTable\.vs\ConfigurableTable\FileContentIndex\" />
+    <Folder Include="src\ConfigurableTable\.vs\ConfigurableTable\v17\" />
+    <Folder Include="src\FilterableTable\" />
+    <Folder Include="src\Layout\" />
+    <Folder Include="src\Menue\" />
     <Folder Include="src\__tests__\" />
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="src\*" />
+    <TypeScriptCompile Include="src\ConfigurableTable\ConfigurableColumn.tsx" />
+    <TypeScriptCompile Include="src\ConfigurableTable\ConfigurableTable.tsx" />
+    <TypeScriptCompile Include="src\FilterableTable\BooleanFilter.tsx" />
+    <TypeScriptCompile Include="src\FilterableTable\DateTimeFilters.tsx" />
+    <TypeScriptCompile Include="src\FilterableTable\EnumFilter.tsx" />
+    <TypeScriptCompile Include="src\FilterableTable\FilterableTable.tsx" />
+    <TypeScriptCompile Include="src\FilterableTable\NumberFilter.tsx" />
+    <TypeScriptCompile Include="src\FilterableTable\TextFilter.tsx" />
+    <TypeScriptCompile Include="src\Layout\OverlayDrawer.tsx" />
+    <TypeScriptCompile Include="src\Layout\SplitDrawer.tsx" />
+    <TypeScriptCompile Include="src\Layout\SplitSection.tsx" />
+    <TypeScriptCompile Include="src\Layout\VerticalSplit.tsx" />
+    <TypeScriptCompile Include="src\Menue\Application.tsx" />
+    <TypeScriptCompile Include="src\Menue\Content.tsx" />
+    <TypeScriptCompile Include="src\Menue\Context.tsx" />
+    <TypeScriptCompile Include="src\Menue\Page.tsx" />
+    <TypeScriptCompile Include="src\Menue\Section.tsx" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\Node.js Tools\Microsoft.NodejsToolsV2.targets" />
   <ProjectExtensions>

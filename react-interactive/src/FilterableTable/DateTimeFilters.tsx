@@ -35,9 +35,9 @@ const momentTimeFormat = "HH:mm:ss.SSS"; // Also is the gemstone format
 
 type FilterTypes = 'before' | 'after' | 'between';
 interface IValue { Value: string }
+    const [date, setDate] = React.useState<string>('');
 
 export function DateFilter<T>(props: IProps<T>) {
-    const [date, setDate] = React.useState<string>('');
     const [secondDate, setSecondDate] = React.useState<string>('')
     const [operator, setOperator] = React.useState<FilterTypes>('after');
 

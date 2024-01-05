@@ -1,4 +1,4 @@
-// ******************************************************************************************************
+ // ******************************************************************************************************
 //  DropdownButton.tsx - Gbtc
 //
 //  Copyright © 2023, Grid Protection Alliance.  All Rights Reserved.
@@ -24,6 +24,9 @@ import * as React from 'react';
 import { CreateGuid } from '@gpa-gemstone/helper-functions'
 import ToolTip from './ToolTip';
 
+/**
+ * Represents the structure of a button used within the application.
+ */
 interface IButton { 
     Label: string,
     Callback: () => void,
@@ -31,6 +34,9 @@ interface IButton {
     Disabled?: boolean
     }
 
+/**
+* Represents the properties for a component that renders buttons.
+*/
 interface IProps {
     Label: string,
     Callback: () => void,

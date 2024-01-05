@@ -22,7 +22,7 @@
 // ******************************************************************************************************
 import * as React from 'react'
 
-/// Styles for all Circles
+// Styles for all circles
 const circleStyle: React.CSSProperties = {
     height: '25px',
     width: '25px',
@@ -46,7 +46,12 @@ interface IProps {
     onClick?: (currentStep: string|number, clickedStep: string|number) => void
 }
 
-const ProgressBar = (props: IProps) => {
+/**
+* Functional component representing a progress bar with steps.
+* @param props - Props for configuring the progress bar.
+* @returns JSX elements for the progress bar.
+*/
+function ProgressBar(props: IProps) {
     const [activeStep, setActiveStep] = React.useState<number>(0);
 
     React.useEffect(() => {
