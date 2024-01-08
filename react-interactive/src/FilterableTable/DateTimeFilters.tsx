@@ -30,13 +30,16 @@ interface IProps<T> {
     FieldName: string
 }
 
+// Defines time and date formats
 const momentDateFormat = "MM/DD/YYYY";
 const momentTimeFormat = "HH:mm:ss.SSS"; // Also is the gemstone format
 
+// Defines filtering types
 type FilterTypes = 'before' | 'after' | 'between';
 interface IValue { Value: string }
     const [date, setDate] = React.useState<string>('');
 
+// Filter for date only
 export function DateFilter<T>(props: IProps<T>) {
     const [secondDate, setSecondDate] = React.useState<string>('')
     const [operator, setOperator] = React.useState<FilterTypes>('after');
@@ -153,6 +156,7 @@ export function DateFilter<T>(props: IProps<T>) {
     </>
 }
 
+// Time filter only
 export function TimeFilter<T>(props: IProps<T>) {
     const [time, setTime] = React.useState<string>('');
     const [secondTime, setSecondTime] = React.useState<string>('')
@@ -271,6 +275,7 @@ export function TimeFilter<T>(props: IProps<T>) {
     </>
 }
 
+// DateTime combination filter
 export function DateTimeFilter<T>(props: IProps<T>) {
     const [dateTime, setDateTime] = React.useState<string>('');
     const [secondDateTime, setSecondDateTime] = React.useState<string>('')

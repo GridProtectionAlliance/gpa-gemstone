@@ -35,8 +35,14 @@ export interface IUnit {
     GetFilter: (filter: number) => number
 }
 
+// Defines filter types
 type FilterType = 'less than' | 'greater than' | 'between' | 'equal to'
 
+/**
+ * 
+ * @param props
+ * @returns
+ */
 export function NumberFilter<T>(props: IProps<T>) {
         const [value, setValue] = React.useState<string>('');
         const [secondValue, setSecondValue] = React.useState<string>('')
