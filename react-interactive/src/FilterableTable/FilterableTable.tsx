@@ -117,6 +117,7 @@ interface IHeaderProps<T> {
     Guid: string,
 }
 
+// Table column header details
 function Header<T>(props: IHeaderProps<T>) {
     const [show, setShow] = React.useState<boolean>(false);
 

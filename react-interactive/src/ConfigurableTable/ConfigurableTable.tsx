@@ -166,6 +166,10 @@ export default function ConfigurableTable<T>(props: React.PropsWithChildren<IPro
         saveLocal();
     }, [columns]);
 
+    /**
+     * 
+     * @returns
+     */
     function saveLocal() {
         if (props.LocalStorageKey === undefined)
             return;
