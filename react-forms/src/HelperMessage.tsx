@@ -26,12 +26,14 @@ import styled from "styled-components";
 import { GetNodeSize } from '@gpa-gemstone/helper-functions'
 import {Portal } from 'react-portal'
 
+// Interface for the props
 interface IProps {
-    Show: boolean,
-    Target?: string,
-    Zindex?: number,
+  Show: boolean,
+  Target?: string,
+  Zindex?: number,
 }
 
+// Interface for the properties of the WrapperDiv component
 interface IWrapperProps {
   Show: boolean,
   Top: number,
@@ -40,6 +42,7 @@ interface IWrapperProps {
   Zindex: number,
 }
 
+// Styled component for the wrapper of the helper message.
 const WrapperDiv = styled.div<IWrapperProps>`
   & {
     border-radius: 3px;
@@ -74,19 +77,25 @@ const WrapperDiv = styled.div<IWrapperProps>`
     }
   `}`
   
-  
+  /**
+   * HelperMessage Component.
+   * Displays a floating message box.
+   */
   const HelperMessage: React.FunctionComponent<IProps> = (props) => {
     const helpMessage = React.useRef(null);
 
+    // State variables for positioning and sizing the helper message.
     const [top, setTop] = React.useState<number>(0);
     const [left, setLeft] = React.useState<number>(0);
     const [width, setWidth] = React.useState<number>(0);
 
+    // State variables for the target element's position and size.
     const [targetLeft, setTargetLeft] = React.useState<number>(0);
     const [targetTop, setTargetTop] = React.useState<number>(0);
     const [targetWidth, setTargetWidth] = React.useState<number>(0);
     const [targetHeight, setTargetHeight] = React.useState<number>(0);
 
+    // Effect for updating the target element's position and size.
     React.useEffect(() => {
       const target = document.querySelectorAll(`[data-help${props.Target === undefined ? '' : `="${props.Target}"`}]`);
 
@@ -95,26 +104,28 @@ const WrapperDiv = styled.div<IWrapperProps>`
         setTargetWidth(0);
         setTargetLeft(-999);
         setTargetTop(-999);
-    }
-    else {  
-        const targetLocation = GetNodeSize(target[0] as HTMLElement);
-        setTargetHeight(targetLocation.height);
-        setTargetWidth(targetLocation.width);
-        setTargetLeft(targetLocation.left);
-        setTargetTop(targetLocation.top);
-    }
-  }, [props.Show]);
+      }
+      else {  
+          const targetLocation = GetNodeSize(target[0] as HTMLElement);
+          setTargetHeight(targetLocation.height);
+          setTargetWidth(targetLocation.width);
+          setTargetLeft(targetLocation.left);
+          setTargetTop(targetLocation.top);
+      }
+    }, [props.Show]);
 
-
-    React.useLayoutEffect(() => {
+  // Layout effect for updating the helper message's position.
+  React.useLayoutEffect(() => {
     const [t,l,w] = UpdatePosition();
-      setTop(t);
-      setLeft(l);
-      setWidth(w);
-    })
+    setTop(t);
+    setLeft(l);
+    setWidth(w);
+  })
 
+  // Default zIndex or the one provided via props.
   const zIndex = (props.Zindex === undefined? 9999: props.Zindex);
   
+  // Function to calculate the position of the helper message.
   function UpdatePosition() {
     if (helpMessage.current === null)
       return [-999,-999];
@@ -130,13 +141,14 @@ const WrapperDiv = styled.div<IWrapperProps>`
     return result;
   }
 
-    return (
-      <Portal>
-      <WrapperDiv Show={props.Show} Top={top} Left={left} Width={width} ref={helpMessage} Zindex={zIndex}>
-        {props.children}
-      </WrapperDiv>
-      </Portal>
-    )
+  // Rendering the component.
+  return (
+    <Portal>
+    <WrapperDiv Show={props.Show} Top={top} Left={left} Width={width} ref={helpMessage} Zindex={zIndex}>
+      {props.children}
+    </WrapperDiv>
+    </Portal>
+  )
 }
 
 

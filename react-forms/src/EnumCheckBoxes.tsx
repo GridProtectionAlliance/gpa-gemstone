@@ -23,6 +23,10 @@
 
 import * as React from 'react';
 
+/**
+ * EnumCheckBoxes Component.
+ * Renders a set of checkboxes based on an enumeration, allowing multiple selection.
+ */
 export default function EnumCheckBoxes<T>(props: {
   Record: T;
   Field: keyof T;
@@ -31,27 +35,36 @@ export default function EnumCheckBoxes<T>(props: {
   Label?: string;
   IsDisabled?: (item: string) => boolean
 }) {
+  // Determine if an enum flag is set.
   /* tslint:disable-next-line:no-bitwise */
   const EquateFlag = (index: number) => (((props.Record[props.Field] as any) / Math.pow(2, index)) & 1) !== 0;
 
+  // Turn off a flag in the enumeration.
   const DecrementFlag = (index: number) => (props.Record[props.Field] as any) - Math.pow(2, index);
+  
+  // Turn on a flag in the enumeration.
   const IncrementFlag = (index: number) => (props.Record[props.Field] as any) + Math.pow(2, index);
 
   return (
     <div className="form-group">
+      {/* Label for the checkbox group. */}
       <label>{props.Label == null ? props.Field : props.Label}</label>
       <br />
+      
+      {/* Checkbox for selecting/deselecting all options. */}
       <div className="form-check form-check-inline">
-          <input
-            className="form-check-input"
-            type="checkbox"
-            checked={(props.Record[props.Field] as any) === (Math.pow(2,props.Enum.length) - 1)}
-            onChange={(evt) =>
-              props.Setter({ ...props.Record, [props.Field]: evt.target.checked ? Math.pow(2,props.Enum.length) -1 : 0 })
-            }
-          />
-          <label className="form-check-label">All</label>
-        </div>
+        <input
+          className="form-check-input"
+          type="checkbox"
+          checked={(props.Record[props.Field] as any) === (Math.pow(2,props.Enum.length) - 1)}
+          onChange={(evt) =>
+            props.Setter({ ...props.Record, [props.Field]: evt.target.checked ? Math.pow(2,props.Enum.length) -1 : 0 })
+          }
+        />
+        <label className="form-check-label">All</label>
+      </div>
+
+      {/* Create a checkbox for each enum. */}
       {props.Enum.map((flag, i) => (
         <div key={i} className="form-check form-check-inline">
           <input

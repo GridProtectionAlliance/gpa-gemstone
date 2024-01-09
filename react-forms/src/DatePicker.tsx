@@ -27,6 +27,7 @@ import DateTimePopup from './DateTimeUI/DateTimePopup';
 import {CreateGuid, GetNodeSize} from '@gpa-gemstone/helper-functions';
 import HelperMessage from './HelperMessage';
 
+// Interface for the DateTimePicker component props. 
 interface IProps<T> {
   Record: T;
   Field: keyof T;
@@ -41,11 +42,18 @@ interface IProps<T> {
   AllowEmpty?: boolean
 }
 
+/**
+ * Component that allows a user to pick a date or datetime.
+*/
 export default function DateTimePicker<T>(props: IProps<T>) {
-  // Formats that will be used for dateBoxes
+  // Formats for displaying dates in the input box and storing in the record.
   const boxFormat = "YYYY-MM-DD" + (props.Type === undefined || props.Type === 'date' ? "" : "[T]HH:mm:ss");
   const recordFormat = props.Format !== undefined ? props.Format : "YYYY-MM-DD" + (props.Type === undefined || props.Type === 'date' ? "" : "[T]HH:mm:ss.SSS[Z]");
+  
+  // Parse the date from the record.
   const parse = (r: T) => moment(props.Record[props.Field] as any, recordFormat);
+
+  // State and ref declarations.
   const divRef = React.useRef<any|null>(null);
 
   const [guid, setGuid] = React.useState<string>("");
@@ -67,8 +75,8 @@ export default function DateTimePicker<T>(props: IProps<T>) {
   }, []);
     
   React.useEffect(() => {
-      setPickerRecord(parse(props.Record));
-      setBoxRecord(parse(props.Record).format(boxFormat))
+    setPickerRecord(parse(props.Record));
+    setBoxRecord(parse(props.Record).format(boxFormat))
   },[props.Record]);
 
   React.useEffect(() => {
@@ -104,42 +112,46 @@ export default function DateTimePicker<T>(props: IProps<T>) {
 
   },[]);
 
+  // Handle clicks outside the component.
   function onWindowClick(evt: any) {
     if (evt.target.closest(`.gpa-gemstone-datetime`) == null)
       setShowOverlay(false);
   }
 
+  // Variables for rendering labels and help icons.
   const showLabel = props.Label !== "";
   const showHelpIcon = props.Help !== undefined;
   const label = props.Label === undefined ? props.Field : props.Label;
 
   return (
     <div className="form-group" ref={divRef}>
+      {/* Label and help icon */}
       {showHelpIcon || showLabel ?
-    <label>{showLabel ? label : ''} 
-    {showHelpIcon? <div 
-      style={{ 
-        width: 20,
-        height: 20, 
-        borderRadius: '50%',
-        display: 'inline-block',
-        background: '#0D6EFD',
-        marginLeft: 10,
-        textAlign: 'center', 
-        fontWeight: 'bold' 
-      }}
-      onMouseEnter={() => setShowHelp(true)} 
-      onMouseLeave={() => setShowHelp(false)}> ? </div> : null}
-    </label> : null}
-    {showHelpIcon? 
-      <HelperMessage Show={showHelp} Target={guid}>
-        {props.Help}
-      </HelperMessage>
-    : null}
+        <label>{showLabel ? label : ''} 
+        {showHelpIcon? <div 
+          style={{ 
+            width: 20,
+            height: 20, 
+            borderRadius: '50%',
+            display: 'inline-block',
+            background: '#0D6EFD',
+            marginLeft: 10,
+            textAlign: 'center', 
+            fontWeight: 'bold' 
+          }}
+          onMouseEnter={() => setShowHelp(true)} 
+          onMouseLeave={() => setShowHelp(false)}> ? </div> : null}
+        </label> : null}
+      {showHelpIcon? 
+        <HelperMessage Show={showHelp} Target={guid}>
+          {props.Help}
+        </HelperMessage>
+      : null}
 
-
+      {/* Input element */}
       {(props.Label !== "") ?
-      <label>{props.Label == null ? props.Field : props.Label}</label> : null}
+        <label>{props.Label == null ? props.Field : props.Label}</label> : null}
+      
       <input
         data-help={guid}
         className={"gpa-gemstone-datetime form-control" + (props.Valid(props.Field) ? '' : ' is-invalid')}
@@ -153,9 +165,13 @@ export default function DateTimePicker<T>(props: IProps<T>) {
         onClick={(e) => {e.preventDefault()}}
         step="1"
       />
+
+      {/* Invalid feedback message */}
       <div className="invalid-feedback">
-      {props.Feedback == null ? props.Field.toString() + ' is a required field.' : props.Feedback}
+        {props.Feedback == null ? props.Field.toString() + ' is a required field.' : props.Feedback}
       </div>
+
+      {/* DateTime popup */}
       <DateTimePopup 
         Setter={(d) => {setPickerRecord(d); if (props.Type === 'date') setShowOverlay(false); }}
         Show={showOverlay}
@@ -163,7 +179,7 @@ export default function DateTimePicker<T>(props: IProps<T>) {
         Valid={props.Valid(props.Field)}
         Top={top} Center={left}
         Type={props.Type === undefined || props.Type === 'date' ? 'date' : 'datetime'}
-        />
+      />
     </div>
   );
 }

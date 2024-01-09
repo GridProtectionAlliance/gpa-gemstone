@@ -25,58 +25,60 @@ import * as React from 'react';
 import { CreateGuid } from '@gpa-gemstone/helper-functions'
 import HelperMessage from './HelperMessage';
 
+// Interface defining the props for other components. 
 interface IProps<T>{
-Record: T,
-Field: keyof T,
-Setter: (record: T) => void;
-Label?: string,
-Disabled?: boolean,
-Help?: string|JSX.Element;
+  Record: T,
+  Field: keyof T,
+  Setter: (record: T) => void;
+  Label?: string,
+  Disabled?: boolean,
+  Help?: string|JSX.Element;
 }
 
 export default function CheckBox<T>(props: IProps<T>) {
   const [guid, setGuid] = React.useState<string>("");
   const [showHelp, setShowHelp] = React.useState<boolean>(false);
 
+  // Determines whether to show help icon and label.
   const showHelpIcon = props.Help !== undefined;
   const showLabel = props.Label !== "";
   const label = props.Label === undefined ? props.Field : props.Label;
   
+  // Runs once, setting a unique GUID for each checkbox instance.
   React.useEffect(() => {
     setGuid(CreateGuid());
-    }, []);
+  }, []);
     
-    return (
-      <div className="form-check" data-help={guid}>
-        <input
-          type="checkbox"
-          className="form-check-input"
-          style={{ zIndex: 1 }}
-          onChange={(evt) => {
-            const record: T = { ...props.Record };
-            record[props.Field] = evt.target.checked as any;
-            props.Setter(record);
-          }}
-          value={props.Record[props.Field] ? 'on' : 'off'}
-          checked={props.Record[props.Field] ? true : false}
-          disabled={props.Disabled == null ? false : props.Disabled}
-        />
-        <label className="form-check-label">{props.Label == null ? props.Field : props.Label}</label>
-        {showHelpIcon ? 
-      <div 
-        style={{ width: 20, height: 20, borderRadius: '50%', display: 'inline-block', background: '#0D6EFD', marginLeft: 10, textAlign: 'center', fontWeight: 'bold' }} 
-        onMouseEnter={() => setShowHelp(true)} 
-        onMouseLeave={() => setShowHelp(false)}
-      > 
-        ? 
-      </div> 
-      : null}
-    {showHelpIcon? 
-      <HelperMessage Show={showHelp} Target={guid}>
-        {props.Help}
-      </HelperMessage>
+  return (
+    <div className="form-check" data-help={guid}>
+      <input
+        type="checkbox"
+        className="form-check-input"
+        style={{ zIndex: 1 }}
+        onChange={(evt) => {
+          const record: T = { ...props.Record };
+          record[props.Field] = evt.target.checked as any;
+          props.Setter(record);
+        }}
+        value={props.Record[props.Field] ? 'on' : 'off'}
+        checked={props.Record[props.Field] ? true : false}
+        disabled={props.Disabled == null ? false : props.Disabled}
+      />
+      <label className="form-check-label">{props.Label == null ? props.Field : props.Label}</label>
+      {showHelpIcon ? 
+    <div 
+      style={{ width: 20, height: 20, borderRadius: '50%', display: 'inline-block', background: '#0D6EFD', marginLeft: 10, textAlign: 'center', fontWeight: 'bold' }} 
+      onMouseEnter={() => setShowHelp(true)} 
+      onMouseLeave={() => setShowHelp(false)}
+    > 
+      ? 
+    </div> 
     : null}
-      </div>
-    );
-  
+  {showHelpIcon? 
+    <HelperMessage Show={showHelp} Target={guid}>
+      {props.Help}
+    </HelperMessage>
+  : null}
+    </div>
+  );
 }
