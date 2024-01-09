@@ -25,24 +25,27 @@ import * as React from 'react';
 import { CreateGuid } from '@gpa-gemstone/helper-functions'
 import HelperMessage from './HelperMessage';
 
+// Interface defining the props for other components. 
 interface IProps<T>{
-Record: T,
-Field: keyof T,
-Setter: (record: T) => void;
-Label?: string,
-Disabled?: boolean,
-Help?: string|JSX.Element;
+  Record: T,
+  Field: keyof T,
+  Setter: (record: T) => void;
+  Label?: string,
+  Disabled?: boolean,
+  Help?: string|JSX.Element;
 }
 
 export default function CheckBox<T>(props: IProps<T>) {
   const [guid, setGuid] = React.useState<string>("");
   const [showHelp, setShowHelp] = React.useState<boolean>(false);
 
+  // Determines whether to show help icon and label.
   const showHelpIcon = props.Help !== undefined;
   
+  // Runs once, setting a unique GUID for each checkbox instance.
   React.useEffect(() => {
     setGuid(CreateGuid());
-    }, []);
+  }, []);
     
     return (
       <div className="form-check" data-help={guid}>

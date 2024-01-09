@@ -31,12 +31,16 @@ export default function ArrayCheckBoxes<T>(props: {
   Checkboxes: { ID: string; Label: string }[];
   Label?: string;
 }) {
+
+  // Remove an ID from the array
   const Remove = (cb: { ID: string; Label: string }) => {
     const a = [...((props.Record[props.Field] as any) as string[])];
     const i = a.indexOf(cb.ID);
     a.splice(i, 1);
     return a;
-  };
+    };
+
+  // Add an ID to the array making sure there are no duplicates and array is sorted
   const Add = (cb: { ID: string; Label: string }) => {
     const a = [...((props.Record[props.Field] as any) as string[])];
     const i = a.indexOf(cb.ID);

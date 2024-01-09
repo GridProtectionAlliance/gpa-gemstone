@@ -23,6 +23,7 @@
 
 import * as React from 'react';
 
+// Generic component designed for selecting multiple options from a dropdown
 export default function ArrayMultiSelect<T>(props: {
   Record: T;
   Field: keyof T;
@@ -36,10 +37,13 @@ export default function ArrayMultiSelect<T>(props: {
   return (
     <div className="form-group" style={props.GroupStyle}>
       <label>{props.Label == null ? props.Field : props.Label}</label>
+
+      {/* Multi-select dropdown control */}
       <select
         multiple
         className="form-control"
         onChange={(evt) => {
+          // On change, update the record's field with the changes.
           const record: T = {
             ...props.Record,
             [props.Field]: Array.from(evt.target.selectedOptions).map((a) => a.value),
@@ -51,6 +55,8 @@ export default function ArrayMultiSelect<T>(props: {
         disabled={props.Disabled == null ? false : props.Disabled}
         style={props.Style}
       >
+
+        {/* Map each option with an <option> element */}
         {props.Options.map((a, i) => (
           <option key={i} value={a.Value}>
             {a.Label}

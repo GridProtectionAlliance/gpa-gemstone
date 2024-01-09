@@ -23,6 +23,10 @@
 
 import * as React from 'react';
 
+/**
+ * DoubleInput Component.
+ * A component that renders two input fields, allowing input for two related fields in a single record.
+ */
 export default function DoubleInput<T>(props: {
     Record: T;
     Field1: keyof T;
@@ -32,12 +36,14 @@ export default function DoubleInput<T>(props: {
     Label?: string;
     Feedback?: string;
     Disabled?: boolean;
-    Type?: 'number' | 'text' | 'password' | 'email' | 'color';
+    Type?: 'number' | 'text' | 'password' | 'email' | 'color'; 
 }) {
     return (
         <div className="form-group">
+            {/* Label for the input group. Defaults to concatenating the names of the two fields if no label is provided. */}
             <label>{props.Label == null ? (props.Field1 + ' ' + props.Field2) : props.Label}</label>
             <div className="input-group">
+                {/* First input field */}
                 <input
                     type={props.Type === undefined ? 'text' : props.Type}
                     className={props.Valid(props.Field1) ? 'form-control' : 'form-control is-invalid'}
@@ -47,6 +53,8 @@ export default function DoubleInput<T>(props: {
                     value={props.Record[props.Field1] == null ? '' : (props.Record[props.Field1] as any).toString()}
                     disabled={props.Disabled == null ? false : props.Disabled}
                 />
+
+                {/* Second input field */}
                 <input
                     type={props.Type === undefined ? 'text' : props.Type}
                     className={props.Valid(props.Field2) ? 'form-control' : 'form-control is-invalid'}
@@ -57,6 +65,8 @@ export default function DoubleInput<T>(props: {
                     disabled={props.Disabled == null ? false : props.Disabled}
                 />
             </div>
+
+            {/* Feedback message for validation errors. */}
             <div className="invalid-feedback">
                 {props.Feedback == null ? (props.Field1 + ' ' + props.Field2 + ' is a required field.') : props.Feedback}
             </div>

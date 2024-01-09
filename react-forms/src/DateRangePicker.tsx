@@ -24,8 +24,13 @@
 import * as React from 'react';
 import * as moment from 'moment';
 
+// Duration options 
 type Duration =   ('Custom' | '1 Day' | '7 Days' | '30 Days' | '90 Days' | '180 Days' | '365 Days')
 
+/**
+ * DateRangePicker Component.
+ * Allows users to select a date range either by choosing predefined durations or by specifying custom dates.
+ */
 export default function DateRangePicker<T>(props: {
   Record: T;
   FromField: keyof T;
@@ -51,6 +56,7 @@ export default function DateRangePicker<T>(props: {
   const boxFormat = "YYYY-MM-DD" + (props.Type === undefined || props.Type === 'date' ? "" : "[T]hh:mm:ss");
   const recordFormat = props.Format !== undefined ? props.Format : "YYYY-MM-DD" + (props.Type === undefined || props.Type === 'date' ? "" : "[T]hh:mm:ss.SSS[Z]");
 
+  // Effect for handling changes to the props.Record.
   React.useEffect(() => {
     setRange(ToRange(moment(props.Record[props.ToField], recordFormat).diff(moment(props.Record[props.FromField], recordFormat), 'days')));
     if (!internal)
@@ -58,6 +64,7 @@ export default function DateRangePicker<T>(props: {
     setInternal(false);
   },[props.Record]);
 
+  // Effect for handling changes to the formRange state.
   React.useEffect(() => {
     setRange(formRange);
     const toTime: moment.Moment =  moment(props.Record[props.FromField], recordFormat).add(GetDays(formRange), 'days');
@@ -65,6 +72,7 @@ export default function DateRangePicker<T>(props: {
     setBoxRecord({...boxRecord, [props.ToField]: toTime.format(boxFormat) as any});
   }, [formRange]);
 
+  // Parses the record for display in the date boxes.
   function ParseRecord(): T{
     const record: T = { ...props.Record };
     const ParseExternalField: (field: keyof T) => any = (field: keyof T) => {return props.Record[field] === null ? '' : moment(props.Record[field] as any, recordFormat).format(boxFormat)};
@@ -73,6 +81,7 @@ export default function DateRangePicker<T>(props: {
     return record;
   }
 
+  // Converts the selected duration to a number of days.
   function GetDays(val: Duration) {
     if (val === '1 Day')
       return 1;
@@ -89,6 +98,7 @@ export default function DateRangePicker<T>(props: {
     return 0;
   }
 
+  // Maps a number of days to a Duration value.
   function ToRange(days: number) {
     if (days === 1) return ('1 Day');
     else if (days === 7) return('7 Days');
@@ -99,6 +109,7 @@ export default function DateRangePicker<T>(props: {
     else return('Custom');
   }
 
+  // Renders a date input box.
   function dateBox(field: keyof T): any {
     return <div className="col">
       <input
@@ -125,7 +136,7 @@ export default function DateRangePicker<T>(props: {
     </div>
   }
 
-
+  // Main render method for the component.
   return (
     <div className="form-group">
       {props.Label === "" ? null : <label>{props.Label}</label>}
