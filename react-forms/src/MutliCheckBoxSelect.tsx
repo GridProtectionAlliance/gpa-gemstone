@@ -32,21 +32,25 @@ interface IProps {
   Help?: string|JSX.Element;
 }
 const MultiSelect = (props: IProps) => {
+    // State hooks for managing the visibility of the dropdown and help message.
   const [show, setShow] = React.useState<boolean>(false);
   const [showHelp, setShowHelp] = React.useState<boolean>(false);
   const [guid, setGuid] = React.useState<string>("");
   const multiSelect = React.useRef<HTMLDivElement>(null);
 
+  // Effect to generate a unique ID for the component.
   React.useEffect(() => {
     setGuid(CreateGuid());
-    }, []);
+  }, []);
     
+  // Handle showing and hiding of the dropdown.
   function HandleShow(evt: React.MouseEvent<HTMLButtonElement, MouseEvent> | MouseEvent) {
     if (multiSelect.current === null) setShow(!show);
     else if (!(multiSelect.current as HTMLDivElement).contains(evt.target as Node)) setShow(false);
     else setShow(true);
   }
 
+  // Effect to add and remove event listener for clicking outside the component.
   React.useEffect(() => {
     document.addEventListener('mousedown', HandleShow, false);
     return () => {
@@ -54,83 +58,97 @@ const MultiSelect = (props: IProps) => {
     };
   }, []);
 
+  // Variables to control the rendering of label and help icon.
   const showLabel = props.Label !== "";
   const showHelpIcon = props.Help !== undefined;
   const label = props.Label === undefined ? 'Select' : props.Label;
   
   return (
     <div className="form-group">
-    {showLabel || showHelpIcon ?
-    <label>{showLabel? label : ''} 
-    {showHelpIcon? <div 
-    style={{ width: 20, height: 20, borderRadius: '50%', display: 'inline-block', background: '#0D6EFD', marginLeft: 10, textAlign: 'center', fontWeight: 'bold' }}
-     onMouseEnter={() => setShowHelp(true)} 
-     onMouseLeave={() => setShowHelp(false)}> ? </div> : null}
-    </label> : null}
-    {showHelpIcon? 
-      <HelperMessage Show={showHelp} Target={guid}>
-        {props.Help}
-      </HelperMessage>
-    : null}
-    <div ref={multiSelect} style={{ position: 'relative', display: 'block', width: 'inherit' }}>
-      <button
-        type="button"
-        style={{ border: '1px solid #ced4da', padding: '.375rem .75rem', fontSize: '1rem', borderRadius: '.25rem' }}
-        className="btn form-control dropdown-toggle"
-        onClick={HandleShow}
-      >
-        {props.Options.filter((x) => x.Selected).length !== props.Options.length
-          ? props.Options.filter((x) => x.Selected).length
-          : 'All '}{' '}
-        Selected
-      </button>
-      <div
-        style={{
-          maxHeight: window.innerHeight * 0.75,
-          overflowY: 'auto',
-          padding: '10 5',
-          display: show ? 'block' : 'none',
-          position: 'absolute',
-          backgroundColor: '#fff',
-          boxShadow: '0px 8px 16px 0px rgba(0,0,0,0.2)',
-          zIndex: 401,
-          minWidth: '100%',
-        }}
-      >
-        <table className="table" style={{ margin: 0 }}>
-          <tbody>
-            <tr
-              onClick={(evt) => {
-                evt.preventDefault();
-                props.OnChange(
-                  evt,
-                  props.Options.filter(
-                    (x) => x.Selected === (props.Options.filter((o) => o.Selected).length === props.Options.length),
-                  ),
-                );
-              }}
-            >
-              <td>
-                <input
-                  type="checkbox"
-                  checked={props.Options.filter((x) => x.Selected).length === props.Options.length}
-                  onChange={() => null}
-                />
-              </td>
-              <td>All</td>
-            </tr>
-            {props.Options.map((f, i) => (
-              <tr key={i} onClick={(evt) => props.OnChange(evt, [f])}>
+      {/* Rendering label and help icon */}
+      {showLabel || showHelpIcon ?
+        <label>{showLabel? label : ''} 
+          {showHelpIcon? 
+            <div 
+              style={{ width: 20, height: 20, borderRadius: '50%', display: 'inline-block', background: '#0D6EFD', marginLeft: 10, textAlign: 'center', fontWeight: 'bold' }}
+              onMouseEnter={() => setShowHelp(true)} 
+              onMouseLeave={() => setShowHelp(false)}> ? 
+            </div> 
+          : null}
+        </label> : null
+      }
+      
+      {showHelpIcon? 
+        <HelperMessage Show={showHelp} Target={guid}>
+          {props.Help}
+        </HelperMessage>
+      : null}
+
+      {/* Rendering the dropdown */}
+      <div ref={multiSelect} style={{ position: 'relative', display: 'block', width: 'inherit' }}>
+        <button
+          type="button"
+          style={{ border: '1px solid #ced4da', padding: '.375rem .75rem', fontSize: '1rem', borderRadius: '.25rem' }}
+          className="btn form-control dropdown-toggle"
+          onClick={HandleShow}
+        >
+          {props.Options.filter((x) => x.Selected).length !== props.Options.length
+            ? props.Options.filter((x) => x.Selected).length
+            : 'All '}{' '}
+          Selected
+        </button>
+        {/* Dropdown menu */}
+        <div
+          style={{
+            maxHeight: window.innerHeight * 0.75,
+            overflowY: 'auto',
+            padding: '10 5',
+            display: show ? 'block' : 'none',
+            position: 'absolute',
+            backgroundColor: '#fff',
+            boxShadow: '0px 8px 16px 0px rgba(0,0,0,0.2)',
+            zIndex: 401,
+            minWidth: '100%',
+          }}
+        >
+          {/* Table for checkboxes and options */}
+          <table className="table" style={{ margin: 0 }}>
+            <tbody>
+              {/* Checkbox for selecting/deselecting all options */}
+              <tr
+                onClick={(evt) => {
+                  evt.preventDefault();
+                  props.OnChange(
+                    evt,
+                    props.Options.filter(
+                      (x) => x.Selected === (props.Options.filter((o) => o.Selected).length === props.Options.length),
+                    ),
+                  );
+                }}
+              >
                 <td>
-                  <input type="checkbox" checked={f.Selected} onChange={() => null} />
+                  <input
+                    type="checkbox"
+                    checked={props.Options.filter((x) => x.Selected).length === props.Options.length}
+                    onChange={() => null}
+                  />
                 </td>
-                <td>{f.Text}</td>
+                <td>All</td>
               </tr>
-            ))}
-          </tbody>
-        </table>
+
+              {/* Checkboxes for individual options */}
+              {props.Options.map((f, i) => (
+                <tr key={i} onClick={(evt) => props.OnChange(evt, [f])}>
+                  <td>
+                    <input type="checkbox" checked={f.Selected} onChange={() => null} />
+                  </td>
+                  <td>{f.Text}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
     </div>
   );
 };

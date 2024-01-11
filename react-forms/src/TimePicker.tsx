@@ -33,10 +33,14 @@ export default function DatePicker<T>(props: {
   Feedback?: string;
   Step?: number;
 }) {
+
   return (
     <div className="form-group">
+      {/* Rendering the label, if provided */}
       {(props.Label !== "") ?
-      <label>{props.Label == null ? props.Field : props.Label}</label> : null}
+        <label>{props.Label == null ? props.Field : props.Label}</label> : null}
+      
+      {/* Time input field */} 
       <input
         className={'form-control' + (props.Valid(props.Field) ? '' : ' is-invalid')}
         type="time"
@@ -53,9 +57,11 @@ export default function DatePicker<T>(props: {
         }
         disabled={props.Disabled == null ? false : props.Disabled}
       />
+
+      {/* Feedback message for validation errors */}
       <div className="invalid-feedback">
-      {props.Feedback == null ? props.Field.toString() + ' is a required field.' : props.Feedback}
-    </div>
+        {props.Feedback == null ? props.Field.toString() + ' is a required field.' : props.Feedback}
+      </div>
     </div>
   );
 }
