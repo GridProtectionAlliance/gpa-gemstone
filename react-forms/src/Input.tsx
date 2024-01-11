@@ -50,17 +50,20 @@ export default function Input<T>(props: IProps<T>) {
   const [showHelp, setShowHelp] = React.useState<boolean>(false);
   const [heldVal, setHeldVal] = React.useState<string>(''); // Need to buffer tha value because parseFloat will throw away trailing decimals or zeros
   
-   React.useEffect(() => {
+  // Effect to generate a unique ID for the component.
+  React.useEffect(() => {
     setGuid(CreateGuid());
-    }, []);
+  }, []);
   
-    React.useEffect(() => {
-      if (!internal.current) {
-        setHeldVal(props.Record[props.Field] == null ? '' : (props.Record[props.Field] as any).toString());
-      }
-      internal.current = false;
-     }, [props.Record[props.Field]]);
+  // Handle changes to the record's field value.
+  React.useEffect(() => {
+    if (!internal.current) {
+      setHeldVal(props.Record[props.Field] == null ? '' : (props.Record[props.Field] as any).toString());
+    }
+    internal.current = false;
+  }, [props.Record[props.Field]]);
 
+  // Handle blur event (loss of focus) on the input.
   function onBlur() {
     const allowNull = props.AllowNull === undefined? false : props.AllowNull;
     if (!allowNull && (props.Type === 'number' || props.Type === 'integer' ) && heldVal === '') {
@@ -69,6 +72,7 @@ export default function Input<T>(props: IProps<T>) {
     }
   }
 
+  // Handle value change of the input.
   function valueChange(value: string) {
     internal.current = true;
 
@@ -81,8 +85,7 @@ export default function Input<T>(props: IProps<T>) {
         }
         else if (v === '') {
           setHeldVal(v);
-        }
-      
+        } 
     }
     else if (props.Type === 'integer') {
         if (IsInteger(value) || (value === '' && allowNull)) {
@@ -99,21 +102,26 @@ export default function Input<T>(props: IProps<T>) {
     }
   }
   
+  // Variables to control the rendering of label and help icon.
   const showLabel = props.Label !== "";
   const showHelpIcon = props.Help !== undefined;
   const label = props.Label === undefined ? props.Field : props.Label;
   
   return (
     <div className={"form-group " + (props.Size === 'large'? 'form-group-lg' : '') + (props.Size === 'small'? 'form-group-sm' : '')} style={props.Style}>
-    {showHelpIcon || showLabel ?
-    <label>{showLabel ? label : ''} 
-    {showHelpIcon? <div style={{ width: 20, height: 20, borderRadius: '50%', display: 'inline-block', background: '#0D6EFD', marginLeft: 10, textAlign: 'center', fontWeight: 'bold' }} onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)}> ? </div> : null}
-    </label> : null}
-    {showHelpIcon? 
-      <HelperMessage Show={showHelp} Target={guid}>
-        {props.Help}
-      </HelperMessage>
-    : null}
+      {/* Rendering label and help icon */}
+      {showHelpIcon || showLabel ?
+        <label>{showLabel ? label : ''} 
+        {showHelpIcon? <div style={{ width: 20, height: 20, borderRadius: '50%', display: 'inline-block', background: '#0D6EFD', marginLeft: 10, textAlign: 'center', fontWeight: 'bold' }} onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)}> ? </div> : null}
+        </label> : null}
+
+      {showHelpIcon? 
+        <HelperMessage Show={showHelp} Target={guid}>
+          {props.Help}
+        </HelperMessage>
+      : null}
+
+      {/* Input element */}
       <input
         data-help={guid}
         type={props.Type === undefined ? 'text' : props.Type}
@@ -124,6 +132,8 @@ export default function Input<T>(props: IProps<T>) {
         onBlur={onBlur}
         step='any'
       />
+
+      {/* Invalid feedback message */}
       <div className="invalid-feedback">
         {props.Feedback == null ? props.Field.toString() + ' is a required field.' : props.Feedback}
       </div>

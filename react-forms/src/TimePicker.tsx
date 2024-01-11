@@ -67,9 +67,11 @@ export default function TimePicker<T>(props: {
         }
         disabled={props.Disabled == null ? false : props.Disabled}
       />
+
+      {/* Feedback message for validation errors */}
       <div className="invalid-feedback">
-      {props.Feedback == null ? props.Field.toString() + ' is a required field.' : props.Feedback}
-    </div>
+        {props.Feedback == null ? props.Field.toString() + ' is a required field.' : props.Feedback}
+      </div>
     </div>
   );
 }
