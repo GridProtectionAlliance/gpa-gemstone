@@ -114,7 +114,7 @@ function HorizontalMarker(props: IProps) {
            style={{ fill: 'none', strokeWidth: props.width, stroke: props.color }}
            strokeDasharray={props.lineStyle === ':'? '10,5' : 'none'} 
            />
-           {props.setValue !== undefined && props.Value !== value?
+           {props.setValue !== undefined && props.Value !== value && isSelected?
            <path d={generateData(value)} 
            style={{ fill: 'none', strokeWidth: props.width, stroke: props.color, opacity: 0.5}}
            strokeDasharray={props.lineStyle === ':'? '10,5' : 'none'} 
