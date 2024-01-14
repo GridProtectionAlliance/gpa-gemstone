@@ -59,7 +59,7 @@ function HorizontalMarker(props: IProps) {
     const yT = context.YTransformation(y, axis);
     if (yT <= yP + (props.width/2) && yT >= yP - (props.width/2))
       setSelected(true);
-  }, [props.width, props.Value, props.axis]);
+  }, [props.width, props.Value, props.axis, context.YTransformation]);
 
   React.useEffect(() => {
         const id = context.RegisterSelect({

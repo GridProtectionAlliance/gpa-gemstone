@@ -59,7 +59,7 @@ function VerticalMarker(props: IProps) {
       const xT = context.XTransformation(x);
        if (xT <= xP + (props.width/2) && xT >= xP - (props.width/2))
         setSelected(true);
-  }, [props.width, props.Value]);
+  }, [props.width, props.Value, context.XTransformation]);
 
   React.useEffect(() => {
         const id = context.RegisterSelect({
