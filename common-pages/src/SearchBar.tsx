@@ -260,13 +260,13 @@ export namespace DefaultSearch {
     export function Customer (props: IProps<OpenXDA.Types.Customer>) {
 
         const defaultSearchcols: Search.IField<OpenXDA.Types.Customer>[] = [
-            { label: 'Account Name', key: 'CustomerKey', type: 'string', isPivotField: false },
             { label: 'Name', key: 'Name', type: 'string', isPivotField: false },
+            { label: 'Account Name', key: 'CustomerKey', type: 'string', isPivotField: false },
             { label: 'Phone', key: 'Phone', type: 'string', isPivotField: false },
             { label: 'Description', key: 'Description', type: 'string', isPivotField: false },
         ];
 
-        const standardSearch: Search.IField<OpenXDA.Types.Customer> = defaultSearchcols[0];
+        const standardSearch: Search.IField<OpenXDA.Types.Customer> = { label: 'Name', key: 'Name', type: 'string', isPivotField: false };
         const [addlFieldCols, setAddlFieldCols] = React.useState<Search.IField<OpenXDA.Types.Customer>[]>([]);
         
         const dispatch = useDispatch<Dispatch<any>>();
