@@ -59,7 +59,7 @@ function HorizontalMarker(props: IProps) {
     const yT = context.YTransformation(y, axis);
     if (yT <= yP + (props.width/2) && yT >= yP - (props.width/2))
       setSelected(true);
-  }, [props.width, props.Value, props.axis]);
+  }, [props.width, props.Value, props.axis, context.YTransformation]);
 
   React.useEffect(() => {
         const id = context.RegisterSelect({
@@ -114,7 +114,7 @@ function HorizontalMarker(props: IProps) {
            style={{ fill: 'none', strokeWidth: props.width, stroke: props.color }}
            strokeDasharray={props.lineStyle === ':'? '10,5' : 'none'} 
            />
-           {props.setValue !== undefined && props.Value !== value?
+           {props.setValue !== undefined && props.Value !== value && isSelected?
            <path d={generateData(value)} 
            style={{ fill: 'none', strokeWidth: props.width, stroke: props.color, opacity: 0.5}}
            strokeDasharray={props.lineStyle === ':'? '10,5' : 'none'} 

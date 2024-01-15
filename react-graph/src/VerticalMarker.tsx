@@ -58,8 +58,8 @@ function VerticalMarker(props: IProps) {
       const xP = context.XTransformation(props.Value);
       const xT = context.XTransformation(x);
        if (xT <= xP + (props.width/2) && xT >= xP - (props.width/2))
-         setSelected(true);
-  }, [props.width, props.Value]);
+        setSelected(true);
+  }, [props.width, props.Value, context.XTransformation]);
 
   React.useEffect(() => {
         const id = context.RegisterSelect({
@@ -111,13 +111,12 @@ function VerticalMarker(props: IProps) {
    }, [context.XHoverSnap]);
 
    return (
-       
        <g>
           <path d={generateData(props.Value)} 
            style={{ fill: 'none', strokeWidth: props.width, stroke: props.color }}
            strokeDasharray={props.lineStyle === ':'? '10,5' : 'none'} 
            />
-           {props.setValue !== undefined && props.Value !== value?
+           {props.setValue !== undefined && props.Value !== value && isSelected?
            <path d={generateData(value)} 
            style={{ fill: 'none', strokeWidth: props.width, stroke: props.color, opacity: 0.5}}
            strokeDasharray={props.lineStyle === ':'? '10,5' : 'none'} 

@@ -51,6 +51,7 @@ export default function DateTimePicker<T>(props: IProps<T>) {
     const recordFormat = props.Format !== undefined ? props.Format : "YYYY-MM-DD" + (props.Type === undefined || props.Type === 'date' ? "" : "[T]HH:mm:ss.SSS[Z]");
     const parse = (r: T) => moment(props.Record[props.Field] as any, recordFormat);
     const divRef = React.useRef<any | null>(null);
+    const recordChange = React.useRef<boolean>(false);
 
     const [guid, setGuid] = React.useState<string>("");
     const [showHelp, setShowHelp] = React.useState<boolean>(false);
@@ -64,29 +65,30 @@ export default function DateTimePicker<T>(props: IProps<T>) {
     const [top, setTop] = React.useState<number>(0);
     const [left, setLeft] = React.useState<number>(0);
 
-    const allowEmpty = props.AllowEmpty ?? false;
-
     React.useEffect(() => {
         setGuid(CreateGuid());
     }, []);
 
     React.useEffect(() => {
         setPickerRecord(parse(props.Record));
-        setBoxRecord(parse(props.Record).format(boxFormat))
+        setBoxRecord(parse(props.Record).format(boxFormat));
+        recordChange.current = false;
     }, [props.Record]);
 
     React.useEffect(() => {
-        const valid = moment(boxRecord, boxFormat).isValid();
+        if (!recordChange.current) return;
 
-        if (allowEmpty && boxRecord.length === 0 && !valid && props.Record !== null) {
+        const valid = moment(boxRecord, boxFormat).isValid();
+        if ((props.AllowEmpty ?? false) && boxRecord.length === 0 && !valid && props.Record !== null)
             props.Setter({ ...props.Record, [props.Field]: null });
-        }
 
         if (valid && parse(props.Record).format(boxFormat) !== boxRecord)
             props.Setter({ ...props.Record, [props.Field]: moment(boxRecord, boxFormat).format(recordFormat) });
     }, [boxRecord])
 
     React.useEffect(() => {
+        if (!recordChange.current) return;
+
         if (pickerRecord.format(recordFormat) !== parse(props.Record).format(recordFormat))
             props.Setter({ ...props.Record, [props.Field]: pickerRecord.format(recordFormat) });
     }, [pickerRecord]);
@@ -184,6 +186,7 @@ export default function DateTimePicker<T>(props: IProps<T>) {
                 type={props.Type === undefined ? 'date' : props.Type}
                 onChange={(evt) => {
                     setBoxRecord(evt.target.value ?? "");
+                    recordChange.current = true;
                 }}
                 onFocus={() => { setShowOverlay(true) }}
                 value={boxRecord}
@@ -195,7 +198,7 @@ export default function DateTimePicker<T>(props: IProps<T>) {
                 {props.Feedback == null ? props.Field.toString() + ' is a required field.' : props.Feedback}
             </div>
             <DateTimePopup
-                Setter={(d) => { setPickerRecord(d); if (props.Type === 'date') setShowOverlay(false); }}
+                Setter={(d) => { setPickerRecord(d); recordChange.current = true; if (props.Type === 'date') setShowOverlay(false); }}
                 Show={showOverlay}
                 DateTime={pickerRecord}
                 Valid={props.Valid(props.Field)}
