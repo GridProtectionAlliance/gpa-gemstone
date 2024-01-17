@@ -22,7 +22,7 @@
 // ******************************************************************************************************
 
 import * as React from 'react';
-import {MagnifyingGlass, House, Pan, InputNumbers, Point} from '@gpa-gemstone/gpa-symbols'
+import {MagnifyingGlass, House, Pan, InputNumbers, Point, Scroll} from '@gpa-gemstone/gpa-symbols'
 import Button from './Button'
 
 interface IProps {
@@ -31,6 +31,7 @@ interface IProps {
     showReset: boolean,
     showSelect: boolean,
     showDownload: boolean,
+    showCapture: boolean,
     currentSelection: 'zoom'|'pan'|'select',
     setSelection: (selection: ButtonType) => void,
     x: number,
@@ -39,7 +40,7 @@ interface IProps {
     holdOpen?: boolean
 }
 
-type ButtonType = ('zoom' | 'pan' | 'reset' | 'select' | 'download');
+type ButtonType = ('zoom' | 'pan' | 'reset' | 'select' | 'download' | 'capture');
 type Cleanup = ((() => void) | void);
 
 const InteractiveButtons: React.FunctionComponent<IProps> = (props) => {
@@ -48,8 +49,16 @@ const InteractiveButtons: React.FunctionComponent<IProps> = (props) => {
     const [expand, setExpand] = React.useState<boolean>(props.holdOpen ?? false);
     const [currentSelect, setCurrentSelect] = React.useState<string>('regular');
 
-    const nChildren = (props.children == null) ? 0 : React.Children.count(props.children);
-    const nButtons = (props.holdOpen? 1 : 0) + (props.showZoom? 1 : 0) + (props.showPan? 1 : 0) + (props.showReset? 1 : 0) + (props.showSelect? 1 : 0) + (props.showDownload? 1 : 0) + nChildren;
+    const nButtons = React.useMemo(() =>
+      (props.holdOpen? 1 : 0) + 
+      (props.showZoom? 1 : 0) + 
+      (props.showPan? 1 : 0) + 
+      (props.showReset? 1 : 0) + 
+      (props.showSelect? 1 : 0) + 
+      (props.showDownload? 1 : 0) + 
+      (props.showCapture? 1 : 0) + 
+      ((props.children == null) ? 0 : React.Children.count(props.children))
+      , [props.holdOpen, props.showZoom, props.showPan, props.showReset, props.showSelect, props.showDownload, props.showCapture, props.children]);
 
     const direction = React.useMemo<number>(() => {return props.openTowardsRight ? 1 : -1}, [props.openTowardsRight]);
 
@@ -122,6 +131,10 @@ const InteractiveButtons: React.FunctionComponent<IProps> = (props) => {
     if (props.showDownload) {
       symbolNames.push('download' as ButtonType);
       symbols.push(<Button onClick={() => {collaspeMenu(); props.setSelection('download');}}>{InputNumbers}</Button>)
+    }
+    if (props.showCapture) {
+      symbolNames.push('capture' as ButtonType);
+      symbols.push(<Button onClick={() => {collaspeMenu(); props.setSelection('capture');}}>{Scroll}</Button>)
     }
 
     return (
