@@ -66,7 +66,8 @@ export interface IProps {
     holdMenuOpen?: boolean,
     moveMenuLeft?: boolean,
     legend?: 'hidden'| 'bottom' | 'right',
-    showMouse: boolean,
+    // Boolean arguements deprecated
+    showMouse?: boolean | 'horizontal' | 'vertical' | 'none',
     legendHeight?: number,
     legendWidth?: number,
     useMetricFactors?: boolean,
@@ -824,8 +825,11 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
                                        return element;
                                    return null;
                                })}
-                         {!photoReady && (props.showMouse === undefined || props.showMouse) ?
-                              <path stroke='black' style={{ strokeWidth: 2, opacity: mouseIn? 0.8: 0.0 }} d={`M ${mousePosition[0]} ${offsetTop} V ${svgHeight - offsetBottom}`} />
+                         {!photoReady && (props.showMouse === undefined || (props.showMouse !== 'none' && props.showMouse !== false)) ?
+                              <path stroke='black' style={{ strokeWidth: 2, opacity: mouseIn? 0.8: 0.0 }} d={(props.showMouse !== 'horizontal' ? 
+                                `M ${mousePosition[0]} ${offsetTop} V ${svgHeight - offsetBottom}` :
+                                `M ${offsetLeft} ${mousePosition[1]} H ${svgWidth - offsetRight}`)
+                              } />
                               : null}
                           {(props.zoom === undefined || props.zoom) && mouseMode === 'zoom' ?
                               <rect fillOpacity={0.8} fill={'black'} x={Math.min(mouseClick[0], mousePosition[0])}
