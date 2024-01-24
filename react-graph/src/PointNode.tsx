@@ -82,10 +82,12 @@ export class PointNode {
                 i > 0  && (this.points?[i-1][0] : 0)<= Tend);
         if (this.points != null)
             return this.points.filter(pt => pt[0] >= Tstart && pt[0] <= Tend );
-        
-
         const result: [...number[]][] = [];
-        return result.concat(...this.children!.filter(node => Tstart <= node.minT && Tend >= node.maxT).map(node => node.GetData(Tstart, Tend, IncludeEdges)));
+        return result.concat(...this.children!.filter(node => 
+            (node.minT <= Tstart && node.maxT > Tstart) || 
+            (node.maxT >= Tend && node.minT < Tend) || 
+            (node.minT >= Tstart && node.maxT <= Tend)
+            ).map(node => node.GetData(Tstart, Tend, IncludeEdges)));
     }
 
     public GetFullData(): [...number[]][] {
