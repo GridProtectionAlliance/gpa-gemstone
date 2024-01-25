@@ -53,7 +53,7 @@ export function TextFilter<T>(props: IProps<T>) {
         if (txt != null && txt.trim().length > 0 && (props.Filter.length === 0 || props.Filter[0].SearchText !== txt.trim()))
             handle = setTimeout(() => props.SetFilter([{
                   FieldName: props.FieldName,
-                  isPivotColumn: false, 
+                  IsPivotColumn: false, 
                   SearchText: (props.ApproxMatches === undefined || props.ApproxMatches? '%' + txt.trim() + '%' : txt.trim()),
                   Operator: 'LIKE', 
                   Type: 'string'

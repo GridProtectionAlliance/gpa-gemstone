@@ -53,10 +53,10 @@ export function BooleanFilter<T>(props: IFilterProps<T>) {
 
     React.useEffect(() => {
         if (selected && !notSelected && (props.Filter.length === 0 || props.Filter[0].SearchText !== '1')) {
-            props.SetFilter([{ FieldName: props.FieldName, isPivotColumn: false, SearchText: '1', Operator: '=', Type: 'boolean' }]);
+            props.SetFilter([{ FieldName: props.FieldName, IsPivotColumn: false, SearchText: '1', Operator: '=', Type: 'boolean' }]);
         }
         if (!selected && notSelected && (props.Filter.length === 0 || props.Filter[0].SearchText !== '0')) {
-            props.SetFilter([{ FieldName: props.FieldName, isPivotColumn: false, SearchText: '0', Operator: '=', Type: 'boolean' }]);
+            props.SetFilter([{ FieldName: props.FieldName, IsPivotColumn: false, SearchText: '0', Operator: '=', Type: 'boolean' }]);
         }
         if (selected && notSelected && props.Filter.length > 0)
             props.SetFilter([]);

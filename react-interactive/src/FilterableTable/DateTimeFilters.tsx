@@ -88,14 +88,14 @@ export function DateFilter<T>(props: IProps<T>) {
             handle = setTimeout(() =>props.SetFilter([
                 {
                     FieldName: props.FieldName,
-                    isPivotColumn: false,
+                    IsPivotColumn: false,
                     Operator: '>=',
                     Type: 'datetime',
                     SearchText: date
                 },
                 {
                     FieldName: props.FieldName,
-                    isPivotColumn: false,
+                    IsPivotColumn: false,
                     Operator: '<=',
                     Type: 'datetime',
                     SearchText: secondDate
@@ -105,7 +105,7 @@ export function DateFilter<T>(props: IProps<T>) {
         else 
             handle = setTimeout(() =>props.SetFilter([{
                 FieldName: props.FieldName,
-                isPivotColumn: false,
+                IsPivotColumn: false,
                 Operator: (operator === 'after'? '>' : '<'),
                 Type: 'datetime',
                 SearchText: date
@@ -205,14 +205,14 @@ export function TimeFilter<T>(props: IProps<T>) {
             handle = setTimeout(() =>props.SetFilter([
                 {
                     FieldName: props.FieldName,
-                    isPivotColumn: false,
+                    IsPivotColumn: false,
                     Operator: '>=',
                     Type: 'datetime',
                     SearchText: time
                 },
                 {
                     FieldName: props.FieldName,
-                    isPivotColumn: false,
+                    IsPivotColumn: false,
                     Operator: '<=',
                     Type: 'datetime',
                     SearchText: secondTime
@@ -222,7 +222,7 @@ export function TimeFilter<T>(props: IProps<T>) {
         else 
             handle = setTimeout(() => props.SetFilter([{
                 FieldName: props.FieldName,
-                isPivotColumn: false,
+                IsPivotColumn: false,
                 Operator: (operator === 'after' ? '>' : '<'),
                 Type: 'datetime',
                 SearchText: time
@@ -326,14 +326,14 @@ export function DateTimeFilter<T>(props: IProps<T>) {
             handle = setTimeout(() =>props.SetFilter([
                 {
                     FieldName: props.FieldName,
-                    isPivotColumn: false,
+                    IsPivotColumn: false,
                     Operator: '>=',
                     Type: 'datetime',
                     SearchText: dateTime
                 },
                 {
                     FieldName: props.FieldName,
-                    isPivotColumn: false,
+                    IsPivotColumn: false,
                     Operator: '<=',
                     Type: 'datetime',
                     SearchText: secondDateTime
@@ -343,7 +343,7 @@ export function DateTimeFilter<T>(props: IProps<T>) {
         else 
             handle = setTimeout(() => props.SetFilter([{
                 FieldName: props.FieldName,
-                isPivotColumn: false,
+                IsPivotColumn: false,
                 Operator: (operator === 'after' ? '>' : '<'),
                 Type: 'datetime',
                 SearchText: dateTime
