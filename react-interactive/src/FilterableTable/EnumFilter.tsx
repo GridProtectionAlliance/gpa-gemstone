@@ -51,7 +51,7 @@ export function EnumFilter<T>(props: IProps<T>) {
         if (options.some(item => !item.Selected))
             props.SetFilter([{
                 FieldName: props.FieldName,
-                isPivotColumn: false,
+                IsPivotColumn: false,
                 Operator: 'IN',
                 Type: 'enum',
                 SearchText: `(${options.filter(o => o.Selected).map(x => x.Value).join(',')})`

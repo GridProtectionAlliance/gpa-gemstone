@@ -83,14 +83,14 @@ export function NumberFilter<T>(props: IProps<T>) {
                 handle = setTimeout(() => props.SetFilter([
                     {
                         FieldName: props.FieldName,
-                        isPivotColumn: false,
+                        IsPivotColumn: false,
                         Operator: '>=',
                         Type: 'number',
                         SearchText: value
                     },
                     {
                         FieldName: props.FieldName,
-                        isPivotColumn: false,
+                        IsPivotColumn: false,
                         Operator: '<=',
                         Type: 'number',
                         SearchText: secondValue
@@ -100,7 +100,7 @@ export function NumberFilter<T>(props: IProps<T>) {
             else 
                 handle = setTimeout(() => props.SetFilter([{
                     FieldName: props.FieldName,
-                    isPivotColumn: false,
+                    IsPivotColumn: false,
                     Operator: transformSymbol(operator),
                     Type: 'number',
                     SearchText: value

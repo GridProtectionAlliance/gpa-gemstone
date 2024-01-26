@@ -47,7 +47,7 @@ export namespace Search {
   export type FieldType = ('string' | 'number' | 'enum' | 'integer' | 'datetime' | 'boolean' | 'date' | 'time' | "query")
   export interface IField<T> { label: string, key: string, type: FieldType, enum?: IOptions[], isPivotField: boolean}
   export type OperatorType = ('=' | '<>' | '>' | '<' | '>=' | '<=' | 'LIKE' | 'NOT LIKE' | 'IN' | 'NOT IN')
-  export interface IFilter<T> { FieldName: string, SearchText: string, Operator: Search.OperatorType, Type: Search.FieldType, isPivotColumn: boolean }
+  export interface IFilter<T> { FieldName: string, SearchText: string, Operator: Search.OperatorType, Type: Search.FieldType, IsPivotColumn: boolean }
 }
 
 export default function SearchBar<T> (props: IProps<T>)  {
@@ -57,7 +57,7 @@ export default function SearchBar<T> (props: IProps<T>)  {
   const [isNew, setIsNew] = React.useState<boolean>(false);
 
   const [filters, setFilters] = React.useState<Search.IFilter<T>[]>([]);
-  const [filter, setFilter] = React.useState<Search.IFilter<T>>({ FieldName: props.CollumnList[0].key, SearchText: '', Operator: props.CollumnList[0].type === 'string'? 'LIKE' : '=', Type: props.CollumnList[0].type, isPivotColumn: props.CollumnList[0].isPivotField});
+  const [filter, setFilter] = React.useState<Search.IFilter<T>>({ FieldName: props.CollumnList[0].key, SearchText: '', Operator: props.CollumnList[0].type === 'string'? 'LIKE' : '=', Type: props.CollumnList[0].type, IsPivotColumn: props.CollumnList[0].isPivotField});
 
   const [search, setSearch] = React.useState<string>("");
   const [searchFilter, setSearchFilter] = React.useState<Search.IFilter<T>|null>(null);
@@ -83,7 +83,7 @@ export default function SearchBar<T> (props: IProps<T>)  {
       let handle: any = null;
       if (search.length > 0 && props.defaultCollumn !== undefined)
           handle = setTimeout(() => {
-              if (props.defaultCollumn !== undefined) setSearchFilter({ FieldName: props.defaultCollumn.key, Operator: 'LIKE', Type: props.defaultCollumn.type, SearchText: ('*' + search + '*'), isPivotColumn: props.defaultCollumn.isPivotField });
+              if (props.defaultCollumn !== undefined) setSearchFilter({ FieldName: props.defaultCollumn.key, Operator: 'LIKE', Type: props.defaultCollumn.type, SearchText: ('*' + search + '*'), IsPivotColumn: props.defaultCollumn.isPivotField });
           }, 500);
       else
           handle = setTimeout(() => {
@@ -121,7 +121,7 @@ export default function SearchBar<T> (props: IProps<T>)  {
       oldFilters.push(adjustedFilter);
 
       setFilters(oldFilters);
-      setFilter({ FieldName: props.CollumnList[0].key, SearchText: '', Operator: props.CollumnList[0].type === 'string'? 'LIKE': '=', Type: props.CollumnList[0].type,isPivotColumn: props.CollumnList[0].isPivotField });
+      setFilter({ FieldName: props.CollumnList[0].key, SearchText: '', Operator: props.CollumnList[0].type === 'string'? 'LIKE': '=', Type: props.CollumnList[0].type,IsPivotColumn: props.CollumnList[0].isPivotField });
       if (props.defaultCollumn !== undefined && searchFilter !== null)
           props.SetFilter([...oldFilters, searchFilter]);
       else
@@ -147,7 +147,7 @@ export default function SearchBar<T> (props: IProps<T>)  {
   function createFilter() {
     setShow(!show);
     setIsNew(true);
-    setFilter({ FieldName: props.CollumnList[0].key, SearchText: '', Operator: props.CollumnList[0].type === 'string'? 'LIKE': '=', Type: props.CollumnList[0].type, isPivotColumn: props.CollumnList[0].isPivotField });
+    setFilter({ FieldName: props.CollumnList[0].key, SearchText: '', Operator: props.CollumnList[0].type === 'string'? 'LIKE': '=', Type: props.CollumnList[0].type, IsPivotColumn: props.CollumnList[0].isPivotField });
   }
 
   const content = (
@@ -211,7 +211,7 @@ export default function SearchBar<T> (props: IProps<T>)  {
                 if (column !== undefined && (column.type === 'number' || column.type === 'integer' || column.type === 'boolean' || column.type === 'datetime' ))
                     operator = '='
 
-                  setFilter((prevFilter) => ({ ...prevFilter, FieldName: record.FieldName, SearchText: '', Operator: operator, Type: (column !== undefined ? column.type : 'string'), isPivotColumn: (column !== undefined ? column.isPivotField : true)  }))
+                  setFilter((prevFilter) => ({ ...prevFilter, FieldName: record.FieldName, SearchText: '', Operator: operator, Type: (column !== undefined ? column.type : 'string'), IsPivotColumn: (column !== undefined ? column.isPivotField : true)  }))
             }} Label='Column' />
             <FilterCreator Filter={filter} Field={props.CollumnList.find(fl => fl.key === filter.FieldName)} Setter={(record) => setFilter(record)} Enum={(props.GetEnum === undefined? undefined : props.GetEnum)}/>
           </Modal>
