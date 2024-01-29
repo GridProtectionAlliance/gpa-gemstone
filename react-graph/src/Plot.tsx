@@ -150,7 +150,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
     const [svgHeight, setSVGheight] = React.useState<number>(props.height);
     const [svgWidth, setSVGwidth] = React.useState<number>(props.width);
     
-    const zoomMode = props.zoomMode === undefined? 'AutoValue' : props.zoomMode;
+    const zoomMode = React.useMemo(() => props.zoomMode === undefined? 'AutoValue' : props.zoomMode, [props.zoomMode]);
 
     // Type correcting functions to convert props into something usable
     const typeCorrect: <T>(arg: T | T[] | undefined, arrayIndex: number) => T|undefined = (arg, arrayIndex) => {
