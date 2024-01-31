@@ -39,7 +39,7 @@ export class KDNode {
     point: [...number[]];
     dim: number;
 
-    constructor(dataPoints: [...number[]][], dims: number, isOrderedAscending: boolean = false, cuttingDim: number = 0){
+    constructor(dataPoints: [...number[]][], dims: number, isOrderedAscending = false, cuttingDim = 0){
         this.dim = dims;
         if (dataPoints.length === 0) throw new TypeError(`No data passed to KDNode construction.`)
         else {
@@ -55,7 +55,7 @@ export class KDNode {
     }
 
     // Unused at the moment, but may be helpful for other applications
-    public insertPoint(point: [...number[]], dim: number, currentDim: number = 0) {
+    public insertPoint(point: [...number[]], dim: number, currentDim = 0) {
         // left path
         if (point[currentDim] < this.point[currentDim]) {
             if (this.left == null) this.left = new KDNode([point], dim, true, currentDim);
@@ -96,7 +96,7 @@ export class KDNode {
 
     private distanceSq(point: [...number[]], transformationFunc?: ITransformationFunc[]): number {
         let distSq = 0;
-        for (let index: number = 0; index < this.dim; index++){
+        for (let index = 0; index < this.dim; index++){
             if (transformationFunc != null)
                 distSq += (transformationFunc[index](point[index]) - transformationFunc[index](this.point[index])) **2;
             else
