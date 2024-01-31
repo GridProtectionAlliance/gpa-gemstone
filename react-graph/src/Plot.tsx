@@ -43,6 +43,7 @@ import AggregatingCircles from './AggregatingCircles';
 import Infobox from './Infobox';
 import HeatMapChart from './HeatMapChart';
 import * as _html2canvas from "html2canvas";
+import { KDNode } from './KDNode';
 const html2canvas: any = _html2canvas;
 
 // A ZoomMode of AutoValue means it will zoom on time, and auto Adjust the Value to fit the data.
@@ -105,6 +106,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
     const handlers = React.useRef<Map<string,IHandlers>>(new Map<string, IHandlers>());
     const wheelTimeout = React.useRef<{timeout?: NodeJS.Timeout, stopScroll: boolean}>({timeout: undefined, stopScroll: false});
     const widthTimeout = React.useRef<{timeout?: NodeJS.Timeout, requesterMap: Map<string,number>}>({timeout: undefined, requesterMap: new Map<string,number>()});
+    const nodeTree = React.useRef<{dataGuids: Map<string, { dataId: string, axis: number}>, trees: (KDNode|null)[]}>({ dataGuids: new Map<string, { dataId: string, axis: number}>(), trees: Array(AxisMap.size).fill(null)});
     
     const guid = React.useMemo(() => CreateGuid(),[]);
     const [data, setData] = React.useState<Map<string, IDataSeries>>(new Map<string, IDataSeries>());
@@ -299,6 +301,41 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
       newHasData[1] = hasFunc('right');
       setYHasData(newHasData);
     }, [data]);
+
+    // Todo: Assumption that dims are 2
+    React.useEffect(() => {
+      // Don't need if we're not snapping
+      if (!props.snapMouse) return;
+
+      // Build map of all guids in data (mapping series key => data key, axis)
+      const guidMap = new Map<string, { dataId: string, axis: number}>();
+      for(const seriesKey of data.keys()){
+        const dataSeries = data.get(seriesKey);
+        if (dataSeries == null || dataSeries.dataId == null || dataSeries.dataId === "") continue;
+        guidMap.set(seriesKey, { dataId: dataSeries.dataId, axis: AxisMap.get(dataSeries.axis) });
+      }
+      // If everything is all equivlant, then data has not changed and we can skip the operation
+      if (nodeTree.current.dataGuids.size === guidMap.size && 
+        [...guidMap.keys()].every(seriesKey => {
+          const currentInfo = nodeTree.current.dataGuids.get(seriesKey);
+          const newInfo = guidMap.get(seriesKey);
+          if (currentInfo == null || newInfo == null) return false;
+          return (currentInfo.axis === newInfo.axis && currentInfo.dataId === newInfo.dataId);
+        })) return;
+      // Construct the node tree(s)
+      const newNodes: KDNode[] = Array(AxisMap.size);
+      for(const axis of AxisMap.values()){
+        let allData: [...number[]][] = []; 
+        for(const seriesKey of guidMap.keys()){
+          const dataSeries = data.get(seriesKey);
+          const dataGuid = guidMap.get(seriesKey);
+          if (dataGuid != null && dataSeries != null && dataGuid.axis === axis)
+            allData = allData.concat(dataSeries.getData([Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER]));
+        }
+        if (allData.length !== 0) newNodes[axis] = new KDNode(allData, 2, false, 0);
+      }
+      nodeTree.current = {dataGuids: guidMap, trees: newNodes };
+    }, [data, props.snapMouse]);
 
     // Adjust x axis
     React.useEffect(() => {
@@ -505,19 +542,18 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
         });
     }, []);
 
-    function snapMouseToClosestSeries(pixelPt: {x: number, y: number}) {
-      const findClosestPoint = (result: { x: number, y: number, distSqr: number|undefined }, series: IDataSeries) => {
-        if (series.getPoint != null) {
-          const pt = series.getPoint(xInvTransform(pixelPt.x));
-          if (pt === undefined) return result;
-          const ptPixel = [xTransform(pt[0]), yTransform(pt[1], AxisMap.get(series.axis))];
-          const distSqr = (ptPixel[1]-pixelPt.y)^2+(ptPixel[0]-pixelPt.x)^2;
-          if (result.distSqr === undefined || distSqr < result.distSqr)
-            return {x: ptPixel[0], y: ptPixel[1], distSqr: distSqr};
-        }
+    function snapMouseToClosestSeries(pixelPt: {x:number, y:number}): {x:number, y:number} {
+      const findClosestPoint = (result: { pt: {x:number, y:number}, distSq: number|undefined }, axis: number) => {
+        if (nodeTree.current.trees[axis] == null) return result;
+        // Todo: We might be able to make NN return the transformed point if the transform function is provided, instead of doing it ourselves
+        const nnResult = nodeTree.current.trees[axis]!.findNearest([xInvTransform(pixelPt.x), yInvTransform(pixelPt.y, axis)], [xTransform, (n)=>yTransform(n,axis)]);
+        const newResult = { pt: { x: xTransform(nnResult.pt[0]), y: yTransform(nnResult.pt[1], axis)}, distSq: nnResult.distSq }
+        if (result.distSq === undefined || newResult.distSq < result.distSq)
+          return newResult;
         return result;
       }
-      return [...data.values()].reduce((result: { x: number, y: number, distSqr: number|undefined }, series: IDataSeries) => findClosestPoint(result, series), { x: 0, y: 0, distSqr: undefined });
+      
+      return [...AxisMap.values()].reduce((result: { pt: {x:number, y:number}, distSq: number|undefined}, axis) => findClosestPoint(result, axis), { pt: {x:0, y:0}, distSq: undefined }).pt;
     }
 
     const registerSelect = React.useCallback((handler: IHandlers) => {

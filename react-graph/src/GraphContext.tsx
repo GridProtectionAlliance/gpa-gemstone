@@ -80,9 +80,11 @@ export const GraphContext = React.createContext({
 } as IGraphContext);
 
 export interface IDataSeries {
+  getData: (tDomain: [number, number], includeEdges?: boolean) => [...number[]][],
   getMin: (tDomain: [number, number]) => number| undefined,
   getMax: (tDomain: [number, number]) => number|undefined,
   getPoint: (xValue: number) => [...number[]]|undefined,
+  dataId?: string,
   axis: AxisIdentifier|undefined,
   legendSize?: 'sm'|'lg',
   legend?: HTMLElement| React.ReactElement| JSX.Element

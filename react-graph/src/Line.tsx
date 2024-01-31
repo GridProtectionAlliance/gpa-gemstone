@@ -27,6 +27,7 @@ import {IDataSeries, GraphContext, LineStyle, AxisIdentifier, AxisMap} from './G
 import * as moment from 'moment';
 import {PointNode} from './PointNode';
 import LineLegend from './LineLegend';
+import { CreateGuid } from '@gpa-gemstone/helper-functions';
 
 
 export interface IProps {
@@ -46,6 +47,7 @@ function Line(props: IProps) {
         Single Line with ability to turn off and on.
     */
     const [guid, setGuid] = React.useState<string>("");
+    const [dataGuid, setDataGuid] = React.useState<string>("");
     const [highlight, setHighlight] = React.useState<[number, number]>([NaN,NaN]);
     const [enabled, setEnabled] = React.useState<boolean>(true);
     const [data, setData] = React.useState<PointNode|null>(null);
@@ -55,32 +57,41 @@ function Line(props: IProps) {
         ((props.autoShowPoints === undefined || props.autoShowPoints) && visibleData.length <= 100), 
         [props.showPoints, props.autoShowPoints, visibleData]);
 
-   React.useEffect(() => {
-       if (guid === "")
-        return;
-      context.UpdateData(guid, {
-        legend: createLegend(),
-        legendSize: 'sm',
-        axis: props.axis,
-        getMax: (t) => (data == null|| !enabled? -Infinity : data.GetLimits(t[0],t[1])[1]),
-        getMin: (t) => (data == null|| !enabled? Infinity : data.GetLimits(t[0],t[1])[0]),
-        getPoint: (t) => (data == null|| !enabled? NaN : data.GetPoint(t)),
-      } as IDataSeries)
-   }, [props, data, enabled])
+    const createContextData = React.useCallback(() => {
+        return {
+            legend: createLegend(),
+            legendSize: 'sm',
+            axis: props.axis,
+            dataId: dataGuid,
+            getMax: (t) => (data == null|| !enabled? -Infinity : data.GetLimits(t[0],t[1])[1]),
+            getMin: (t) => (data == null|| !enabled? Infinity : data.GetLimits(t[0],t[1])[0]),
+            getPoint: (t) => (data == null|| !enabled? NaN : data.GetPoint(t)),
+            getData: (t, ie) => (data == null || !enabled ? NaN : data.GetData(t[0], t[1], ie))
+        } as IDataSeries;
+    }, [props.axis, enabled, dataGuid]);
 
-   React.useEffect(() => {
-      if (props.data.length === 0 || isNaN(context.XHover) || data === null)
-         setHighlight([NaN, NaN]);
-      else {
-         try {
+    React.useEffect(() => {
+        if (guid === "")
+            return;
+        context.UpdateData(guid, createContextData());
+    }, [createContextData]);
+
+    React.useEffect(() => {
+        setDataGuid(CreateGuid());
+    }, [data]);
+
+    React.useEffect(() => {
+        if (props.data.length === 0 || isNaN(context.XHover) || data === null)
+            setHighlight([NaN, NaN]);
+        else {
+            try {
             const point = data.GetPoint(context.XHover);
             if(point != null)
-               setHighlight(point as [number,number]);
-         } catch {
+                setHighlight(point as [number,number]);
+            } catch {
             setHighlight([NaN, NaN]);
-         }
-       }
-
+            }
+        }
    }, [data, context.XHover])
 
    React.useEffect(() => {
@@ -102,18 +113,11 @@ function Line(props: IProps) {
         setVisibleData(data.GetData(context.XDomain[0],context.XDomain[1],true));
     },[data, context.XDomain[0], context.XDomain[1]])
 
-   React.useEffect(() => {
-       const id = context.AddData({
-           legend: createLegend(),
-           legendSize: 'sm',
-           axis: props.axis,
-           getMax: (t) => (data == null|| !enabled? -Infinity : data.GetLimits(t[0],t[1])[1]),
-           getMin: (t) => (data == null|| !enabled? Infinity : data.GetLimits(t[0],t[1])[0]),
-           getPoint: (t) => (data == null|| !enabled? NaN : data.GetPoint(t)),
-       } as IDataSeries)
-     setGuid(id)
-       return () => { context.RemoveData(id) }
-   }, []);
+    React.useEffect(() => {
+        const id = context.AddData(createContextData());
+        setGuid(id);
+        return () => { context.RemoveData(id) }
+    }, []);
 
    function createLegend(): HTMLElement| React.ReactElement| JSX.Element| undefined {
      if (props.legend === undefined)
