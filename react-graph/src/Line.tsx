@@ -60,7 +60,6 @@ function Line(props: IProps) {
     const createContextData = React.useCallback(() => {
         return {
             legend: createLegend(),
-            legendSize: 'sm',
             axis: props.axis,
             dataId: dataGuid,
             getMax: (t) => (data == null|| !enabled? -Infinity : data.GetLimits(t[0],t[1])[1]),
@@ -119,7 +118,7 @@ function Line(props: IProps) {
         return () => { context.RemoveData(id) }
     }, []);
 
-   function createLegend(): HTMLElement| React.ReactElement| JSX.Element| undefined {
+   function createLegend(): React.ReactElement| undefined {
      if (props.legend === undefined)
        return undefined;
 
@@ -129,11 +128,8 @@ function Line(props: IProps) {
       txt = txt + ` (${moment.utc(highlight[0]).format('MM/DD/YY hh:mm:ss')}: ${highlight[1].toPrecision(6)})`
 
        return <LineLegend 
-        label={txt} color={props.color}
-        lineStyle={props.lineStyle}
-        onClick={() => setEnabled((e) => !e)} 
-        opacity={(enabled? 1 : 0.5)}
-        requestWidth={context.RequestLegendWidth}/>;
+        size = 'sm' label={txt} color={props.color} lineStyle={props.lineStyle}
+        onClick={() => setEnabled((e) => !e)}  opacity={(enabled? 1 : 0.5)}/>;
    }
 
    function generateData() {

@@ -29,6 +29,7 @@ import * as moment from 'moment';
 import {PointNode} from './PointNode';
 import {GetTextWidth} from '@gpa-gemstone/helper-functions';
 import {IProps as ILineProps} from './Line';
+import LineLegend from './LineLegend';
 
 export interface IProps extends ILineProps {
     threshHolds: IThreshold[],
@@ -109,7 +110,7 @@ function LineWithThreshold(props: IProps) {
      setThresholdLimits([Math.min(...props.threshHolds.map(t => t.Value)),Math.max(...props.threshHolds.map(t => t.Value)) ])
    }, [props.threshHolds]);
 
-   function createLegend():  HTMLElement| React.ReactElement| JSX.Element| undefined {
+   function createLegend(): React.ReactElement | undefined {
      if (props.legend === undefined)
        return undefined;
 
@@ -118,15 +119,9 @@ function LineWithThreshold(props: IProps) {
      if (props.highlightHover && !isNaN(highlight[0]) && !isNaN(highlight[1]))
       txt = txt + ` (${moment.utc(highlight[0]).format('MM/DD/YY hh:mm:ss')}: ${highlight[1].toPrecision(6)})`
 
-       return (
-           <div onClick={() => setEnabled((e) => !e)} style={{ width: wLegend, display: 'flex', alignItems: 'center', marginRight: '20px' }}>
-              {(props.lineStyle === '-' ?
-                <div style={{ width: ' 10px', height: 0, borderTop: '2px solid', borderRight: '10px solid', borderBottom: '2px solid', borderLeft: '10px solid', borderColor: props.color, overflow: 'hidden', marginRight: '5px', opacity: (enabled? 1 : 0.5) }}></div> :
-                <div style={{ width: ' 10px', height: '4px', borderTop: '0px solid', borderRight: '3px solid', borderBottom: '0px solid', borderLeft: '3px solid', borderColor: props.color, overflow: 'hidden', marginRight: '5px', opacity: (enabled? 1 : 0.5) }}></div>
-              )}
-              <label style={{ marginTop: '0.5rem' }}> {txt}</label>
-           </div>
-       );
+      return <LineLegend 
+      size = 'sm' label={txt} color={props.color} lineStyle={props.lineStyle}
+      onClick={() => setEnabled((e) => !e)}  opacity={(enabled? 1 : 0.5)}/>;
    }
 
    function generateData() {

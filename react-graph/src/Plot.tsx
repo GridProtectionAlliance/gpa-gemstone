@@ -530,7 +530,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
         setData((fld) => { const updated = cloneDeep(fld); updated.delete(d); return updated;})
     },[]);
 
-    const setLegend = React.useCallback((key: string, legend?:  HTMLElement| React.ReactElement| JSX.Element) =>  {
+    const setLegend = React.useCallback((key: string, legend?: React.ReactElement) =>  {
         setData((fld) => {
           const updated = cloneDeep(fld);
           const series = updated.get(key);
@@ -824,8 +824,6 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
         RegisterSelect={registerSelect}
         RemoveSelect={removeSelect}
         UpdateSelect={updateSelect}
-        RequestLegendWidth={requestLegendWidthChange}
-        RequestLegendHeight={requestLegendHeightChange}
       >
           <div id={guid} style={{ height: props.height, width: props.width, position: 'relative' }}>
               <div style={{ height: svgHeight, width: svgWidth, position: 'absolute', cursor: mouseStyle }}
@@ -898,7 +896,11 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
                       }
                   </svg>
               </div>
-            {props.legend  !== undefined && props.legend !== 'hidden' ? <Legend location={props.legend} height={legendHeight} width={legendWidth} graphWidth={svgWidth} graphHeight={svgHeight} /> : null}
+            {props.legend  !== undefined && props.legend !== 'hidden' ? 
+            <Legend location={props.legend} height={legendHeight} width={legendWidth} graphWidth={svgWidth} graphHeight={svgHeight} 
+            RequestLegendWidth={requestLegendWidthChange} RequestLegendHeight={requestLegendHeightChange}
+            /> 
+            : null}
            </div>
       </ContextWrapper>
   )

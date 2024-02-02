@@ -23,10 +23,10 @@
 
 
 import * as React from 'react';
-import { LineStyle} from './GraphContext';
+import { LineStyle } from './GraphContext';
 import { GetTextWidth, GetTextHeight } from '@gpa-gemstone/helper-functions';
 import { CreateGuid } from '@gpa-gemstone/helper-functions';
-
+import { LegendContext } from './LegendContext';
 
 export interface IProps {
     label: string,
@@ -34,38 +34,34 @@ export interface IProps {
     lineStyle: LineStyle,
     onClick: () => void,
     opacity: number,
-    requestWidth?: (newWidth: number, guid: string) => void
+    size: 'lg' | 'sm'
 }
 
 const nonTextualWidth = 45;
 const textFont = "Segoe UI";
 function LineLegend(props: IProps) {
-  const ref = React.useRef(null);
-  const [wLegend, setWLegend] = React.useState<number>(0);
-  const [hLegend, setHLegend] = React.useState<number>(0);
+  const [wLegend, setWLegend] = React.useState<number>(100);
+  const [hLegend, setHLegend] = React.useState<number>(100);
   const [textSize, setTextSize] = React.useState<number>(1);
   const [useMultiLine, setUseMultiLine] = React.useState<boolean>(false);
-  const [guid, setGuid] = React.useState<string>('');
-
-  React.useLayoutEffect(() => {
-    setWLegend(((ref?.current as any)?.offsetWidth) ?? 0);
-    setHLegend((ref?.current as any)?.offsetHeight ?? 0);
-  });
+  const [guid] = React.useState<string>(CreateGuid());
+  const context = React.useContext(LegendContext);
 
   React.useEffect(() => {
-    const generatedID = CreateGuid();
-    setGuid(generatedID);
     return () => {
-      if (props.requestWidth !== undefined) props.requestWidth(-1, guid);
+      context.RequestLegendWidth(-1, guid);
     }
   }, []);
+
+  React.useEffect(() => setWLegend(props.size === 'sm' ? context.SmWidth : context.LgWidth), [context.LgWidth, context.SmWidth, props.size]);
+  React.useEffect(() => setHLegend(props.size === 'sm' ? context.SmHeight : context.LgHeight), [context.SmHeight, context.LgHeight, props.size]);
 
   React.useEffect(() => {
     let t = 1;
     let w = GetTextWidth(textFont, `${t}em`, props.label);
     let h = GetTextWidth(textFont, `${t}em`, props.label);
     let useML = false;
-    if (props.requestWidth !== undefined) props.requestWidth(h, guid);
+    context.RequestLegendWidth(h, guid);
 
     while (t > 0.4 &&  ( w > wLegend - nonTextualWidth || h > hLegend)) {
       t = t - 0.05;
@@ -80,17 +76,18 @@ function LineLegend(props: IProps) {
       }
     }
     setTextSize(t);
-    setUseMultiLine(useML)
-  }, [props.label, wLegend, hLegend])
+    setUseMultiLine(useML);
+  }, [props.label, wLegend, hLegend, props.size]);
 
    return (
-    <div ref={ref} onClick={() => props.onClick()} style={{ width: '100%', display: 'flex', alignItems: 'center', marginRight: '5px', height:'100%' }}>
-       {(props.lineStyle === '-' ?
-         <div style={{ width: ' 10px', height: 0, borderTop: '2px solid', borderRight: '10px solid', borderBottom: '2px solid', borderLeft: '10px solid', borderColor: props.color, overflow: 'hidden', marginRight: '5px',
-          opacity: props.opacity }}></div> :
-         <div style={{ width: ' 10px', height: '4px', borderTop: '0px solid', borderRight: '3px solid', borderBottom: '0px solid', borderLeft: '3px solid', borderColor: props.color, overflow: 'hidden', marginRight: '5px', opacity: props.opacity }}></div>
-       )}
-       <label style={{ margin: 'auto', marginLeft: 0, fontSize: textSize + 'em', whiteSpace: (useMultiLine? 'normal' : 'nowrap') }}> {props.label}</label>
+    <div style={{ height: hLegend, width: wLegend }}>
+      <div onClick={() => props.onClick()} style={{ width: '100%', display: 'flex', alignItems: 'center', marginRight: '5px', height: '100%' }}>
+        {(props.lineStyle === '-' ?
+          <div style={{ width: ' 10px', height: 0, borderTop: '2px solid', borderRight: '10px solid', borderBottom: '2px solid', borderLeft: '10px solid', borderColor: props.color, overflow: 'hidden', marginRight: '5px', opacity: props.opacity }}></div> :
+          <div style={{ width: ' 10px', height: '4px', borderTop: '0px solid', borderRight: '3px solid', borderBottom: '0px solid', borderLeft: '3px solid', borderColor: props.color, overflow: 'hidden', marginRight: '5px', opacity: props.opacity }}></div>
+        )}
+        <label style={{ margin: 'auto', marginLeft: 0, fontSize: textSize + 'em', whiteSpace: (useMultiLine? 'normal' : 'nowrap') }}> {props.label}</label>
+      </div>
     </div>
 );
 }

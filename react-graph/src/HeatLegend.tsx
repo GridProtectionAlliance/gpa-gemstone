@@ -23,7 +23,7 @@
 
 
 import * as React from 'react';
-import { GraphContext} from './GraphContext';
+import { LegendContext } from './LegendContext';
 import { CreateGuid } from '@gpa-gemstone/helper-functions';
 
 
@@ -32,7 +32,8 @@ export interface IProps {
   minValue: number,
   minColor: string,
   maxValue: number,
-  maxColor: string
+  maxColor: string,
+  size: 'lg' | 'sm'
 }
 
 const SvgStyle: React.CSSProperties = {
@@ -54,17 +55,14 @@ const TextStyle: React.CSSProperties = {
 };
 
 function HeatLegend(props: IProps) {
-  const ref = React.useRef(null);
-  const [wLegend, setWLegend] = React.useState<number>(0);
-  const [hLegend, setHLegend] = React.useState<number>(0);
+  const [wLegend, setWLegend] = React.useState<number>(100);
+  const [hLegend, setHLegend] = React.useState<number>(100);
   const [nDigits, setNdigits] = React.useState<number>(1);
   const [guid, setGuid] = React.useState<string>('');
-  const context = React.useContext(GraphContext);
+  const context = React.useContext(LegendContext);
 
-  React.useLayoutEffect(() => {
-    setWLegend(((ref?.current as any)?.offsetWidth) ?? 0);
-    setHLegend((ref?.current as any)?.offsetHeight ?? 0);
-  });
+  React.useEffect(() => setWLegend(props.size === 'sm' ? context.SmWidth : context.LgWidth), [context.LgWidth, context.SmWidth, props.size]);
+  React.useEffect(() => setHLegend(props.size === 'sm' ? context.SmHeight : context.LgHeight), [context.SmHeight, context.LgHeight, props.size]);
 
   React.useEffect(() => {
     let delta = props.maxValue - props.minValue;
@@ -96,25 +94,27 @@ function HeatLegend(props: IProps) {
   }, []);
 
   return (
-    <div ref={ref} style={{ width: '100%', display: 'flex', alignItems: 'center', marginRight: '5px', height:'100%' }}>
-      <svg style={SvgStyle} viewBox={`0 0 ${wLegend} ${hLegend}`}>
-        <linearGradient id={guid} x1="0" x2={`${wLegend < hLegend ? 0 : 1}`} y1="0" y2={`${wLegend < hLegend ? 1 : 0}`}>
-          <stop offset="5%" stopColor={props.minColor} />
-          <stop offset="95%" stopColor={props.maxColor} />
-        </linearGradient>
-        <path stroke='black' fill={`url(#${guid})`} style={{ strokeWidth: 1, transition: 'd 0.5s' }} 
-        d={wLegend < hLegend ? 
-          `M ${0.05*wLegend} ${0.1*hLegend} H ${0.5*wLegend} V ${0.9*hLegend} H ${0.05*wLegend} V ${0.1*hLegend}` :
-          `M ${0.1*wLegend} ${0.05*hLegend} H ${0.9*wLegend} V ${0.5*hLegend} H ${0.1*wLegend} V ${0.05*hLegend}`}/>
-        <text fill={'black'} style={TextStyle} x={wLegend*(wLegend < hLegend ? 0.5 : 0.1)} y={hLegend*(wLegend < hLegend ? 0.1 : 0.5)}
-        transform={`rotate(${wLegend < hLegend ? 270 : 0},${wLegend*(wLegend < hLegend ? 0.5 : 0.1)},${hLegend*(wLegend < hLegend ? 0.1 : 0.5)})`}>
-          {`${props.minValue.toFixed(nDigits)}${props.unitLabel !== undefined ? `${props.unitLabel}` : ''}`}
-        </text>
-        <text fill={'black'} style={TextStyle} x={wLegend*(wLegend < hLegend ? 0.5 : 0.9)} y={hLegend*(wLegend < hLegend ? 0.9 : 0.5)}
-        transform={`rotate(${wLegend < hLegend ? 270 : 0},${wLegend*(wLegend < hLegend ? 0.5 : 0.9)},${hLegend*(wLegend < hLegend ? 0.9 : 0.5)})`}>
-          {`${props.maxValue.toFixed(nDigits)}${props.unitLabel !== undefined ? `${props.unitLabel}` : ''}`}
-        </text>
-      </svg>
+    <div style={{ height: hLegend, width: wLegend }}>
+      <div style={{ width: '100%', display: 'flex', alignItems: 'center', marginRight: '5px', height:'100%' }}>
+        <svg style={SvgStyle} viewBox={`0 0 ${wLegend} ${hLegend}`}>
+          <linearGradient id={guid} x1="0" x2={`${wLegend < hLegend ? 0 : 1}`} y1="0" y2={`${wLegend < hLegend ? 1 : 0}`}>
+            <stop offset="5%" stopColor={props.minColor} />
+            <stop offset="95%" stopColor={props.maxColor} />
+          </linearGradient>
+          <path stroke='black' fill={`url(#${guid})`} style={{ strokeWidth: 1, transition: 'd 0.5s' }} 
+          d={wLegend < hLegend ? 
+            `M ${0.05*wLegend} ${0.1*hLegend} H ${0.5*wLegend} V ${0.9*hLegend} H ${0.05*wLegend} V ${0.1*hLegend}` :
+            `M ${0.1*wLegend} ${0.05*hLegend} H ${0.9*wLegend} V ${0.5*hLegend} H ${0.1*wLegend} V ${0.05*hLegend}`}/>
+          <text fill={'black'} style={TextStyle} x={wLegend*(wLegend < hLegend ? 0.5 : 0.1)} y={hLegend*(wLegend < hLegend ? 0.1 : 0.5)}
+          transform={`rotate(${wLegend < hLegend ? 270 : 0},${wLegend*(wLegend < hLegend ? 0.5 : 0.1)},${hLegend*(wLegend < hLegend ? 0.1 : 0.5)})`}>
+            {`${props.minValue.toFixed(nDigits)}${props.unitLabel !== undefined ? `${props.unitLabel}` : ''}`}
+          </text>
+          <text fill={'black'} style={TextStyle} x={wLegend*(wLegend < hLegend ? 0.5 : 0.9)} y={hLegend*(wLegend < hLegend ? 0.9 : 0.5)}
+          transform={`rotate(${wLegend < hLegend ? 270 : 0},${wLegend*(wLegend < hLegend ? 0.5 : 0.9)},${hLegend*(wLegend < hLegend ? 0.9 : 0.5)})`}>
+            {`${props.maxValue.toFixed(nDigits)}${props.unitLabel !== undefined ? `${props.unitLabel}` : ''}`}
+          </text>
+        </svg>
+      </div>
     </div>
   );
 }
