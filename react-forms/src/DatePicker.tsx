@@ -157,6 +157,13 @@ export default function DateTimePicker<T>(props: IProps<T>) {
     const label = props.Label === undefined ? props.Field : props.Label;
     const step = props.Accuracy === 'millisecond' ? '0.001' : (props.Accuracy === 'minute' ? '60' : '1');
 
+    const IsValid = () => {
+        if (feedbackMessage.length > 0) return false;
+
+        return props.Valid(props.Field);
+    }
+
+
 
     return (
         <div className="form-group" ref={divRef}>
@@ -184,7 +191,7 @@ export default function DateTimePicker<T>(props: IProps<T>) {
 
             <input
                 data-help={guid}
-                className={`gpa-gemstone-datetime form-control ${!props.Valid(props.Field) || feedbackMessage ? 'is-invalid' : ''}`}
+                className={`gpa-gemstone-datetime form-control ${IsValid() ? '' : 'is-invalid'}`}
                 type={props.Type === undefined ? 'date' : props.Type}
                 onChange={(evt) => {
                     const inputVal = evt.target.value ?? "";
