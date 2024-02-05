@@ -169,6 +169,16 @@ export default function DateTimePicker<T>(props: IProps<T>) {
         }
     }
 
+    function getFeedbackMessage() {
+        if (feedbackMessage.length != 0) {
+            return feedbackMessage;
+        } else if (props.Feedback == null || props.Feedback.length == 0) {
+            return props.Field.toString();
+        } else {
+            return `${props.Field.toString()} is a required field.`;
+        }
+    }
+
     const showLabel = props.Label !== "";
     const showHelpIcon = props.Help !== undefined;
     const label = props.Label === undefined ? props.Field : props.Label;
@@ -221,7 +231,7 @@ export default function DateTimePicker<T>(props: IProps<T>) {
                 step={step}
             />
             <div className="invalid-feedback">
-                {feedbackMessage || props.Feedback || `${props.Field.toString()} is a required field.`}
+                {getFeedbackMessage()}
             </div>
             <DateTimePopup
                 Setter={(d) => { setPickerRecord(d); recordChange.current = true; if (props.Type === 'date') setShowOverlay(false); }}
