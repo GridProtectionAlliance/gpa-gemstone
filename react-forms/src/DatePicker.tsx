@@ -60,6 +60,8 @@ export default function DateTimePicker<T>(props: IProps<T>) {
     const [boxRecord, setBoxRecord] = React.useState<string>(parse(props.Record).format(boxFormat));
     const [pickerRecord, setPickerRecord] = React.useState<moment.Moment>(parse(props.Record));
 
+    const [feedbackMessage, setFeedbackMessage] = React.useState("");
+
     const [showOverlay, setShowOverlay] = React.useState<boolean>(false);
 
     const [top, setTop] = React.useState<number>(0);
@@ -182,9 +184,19 @@ export default function DateTimePicker<T>(props: IProps<T>) {
 
             <input
                 data-help={guid}
-                className={"gpa-gemstone-datetime form-control" + (props.Valid(props.Field) ? '' : ' is-invalid')}
+                className={`gpa-gemstone-datetime form-control ${!props.Valid(props.Field) || feedbackMessage ? 'is-invalid' : ''}`}
                 type={props.Type === undefined ? 'date' : props.Type}
                 onChange={(evt) => {
+                    const inputVal = evt.target.value ?? "";
+                    const date = moment(inputVal, boxFormat, true);
+                    const validStartDate = moment("1753-01-01", "YYYY-MM-DD");
+
+                    if (date.isValid() && date.isSameOrAfter(validStartDate)) {
+                        setFeedbackMessage(""); 
+                    } else {
+                        // Date is invalid due to being before 1753
+                        setFeedbackMessage("Date cannot be before 01/01/1753");
+                    }
                     setBoxRecord(evt.target.value ?? "");
                     recordChange.current = true;
                 }}
@@ -195,7 +207,7 @@ export default function DateTimePicker<T>(props: IProps<T>) {
                 step={step}
             />
             <div className="invalid-feedback">
-                {props.Feedback == null ? props.Field.toString() + ' is a required field.' : props.Feedback}
+                {feedbackMessage || props.Feedback || `${props.Field.toString()} is a required field.`}
             </div>
             <DateTimePopup
                 Setter={(d) => { setPickerRecord(d); recordChange.current = true; if (props.Type === 'date') setShowOverlay(false); }}
