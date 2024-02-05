@@ -79,8 +79,25 @@ export default function DateTimePicker<T>(props: IProps<T>) {
 
     React.useEffect(() => {
         if (!recordChange.current) return;
+        const date = moment(boxRecord, boxFormat);
+        const validStartDate = moment("1753-01-01", "YYYY-MM-DD");
 
-        const valid = moment(boxRecord, boxFormat).isValid();
+        let valid = true;
+
+        // Invalid date format
+        if (!date.isValid()) {
+            setFeedbackMessage("Invalid Date Format MM-DD-YYYY");
+            valid = false;
+        }
+        // Date before 1753
+        else if (date.isBefore(validStartDate)) {
+            setFeedbackMessage("Date cannot be before 01-01-1753");
+            valid = false;
+        }
+        else {
+            setFeedbackMessage("");
+        }
+
         if ((props.AllowEmpty ?? false) && boxRecord.length === 0 && !valid && props.Record !== null)
             props.Setter({ ...props.Record, [props.Field]: null });
 
@@ -194,16 +211,6 @@ export default function DateTimePicker<T>(props: IProps<T>) {
                 className={`gpa-gemstone-datetime form-control ${IsValid() ? '' : 'is-invalid'}`}
                 type={props.Type === undefined ? 'date' : props.Type}
                 onChange={(evt) => {
-                    const inputVal = evt.target.value ?? "";
-                    const date = moment(inputVal, boxFormat, true);
-                    const validStartDate = moment("1753-01-01", "YYYY-MM-DD");
-
-                    if (date.isValid() && date.isSameOrAfter(validStartDate)) {
-                        setFeedbackMessage(""); 
-                    } else {
-                        // Date is invalid due to being before 1753
-                        setFeedbackMessage("Date cannot be before 01/01/1753");
-                    }
                     setBoxRecord(evt.target.value ?? "");
                     recordChange.current = true;
                 }}
