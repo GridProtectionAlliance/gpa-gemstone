@@ -111,11 +111,11 @@ export function ColumnHeaderWrapper<T>(props: React.PropsWithChildren<IHeaderWra
                 onClick={onClick}
                 onDrag={(e) => {e.stopPropagation()}}
             >
-            {props.sorted && props.asc ? <div 
+            {props.sorted && !props.asc ? <div 
                 style={{ position: 'absolute', width: 25 }}>
                     {SVGIcons.ArrowDropDown} 
                 </div> : null}
-            {props.sorted && !props.asc ? <div 
+            {props.sorted && props.asc ? <div 
                 style={{ position: 'absolute', width: 25 }}>
                     {SVGIcons.ArrowDropUp} 
                 </div> : null}
