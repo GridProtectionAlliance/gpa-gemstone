@@ -86,12 +86,12 @@ export default function DateTimePicker<T>(props: IProps<T>) {
 
         // Invalid date format
         if (!date.isValid()) {
-            setFeedbackMessage("Invalid Date Format MM-DD-YYYY");
+            setFeedbackMessage(`Please enter a date as ${boxFormat}`);
             valid = false;
         }
         // Date before 1753
         else if (date.isBefore(validStartDate)) {
-            setFeedbackMessage("Date cannot be before 01-01-1753");
+            setFeedbackMessage(`Date cannot be before ${validStartDate.format(boxFormat)}`);
             valid = false;
         }
         else {
