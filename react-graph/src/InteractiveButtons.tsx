@@ -138,9 +138,9 @@ const InteractiveButtons: React.FunctionComponent<IProps> = (props) => {
     }
 
     return (
-     <g>
+     <g style={{ cursor: 'default' }}>
          <path d={`M ${props.x} ${props.y + 10 * direction} A 10 10 180 0 1 ${props.x} ${props.y - 10 * direction} h ${width * direction} A 10 10 180 0 1 ${props.x + width * direction} ${props.y + 10 * direction} h ${-width * direction}`} style={{
-             fill: '#1e90ff'}} />
+             fill: '#1e90ff' }} />
           {symbols.map((s,i) => <CircleButton key={i} x={props.x + i*25*direction} 
             y={props.y} active={props.currentSelection === symbolNames[i] && (props.currentSelection !== 'select' || currentSelect === 'regular')} button={s}
             btnCleanup={btnCleanup} setSelectIcon={setSelectIcon}

@@ -91,7 +91,7 @@ function Legend(props: IProps) {
   return (
     <LegendContext.Provider value={legendContextValue}>
       <div style={{ height, width, paddingLeft: `${leftPad}px`, position: (props.location === 'bottom'? 'absolute' : 'relative'), float:(props.location as any), display: 'flex', flexWrap: 'wrap', bottom: 0, 
-        overflowY: hasScroll ? 'scroll' : 'hidden', overflowX: hasScroll ? 'visible' : 'hidden'}}>
+        overflowY: hasScroll ? 'scroll' : 'hidden', overflowX: hasScroll ? 'visible' : 'hidden', cursor: 'default' }}>
         {[...graphContext.Data.values()].map((series, index) => (series.legend !== undefined ? <div key={index}>{series.legend}</div> : null))}
       </div>
     </LegendContext.Provider>);

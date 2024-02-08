@@ -388,7 +388,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
             newCursor = 'pointer';
             break;
           default:
-            newCursor = 'default';
+            newCursor = 'crosshair';
         }
       } else newCursor = props.cursorOverride;
       setMouseStyle(newCursor);
