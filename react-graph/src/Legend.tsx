@@ -32,7 +32,8 @@ interface IProps {
   graphHeight: number,
   graphWidth: number,
   RequestLegendWidth: (width: number, requesterID: string) => void,
-  RequestLegendHeight: (height: number) => void
+  RequestLegendHeight: (height: number) => void,
+  HideDisabled: boolean
 }
 
 const itemHeight = 25;
@@ -73,6 +74,7 @@ function Legend(props: IProps) {
   React.useEffect(() => {
     const newNLegends = [...graphContext.Data.values()].reduce((s,c) => {
       if (c.legend === undefined) return s;
+      if (props.HideDisabled && !(c.legend?.props?.enabled ?? true)) return s;
       if ((c.legend?.props?.size ?? 'sm') === 'sm') s.sm = s.sm + 1;
       else s.lg = s.lg + 1;
       return s;
@@ -92,7 +94,7 @@ function Legend(props: IProps) {
     <LegendContext.Provider value={legendContextValue}>
       <div style={{ height, width, paddingLeft: `${leftPad}px`, position: (props.location === 'bottom'? 'absolute' : 'relative'), float:(props.location as any), display: 'flex', flexWrap: 'wrap', bottom: 0, 
         overflowY: hasScroll ? 'scroll' : 'hidden', overflowX: hasScroll ? 'visible' : 'hidden', cursor: 'default' }}>
-        {[...graphContext.Data.values()].map((series, index) => (series.legend !== undefined ? <div key={index}>{series.legend}</div> : null))}
+        {[...graphContext.Data.values()].map((series, index) => (series.legend !== undefined && (!props.HideDisabled || (series.legend.props.enabled ?? true)) ? <div key={index}>{series.legend}</div> : null))}
       </div>
     </LegendContext.Provider>);
 }

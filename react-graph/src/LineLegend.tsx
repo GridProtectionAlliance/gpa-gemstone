@@ -26,15 +26,13 @@ import * as React from 'react';
 import { LineStyle } from './GraphContext';
 import { GetTextWidth, GetTextHeight } from '@gpa-gemstone/helper-functions';
 import { CreateGuid } from '@gpa-gemstone/helper-functions';
-import { LegendContext } from './LegendContext';
+import { ILegendRequiredProps, LegendContext } from './LegendContext';
 
-export interface IProps {
+export interface IProps extends ILegendRequiredProps {
     label: string,
     color: string,
     lineStyle: LineStyle,
-    onClick: () => void,
-    opacity: number,
-    size: 'lg' | 'sm'
+    setEnabled: (arg: boolean) => void
 }
 
 const nonTextualWidth = 45;
@@ -81,10 +79,10 @@ function LineLegend(props: IProps) {
 
    return (
     <div style={{ height: hLegend, width: wLegend }}>
-      <div onClick={() => props.onClick()} style={{ width: '100%', display: 'flex', alignItems: 'center', marginRight: '5px', height: '100%' }}>
+      <div onClick={() => props.setEnabled(!props.enabled)} style={{ width: '100%', display: 'flex', alignItems: 'center', marginRight: '5px', height: '100%' }}>
         {(props.lineStyle === '-' ?
-          <div style={{ width: ' 10px', height: 0, borderTop: '2px solid', borderRight: '10px solid', borderBottom: '2px solid', borderLeft: '10px solid', borderColor: props.color, overflow: 'hidden', marginRight: '5px', opacity: props.opacity }}></div> :
-          <div style={{ width: ' 10px', height: '4px', borderTop: '0px solid', borderRight: '3px solid', borderBottom: '0px solid', borderLeft: '3px solid', borderColor: props.color, overflow: 'hidden', marginRight: '5px', opacity: props.opacity }}></div>
+          <div style={{ width: ' 10px', height: 0, borderTop: '2px solid', borderRight: '10px solid', borderBottom: '2px solid', borderLeft: '10px solid', borderColor: props.color, overflow: 'hidden', marginRight: '5px', opacity: (props.enabled? 1 : 0.5) }}></div> :
+          <div style={{ width: ' 10px', height: '4px', borderTop: '0px solid', borderRight: '3px solid', borderBottom: '0px solid', borderLeft: '3px solid', borderColor: props.color, overflow: 'hidden', marginRight: '5px', opacity:(props.enabled? 1 : 0.5) }}></div>
         )}
         <label style={{ margin: 'auto', marginLeft: 0, fontSize: textSize + 'em', whiteSpace: (useMultiLine? 'normal' : 'nowrap') }}> {props.label}</label>
       </div>

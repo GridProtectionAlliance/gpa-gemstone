@@ -23,17 +23,16 @@
 
 
 import * as React from 'react';
-import { LegendContext } from './LegendContext';
+import { ILegendRequiredProps, LegendContext } from './LegendContext';
 import { CreateGuid } from '@gpa-gemstone/helper-functions';
 
 
-export interface IProps {
+export interface IProps extends ILegendRequiredProps {
   unitLabel?: string,
   minValue: number,
   minColor: string,
   maxValue: number,
-  maxColor: string,
-  size: 'lg' | 'sm'
+  maxColor: string
 }
 
 const SvgStyle: React.CSSProperties = {

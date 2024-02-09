@@ -31,6 +31,11 @@ export interface ILegendContext {
     RequestLegendHeight: (height: number) => void
 }
 
+export interface ILegendRequiredProps {
+    size: 'lg' | 'sm',
+    enabled: boolean
+}
+
 export const LegendContext = React.createContext({
     SmWidth: 0,
     LgWidth: 0,

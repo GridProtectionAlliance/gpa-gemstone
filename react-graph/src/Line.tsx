@@ -129,7 +129,7 @@ function Line(props: IProps) {
 
        return <LineLegend 
         size = 'sm' label={txt} color={props.color} lineStyle={props.lineStyle}
-        onClick={() => setEnabled((e) => !e)}  opacity={(enabled? 1 : 0.5)}/>;
+        setEnabled={setEnabled} enabled={enabled}/>;
    }
 
    function generateData() {

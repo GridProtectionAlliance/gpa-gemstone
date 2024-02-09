@@ -898,7 +898,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
               </div>
             {props.legend  !== undefined && props.legend !== 'hidden' ? 
             <Legend location={props.legend} height={legendHeight} width={legendWidth} graphWidth={svgWidth} graphHeight={svgHeight} 
-            RequestLegendWidth={requestLegendWidthChange} RequestLegendHeight={requestLegendHeightChange}
+            RequestLegendWidth={requestLegendWidthChange} RequestLegendHeight={requestLegendHeightChange} HideDisabled={photoReady}
             /> 
             : null}
            </div>
