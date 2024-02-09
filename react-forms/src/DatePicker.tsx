@@ -60,6 +60,8 @@ export default function DateTimePicker<T>(props: IProps<T>) {
     const [boxRecord, setBoxRecord] = React.useState<string>(parse(props.Record).format(boxFormat));
     const [pickerRecord, setPickerRecord] = React.useState<moment.Moment>(parse(props.Record));
 
+    const [feedbackMessage, setFeedbackMessage] = React.useState("");
+
     const [showOverlay, setShowOverlay] = React.useState<boolean>(false);
 
     const [top, setTop] = React.useState<number>(0);
@@ -77,8 +79,25 @@ export default function DateTimePicker<T>(props: IProps<T>) {
 
     React.useEffect(() => {
         if (!recordChange.current) return;
+        const date = moment(boxRecord, boxFormat);
+        const validStartDate = moment("1753-01-01", "YYYY-MM-DD");
 
-        const valid = moment(boxRecord, boxFormat).isValid();
+        let valid = true;
+
+        // Invalid date format
+        if (!date.isValid()) {
+            setFeedbackMessage(`Please enter a date as ${boxFormat}`);
+            valid = false;
+        }
+        // Date before 1753
+        else if (date.isBefore(validStartDate)) {
+            setFeedbackMessage(`Date cannot be before ${validStartDate.format(boxFormat)}`);
+            valid = false;
+        }
+        else {
+            setFeedbackMessage("");
+        }
+
         if ((props.AllowEmpty ?? false) && boxRecord.length === 0 && !valid && props.Record !== null)
             props.Setter({ ...props.Record, [props.Field]: null });
 
@@ -150,10 +169,27 @@ export default function DateTimePicker<T>(props: IProps<T>) {
         }
     }
 
+    function getFeedbackMessage() {
+        if (feedbackMessage.length != 0) {
+            return feedbackMessage;
+        } else if (props.Feedback == null || props.Feedback.length == 0) {
+            return props.Field.toString();
+        } else {
+            return `${props.Field.toString()} is a required field.`;
+        }
+    }
+
     const showLabel = props.Label !== "";
     const showHelpIcon = props.Help !== undefined;
     const label = props.Label === undefined ? props.Field : props.Label;
     const step = props.Accuracy === 'millisecond' ? '0.001' : (props.Accuracy === 'minute' ? '60' : '1');
+
+    const IsValid = () => {
+        if (feedbackMessage.length > 0) return false;
+
+        return props.Valid(props.Field);
+    }
+
 
 
     return (
@@ -182,7 +218,7 @@ export default function DateTimePicker<T>(props: IProps<T>) {
 
             <input
                 data-help={guid}
-                className={"gpa-gemstone-datetime form-control" + (props.Valid(props.Field) ? '' : ' is-invalid')}
+                className={`gpa-gemstone-datetime form-control ${IsValid() ? '' : 'is-invalid'}`}
                 type={props.Type === undefined ? 'date' : props.Type}
                 onChange={(evt) => {
                     setBoxRecord(evt.target.value ?? "");
@@ -195,7 +231,7 @@ export default function DateTimePicker<T>(props: IProps<T>) {
                 step={step}
             />
             <div className="invalid-feedback">
-                {props.Feedback == null ? props.Field.toString() + ' is a required field.' : props.Feedback}
+                {getFeedbackMessage()}
             </div>
             <DateTimePopup
                 Setter={(d) => { setPickerRecord(d); recordChange.current = true; if (props.Type === 'date') setShowOverlay(false); }}
