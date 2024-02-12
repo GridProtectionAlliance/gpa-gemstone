@@ -28,23 +28,32 @@ import { Portal } from 'react-portal';
 interface IProps {
     Title: string,
     ShowX?: boolean,
-    CallBack: ((confirmed: boolean, isButton?: boolean) => void),
+    CallBack: ((confirmed: boolean, isButton?: boolean, tertiary?: boolean) => void),
     Show: boolean,
     Size?: ('lg' | 'sm' | 'xlg'),
-    ShowCancel?: boolean,
+    BodyStyle?: React.CSSProperties,
+    HeaderStyle?: React.CSSProperties,
+
     ShowConfirm?: boolean,
     DisableConfirm?: boolean,
-    DisableCancel?: boolean,
-    CancelText?: string,
     ConfirmText?: string,
     ConfirmBtnClass?: string,
-    CancelBtnClass?: string,
     ConfirmShowToolTip?: boolean,
-    CancelShowToolTip?: boolean,
     ConfirmToolTipContent?: React.ReactNode,
+
+    ShowCancel?: boolean,
+    DisableCancel?: boolean,
+    CancelText?: string,
+    CancelBtnClass?: string,
+    CancelShowToolTip?: boolean,
     CancelToolTipContent?: React.ReactNode,
-    BodyStyle?: React.CSSProperties;
-    HeaderStyle?: React.CSSProperties;
+
+    ShowTertiary?: boolean,
+    DisableTertiary?: boolean,
+    TertiaryText?: string,
+    TertiaryBtnClass?: string,
+    TertiaryShowToolTip?: boolean,
+    TertiaryToolTipContent?: React.ReactNode,
 }
 
 // Props Description:
@@ -61,67 +70,66 @@ interface IProps {
 // ConfirmBtnClass => Class of the Confirm Button
 // CancelBtnClass =>> Class of the Cancel Button
 const Modal: React.FunctionComponent<IProps> = (props) => {
-
-    const [hover, setHover] = React.useState<'confirm'|'cancel'|'none'>('none');
-    const [guid, setGuid] = React.useState<string>('')
+    const [hover, setHover] = React.useState<'confirm'|'cancel'|'tertiary'|'none'>('none');
+    const [guid, setGuid] = React.useState<string>('');
 
     React.useEffect(() => {
         setGuid(CreateGuid());
-    }, [])
-
-    const confirmBtn = (props.ConfirmText === undefined ? 'Save' : props.ConfirmText);
-    const cxnBtn = (props.CancelText === undefined ? 'Cancel' : props.CancelText);
-
-    const cxnbtnCls = 'btn ' + (props.CancelBtnClass === undefined ? 'btn-danger' : props.CancelBtnClass);
-    const confirmbtnCls = 'btn ' + (props.ConfirmBtnClass === undefined ? 'btn-primary' : props.ConfirmBtnClass);
-
-    const showConfirmToolTip = (props.ConfirmShowToolTip !== undefined && props.ConfirmShowToolTip) && hover === 'confirm';
-    const showCxnToolTip = (props.CancelShowToolTip !== undefined && props.CancelShowToolTip) && hover === 'cancel';
-
-    const bodyStyle: React.CSSProperties = (props.BodyStyle === undefined ? { maxHeight: 'calc(100vh - 210px)', overflowY: 'auto' } : props.BodyStyle);
-    const headerStyle: React.CSSProperties = (props.HeaderStyle === undefined ? {} : props.HeaderStyle)
+    }, []);
 
     return (
         <Portal>
-        <div className={"modal" + (props.Show ? " show" : '')} style={props.Show ? {display: 'block', zIndex: 9990} : {}}>
-            <div className={"modal-dialog" + (props.Size === undefined? '' : props.Size === 'xlg'? '' :(" modal-"  + props.Size))} style={props.Size === 'xlg'? {maxWidth: window.innerWidth - 100} : {}}>
-                <div className="modal-content">
-                    <div className="modal-header" style={headerStyle}>
-                        <h4 className="modal-title">{props.Title}</h4>
-                        {props.ShowX? <button type="button" className="close" onClick={() => props.CallBack(false,false) }>&times;</button> : null}
-                    </div>
-                    <div className="modal-body" style={bodyStyle}>
-                        {props.Show? props.children : null}
-                    </div>
-                    <div className="modal-footer">
-                        {props.ShowConfirm === undefined || props.ShowConfirm ?
-                            <button type="button"
-                                className={confirmbtnCls + (!(props.DisableConfirm === undefined || !props.DisableConfirm)? ' disabled' : '')}
-                                data-tooltip={guid + '-confirm'}
-                                onClick={() => { if (!(props.DisableConfirm === undefined || !props.DisableConfirm)) return; props.CallBack(true,true)}}
-                                onMouseEnter={() => setHover('confirm')}
-                                onMouseLeave={() => setHover('none')}
-                            >{confirmBtn}</button>
-                            : null}
-                        {props.ShowCancel === undefined || props.ShowCancel ?
-                            <button type="button"
-                                className={cxnbtnCls  + (!(props.DisableCancel === undefined || !props.DisableCancel)? ' disabled' : '')}
-                                data-tooltip={guid + '-cancel'}
-                                onClick={() => { if (!(props.DisableCancel === undefined || !props.DisableCancel)) return; props.CallBack(false,true)}}
-                                onMouseEnter={() => setHover('cancel') }
-                                onMouseLeave={() => setHover('none')}
-                            >{cxnBtn}</button>
-                            : null}
+            <div className={"modal" + (props.Show ? " show" : '')} style={props.Show ? {display: 'block', zIndex: 9990} : {}}>
+                <div className={"modal-dialog" + (props.Size === undefined? '' : props.Size === 'xlg'? '' :(" modal-"  + props.Size))} style={props.Size === 'xlg'? {maxWidth: window.innerWidth - 100} : {}}>
+                    <div className="modal-content">
+                        <div className="modal-header" style={(props.HeaderStyle ?? {})}>
+                            <h4 className="modal-title">{props.Title}</h4>
+                            {props.ShowX? <button type="button" className="close" onClick={() => props.CallBack(false,false,false) }>&times;</button> : null}
+                        </div>
+                        <div className="modal-body" style={props.BodyStyle ?? { maxHeight: 'calc(100vh - 210px)', overflowY: 'auto' }}>
+                            {props.Show? props.children : null}
+                        </div>
+                        <div className="modal-footer">
+                            {props.ShowConfirm === undefined || props.ShowConfirm ?
+                                <button type="button"
+                                    className={`btn ${(props.ConfirmBtnClass ?? 'btn-primary')} ${((props.DisableConfirm ?? false) ? 'disabled' : '')}`}
+                                    data-tooltip={guid + '-confirm'}
+                                    onClick={() => { if (!(props.DisableConfirm === undefined || !props.DisableConfirm)) return; props.CallBack(true,true,false)}}
+                                    onMouseEnter={() => setHover('confirm')}
+                                    onMouseLeave={() => setHover('none')}
+                                >{(props.ConfirmText ?? 'Save')}</button>
+                                : null}
+                            {(props.ShowTertiary ?? false) ?
+                                <button type="button"
+                                    className={`btn ${(props.TertiaryBtnClass ?? 'btn-secondary')} ${((props.DisableTertiary ?? false) ? 'disabled' : '')}`}
+                                    data-tooltip={guid + '-tertiary'}
+                                    onClick={() => { if (props.DisableTertiary ?? false) return; props.CallBack(false,true,true)}}
+                                    onMouseEnter={() => setHover('tertiary')}
+                                    onMouseLeave={() => setHover('none')}
+                                >{(props.TertiaryText ?? 'Action')}</button>
+                                : null}
+                            {props.ShowCancel === undefined || props.ShowCancel ?
+                                <button type="button"
+                                    className={`btn ${(props.CancelBtnClass ?? 'btn-danger')} ${((props.DisableCancel ?? false) ? 'disabled' : '')}`}
+                                    data-tooltip={guid + '-cancel'}
+                                    onClick={() => { if (!(props.DisableCancel === undefined || !props.DisableCancel)) return; props.CallBack(false,true,false)}}
+                                    onMouseEnter={() => setHover('cancel') }
+                                    onMouseLeave={() => setHover('none')}
+                                >{(props.CancelText ?? 'Cancel')}</button>
+                                : null}
+                        </div>
                     </div>
                 </div>
             </div>
-            </div>
-            <ToolTip Show={showConfirmToolTip} Position={'top'} Theme={'dark'} Target={guid + '-confirm'} Zindex={9999}>
+            <ToolTip Show={(props.ConfirmShowToolTip ?? false) && hover === 'confirm'} Position={'top'} Theme={'dark'} Target={guid + '-confirm'} Zindex={9999}>
                 {props.ConfirmToolTipContent}
-              </ToolTip>
-              <ToolTip Show={showCxnToolTip} Position={'top'} Theme={'dark'} Target={guid + '-cancel'} Zindex={9999}>
+            </ToolTip>
+            <ToolTip Show={(props.TertiaryShowToolTip ?? false) && hover === 'tertiary'} Position={'top'} Theme={'dark'} Target={guid + '-tertiary'} Zindex={9999}>
+                {props.TertiaryToolTipContent}
+            </ToolTip>
+            <ToolTip Show={(props.CancelShowToolTip ?? false) && hover === 'cancel'} Position={'top'} Theme={'dark'} Target={guid + '-cancel'} Zindex={9999}>
                 {props.CancelToolTipContent}
-              </ToolTip>
+            </ToolTip>
             {props.Show ? < div style={{
                 width: '100%',
                 height: '100%',
@@ -132,7 +140,7 @@ const Modal: React.FunctionComponent<IProps> = (props) => {
                 backgroundColor: '#ffffff',
                 zIndex: 9980,
                 }}></div> : null}
-            </Portal>
+        </Portal>
     )
 }
 
