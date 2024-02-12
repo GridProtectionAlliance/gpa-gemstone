@@ -75,8 +75,8 @@ export interface IProps {
     showDateOnTimeAxis?: boolean,
     cursorOverride?: string,
     onSelect?: (x: number, y: number[], actions: IActionFunctions) => void,
-    showDivCapture?: boolean,
-    divCaptureId?: string,
+    onCapture?: (legendHeightRequired: number) => string | undefined,
+    onCaptureComplete?: () => void,
     onDataInspect?: (tDomain: [number,number]) => void,
     Ymin?: number | number[],
     Ymax?: number | number[],
@@ -105,6 +105,8 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
     const SVGref = React.useRef<any>(null);
     const handlers = React.useRef<Map<string,IHandlers>>(new Map<string, IHandlers>());
     const wheelTimeout = React.useRef<{timeout?: NodeJS.Timeout, stopScroll: boolean}>({timeout: undefined, stopScroll: false});
+    const heightChange = React.useRef<{timeout?: NodeJS.Timeout, extraNeeded: number, captureID?: string}>(
+      {timeout: undefined, extraNeeded: 0, captureID: undefined});
     const widthTimeout = React.useRef<{timeout?: NodeJS.Timeout, requesterMap: Map<string,number>}>({timeout: undefined, requesterMap: new Map<string,number>()});
     const nodeTree = React.useRef<{dataGuids: Map<string, { dataId: string, axis: number}>, trees: (KDNode|null)[]}>({ dataGuids: new Map<string, { dataId: string, axis: number}>(), trees: Array(AxisMap.size).fill(null)});
     
@@ -403,8 +405,12 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
 
   // Execute Plot Capture and leave photo mode
   React.useEffect(() => {
-    if (photoReady){
-      const id = props.divCaptureId ?? guid;
+    if (!photoReady) return;
+    // we can't immediately complete the request, since some layout things may still be changing...
+    clearTimeout(heightChange.current.timeout);
+    // timeout to set if we don't see any more changes within 0.05 seconds
+    heightChange.current.timeout = setTimeout(() => {
+      const id = heightChange.current.captureID ?? guid;
       const element = document.getElementById(id);
       if (element == null) {
         console.error(`Could not find document element with id ${id}`);
@@ -423,16 +429,19 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
           document.body.removeChild(canvas);
         });
       }
-    setPhotoReady(false);
-    }
-  }, [photoReady]);
+      setPhotoReady(false);
+      if (props.onCaptureComplete !== undefined) props.onCaptureComplete();
+    }, 50);
+  });
 
   // requests new legend height/width upto a defined maximum set by props
   const requestLegendHeightChange = React.useCallback((newHeight: number) =>  {
+    const heightLimit = props.legend !== 'bottom' ? svgHeight : (props.legendHeight ?? defaultLegendHeight);
+    if (!photoReady) heightChange.current.extraNeeded = Math.max(newHeight - heightLimit, 0);
     if (props.legend !== 'bottom') return;
-    const limitedHeight = Math.min(newHeight, props.legendHeight ?? defaultLegendHeight);
+    const limitedHeight = Math.min(newHeight, heightLimit);
     if (legendHeight !== limitedHeight) setLegendHeight(limitedHeight);
-  },[props.legendHeight, setLegendHeight, legendHeight, props.legend]);
+  },[props.legendHeight, setLegendHeight, legendHeight, props.legend, photoReady]);
 
   const requestLegendWidthChange = React.useCallback((newWidth: number, requesterID: string) =>  {
     if (newWidth < 0) {
@@ -573,7 +582,10 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
     const setSelection = React.useCallback((s: string) => {
       if (s === "reset") Reset();
       else if (s === "download") { if (props.onDataInspect !== undefined) props.onDataInspect(tDomain); }
-      else if (s === "capture") setPhotoReady(true);
+      else if (s === "capture") {
+        setPhotoReady(true);
+        if (props.onCapture !== undefined) heightChange.current.captureID = props.onCapture(heightChange.current.extraNeeded);
+      }
       else setSelectedMode(s as ('zoom'|'pan'|'select'))
     }, [tDomain, Reset, props.onDataInspect]);
 
@@ -878,7 +890,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
                         showReset={!(props.pan !== undefined && props.zoom !== undefined && !props.zoom && !props.pan)}
                         showSelect={props.onSelect !== undefined || handlers.current.size > 0}
                         showDownload={props.onDataInspect !== undefined}
-                        showCapture={props.showDivCapture ?? false}
+                        showCapture={props.onCapture !== undefined}
                         currentSelection={selectedMode}
                         setSelection={setSelection}
                         holdOpen={props.holdMenuOpen}

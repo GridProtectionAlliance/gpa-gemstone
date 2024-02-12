@@ -80,11 +80,11 @@ function Legend(props: IProps) {
       return s;
     }, {sm: 0, lg: 0});
     if (newNLegends.sm !== nLegends.sm || newNLegends.lg !== nLegends.lg) setNLegends(newNLegends);
-  }, [graphContext.Data]);
+  }, [graphContext.Data, props.HideDisabled]);
 
   React.useEffect(() => {
     const requiredHeight = Math.ceil(nLegends.sm/ (props.location === 'bottom' ? itemsWhenBottom : 1)) * legendContextValue.SmHeight + nLegends.lg * legendContextValue.LgHeight;
-    if (props.location === 'bottom' && props.RequestLegendHeight !== undefined) props.RequestLegendHeight(requiredHeight);
+    if (props.RequestLegendHeight !== undefined && requiredHeight !== height) props.RequestLegendHeight(requiredHeight);
     setHasScroll(requiredHeight > height);
   }, [nLegends, props.location, height, props.RequestLegendHeight]);
 
