@@ -50,7 +50,7 @@ function Legend(props: IProps) {
   const legendContextValue = React.useMemo(() => {
     const scrollBarSpace = (hasScroll ? 6 : 0);
     const baseWidth = width - leftPad;
-    const baseHeight = props.location === 'bottom'? itemHeight : Math.max(height/(nLegends.sm + nLegends.lg), itemHeight);
+    const baseHeight = props.location === 'bottom'? itemHeight : Math.max(height/(Math.max(nLegends.sm + nLegends.lg, 1)), itemHeight);
     return {
       SmWidth: (baseWidth / (props.location === 'bottom'  ? itemsWhenBottom : 1)) - scrollBarSpace,
       LgWidth: baseWidth - scrollBarSpace,
@@ -59,7 +59,7 @@ function Legend(props: IProps) {
       RequestLegendWidth: (_: number, __: string) => undefined,
       RequestLegendHeight: (_: number) => undefined
     } as ILegendContext
-  }, [width, height, props.RequestLegendWidth, props.RequestLegendHeight, hasScroll, props.location, leftPad]);
+  }, [width, height, props.RequestLegendWidth, props.RequestLegendHeight, hasScroll, props.location, leftPad, nLegends]);
 
   React.useEffect(() => {
     const newWidth = props.location === 'bottom'? props.graphWidth : props.width;

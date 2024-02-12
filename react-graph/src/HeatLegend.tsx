@@ -83,7 +83,7 @@ function HeatLegend(props: IProps) {
     if (delta === 0)
       setNdigits(2);
 
-  }, [props.maxValue, props.minValue])
+  }, [props.maxValue, props.minValue]);
 
   React.useEffect(() => {
       const id = CreateGuid();
