@@ -460,7 +460,7 @@ function Header<T>(props: React.PropsWithChildren<IHeaderProps<T>>) {
                          {...element.props}
                          setWidth={(w,min) => props.SetWidth(element.props.Key,Math.floor(w),'adjustable', min)}
                          onSort={(key, e, fld) => props.OnSort({colKey: key, colField: fld, ascending: props.Ascending},e)}
-                         sorted={props.SortKey === element.props.Key && (element.props.AllowSort ?? true)}
+                         sorted={props.SortKey === element.props.Field && (element.props.AllowSort ?? true)}
                          asc={props.Ascending}
                          width={adjustWidth(props.GetWidth(element.props.Key,'adjustable'),element.props.Key)}
                          startAdjustment={(e) => {
@@ -481,7 +481,7 @@ function Header<T>(props: React.PropsWithChildren<IHeaderProps<T>>) {
                         {...element.props}
                         setWidth={(w) => props.SetWidth(element.props.Key,Math.floor(w),'fixed')}
                         onSort={(key, e, fld) => props.OnSort({colKey: key, colField: fld, ascending: props.Ascending},e)}
-                        sorted={props.SortKey === element.props.Key && (element.props.AllowSort ?? true)}
+                        sorted={props.SortKey === element.props.Field && (element.props.AllowSort ?? true)}
                         asc={props.Ascending}
                         width={props.GetWidth(element.props.Key,'fixed')}
                         fixedLayout={props.FixedLayout}
