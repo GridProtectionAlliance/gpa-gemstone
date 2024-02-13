@@ -49,6 +49,7 @@ const msPerDay = msPerHour* 24.0;
 const msPerYear = msPerDay* 365;
 
 type TimeStep = ('y'|'M'|'w'|'d'|'h'|'m'|'s'|'ms');
+type TimeFormat = 'SSS'|'ss.SS'|'mm:ss'|'mm'|'HH:mm'|'HH'|'DD HH'|'MM/DD'|'MM YY'|'YYYY';
 
 function TimeAxis(props: IProps) {
     /*
@@ -58,14 +59,73 @@ function TimeAxis(props: IProps) {
     const [tick,setTick] = React.useState<number[]>([]);
     const [hLabel, setHlabel] = React.useState<number>(0);
     const [hAxis, setHAxis] = React.useState<number>(0);
-    const [tFormat, setTformat] = React.useState<string>('YYYY');
+    const [tFormat, setTformat] = React.useState<TimeFormat>('YYYY');
     const [dFormat, setDformat] = React.useState<string>('');
+    const [title, setTitle] = React.useState<string|undefined>('Time');
 
     // Adjust space for X Axis labels
     React.useEffect(() => {
-      const dX =  (props.label !== undefined? GetTextHeight("Segoe UI", '1em', props.label + GetUnitLabel()) : 0);
-      setHlabel(dX)
-    }, [tick,props.label,tFormat]);
+      setHlabel(title !== undefined? GetTextHeight("Segoe UI", '1em', title) : 0);
+    }, [title]);
+
+    // Adjust unit label
+    React.useEffect(() => {
+      if (props.label === undefined) setTitle(undefined);
+
+      let titleFormat = "";
+      let unitLabel = "";
+      switch (tFormat) {
+        case ('SSS'):
+          titleFormat = "MMM Do, YYYY HH:mm:ss";
+          unitLabel = " (ms)";
+          break;
+        case('ss.SS'):
+          titleFormat = "MMM Do, YYYY HH:mm";
+          unitLabel = " (sec)";
+          break;
+        case('mm:ss'):
+          titleFormat = "MMM Do, YYYY HH";
+          unitLabel = " (min:sec)";
+          break;
+        case('mm'):
+          titleFormat = "MMM Do, YYYY HH";
+          unitLabel = " (min)";
+          break;
+        case('HH:mm'):
+          titleFormat = "MMM Do, YYYY";
+          unitLabel = " (hour:min)";
+          break;
+        case('HH'):
+          titleFormat = "MMM Do, YYYY";
+          unitLabel = " (hour)";
+          break;
+        case('DD HH'):
+          titleFormat = "MMM YYYY";
+          unitLabel = " (month/day hour)";
+          break;
+        case('MM/DD'):
+          titleFormat = "YYYY";
+          unitLabel = " (month/day)";
+          break;
+        case('MM YY'):
+          titleFormat = "";
+          unitLabel = " (month year)";
+          break;
+          case('YYYY'):
+            titleFormat = "";
+            unitLabel = " (year)";
+            break;
+        default:
+          console.warn(`Unrecognized format: ${tFormat}`);
+          break;
+      }
+
+      if (props.label === '') {
+        const formatedTitle = titleFormat === "" ? "Time" : formatTS(tick[0], titleFormat);
+        setTitle(formatedTitle + unitLabel);
+      }
+      else setTitle(props.label + unitLabel);
+    }, [tFormat, props.label, tick]);
 
     // Adjust space for X Tick labels
     React.useEffect(() => {
@@ -84,7 +144,7 @@ function TimeAxis(props: IProps) {
       if (deltaT === 0)
         return;
 
-      let format = 'YYYY';
+      let format: TimeFormat = 'YYYY';
       let dateFormat = '';
       if (deltaT < msPerYear*15 && deltaT >= msPerYear) {
         format = 'MM YY';
@@ -95,7 +155,7 @@ function TimeAxis(props: IProps) {
         dateFormat = 'YY';
       }
       if (deltaT < 30 * msPerDay && deltaT >=  2* msPerDay) {
-        format = 'MM/DD HH';
+        format = 'DD HH';
         dateFormat = 'YY';
       }
       if (deltaT < 2* msPerDay && deltaT >=  30* msPerHour) {
@@ -320,30 +380,6 @@ function TimeAxis(props: IProps) {
       else setDformat('');
     }, [context.XDomain, props.showDate]);
 
-    function GetUnitLabel(): string {
-      if (tFormat === 'SSS')
-        return " (ms)";
-      if (tFormat === 'ss.SS')
-        return " (sec)";
-      if (tFormat === 'mm:sss')
-        return " (min:sec)";
-      if (tFormat === 'mm')
-        return " (min)";
-      if (tFormat === 'HH:mm')
-        return " (hour:min)";
-      if (tFormat === 'HH')
-        return " (hour)"
-      if (tFormat === 'MM/DD HH')
-        return " (month/day hour)"
-      if (tFormat === 'MM/DD')
-        return " (month/day)"
-      if (tFormat === 'MM YY')
-          return " (month year)"
-
-      return ""
-
-    }
-
     function setTopOfms(d: moment.Moment) {
       d.milliseconds(Math.floor(d.millisecond()));
     }
@@ -392,8 +428,8 @@ function TimeAxis(props: IProps) {
              {tick.map((l, i) => <text fill={'black'} key={i} style={{ fontSize: '1em', textAnchor: 'middle', dominantBaseline: 'hanging', transition: 'x 0.5s, y 0.5s' }} y={props.height - props.offsetBottom + 8} x={context.XTransformation(l)}>{formatTS(l, tFormat)}</text>)}
          </>
          : null}
-     {props.label !== undefined? <text fill={'black'} style={{ fontSize: '1em', textAnchor: 'middle', dominantBaseline: 'middle' }} x={props.offsetLeft + (( props.width- props.offsetLeft - props.offsetRight) / 2)}
-      y={props.height - props.offsetBottom + hAxis}>{props.label + GetUnitLabel()}</text> : null}
+     {title !== undefined? <text fill={'black'} style={{ fontSize: '1em', textAnchor: 'middle', dominantBaseline: 'middle' }} x={props.offsetLeft + (( props.width- props.offsetLeft - props.offsetRight) / 2)}
+      y={props.height - props.offsetBottom + hAxis}>{title}</text> : null}
     {(dFormat !== '' && tick.length > 0) ? <text fill={'black'} style={{ fontSize: '1em', textAnchor: 'end', dominantBaseline: 'middle' }} x={props.width - props.offsetRight} y={props.height - props.offsetBottom + hAxis}>{formatTS(tick[0], dFormat)}</text> : null}
     </g>)
 }
