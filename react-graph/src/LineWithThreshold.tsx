@@ -121,7 +121,7 @@ function LineWithThreshold(props: IProps) {
 
       return <LineLegend 
         size = 'sm' label={txt} color={props.color} lineStyle={props.lineStyle}
-        setEnabled={setEnabled} enabled={enabled}/>;
+        setEnabled={setEnabled} enabled={enabled} hasNoData={data == null}/>;
    }
 
    function generateData() {

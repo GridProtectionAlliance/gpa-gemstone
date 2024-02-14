@@ -80,7 +80,7 @@ function Line(props: IProps) {
     }, [data]);
 
     React.useEffect(() => {
-        if (props.data.length === 0 || isNaN(context.XHover) || data === null)
+        if (data == null || props.data == null || props.data.length === 0 || isNaN(context.XHover))
             setHighlight([NaN, NaN]);
         else {
             try {
@@ -93,9 +93,10 @@ function Line(props: IProps) {
         }
    }, [data, context.XHover])
 
-   React.useEffect(() => {
-      setData(new PointNode(props.data));
-   },[props.data]);
+    React.useEffect(() => {
+        if (props.data == null || props.data.length === 0) setData(null);
+        else setData(new PointNode(props.data));
+    },[props.data]);
 
    React.useEffect(() => {
        if (guid === "")
@@ -129,7 +130,7 @@ function Line(props: IProps) {
 
        return <LineLegend 
         size = 'sm' label={txt} color={props.color} lineStyle={props.lineStyle}
-        setEnabled={setEnabled} enabled={enabled}/>;
+        setEnabled={setEnabled} enabled={enabled} hasNoData={data == null}/>;
    }
 
    function generateData() {
