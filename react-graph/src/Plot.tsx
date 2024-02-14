@@ -65,7 +65,7 @@ export interface IProps {
     Tlabel?: string,
     Ylabel?: string|string[],
     holdMenuOpen?: boolean,
-    moveMenuLeft?: boolean,
+    menuLocation?: 'left' | 'right' | 'outer-left' | 'outer-right',
     legend?: 'hidden'| 'bottom' | 'right',
     // Boolean arguements deprecated
     showMouse?: boolean | 'horizontal' | 'vertical' | 'none',
@@ -138,6 +138,8 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
     const [offsetBottom, setOffsetBottom] = React.useState<number>(10);
     const [offsetLeft, setOffsetLeft] = React.useState<number>(5);
     const [offsetRight, setOffsetRight] = React.useState<number>(5);
+
+    const [toolBarX, setToolBarX] = React.useState<number>(12);
 
     const [heightYFactor, setHeightYFactor] = React.useState<number>(0);
     const [heightXLabel, setHeightXLabel] = React.useState<number>(0);
@@ -434,6 +436,20 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
     }, 50);
   });
 
+  // Calculates where the toolbar should be
+  React.useEffect(() => {
+    const isLeft = (props.menuLocation ?? "").match(/(?:left)/i) != null;
+    // No axis = no outer to be at
+    const isOuter = ((props.menuLocation ?? "").match(/(?:outer)/i) != null) && (isLeft && yHasData[AxisMap.get('left')] || !isLeft && yHasData[AxisMap.get('right')]);
+    let xVal = 0;
+    if (isLeft) {
+      xVal = (isOuter ? 0 : offsetLeft) + 12;
+    } else {
+      xVal = svgWidth - (isOuter ? 0 : offsetRight) - 12;
+    }
+    if (xVal !== toolBarX) setToolBarX(xVal);
+  }, [props.menuLocation, yHasData, offsetLeft, offsetRight, svgWidth]);
+  
   // requests new legend height/width upto a defined maximum set by props
   const requestLegendHeightChange = React.useCallback((newHeight: number) =>  {
     const heightLimit = props.legend !== 'bottom' ? svgHeight : (props.legendHeight ?? defaultLegendHeight);
@@ -894,8 +910,8 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
                         currentSelection={selectedMode}
                         setSelection={setSelection}
                         holdOpen={props.holdMenuOpen}
-                        openTowardsRight={props.moveMenuLeft ?? false}
-                        x={(props.moveMenuLeft ?? false) ? (offsetLeft + 12) : (svgWidth - offsetRight - 12)}
+                        openTowardsRight={(props.menuLocation ?? "").match(/(?:left)/i) != null}
+                        x={toolBarX}
                         y={22} > 
                         {React.Children.map(props.children, (element) => {
                                    if (!React.isValidElement(element))
