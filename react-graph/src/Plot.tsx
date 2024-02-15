@@ -65,7 +65,7 @@ export interface IProps {
     Tlabel?: string,
     Ylabel?: string|string[],
     holdMenuOpen?: boolean,
-    menuLocation?: 'left' | 'right' | 'outer-left' | 'outer-right',
+    menuLocation?: 'left' | 'right' | 'outer-left' | 'outer-right' | 'hide',
     legend?: 'hidden'| 'bottom' | 'right',
     // Boolean arguements deprecated
     showMouse?: boolean | 'horizontal' | 'vertical' | 'none',
@@ -407,6 +407,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
 
   // Execute Plot Capture and leave photo mode
   React.useEffect(() => {
+    // ToDo: We can clean this up some and improve performance using html2canvas options (but the biggest hurdle is the legend, which we don't have a lot of options for...)
     if (!photoReady) return;
     // we can't immediately complete the request, since some layout things may still be changing...
     clearTimeout(heightChange.current.timeout);
@@ -438,6 +439,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
 
   // Calculates where the toolbar should be
   React.useEffect(() => {
+    if (props.menuLocation === 'hide') return;
     const isLeft = (props.menuLocation ?? "").match(/(?:left)/i) != null;
     // No axis = no outer to be at
     const isOuter = ((props.menuLocation ?? "").match(/(?:outer)/i) != null) && (isLeft && yHasData[AxisMap.get('left')] || !isLeft && yHasData[AxisMap.get('right')]);
@@ -900,7 +902,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
                                height={zoomMode === 'Rect'?  Math.abs(mouseClick[1] - mousePosition[1]) : (svgHeight - offsetTop - offsetBottom)} />
                               : null}
                       </g>
-                      {(photoReady) ? <></> :
+                      {(photoReady || props.menuLocation === 'hide') ? <></> :
                        <InteractiveButtons showPan={(props.pan === undefined || props.pan)}
                         showZoom={props.zoom === undefined || props.zoom}
                         showReset={!(props.pan !== undefined && props.zoom !== undefined && !props.zoom && !props.pan)}
