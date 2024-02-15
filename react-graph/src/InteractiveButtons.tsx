@@ -32,7 +32,7 @@ interface IProps {
     showSelect: boolean,
     showDownload: boolean,
     showCapture: boolean,
-    currentSelection: 'zoom'|'pan'|'select',
+    currentSelection: 'zoom-rectangular' | 'zoom-vertical' | 'zoom-horizontal' | 'pan' | 'select',
     setSelection: (selection: ButtonType) => void,
     x: number,
     y: number,
@@ -40,7 +40,7 @@ interface IProps {
     holdOpen?: boolean
 }
 
-type ButtonType = ('zoom' | 'pan' | 'reset' | 'select' | 'download' | 'capture');
+type ButtonType = ('zoom-rectangular' | 'zoom-vertical' | 'zoom-horizontal' | 'pan' | 'reset' | 'select' | 'download' | 'capture');
 type Cleanup = ((() => void) | void);
 
 const InteractiveButtons: React.FunctionComponent<IProps> = (props) => {
@@ -51,7 +51,7 @@ const InteractiveButtons: React.FunctionComponent<IProps> = (props) => {
 
     const nButtons = React.useMemo(() =>
       (props.holdOpen? 1 : 0) + 
-      (props.showZoom? 1 : 0) + 
+      (props.showZoom? 3 : 0) + 
       (props.showPan? 1 : 0) + 
       (props.showReset? 1 : 0) + 
       (props.showSelect? 1 : 0) + 
@@ -83,7 +83,9 @@ const InteractiveButtons: React.FunctionComponent<IProps> = (props) => {
       switch(props.currentSelection){
         default:
         case 'pan': return Pan;
-        case 'zoom': return MagnifyingGlass;
+        case 'zoom-rectangular': return MagnifyingGlass;
+        case 'zoom-vertical': return "\u2016";
+        case 'zoom-horizontal': return "\u2550";
         case 'select': return selectIcon;
       } 
     },[selectIcon, props.currentSelection]);
@@ -113,8 +115,12 @@ const InteractiveButtons: React.FunctionComponent<IProps> = (props) => {
       symbols.push(<Button onClick={() => setExpand(false)}>{(props.openTowardsRight ?? false) ? "<" : ">"}</Button>)
     }
     if (props.showZoom) {
-      symbolNames.push('zoom' as ButtonType);
-      symbols.push(<Button onClick={() => {props.setSelection('zoom'); collaspeMenu(); }}>{MagnifyingGlass}</Button>)
+      symbolNames.push('zoom-rectangular' as ButtonType);
+      symbols.push(<Button onClick={() => {props.setSelection('zoom-rectangular'); collaspeMenu(); }}>{MagnifyingGlass}</Button>);
+      symbolNames.push('zoom-vertical' as ButtonType);
+      symbols.push(<Button onClick={() => {props.setSelection('zoom-vertical'); collaspeMenu(); }}>{"\u2016"}</Button>);
+      symbolNames.push('zoom-horizontal' as ButtonType);
+      symbols.push(<Button onClick={() => {props.setSelection('zoom-horizontal'); collaspeMenu(); }}>{"\u2550"}</Button>);
     }
     if (props.showPan) {
       symbolNames.push('pan' as ButtonType);

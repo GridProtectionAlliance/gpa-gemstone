@@ -142,7 +142,7 @@ interface IContextWrapperProps extends IHandlerRegistration, IDataRegistration {
   MousePosition: [number,number],
   MousePositionSnap: [number,number],
   YDomain: [number,number][],
-  CurrentMode:  'zoom'|'pan'|'select',
+  CurrentMode: 'zoom-rectangular' | 'zoom-vertical' | 'zoom-horizontal' | 'pan' | 'select',
   MouseIn: boolean,
   UpdateFlag: number,
   Data: Map<string, IDataSeries>,
