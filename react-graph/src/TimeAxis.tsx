@@ -81,7 +81,7 @@ function TimeAxis(props: IProps) {
           break;
         case('ss.SS'):
           titleFormat = "MMM Do, YYYY HH:mm";
-          unitLabel = " (sec)";
+          unitLabel = " (sec.ms)";
           break;
         case('mm:ss'):
           titleFormat = "MMM Do, YYYY HH";
@@ -101,7 +101,7 @@ function TimeAxis(props: IProps) {
           break;
         case('DD HH'):
           titleFormat = "MMM YYYY";
-          unitLabel = " (month/day hour)";
+          unitLabel = " (day hour)";
           break;
         case('MM/DD'):
           titleFormat = "YYYY";
