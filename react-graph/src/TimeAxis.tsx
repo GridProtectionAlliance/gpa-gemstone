@@ -49,7 +49,7 @@ const msPerDay = msPerHour* 24.0;
 const msPerYear = msPerDay* 365;
 
 type TimeStep = ('y'|'M'|'w'|'d'|'h'|'m'|'s'|'ms');
-type TimeFormat = 'SSS'|'ss.SS'|'mm:ss'|'mm'|'HH:mm'|'HH'|'DD HH'|'MM/DD'|'MM YY'|'YYYY';
+type TimeFormat = 'SSS'|'ss.SS'|'ss'|'mm:ss'|'mm'|'HH:mm'|'HH'|'DD HH'|'MM/DD'|'MM YY'|'YYYY';
 
 function TimeAxis(props: IProps) {
     /*
@@ -82,6 +82,10 @@ function TimeAxis(props: IProps) {
         case('ss.SS'):
           titleFormat = "MMM Do, YYYY HH:mm";
           unitLabel = " (sec.ms)";
+          break;
+        case('ss'):
+          titleFormat = "MMM Do, YYYY HH:mm";
+          unitLabel = " (sec)";
           break;
         case('mm:ss'):
           titleFormat = "MMM Do, YYYY HH";
@@ -170,11 +174,15 @@ function TimeAxis(props: IProps) {
         format = 'mm';
         dateFormat = 'MM/DD HH';
       }
-      if (deltaT < 30* msPerMinute && deltaT >=   msPerMinute) {
+      if (deltaT < 30* msPerMinute && deltaT >= msPerMinute) {
         format = 'mm:ss';
         dateFormat = 'MM/DD HH';
       }
-      if (deltaT < 30*msPerSecond && deltaT >=  msPerSecond) {
+      if (deltaT < msPerMinute && deltaT >= 30*msPerSecond) {
+        format = 'ss';
+        dateFormat = 'MM/DD HH:mm';
+      }
+      if (deltaT < 30*msPerSecond && deltaT >= msPerSecond) {
         format = 'ss.SS';
         dateFormat = 'MM/DD HH:mm';
       }
