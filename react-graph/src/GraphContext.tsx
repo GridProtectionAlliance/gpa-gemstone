@@ -85,7 +85,17 @@ export interface IDataSeries {
   legend?: React.ReactElement
 }
 
-export type LineStyle = '-'|':';
+export type LineStyle = '-'|':'|'solid'|'dash'|'short-dash'|'long-dash';
+
+export const LineMap = new Map<LineStyle, string>([
+  ['-', 'none'],
+  ['solid', 'none'],
+  [':', '10,5'],
+  ['short-dash', '10,5'],
+  ['dash', '20,5'],
+  ['long-dash', '30,5']
+]);
+
 export type FillStyle = 'fill';
 export type AxisIdentifier = 'left'|'right'; 
 

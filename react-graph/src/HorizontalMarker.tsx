@@ -23,7 +23,7 @@
 
 
 import * as React from 'react';
-import {AxisIdentifier, AxisMap, GraphContext, IHandlers, LineStyle} from './GraphContext';
+import {AxisIdentifier, AxisMap, GraphContext, IHandlers, LineMap, LineStyle} from './GraphContext';
 
 export interface IProps {
     start?: number,
@@ -112,12 +112,12 @@ function HorizontalMarker(props: IProps) {
        <g>
           <path d={generateData(props.Value)} 
            style={{ fill: 'none', strokeWidth: props.width, stroke: props.color }}
-           strokeDasharray={props.lineStyle === ':'? '10,5' : 'none'} 
+           strokeDasharray={LineMap.get(props.lineStyle)} 
            />
            {props.setValue !== undefined && props.Value !== value && isSelected?
            <path d={generateData(value)} 
            style={{ fill: 'none', strokeWidth: props.width, stroke: props.color, opacity: 0.5}}
-           strokeDasharray={props.lineStyle === ':'? '10,5' : 'none'} 
+           strokeDasharray={LineMap.get(props.lineStyle)} 
            />
            : null}
         </g>
