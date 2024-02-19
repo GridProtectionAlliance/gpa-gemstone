@@ -601,10 +601,6 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
         const data = series.getData(tDomainContraint, true);
         const axis = AxisMap.get(series.axis);
         const valMin = data.find(val => val[1] >= newYDomain[axis][0] && val[1] <= newYDomain[axis][1]);
-        console.log(valMin)
-        console.log(newYDomain[axis][0])
-        console.log(newYDomain[axis][1])
-        console.log(data)
 
         if (valMin !== undefined) tMinArray.push(valMin[0]);
         const valMaxInd = findLastIndex(data, val => val[1] >= newYDomain[axis][0] && val[1] <= newYDomain[axis][1]);
