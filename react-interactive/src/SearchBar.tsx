@@ -208,8 +208,10 @@ export default function SearchBar<T> (props: IProps<T>)  {
 
                 if (column !== undefined && column.type === 'string')
                     operator = "LIKE";
-                if (column !== undefined && (column.type === 'number' || column.type === 'integer' || column.type === 'boolean' || column.type === 'datetime' ))
-                    operator = '='
+                if (column !== undefined && (column.type === 'number' || column.type === 'integer' || column.type === 'boolean'))
+                    operator = '=';
+                if (column !== undefined && column.type === 'datetime')
+                    operator = '>';
 
                   setFilter((prevFilter) => ({ ...prevFilter, FieldName: record.FieldName, SearchText: '', Operator: operator, Type: (column !== undefined ? column.type : 'string'), IsPivotColumn: (column !== undefined ? column.isPivotField : true)  }))
             }} Label='Column' />
