@@ -64,9 +64,9 @@ function LineLegend(props: IProps) {
   React.useEffect(() => {
     let t = 1;
     let w = GetTextWidth(textFont, `${t}em`, label);
-    let h = GetTextWidth(textFont, `${t}em`, label);
+    let h = GetTextHeight(textFont, `${t}em`, label);
     let useML = false;
-    context.RequestLegendWidth(h, guid);
+    context.RequestLegendWidth(w, guid);
 
     while (t > 0.4 &&  ( w > wLegend - nonTextualWidth || h > hLegend)) {
       t = t - 0.05;

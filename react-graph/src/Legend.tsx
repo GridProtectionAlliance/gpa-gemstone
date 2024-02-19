@@ -56,8 +56,8 @@ function Legend(props: IProps) {
       LgWidth: baseWidth - scrollBarSpace,
       SmHeight: baseHeight,
       LgHeight: baseHeight * (props.location === 'bottom' ? 2 : 1),
-      RequestLegendWidth: (_: number, __: string) => undefined,
-      RequestLegendHeight: (_: number) => undefined
+      RequestLegendWidth: props.RequestLegendWidth,
+      RequestLegendHeight: props.RequestLegendHeight
     } as ILegendContext
   }, [width, height, props.RequestLegendWidth, props.RequestLegendHeight, hasScroll, props.location, leftPad, nLegends]);
 
