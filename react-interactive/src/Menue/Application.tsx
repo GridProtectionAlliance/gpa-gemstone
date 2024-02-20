@@ -227,12 +227,12 @@ const HeaderContent: React.FunctionComponent<IHeaderProps> = (props) => {
 
     return <>
             <nav className="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow" ref={containerRef}>
-            {props.ShowOpen ? <a style={{ color: '#f8f9fa', marginLeft: 15 }} onClick={() => props.SetCollapsed(false)} >
-                {SVGIcons.ArrowForward}
-            </a> : null}
-            {props.ShowClose ? <a style={{ color: '#f8f9fa', marginLeft: 15 }} onClick={() => props.SetCollapsed(true)}>
-                {SVGIcons.ArrowBackward}
-            </a> : null}
+                {props.ShowOpen ? <a style={{ color: '#f8f9fa', marginLeft: 15 }} onClick={() => props.SetCollapsed(false)} >
+                    {SVGIcons.ArrowForward}
+                </a> : null}
+                {props.ShowClose ? <a style={{ color: '#f8f9fa', marginLeft: 15 }} onClick={() => props.SetCollapsed(true)}>
+                    {SVGIcons.ArrowBackward}
+                </a> : null}
             {props.Logo !== undefined ?
                 < a className="navbar-brand col-sm-2 col-md-1 mr-0 mr-auto" href={props.HomePath} ><img style={{ maxHeight: 35, margin: -5 }} src={props.Logo} /></a> : null}
             <ul className="navbar-nav px-3 ml-auto">
@@ -268,5 +268,5 @@ const HeaderContent: React.FunctionComponent<IHeaderProps> = (props) => {
                     <span></span>
                 </div> : null}
             </SidebarNav>}
-    </>
+</>
 }
