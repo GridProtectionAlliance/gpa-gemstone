@@ -53,7 +53,7 @@ const BtnDropdown = (props: IProps) => {
 
     return (
         <div className={`btn-group btn-group-${size}`}>
-            <button className={`btn ${className} ${(!disabled ? "" : " disabled")}`}
+            <button type="button" className={`btn ${className} ${(!disabled ? "" : " disabled")}`}
                 data-tooltip={guid.current}
                 onMouseEnter={() => setHover(true)}
                 onMouseLeave={() => setHover(false)}
