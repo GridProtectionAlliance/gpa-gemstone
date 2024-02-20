@@ -43,7 +43,8 @@ interface IProps {
     AllowCollapsed?: boolean
     NavBarContent?: React.ReactNode,
     HideSideBar?: boolean,
-    UseLegacyNavigation?: boolean
+    UseLegacyNavigation?: boolean,
+    NavBarCallBack?: (div: HTMLDivElement) => void
 }
 
 interface INavProps { collapsed: boolean }
@@ -209,13 +210,22 @@ interface IHeaderProps {
     ShowOpen: boolean,
     ShowClose: boolean,
     HideSide: boolean,
-    NavBarContent?: React.ReactNode
+    NavBarContent?: React.ReactNode,
+    NavBarCallBack?: (div: HTMLDivElement) => void
 }
 
 const HeaderContent: React.FunctionComponent<IHeaderProps> = (props) => {
+    const containerRef = React.useRef<HTMLDivElement>(null);
+
+    React.useLayoutEffect(() => {
+        if (containerRef?.current) {
+            if(props?.NavBarCallBack)
+                props.NavBarCallBack(containerRef.current)
+        }
+    })
 
     return <>
-    <nav className="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
+            <nav className="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow" ref={containerRef}>
                 {props.ShowOpen ? <a style={{ color: '#f8f9fa', marginLeft: 15 }} onClick={() => props.SetCollapsed(false)} >
                     {SVGIcons.ArrowForward}
                 </a> : null}
@@ -258,5 +268,4 @@ const HeaderContent: React.FunctionComponent<IHeaderProps> = (props) => {
                     </div> : null}
             </SidebarNav>}
 </>
-
 }
