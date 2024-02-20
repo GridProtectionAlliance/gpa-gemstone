@@ -53,6 +53,7 @@ export interface IProps {
     defaultTdomain: [number, number],
     defaultYdomain?: [number,number] | [number,number][],
     yDomain?: 'Manual'|'AutoValue'|'HalfAutoValue',
+    limitZoom?: boolean
     height: number,
     width: number,
 
@@ -592,13 +593,13 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
       else setSelectedMode(s as ('zoom-rectangular' | 'zoom-vertical' | 'zoom-horizontal' | 'pan' | 'select'))
     }, [tDomain, Reset, props.onDataInspect]);
 
-    const getContrainedTDomain = React.useCallback((newYDomain: [number,number][], tContraint?: [number, number]): [number,number] => {
+    const getContrainedTDomain = React.useCallback((newYDomain: [number,number][]): [number,number] => {
       const tMinArray: number[] = [];
       const tMaxArray: number[] = [];
 
-      const tDomainContraint: [number,number] = tContraint !== undefined ? tContraint : [Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER];
       [...data.values()].forEach((series: IDataSeries) => {
-        const data = series.getData(tDomainContraint, true);
+        // ToDo: Get rid of getData, ask each bucket if our time domain about their min/max instead to discard buckets then look for the bucket where a value we can see falls in first and last
+        const data = series.getData([Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER], false);
         const axis = AxisMap.get(series.axis);
         const valMin = data.find(val => val[1] >= newYDomain[axis][0] && val[1] <= newYDomain[axis][1]);
 
@@ -613,7 +614,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
       else return tDomain;
     }, [data, tDomain]);
 
-    const getConstrainedYDomain = React.useCallback((newTDomain: [number, number], yContraint?: [number, number][]): [number,number][] => {
+    const getConstrainedYDomain = React.useCallback((newTDomain: [number, number]): [number,number][] => {
       const dataReducerFunc = (result: number[], series: IDataSeries, func: (tDomain: [number, number]) => number|undefined, axis: number) => {
         // This part of the data may not belong to the axis we care about at the moment
         const dataAxis = AxisMap.get(series.axis);
@@ -624,9 +625,8 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
         return result;
       }
       return yDomain.map((oldDomain, axis) => {
-        const yDomainContraint = yContraint !== undefined ? yContraint[axis] : [Number.MAX_SAFE_INTEGER, Number.MIN_SAFE_INTEGER];
-        const yMin = Math.min(...[...data.values()].reduce((result: number[], series: IDataSeries) => dataReducerFunc(result, series, series.getMin, axis), []), yDomainContraint[0]);
-        const yMax = Math.max(...[...data.values()].reduce((result: number[], series: IDataSeries) => dataReducerFunc(result, series, series.getMax, axis), []), yDomainContraint[1]);
+        const yMin = Math.min(...[...data.values()].reduce((result: number[], series: IDataSeries) => dataReducerFunc(result, series, series.getMin, axis), []));
+        const yMax = Math.max(...[...data.values()].reduce((result: number[], series: IDataSeries) => dataReducerFunc(result, series, series.getMax, axis), []));
         if (!isNaN(yMin) && !isNaN(yMax) && isFinite(yMin) && isFinite(yMax)) return [yMin, yMax];
         return yDomain[axis];
       });
@@ -667,7 +667,9 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
                 x1 = Xcenter + (x1 - Xcenter) * multiplier;
             }
             if ((x1-x0) > 10) {
-              const newTDomain: [number,number] = [xInvTransform(x0), xInvTransform(x1)];
+              let newTDomain: [number,number];
+              if (props.limitZoom ?? false) newTDomain = [Math.max(defaultTdomain[0],xInvTransform(x0)), Math.min(defaultTdomain[1], xInvTransform(x1))]
+              else newTDomain = [xInvTransform(x0), xInvTransform(x1)];
               if (selectedMode === 'zoom-vertical') {
                 const newYDomain = getConstrainedYDomain(newTDomain);
                 if (!_.isEqual(newYDomain, yDomain)) setYdomain(newYDomain);
@@ -694,6 +696,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
               }
   
               if (Math.abs(y1-y0) > 10) {
+                if (props.limitZoom ?? false) return [Math.max(defaultYdomain[axis][0],yInvTransform(y0, axis)), Math.min(defaultYdomain[axis][1], yInvTransform(y1, axis))];
                 return [yInvTransform(y0, axis), yInvTransform(y1, axis)];
               }
               return domain;
