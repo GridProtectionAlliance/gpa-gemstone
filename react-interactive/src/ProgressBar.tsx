@@ -43,7 +43,8 @@ interface IProps {
     steps: IStep[],
     activeStep: string | number,
     height?: string | number,
-    width?: string | number
+    width?: string | number,
+    onClick?: (currentStep: string|number, clickedStep: string|number) => void
 }
 
 function ProgressBar(props: IProps) {
@@ -63,6 +64,11 @@ function ProgressBar(props: IProps) {
             setActiveStep(index);
 
     }, [props.activeStep, props.steps])
+
+    const clickhandle = React.useCallback((step: number|string) => {
+        if (props.onClick !== undefined)
+            props.onClick(props.activeStep,step);
+    },[props.activeStep]);
 
     /// Styles for overall div
     const stepsStyle: React.CSSProperties = {
@@ -109,19 +115,26 @@ function ProgressBar(props: IProps) {
                 justifyContent: 'space-between'
             }}>
                 {props.steps.map((x,i) => <div
+                    
                     style={{
                         height: '60px',
                         width: 'calc(' + (100/props.steps.length).toString() + '%)',
                         marginTop: -17
                     }} key={x.id}>
-                    <span style={{
+                    <span onClick={() => clickhandle(x.id)}
+                    style={{
                         ...circleStyle,
                         borderColor: i <= activeStep ? '#5DC177' : '#D3D3D3',
+                        cursor: (i === activeStep || props.onClick === undefined) ? undefined : 'pointer',
                         marginLeft: (i === (props.steps.length-1) ? 'calc(100% - 25px)' : (i===0? undefined : 'calc(50% - 12px)')),
-                        marginRight: (i === 0 ? 'calc(100% - 25px)' : (i === (props.steps.length - 1) ? undefined :'calc(50% - 12px)'))
+                        marginRight: (i === 0 ? 'calc(100% - 25px)' : (i === (props.steps.length - 1) ? undefined :'calc(50% - 12px)')),
+                        
                     }} />
-                    <span style={{
+                    <span 
+                        onClick={() => clickhandle(x.id)}
+                    style={{
                         ...descriptionStyles,
+                        cursor: (i === activeStep || props.onClick === undefined) ? undefined : 'pointer',
                         textAlign: (i === 0? 'left' : (i === (props.steps.length - 1) ? 'right' : 'center'))
                     }}>
                         {x.id === props.activeStep ? x.long : x.short}
