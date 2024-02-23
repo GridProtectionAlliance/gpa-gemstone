@@ -44,7 +44,7 @@ interface IProps {
     NavBarContent?: React.ReactNode,
     HideSideBar?: boolean,
     UseLegacyNavigation?: boolean,
-    NavBarCallBack?: (div: HTMLDivElement) => void
+    SetNavBarRef?: (div: HTMLDivElement) => void
 }
 
 interface INavProps { collapsed: boolean }
@@ -187,7 +187,7 @@ const Applications: React.FunctionComponent<IProps> = (props) => {
                         ShowClose={showClose}
                         HideSide={hideSide}
                         NavBarContent={props.NavBarContent}
-                        NavBarCallBack={props.NavBarCallBack}
+                        SetNavBarRef={props.SetNavBarRef}
                     >
                         {props.children}
                     </HeaderContent>
@@ -212,7 +212,7 @@ interface IHeaderProps {
     ShowClose: boolean,
     HideSide: boolean,
     NavBarContent?: React.ReactNode,
-    NavBarCallBack?: (div: HTMLDivElement) => void
+    SetNavBarRef?: (div: HTMLDivElement) => void
 }
 
 const HeaderContent: React.FunctionComponent<IHeaderProps> = (props) => {
@@ -220,8 +220,8 @@ const HeaderContent: React.FunctionComponent<IHeaderProps> = (props) => {
 
     React.useLayoutEffect(() => {
         if (containerRef?.current) {
-            if(props?.NavBarCallBack)
-                props.NavBarCallBack(containerRef.current)
+            if (props?.SetNavBarRef)
+                props.SetNavBarRef(containerRef.current)
         }
     })
 
