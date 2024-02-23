@@ -261,7 +261,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
 
     // Adjust Right Offset
     React.useEffect(() => {
-      const right = heightRightYLabel + (props.menuLocation === 'right' ? 28 : 10);;
+      const right = heightRightYLabel + (props.menuLocation === 'right' ? 28 : 10);
       if (offsetRight !== right)
         setOffsetRight(right);
     }, [heightRightYLabel, props.menuLocation]);

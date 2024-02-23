@@ -136,7 +136,7 @@ export class PointNode {
      * @param {number} point - The center point of the point retrieval.
      * @param {number} pointsRetrieved - The number of points to retrieve
      */
-    public GetPoints(point: number, pointsRetrieved: number = 1, bucketLowerNeighbor?: PointNode, bucketUpperNeighbor?: PointNode): [...number[]][] {
+    public GetPoints(point: number, pointsRetrieved = 1, bucketLowerNeighbor?: PointNode, bucketUpperNeighbor?: PointNode): [...number[]][] {
         if (bucketUpperNeighbor === undefined && bucketLowerNeighbor === undefined && pointsRetrieved > MaxPoints)
             console.warn("Points requested exceeds maximum per bucket. This may result in an unexpected output.");
         if (pointsRetrieved <= 0) throw new RangeError(`Requested number of points must be positive value.`);
