@@ -67,7 +67,7 @@ export interface IProps {
     Tlabel?: string,
     Ylabel?: string|string[],
     holdMenuOpen?: boolean,
-    menuLocation?: 'left' | 'right' | 'outer-left' | 'outer-right' | 'hide',
+    menuLocation?: 'left' | 'right' | 'hide',
     legend?: 'hidden'| 'bottom' | 'right',
     // Boolean arguements deprecated
     showMouse?: boolean | 'horizontal' | 'vertical' | 'none',
@@ -247,7 +247,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
     // Adjust top and bottom Offset
     React.useEffect(() => {
       const top = heightYFactor + 10;
-      const bottom = heightXLabel + 10;
+      const bottom = heightXLabel;
       if (offsetTop !== top)
         setOffsetTop(top);
       if (offsetBottom !== bottom)
@@ -256,17 +256,17 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
 
     // Adjust Left Offset
     React.useEffect(() => {
-      const left = heightLeftYLabel + 10;
+      const left = heightLeftYLabel + (props.menuLocation === 'left' ? 28 : 10);
       if (offsetLeft !== left)
         setOffsetLeft(left);
-    }, [heightLeftYLabel]);
+    }, [heightLeftYLabel, props.menuLocation]);
 
     // Adjust Right Offset
     React.useEffect(() => {
-      const right = heightRightYLabel + 10;
+      const right = heightRightYLabel + (props.menuLocation === 'right' ? 28 : 10);;
       if (offsetRight !== right)
         setOffsetRight(right);
-    }, [heightRightYLabel]);
+    }, [heightRightYLabel, props.menuLocation]);
 
     // Adjust Y domain defaults
     React.useEffect(() => {
@@ -435,21 +435,6 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
       if (props.onCaptureComplete !== undefined) props.onCaptureComplete();
     }, 50);
   });
-
-  // Calculates where the toolbar should be
-  React.useEffect(() => {
-    if (props.menuLocation === 'hide') return;
-    const isLeft = (props.menuLocation ?? "").match(/(?:left)/i) != null;
-    // No axis = no outer to be at
-    const isOuter = ((props.menuLocation ?? "").match(/(?:outer)/i) != null) && (isLeft && yHasData[AxisMap.get('left')] || !isLeft && yHasData[AxisMap.get('right')]);
-    let xVal = 0;
-    if (isLeft) {
-      xVal = (isOuter ? 0 : offsetLeft) + 12;
-    } else {
-      xVal = svgWidth - (isOuter ? 0 : offsetRight) - 12;
-    }
-    if (xVal !== toolBarX) setToolBarX(xVal);
-  }, [props.menuLocation, yHasData, offsetLeft, offsetRight, svgWidth]);
   
   // requests new legend height/width upto a defined maximum set by props
   const requestLegendHeightChange = React.useCallback((newHeight: number) =>  {
@@ -959,8 +944,8 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
                         currentSelection={selectedMode}
                         setSelection={setSelection}
                         holdOpen={props.holdMenuOpen}
-                        openTowardsRight={(props.menuLocation ?? "").match(/(?:left)/i) != null}
-                        x={toolBarX}
+                        heightAvaliable={svgHeight-22}
+                        x={(props.menuLocation === 'left' ? 14 : (svgWidth -14))}
                         y={22} > 
                         {React.Children.map(props.children, (element) => {
                                    if (!React.isValidElement(element))
