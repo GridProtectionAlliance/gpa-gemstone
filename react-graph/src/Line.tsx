@@ -61,11 +61,10 @@ function Line(props: IProps) {
         return {
             legend: createLegend(),
             axis: props.axis,
-            dataId: dataGuid,
+            enabled: enabled,
             getMax: (t) => (data == null|| !enabled? -Infinity : data.GetLimits(t[0],t[1])[1]),
             getMin: (t) => (data == null|| !enabled? Infinity : data.GetLimits(t[0],t[1])[0]),
-            getPoint: (t) => (data == null|| !enabled? NaN : data.GetPoint(t)),
-            getData: (t, ie) => (data == null || !enabled ? NaN : data.GetData(t[0], t[1], ie))
+            getPoints: (t, n?) => (data == null|| !enabled? NaN : data.GetPoints(t, n ?? 1))
         } as IDataSeries;
     }, [props.axis, enabled, dataGuid]);
 

@@ -128,25 +128,31 @@ export class PointNode {
      * @param {number} point - The point to retrieve from the tree
      */
     public GetPoint(point: number): [...number[]] {
+        return this.GetPoints(point, 1)[0];
+    }
+
+    /**
+     * Retrieves a specified number of points from the PointNode tree, centered around a point
+     * @param {number} point - The center point of the point retrieval.
+     * @param {number} pointsRetrieved - The number of points to retrieve
+     */
+    public GetPoints(point: number, pointsRetrieved: number = 1, bucketLowerNeighbor?: PointNode, bucketUpperNeighbor?: PointNode): [...number[]][] {
+        if (bucketUpperNeighbor === undefined && bucketLowerNeighbor === undefined && pointsRetrieved > MaxPoints)
+            console.warn("Points requested exceeds maximum per bucket. This may result in an unexpected output.");
+        if (pointsRetrieved <= 0) throw new RangeError(`Requested number of points must be positive value.`);
         // round point back to whole integer 
         point = Math.round(point);
 
-        // if the point is less than the minimum value of the subsection, return the first point
-        if (point < this.minT && this.points !== null)
-            return this.points[0];
+        if (this.points !== null) {
+            // if the point is less than the minimum value of the subsection, return the first point
+            if (point < this.minT)
+                return this.points.slice(0,pointsRetrieved);
 
-        // if the point is greater than the largest value of the subsection, return the last point
-        if (point > this.maxT && this.points !== null)
-          return this.points[this.points.length - 1];
+            // if the point is greater than the largest value of the subsection, return the last point
+            if (point > this.maxT)
+                return this.points.slice(-pointsRetrieved);
 
-        // if the subsection is null, and the point is less than the minimum value of the subsection, ??Start over again lookign for the point in the first subsection??
-        if (point < this.minT && this.points === null)
-          return this.children![0].GetPoint(point);
-        else if (point > this.maxT && this.points === null)
-            return this.children![this.children!.length - 1].GetPoint(point);
-
-
-        if (this.points != null) {
+            // Otherwise, perform binary search
             let upper = this.points.length - 1;
             let lower = 0;
 
@@ -166,16 +172,43 @@ export class PointNode {
                 Tupper = this.points[upper][0];
                 Tlower = this.points[lower][0];
             }
-            if (Math.abs(point - Tlower) < Math.abs(point - Tupper))
-                return this.points[lower];
 
-            return this.points[upper];
+            let upperPoints = Math.floor(pointsRetrieved / 2);
+            let lowerPoints = upperPoints;
+            // Adjustment for even number of points
+            const sidingAdjust = pointsRetrieved % 2 === 0 ? 1 : 0;
+            let centerIndex: number;
+            if (Math.abs(point - Tlower) < Math.abs(point - Tupper)) {
+                centerIndex = lower;
+                lowerPoints -= sidingAdjust;
+            } else {
+                centerIndex = upper;
+                upperPoints -= sidingAdjust;
+            }
+
+            // Note: If we have spillover and no neighbor on the spillover side, then we discard the idea of spillover, and just return as many as we can on that side
+            const upperSpillOver = centerIndex + upperPoints + 1 - this.points.length;
+            const upperNeighborPoints = (upperSpillOver > 0 && bucketUpperNeighbor !== undefined) ? bucketUpperNeighbor.GetPoints(point, upperSpillOver, this, undefined) : [];
+            const lowerSpillOver = lowerPoints - centerIndex;
+            const lowerNeighborPoints = (lowerSpillOver > 0 && bucketLowerNeighbor !== undefined) ? bucketLowerNeighbor.GetPoints(point, lowerSpillOver, undefined, this) : [];
+
+            return lowerNeighborPoints.concat(this.points.slice(Math.max(centerIndex - lowerPoints, 0), Math.min(centerIndex + upperPoints +1, this.points.length))).concat(upperNeighborPoints);
 
         }
-        else {
-            const child = this.children!.find(n => /*n.minT <= point &&*/ n.maxT > point);
-            return child!.GetPoint(point);
-        }
+        else if (this.children !== null) {
+            let childIndex = -1;
+            // if the subsection is null, and the point is less than the minimum value of the subsection, ??Start over again lookign for the point in the first subsection??
+            if (point < this.minT) childIndex = 0;
+            else if (point > this.maxT) childIndex = this.children.length - 1;
+            else childIndex = this.children.findIndex(n => n.maxT > point);
 
+            if (childIndex === -1) throw new RangeError(`Could not find child bucket with point ${point}`);
+
+            // Find neighbors
+            const upperNeighbor = childIndex !== this.children.length - 1 ? this.children[childIndex + 1] : undefined;
+            const lowerNeighbor = childIndex !== 0 ? this.children[childIndex - 1] : undefined;
+            return this.children[childIndex].GetPoints(point, pointsRetrieved, lowerNeighbor, upperNeighbor);
+        }
+        else throw new RangeError(`Both children and points are null for PointNode, unabled to find point ${point}`);
     }
 }

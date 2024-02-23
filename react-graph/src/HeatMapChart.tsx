@@ -99,6 +99,7 @@ function HeatMapChart(props: IProps) {
         context.UpdateData(guid, {
             axis: props.axis,
             legend: createLegend(),
+            enabled: true,
             getMax: (t) => (data == null ? -Infinity : data.GetLimits(t[0],t[1],0)[1]),
             getMin: (t) => (data == null ?  Infinity : data.GetLimits(t[0],t[1],0)[0]),
         } as IDataSeries);
@@ -108,6 +109,7 @@ function HeatMapChart(props: IProps) {
         const id = context.AddData({
             axis: props.axis,
             legend: createLegend(),
+            enabled: false,
             getMax: (t) => (data == null ? -Infinity : data.GetLimits(t[0],t[1],0)[1]),
             getMin: (t) => (data == null ?  Infinity : data.GetLimits(t[0],t[1],0)[0]),
         } as IDataSeries);

@@ -43,7 +43,6 @@ import AggregatingCircles from './AggregatingCircles';
 import Infobox from './Infobox';
 import HeatMapChart from './HeatMapChart';
 import * as _html2canvas from "html2canvas";
-import { KDNode } from './KDNode';
 const html2canvas: any = _html2canvas;
 
 // A ZoomMode of AutoValue means it will zoom on time, and auto Adjust the Value to fit the data.
@@ -120,7 +119,6 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
     const heightChange = React.useRef<{timeout?: NodeJS.Timeout, extraNeeded: number, captureID?: string}>(
       {timeout: undefined, extraNeeded: 0, captureID: undefined});
     const widthTimeout = React.useRef<{timeout?: NodeJS.Timeout, requesterMap: Map<string,number>}>({timeout: undefined, requesterMap: new Map<string,number>()});
-    const nodeTree = React.useRef<{dataGuids: Map<string, { dataId: string, axis: number}>, trees: (KDNode|null)[]}>({ dataGuids: new Map<string, { dataId: string, axis: number}>(), trees: Array(AxisMap.size).fill(null)});
     
     const guid = React.useMemo(() => CreateGuid(),[]);
     const [data, setData] = React.useState<Map<string, IDataSeries>>(new Map<string, IDataSeries>());
@@ -304,41 +302,6 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
       newHasData[1] = hasFunc('right');
       setYHasData(newHasData);
     }, [data]);
-
-    // Todo: Assumption that dims are 2
-    React.useEffect(() => {
-      // Don't need if we're not snapping
-      if (!props.snapMouse) return;
-
-      // Build map of all guids in data (mapping series key => data key, axis)
-      const guidMap = new Map<string, { dataId: string, axis: number}>();
-      for(const seriesKey of data.keys()){
-        const dataSeries = data.get(seriesKey);
-        if (dataSeries == null || dataSeries.dataId == null || dataSeries.dataId === "") continue;
-        guidMap.set(seriesKey, { dataId: dataSeries.dataId, axis: AxisMap.get(dataSeries.axis) });
-      }
-      // If everything is all equivlant, then data has not changed and we can skip the operation
-      if (nodeTree.current.dataGuids.size === guidMap.size && 
-        [...guidMap.keys()].every(seriesKey => {
-          const currentInfo = nodeTree.current.dataGuids.get(seriesKey);
-          const newInfo = guidMap.get(seriesKey);
-          if (currentInfo == null || newInfo == null) return false;
-          return (currentInfo.axis === newInfo.axis && currentInfo.dataId === newInfo.dataId);
-        })) return;
-      // Construct the node tree(s)
-      const newNodes: KDNode[] = Array(AxisMap.size);
-      for(const axis of AxisMap.values()){
-        let allData: [...number[]][] = []; 
-        for(const seriesKey of guidMap.keys()){
-          const dataSeries = data.get(seriesKey);
-          const dataGuid = guidMap.get(seriesKey);
-          if (dataGuid != null && dataSeries != null && dataGuid.axis === axis)
-            allData = allData.concat(dataSeries.getData([Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER]));
-        }
-        if (allData.length !== 0) newNodes[axis] = new KDNode(allData, 2, false, 0);
-      }
-      nodeTree.current = {dataGuids: guidMap, trees: newNodes };
-    }, [data, props.snapMouse]);
 
     // Adjust x axis
     React.useEffect(() => {
@@ -541,17 +504,22 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
     }, []);
 
     function snapMouseToClosestSeries(pixelPt: {x:number, y:number}): {x:number, y:number} {
-      const findClosestPoint = (result: { pt: {x:number, y:number}, distSq: number|undefined }, axis: number) => {
-        if (nodeTree.current.trees[axis] == null) return result;
-        // Todo: We might be able to make NN return the transformed point if the transform function is provided, instead of doing it ourselves
-        const nnResult = nodeTree.current.trees[axis]!.findNearest([xInvTransform(pixelPt.x), yInvTransform(pixelPt.y, axis)], [xTransform, (n)=>yTransform(n,axis)]);
-        const newResult = { pt: { x: xTransform(nnResult.pt[0]), y: yTransform(nnResult.pt[1], axis)}, distSq: nnResult.distSq }
-        if (result.distSq === undefined || newResult.distSq < result.distSq)
-          return newResult;
+      const xVal = xInvTransform(pixelPt.x);
+      const findClosestPoint = (result: { pt: {x:number, y:number}, distSq: number|undefined }, series: IDataSeries) => {
+        const pointArray = series.getPoints(xVal, 7);
+        if (pointArray === undefined) return result;
+        const ptArrayResult = pointArray.reduce((result: { pt: {x:number, y:number}, distSq: number|undefined}, pt) => {
+          const point = [xTransform(pt[0]), yTransform(pt[1], AxisMap.get(series.axis))];
+          const newDistSq = (point[0] - pixelPt.x)**2 + (point[1] - pixelPt.y)**2;
+          if (result.distSq === undefined || newDistSq < result.distSq) return {pt: { x: point[0], y: point[1]}, distSq: newDistSq};
+          return result;
+
+        }, { pt: {x:0, y:0}, distSq: undefined });
+        if (ptArrayResult.distSq !== undefined && (result.distSq === undefined || ptArrayResult.distSq < result.distSq)) return ptArrayResult;
         return result;
       }
       
-      return [...AxisMap.values()].reduce((result: { pt: {x:number, y:number}, distSq: number|undefined}, axis) => findClosestPoint(result, axis), { pt: {x:0, y:0}, distSq: undefined }).pt;
+      return [...data.values()].reduce((result: { pt: {x:number, y:number}, distSq: number|undefined}, series) => findClosestPoint(result, series), { pt: {x:0, y:0}, distSq: undefined }).pt;
     }
 
     const registerSelect = React.useCallback((handler: IHandlers) => {
@@ -578,7 +546,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
       else setSelectedMode(s as ('zoom-rectangular' | 'zoom-vertical' | 'zoom-horizontal' | 'pan' | 'select'))
     }, [tDomain, Reset, props.onDataInspect]);
 
-    const getContrainedTDomain = React.useCallback((newYDomain: [number,number][]): [number,number] => {
+    /* const getContrainedTDomain = React.useCallback((newYDomain: [number,number][]): [number,number] => {
       const tMinArray: number[] = [];
       const tMaxArray: number[] = [];
 
@@ -597,7 +565,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
       const tMax = Math.max(...tMaxArray);
       if (!isNaN(tMin) && !isNaN(tMax) && isFinite(tMin) && isFinite(tMax)) return [tMin, tMax];
       else return tDomain;
-    }, [data, tDomain]);
+    }, [data, tDomain]); */
 
     const getConstrainedYDomain = React.useCallback((newTDomain: [number, number]): [number,number][] => {
       const dataReducerFunc = (result: number[], series: IDataSeries, func: (tDomain: [number, number]) => number|undefined, axis: number) => {
@@ -688,8 +656,9 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
             });
             if (!_.isEqual(newYDomain, yDomain)) {
               if (selectedMode === 'zoom-horizontal') {
-                const newTDomain = getContrainedTDomain(newYDomain);
-                if (!_.isEqual(newTDomain, tDomain)) setTdomain(newTDomain);
+                // Todo: fix this, getData no longer avalible
+                //const newTDomain = getContrainedTDomain(newYDomain);
+                //if (!_.isEqual(newTDomain, tDomain)) setTdomain(newTDomain);
               }
               setYdomain(newYDomain);
             }
@@ -809,8 +778,9 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
             });
             if (!_.isEqual(newYDomain, yDomain)) {
               if (selectedMode === 'zoom-horizontal') {
-                const newTDomain = getContrainedTDomain(newYDomain);
-                if (!_.isEqual(newTDomain, tDomain)) setTdomain(newTDomain);
+                // todo: fix this, get data not longer avalible
+                //const newTDomain = getContrainedTDomain(newYDomain);
+                //if (!_.isEqual(newTDomain, tDomain)) setTdomain(newTDomain);
               }
               setYdomain(newYDomain);
             }
