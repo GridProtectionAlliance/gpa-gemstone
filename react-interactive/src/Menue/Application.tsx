@@ -44,7 +44,6 @@ interface IProps {
     NavBarContent?: React.ReactNode,
     HideSideBar?: boolean,
     UseLegacyNavigation?: boolean,
-    SetNavBarRef?: (div: HTMLDivElement) => void
 }
 
 interface INavProps { collapsed: boolean }
@@ -81,7 +80,7 @@ const MainDiv = styled.div<IMainDivProps>`
     user-select: none;
  }`;
 
-const Applications: React.FunctionComponent<IProps> = (props) => {
+const Applications: React.FunctionComponent<IProps> = (props, ref) => {
 
     const [collapsed, setCollapsed] = React.useState<boolean>(false)
 
@@ -146,7 +145,7 @@ const Applications: React.FunctionComponent<IProps> = (props) => {
                         ShowOpen={showOpen}
                         ShowClose={showClose}
                         HideSide={hideSide}
-                        NavBarContent={props.NavBarContent}
+                        ref={ref}
                     >
                         {props.children}
                     </HeaderContent>
@@ -187,7 +186,7 @@ const Applications: React.FunctionComponent<IProps> = (props) => {
                         ShowClose={showClose}
                         HideSide={hideSide}
                         NavBarContent={props.NavBarContent}
-                        SetNavBarRef={props.SetNavBarRef}
+                        ref={ref}
                     >
                         {props.children}
                     </HeaderContent>
@@ -199,7 +198,7 @@ const Applications: React.FunctionComponent<IProps> = (props) => {
     </React.Suspense>;
 }
 
-export default Applications;
+export default forwardRef(Applications);
 
 interface IHeaderProps {
     Collapsed: boolean,
@@ -212,21 +211,12 @@ interface IHeaderProps {
     ShowClose: boolean,
     HideSide: boolean,
     NavBarContent?: React.ReactNode,
-    SetNavBarRef?: (div: HTMLDivElement) => void
 }
 
-const HeaderContent: React.FunctionComponent<IHeaderProps> = (props) => {
-    const containerRef = React.useRef<HTMLDivElement>(null);
-
-    React.useLayoutEffect(() => {
-        if (containerRef?.current) {
-            if (props?.SetNavBarRef)
-                props.SetNavBarRef(containerRef.current)
-        }
-    })
+const HeaderContent: React.FunctionComponent<IHeaderProps> = forwardRef((props, ref) => {
 
     return <>
-            <nav className="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow" ref={containerRef}>
+            <nav className="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow" ref={ref}>
             {props.ShowOpen ? <a style={{ color: '#f8f9fa', marginLeft: 15 }} onClick={() => props.SetCollapsed(false)} >
                 {SVGIcons.ArrowForward}
             </a> : null}
@@ -269,4 +259,4 @@ const HeaderContent: React.FunctionComponent<IHeaderProps> = (props) => {
                 </div> : null}
             </SidebarNav>}
     </>
-}
+})
