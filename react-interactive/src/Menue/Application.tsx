@@ -198,7 +198,7 @@ const Applications: React.FunctionComponent<IProps> = (props, ref) => {
     </React.Suspense>;
 }
 
-export default forwardRef(Applications);
+export default React.forwardRef(Applications);
 
 interface IHeaderProps {
     Collapsed: boolean,
@@ -213,7 +213,7 @@ interface IHeaderProps {
     NavBarContent?: React.ReactNode,
 }
 
-const HeaderContent: React.FunctionComponent<IHeaderProps> = forwardRef((props, ref) => {
+const HeaderContent: React.FunctionComponent<IHeaderProps> = React.forwardRef((props, ref) => {
 
     return <>
             <nav className="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow" ref={ref}>
