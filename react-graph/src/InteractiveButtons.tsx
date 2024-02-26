@@ -23,6 +23,7 @@
 
 import * as React from 'react';
 import {MagnifyingGlass, House, Pan, InputNumbers, Point, Scroll} from '@gpa-gemstone/gpa-symbols'
+import {SelectType} from './GraphContext'
 import Button from './Button'
 
 interface IProps {
@@ -41,7 +42,6 @@ interface IProps {
     children: React.ReactNode
 }
 
-type SelectType = 'zoom-rectangular' | 'zoom-vertical' | 'zoom-horizontal' | 'pan' | 'select';
 type ButtonType = SelectType | 'reset' | 'download' | 'capture' | 'collaspe' | 'custom';
 type Cleanup = ((() => void) | void);
 const heightPerButton = 25;

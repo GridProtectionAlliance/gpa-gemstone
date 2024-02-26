@@ -32,7 +32,7 @@ export interface IGraphContext extends IHandlerRegistration, IDataRegistration {
   YHoverSnap: number[],
   YDomain: [number, number][],
 
-  CurrentMode: 'zoom'|'pan'|'select',
+  CurrentMode: SelectType,
   Data: Map<string, IDataSeries>,
   XApplyPixelOffset: (x: number) => number,
   YApplyPixelOffset: (y: number) => number,
@@ -97,6 +97,7 @@ export const LineMap = new Map<LineStyle, string>([
 
 export type FillStyle = 'fill';
 export type AxisIdentifier = 'left'|'right'; 
+export type SelectType = 'zoom-rectangular' | 'zoom-vertical' | 'zoom-horizontal' | 'pan' | 'select';
 
 class AxisMapClass<T, U> {
   private mapBase: Map<T, U>;
@@ -151,7 +152,7 @@ interface IContextWrapperProps extends IHandlerRegistration, IDataRegistration {
   MousePosition: [number,number],
   MousePositionSnap: [number,number],
   YDomain: [number,number][],
-  CurrentMode: 'zoom-rectangular' | 'zoom-vertical' | 'zoom-horizontal' | 'pan' | 'select',
+  CurrentMode: SelectType,
   MouseIn: boolean,
   UpdateFlag: number,
   Data: Map<string, IDataSeries>,

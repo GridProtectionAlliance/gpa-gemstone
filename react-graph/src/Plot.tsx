@@ -25,8 +25,8 @@
 import * as React from 'react';
 import * as _ from 'lodash';
 import InteractiveButtons from './InteractiveButtons';
-import {IDataSeries, IHandlers, ContextWrapper, IActionFunctions, AxisIdentifier, AxisMap} from './GraphContext';
-import {CreateGuid, findLastIndex} from '@gpa-gemstone/helper-functions';
+import {IDataSeries, IHandlers, ContextWrapper, IActionFunctions, AxisIdentifier, AxisMap, SelectType} from './GraphContext';
+import {CreateGuid} from '@gpa-gemstone/helper-functions';
 import {cloneDeep, isEqual} from 'lodash';
 import TimeAxis from './TimeAxis';
 import LogAxis from './LogAxis'; 
@@ -133,8 +133,8 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
     // ToDo: This is hardset to two because it's tied to display, 'left' and 'right'
     const [yHasData, setYHasData] = React.useState<boolean[]>(Array(2).fill(0));
 
-    const [mouseMode, setMouseMode] = React.useState<'none' | 'zoom-rectangular' | 'zoom-vertical' | 'zoom-horizontal' | 'pan' | 'select'>('none');
-    const [selectedMode, setSelectedMode] = React.useState<'zoom-rectangular' | 'zoom-vertical' | 'zoom-horizontal' | 'pan' | 'select'>('zoom-rectangular');
+    const [mouseMode, setMouseMode] = React.useState<'none' | SelectType>('none');
+    const [selectedMode, setSelectedMode] = React.useState<SelectType>('zoom-rectangular');
     const [mouseIn, setMouseIn] = React.useState<boolean>(false);
     const [mousePosition, setMousePosition] = React.useState<[number, number]>([0, 0]);
     const [mousePositionSnap, setMousePositionSnap] = React.useState<[number, number]>([0, 0]);
@@ -546,27 +546,6 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
       else setSelectedMode(s as ('zoom-rectangular' | 'zoom-vertical' | 'zoom-horizontal' | 'pan' | 'select'))
     }, [tDomain, Reset, props.onDataInspect]);
 
-    /* const getContrainedTDomain = React.useCallback((newYDomain: [number,number][]): [number,number] => {
-      const tMinArray: number[] = [];
-      const tMaxArray: number[] = [];
-
-      [...data.values()].forEach((series: IDataSeries) => {
-        // ToDo: Get rid of getData, ask each bucket if our time domain about their min/max instead to discard buckets then look for the bucket where a value we can see falls in first and last
-        const data = series.getData([Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER], false);
-        const axis = AxisMap.get(series.axis);
-        const valMin = data.find(val => val[1] >= newYDomain[axis][0] && val[1] <= newYDomain[axis][1]);
-
-        if (valMin !== undefined) tMinArray.push(valMin[0]);
-        const valMaxInd = findLastIndex(data, val => val[1] >= newYDomain[axis][0] && val[1] <= newYDomain[axis][1]);
-        if (valMaxInd !== -1) tMaxArray.push(data[valMaxInd][0]);
-      })
-
-      const tMin = Math.min(...tMinArray);
-      const tMax = Math.max(...tMaxArray);
-      if (!isNaN(tMin) && !isNaN(tMax) && isFinite(tMin) && isFinite(tMax)) return [tMin, tMax];
-      else return tDomain;
-    }, [data, tDomain]); */
-
     const getConstrainedYDomain = React.useCallback((newTDomain: [number, number]): [number,number][] => {
       const dataReducerFunc = (result: number[], series: IDataSeries, func: (tDomain: [number, number]) => number|undefined, axis: number) => {
         // This part of the data may not belong to the axis we care about at the moment
@@ -588,7 +567,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
     function handleMouseWheel(evt: any) {
           if (props.zoom !== undefined && !props.zoom)
               return;
-          if (!(selectedMode.match(/(?:zoom)/i) != null))
+          if (!selectedMode.includes('zoom'))
               return;
           if (!mouseIn)
               return;
@@ -655,11 +634,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
               return domain;
             });
             if (!_.isEqual(newYDomain, yDomain)) {
-              if (selectedMode === 'zoom-horizontal') {
-                // Todo: fix this, getData no longer avalible
-                //const newTDomain = getContrainedTDomain(newYDomain);
-                //if (!_.isEqual(newTDomain, tDomain)) setTdomain(newTDomain);
-              }
+              // todo: added contraint to t domain when mode is zoom-horizontal
               setYdomain(newYDomain);
             }
           }
@@ -725,7 +700,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
         pt.y = evt.clientY;
         const ptTransform = pt.matrixTransform(SVGref.current!.getScreenCTM().inverse())
         setMouseClick([ptTransform.x, ptTransform.y]);
-        if ((selectedMode.match(/(?:zoom)/i) != null) && (props.zoom === undefined || props.zoom))
+        if (selectedMode.includes('zoom') && (props.zoom === undefined || props.zoom))
             setMouseMode(selectedMode);
         if (selectedMode === 'pan' && (props.pan === undefined || props.pan)) {
             setMouseMode('pan');
@@ -752,7 +727,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
     function handleMouseUp() {
       if (selectedMode === 'pan' && (props.pan === undefined || props.pan))
           setMouseStyle('grab');
-      if (mouseMode.match(/(?:zoom)/i) != null) {
+      if (mouseMode.includes('zoom')) {
 
           if ((Math.abs(mousePosition[0] - mouseClick[0]) < 10) && (Math.abs(mousePosition[1] - mouseClick[1]) < 10)) {
               setMouseMode('none');
@@ -777,11 +752,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
               return [Math.max(domain[0], y0), Math.min(domain[1], y1)];
             });
             if (!_.isEqual(newYDomain, yDomain)) {
-              if (selectedMode === 'zoom-horizontal') {
-                // todo: fix this, get data not longer avalible
-                //const newTDomain = getContrainedTDomain(newYDomain);
-                //if (!_.isEqual(newTDomain, tDomain)) setTdomain(newTDomain);
-              }
+              // todo: added contraint to t domain when mode is zoom-horizontal
               setYdomain(newYDomain);
             }
           }
@@ -896,7 +867,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
                                 `M ${offsetLeft} ${mousePosition[1]} H ${svgWidth - offsetRight}`)
                               } />
                               : null}
-                          {(props.zoom === undefined || props.zoom) && (mouseMode.match(/(?:zoom)/i) != null) ?
+                          {(props.zoom === undefined || props.zoom) && mouseMode.includes('zoom') ?
                               <rect fillOpacity={0.8} fill={'black'}
                                x={mouseMode !== 'zoom-horizontal' ? Math.min(mouseClick[0], mousePosition[0]) : offsetLeft}
                                y={mouseMode !== 'zoom-vertical' ? Math.min(mouseClick[1], mousePosition[1]) : offsetTop} 
