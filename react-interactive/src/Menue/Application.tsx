@@ -44,10 +44,11 @@ interface IProps {
     NavBarContent?: React.ReactNode,
     HideSideBar?: boolean,
     UseLegacyNavigation?: boolean,
+    children?: React.ReactNode
 }
 
 interface INavProps { collapsed: boolean }
-interface IMainDivProps {w: number}
+interface IMainDivProps { w: number }
 const SidebarNav = styled.nav <INavProps>`
   & {
     position: fixed;
@@ -80,7 +81,7 @@ const MainDiv = styled.div<IMainDivProps>`
     user-select: none;
  }`;
 
-const Applications: React.FunctionComponent<IProps> = (props, ref) => {
+const Applications: React.ForwardRefRenderFunction<HTMLDivElement, IProps> = (props, ref) => {
 
     const [collapsed, setCollapsed] = React.useState<boolean>(false)
 
@@ -196,9 +197,9 @@ const Applications: React.FunctionComponent<IProps> = (props, ref) => {
                 </div>}
         </Context.Provider>
     </React.Suspense>;
-}
+};
 
-export default React.forwardRef(Applications);
+export default React.forwardRef<HTMLDivElement, IProps>(Applications);
 
 interface IHeaderProps {
     Collapsed: boolean,
@@ -211,12 +212,13 @@ interface IHeaderProps {
     ShowClose: boolean,
     HideSide: boolean,
     NavBarContent?: React.ReactNode,
+    children?: React.ReactNode
 }
 
-const HeaderContent: React.FunctionComponent<IHeaderProps> = React.forwardRef((props, ref) => {
+const HeaderContent = React.forwardRef<HTMLDivElement, IHeaderProps>((props, ref) => {
 
     return <>
-            <nav className="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow" ref={ref}>
+        <nav className="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow" ref={ref}>
             {props.ShowOpen ? <a style={{ color: '#f8f9fa', marginLeft: 15 }} onClick={() => props.SetCollapsed(false)} >
                 {SVGIcons.ArrowForward}
             </a> : null}
@@ -257,6 +259,6 @@ const HeaderContent: React.FunctionComponent<IHeaderProps> = React.forwardRef((p
                     <br />
                     <span></span>
                 </div> : null}
-            </SidebarNav>}
+        </SidebarNav>}
     </>
-})
+});
