@@ -53,7 +53,7 @@ interface IApplicationRefs {
 }
 
 interface INavProps { collapsed: boolean }
-interface IMainDivProps { w: number }
+interface IMainDivProps { w: number, h: number }
 const SidebarNav = styled.nav <INavProps>`
   & {
     position: fixed;
@@ -75,10 +75,10 @@ const SidebarDiv = styled.div`
 
 const MainDiv = styled.div<IMainDivProps>`
 & {
-    top: 40px;
+    top: ${props => props.h}px;
     position: absolute;
     width: calc(100% - ${props => props.w}px);
-    height: calc(100% - 48px);
+    height: calc(100% - ${props => props.h}px);
     overflow: hidden;
     left: ${props => props.w}px;
 }
@@ -96,10 +96,17 @@ const Applications: React.ForwardRefRenderFunction<IApplicationRefs, IProps> = (
 
     const [ignored, forceUpdate] = React.useReducer((x: number) => x + 1, 0); // integer state for resize renders
 
+    const [navBarHeight, setNavBarHeight] = React.useState<number>(40);
+
+    React.useLayoutEffect(() => {
+        if (navBarRef?.current)
+            setNavBarHeight(navBarRef.current.offsetHeight)
+    }, [props?.children]);
+
     React.useEffect(() => {
         const listener = (evt: any) => forceUpdate();
         window.addEventListener('resize', listener);
-
+        
         return () => window.removeEventListener('resize', listener);
 
     }, []);
@@ -107,7 +114,7 @@ const Applications: React.ForwardRefRenderFunction<IApplicationRefs, IProps> = (
     React.useImperativeHandle(ref, () => ({
         mainDiv: mainDivRef.current, 
         navBarDiv: navBarRef.current, 
-    }),[mainDivRef, navBarRef]);
+    }));
 
     function GetContext(): IContext {
         return {
@@ -161,7 +168,7 @@ const Applications: React.ForwardRefRenderFunction<IApplicationRefs, IProps> = (
                     >
                         {props.children}
                     </HeaderContent>
-                    <MainDiv w={hideSide ? 0 : (collapsed ? 50 : 200)}>
+                    <MainDiv w={hideSide ? 0 : (collapsed ? 50 : 200)} h={navBarHeight}>
                         <Routes>
                             <Route path={`${props.HomePath}`}>
                                 <Route index element={<Navigate to={`${props.HomePath}${props.DefaultPath}`} />} />
@@ -202,7 +209,7 @@ const Applications: React.ForwardRefRenderFunction<IApplicationRefs, IProps> = (
                     >
                         {props.children}
                     </HeaderContent>
-                    <MainDiv w={hideSide ? 0 : (collapsed ? 50 : 200)}>
+                    <MainDiv w={hideSide ? 0 : (collapsed ? 50 : 200)} h={navBarHeight}>
                         {props.children}
                     </MainDiv>
                 </div>}
