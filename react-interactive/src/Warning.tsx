@@ -27,7 +27,8 @@ interface IProps {
     Title: string,
     CallBack: ((confirmed: boolean) => void),
     Show: boolean,
-    Message: string
+    Message: string,
+    ShowCancel?: boolean
 }
 
 // Usage:
@@ -43,7 +44,7 @@ const Warning: React.FunctionComponent<IProps> = (props) => {
 
 
     return (
-        <Modal Title={props.Title} Show={props.Show} CancelBtnClass={'btn-danger'} CancelText={'Cancel'} ConfirmBtnClass={'btn-success'} ConfirmText={'Confirm'} ShowX={false} ShowCancel={true} Size={'sm'} CallBack={(confirmed) => props.CallBack(confirmed)} >
+        <Modal Title={props.Title} Show={props.Show} CancelBtnClass={'btn-danger'} CancelText={'Cancel'} ConfirmBtnClass={'btn-success'} ConfirmText={'Confirm'} ShowX={false} ShowCancel={props.ShowCancel ?? true} Size={'sm'} CallBack={(confirmed) => props.CallBack(confirmed)} >
             <p>{props.Message}</p>
         </Modal>
     )

@@ -54,7 +54,7 @@ export default function Calender(props: IProps) {
   React.useEffect(() => {
     let d1 = moment([year, month, 1]).startOf('week');
     const w: IWeek[] = [];
-    while (d1.month() <= month && d1.year() === year) {
+    while ((d1.month() <= month && d1.year() === year) || (d1.year() < year)) {
       w.push({
         sunday: moment(d1),
         monday:  moment(d1).add(1,'day'),
