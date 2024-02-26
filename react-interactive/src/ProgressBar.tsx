@@ -68,7 +68,7 @@ function ProgressBar(props: IProps) {
     const clickhandle = React.useCallback((step: number|string) => {
         if (props.onClick !== undefined)
             props.onClick(props.activeStep,step);
-    },[props.activeStep]);
+    },[props.activeStep, props.onClick]);
 
     /// Styles for overall div
     const stepsStyle: React.CSSProperties = {
