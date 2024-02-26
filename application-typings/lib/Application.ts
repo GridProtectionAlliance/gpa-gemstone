@@ -20,6 +20,7 @@
 //       Generated original version of source code.
 //
 // ******************************************************************************************************
+import * as React from 'react';
 
 namespace Application{
     export namespace Types{
@@ -45,6 +46,11 @@ namespace Application{
 			ApplicationRoleID: string,
 			UserAccountID: string
 		}
+
+    export interface iApplicationRefs {
+      mainDiv: React.RefObject<HTMLDivElement>;
+      navBarDiv: React.RefObject<HTMLDivElement>;
+    }
 
 		export interface iSecurityGroup {
 			ID: string,

@@ -47,11 +47,6 @@ interface IProps {
     children?: React.ReactNode
 }
 
-interface IApplicationRefs {
-    mainDiv: React.RefObject<HTMLDivElement>;
-    navBarDiv: React.RefObject<HTMLDivElement>;
-}
-
 interface INavProps { collapsed: boolean }
 interface IMainDivProps { w: number }
 const SidebarNav = styled.nav <INavProps>`
@@ -86,7 +81,7 @@ const MainDiv = styled.div<IMainDivProps>`
     user-select: none;
  }`;
 
-const Applications: React.ForwardRefRenderFunction<IApplicationRefs, IProps> = (props, ref) => {
+const Applications: React.ForwardRefRenderFunction<Application.Types.iApplicationRefs, IProps> = (props, ref) => {
     const [collapsed, setCollapsed] = React.useState<boolean>(false)
     const navBarRef = React.useRef<HTMLDivElement>(null);
     const mainDivRef = React.useRef<HTMLDivElement>(null);
@@ -210,7 +205,7 @@ const Applications: React.ForwardRefRenderFunction<IApplicationRefs, IProps> = (
     </React.Suspense>;
 };
 
-export default React.forwardRef<IApplicationRefs, IProps>(Applications);
+export default React.forwardRef<Application.Types.iApplicationRefs, IProps>(Applications);
 
 interface IHeaderProps {
     Collapsed: boolean,
