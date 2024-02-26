@@ -47,6 +47,11 @@ interface IProps {
     children?: React.ReactNode
 }
 
+export interface IApplicationRefs {
+    mainDiv: HTMLDivElement | null;
+    navBarDiv: HTMLDivElement | null;
+}
+
 interface INavProps { collapsed: boolean }
 interface IMainDivProps { w: number }
 const SidebarNav = styled.nav <INavProps>`
@@ -81,7 +86,7 @@ const MainDiv = styled.div<IMainDivProps>`
     user-select: none;
  }`;
 
-const Applications: React.ForwardRefRenderFunction<Application.Types.iApplicationRefs, IProps> = (props, ref) => {
+const Applications: React.ForwardRefRenderFunction<IApplicationRefs, IProps> = (props, ref) => {
     const [collapsed, setCollapsed] = React.useState<boolean>(false)
     const navBarRef = React.useRef<HTMLDivElement>(null);
     const mainDivRef = React.useRef<HTMLDivElement>(null);
@@ -100,9 +105,9 @@ const Applications: React.ForwardRefRenderFunction<Application.Types.iApplicatio
     }, []);
 
     React.useImperativeHandle(ref, () => ({
-        mainDiv: mainDivRef, 
-        navBarDiv: navBarRef, 
-    }));
+        mainDiv: mainDivRef.current, 
+        navBarDiv: navBarRef.current, 
+    }),[mainDivRef, navBarRef]);
 
     function GetContext(): IContext {
         return {
@@ -181,7 +186,7 @@ const Applications: React.ForwardRefRenderFunction<Application.Types.iApplicatio
                     </MainDiv>
                 </div>
             </Router> :
-                <div style={{ width: window.innerWidth, height: window.innerHeight, position: "absolute" }}>
+                <div ref={mainDivRef} style={{ width: window.innerWidth, height: window.innerHeight, position: "absolute" }}>
                     <HeaderContent
                         Collapsed={collapsed}
                         SetCollapsed={setCollapsed}
@@ -205,7 +210,7 @@ const Applications: React.ForwardRefRenderFunction<Application.Types.iApplicatio
     </React.Suspense>;
 };
 
-export default React.forwardRef<Application.Types.iApplicationRefs, IProps>(Applications);
+export default React.forwardRef<IApplicationRefs, IProps>(Applications);
 
 interface IHeaderProps {
     Collapsed: boolean,

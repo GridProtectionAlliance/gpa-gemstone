@@ -47,11 +47,6 @@ namespace Application{
 			UserAccountID: string
 		}
 
-    export interface iApplicationRefs {
-      mainDiv: React.RefObject<HTMLDivElement>;
-      navBarDiv: React.RefObject<HTMLDivElement>;
-    }
-
 		export interface iSecurityGroup {
 			ID: string,
 			Name: string,
