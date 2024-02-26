@@ -241,9 +241,9 @@ const VerticalSplit: React.FunctionComponent<IProps> = (props) => {
             if (e.IsDrawer && !e.Open)
                 return;
             if (e.IsDrawer)
-                result.push(<div style={{width: isNaN(w)? 0 : w, float: 'left', minHeight: 1, height: '100%'}} key={'draw-'+ drawer[e.Index].key}>{drawer[e.Index]}</div>)
+                result.push(<div style={{ width: isNaN(w) ? 0 : w, maxWidth: isNaN(w) ? 0 : w, float: 'left', minHeight: 1, height: '100%'}} key={'draw-'+ drawer[e.Index].key}>{drawer[e.Index]}</div>)
             else
-                result.push(<div style={{width: isNaN(w)? 0 : w, float: 'left', minHeight: 1, height: '100%'}} key={'sec-'+ sections[e.Index].key}>{sections[e.Index]}</div>)
+                result.push(<div style={{ width: isNaN(w) ? 0 : w, maxWidth: isNaN(w) ? 0 : w, float: 'left', minHeight: 1, height: '100%'}} key={'sec-'+ sections[e.Index].key}>{sections[e.Index]}</div>)
 
             if (e.IsDrawer)
                 result.push(<DrawerHeader
@@ -370,7 +370,7 @@ const VerticalSplit: React.FunctionComponent<IProps> = (props) => {
     const hasDrawerLabels = elements.some(e => e.IsDrawer && (e.ShowClosed === undefined || e.ShowClosed));
     return (
         <div className="d-flex" style={{ ...props.style }} ref={divRef} onMouseUp={() => setActiveSlider(-1)} onMouseMove={MouseMove} onMouseLeave={() => setActiveSlider(-1)}>
-            {hasDrawerLabels ? <div className="row" style={{ background: '#6c757d', height: currentHeight, maxHeight: currentHeight, width: 20, marginRight: 20 }}>
+            {hasDrawerLabels ? <div className="row" style={{ background: '#6c757d', height: '100%', width: 20, marginRight: 20 }}>
                 {elements.map((e) => e.IsDrawer && (e.ShowClosed === undefined || e.ShowClosed) ? <DrawerHeader
                     showTooltip={!e.Open}
                     title={e.Label} symbol={e.Open ? 'Close' : 'Open'} textSize={lblSize}
