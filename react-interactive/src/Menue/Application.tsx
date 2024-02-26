@@ -47,6 +47,11 @@ interface IProps {
     children?: React.ReactNode
 }
 
+interface IApplicationRefs {
+    mainDiv: React.RefObject<HTMLDivElement>;
+    navBarDiv: React.RefObject<HTMLDivElement>;
+}
+
 interface INavProps { collapsed: boolean }
 interface IMainDivProps { w: number }
 const SidebarNav = styled.nav <INavProps>`
@@ -81,9 +86,10 @@ const MainDiv = styled.div<IMainDivProps>`
     user-select: none;
  }`;
 
-const Applications: React.ForwardRefRenderFunction<HTMLDivElement, IProps> = (props, ref) => {
-
+const Applications: React.ForwardRefRenderFunction<IApplicationRefs, IProps> = (props, ref) => {
     const [collapsed, setCollapsed] = React.useState<boolean>(false)
+    const navBarRef = React.useRef<HTMLDivElement>(null);
+    const mainDivRef = React.useRef<HTMLDivElement>(null);
 
     const showOpen = props.AllowCollapsed !== undefined && props.AllowCollapsed && collapsed;
     const showClose = props.AllowCollapsed !== undefined && props.AllowCollapsed && !collapsed;
@@ -97,6 +103,11 @@ const Applications: React.ForwardRefRenderFunction<HTMLDivElement, IProps> = (pr
         return () => window.removeEventListener('resize', listener);
 
     }, []);
+
+    React.useImperativeHandle(ref, () => ({
+        mainDiv: mainDivRef, 
+        navBarDiv: navBarRef, 
+    }));
 
     function GetContext(): IContext {
         return {
@@ -135,7 +146,7 @@ const Applications: React.ForwardRefRenderFunction<HTMLDivElement, IProps> = (pr
     return <React.Suspense fallback={<LoadingScreen Show={true} />}>
         <Context.Provider value={GetContext()}>
             {props.UseLegacyNavigation === undefined || !props.UseLegacyNavigation ? <Router>
-                <div style={{ width: window.innerWidth, height: window.innerHeight, position: "absolute" }}>
+                <div ref={mainDivRef} style={{ width: window.innerWidth, height: window.innerHeight, position: "absolute" }}>
                     <HeaderContent
                         Collapsed={collapsed}
                         SetCollapsed={setCollapsed}
@@ -146,7 +157,7 @@ const Applications: React.ForwardRefRenderFunction<HTMLDivElement, IProps> = (pr
                         ShowOpen={showOpen}
                         ShowClose={showClose}
                         HideSide={hideSide}
-                        ref={ref}
+                        ref={navBarRef}
                     >
                         {props.children}
                     </HeaderContent>
@@ -187,7 +198,7 @@ const Applications: React.ForwardRefRenderFunction<HTMLDivElement, IProps> = (pr
                         ShowClose={showClose}
                         HideSide={hideSide}
                         NavBarContent={props.NavBarContent}
-                        ref={ref}
+                        ref={navBarRef}
                     >
                         {props.children}
                     </HeaderContent>
@@ -199,7 +210,7 @@ const Applications: React.ForwardRefRenderFunction<HTMLDivElement, IProps> = (pr
     </React.Suspense>;
 };
 
-export default React.forwardRef<HTMLDivElement, IProps>(Applications);
+export default React.forwardRef<IApplicationRefs, IProps>(Applications);
 
 interface IHeaderProps {
     Collapsed: boolean,
