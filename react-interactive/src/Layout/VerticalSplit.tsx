@@ -91,7 +91,7 @@ const VerticalSplit: React.FunctionComponent<IProps> = (props) => {
     React.useEffect(() => {
         let drawerMargin = 0;
         if (drawer.some((d) => d.props.ShowClosed === undefined || d.props.ShowClosed))
-            drawerMargin = 20;
+            drawerMargin = 5;
 
         drawerMargin = drawerMargin + elements.reduce((s,e) => s + (e.IsDrawer && e.Open? 20 : 0), 0);
 
@@ -237,7 +237,7 @@ const VerticalSplit: React.FunctionComponent<IProps> = (props) => {
 
         let i = 0;
         _.orderBy(elements,(e) => e.Order).forEach((e,index) => {
-            const w = Math.floor(scaling* e.Width);
+            const w = Math.floor(scaling * e.Width);
             if (e.IsDrawer && !e.Open)
                 return;
             if (e.IsDrawer)
