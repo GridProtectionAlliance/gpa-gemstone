@@ -20,8 +20,6 @@
 //       Generated original version of source code.
 //
 // ******************************************************************************************************
-import * as React from 'react';
-
 namespace Application{
     export namespace Types{
 

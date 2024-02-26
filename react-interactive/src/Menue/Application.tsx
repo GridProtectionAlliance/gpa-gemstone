@@ -47,7 +47,7 @@ interface IProps {
     children?: React.ReactNode
 }
 
-export interface IApplicationRefs {
+interface IApplicationRefs {
     mainDiv: HTMLDivElement | null;
     navBarDiv: HTMLDivElement | null;
 }
