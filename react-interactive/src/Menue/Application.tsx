@@ -99,7 +99,7 @@ const Applications: React.ForwardRefRenderFunction<IApplicationRefs, IProps> = (
     const [navBarHeight, setNavBarHeight] = React.useState<number>(40);
 
     React.useLayoutEffect(() => {
-        if (navBarRef?.current)
+        if (navBarRef?.current && navBarRef?.current?.offsetHeight !== navBarHeight)
             setNavBarHeight(navBarRef.current.offsetHeight)
     }, [props?.children]);
 
