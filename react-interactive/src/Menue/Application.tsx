@@ -43,8 +43,7 @@ interface IProps {
     AllowCollapsed?: boolean
     NavBarContent?: React.ReactNode,
     HideSideBar?: boolean,
-    UseLegacyNavigation?: boolean,
-    children?: React.ReactNode
+    UseLegacyNavigation?: boolean
 }
 
 interface IApplicationRefs {
@@ -53,7 +52,7 @@ interface IApplicationRefs {
 }
 
 interface INavProps { collapsed: boolean }
-interface IMainDivProps { w: number, h: number }
+interface IMainDivProps { left: number, top: number }
 const SidebarNav = styled.nav <INavProps>`
   & {
     position: fixed;
@@ -75,18 +74,18 @@ const SidebarDiv = styled.div`
 
 const MainDiv = styled.div<IMainDivProps>`
 & {
-    top: ${props => props.h}px;
+    top: ${props => props.top}px;
     position: absolute;
-    width: calc(100% - ${props => props.w}px);
-    height: calc(100% - ${props => props.h}px);
+    width: calc(100% - ${props => props.left}px);
+    height: calc(100% - ${props => props.top}px);
     overflow: hidden;
-    left: ${props => props.w}px;
+    left: ${props => props.left}px;
 }
 & svg {
     user-select: none;
  }`;
 
-const Applications: React.ForwardRefRenderFunction<IApplicationRefs, IProps> = (props, ref) => {
+const Applications: React.ForwardRefRenderFunction<IApplicationRefs, React.PropsWithChildren<IProps>> = (props, ref) => {
     const [collapsed, setCollapsed] = React.useState<boolean>(false)
     const navBarRef = React.useRef<HTMLDivElement>(null);
     const mainDivRef = React.useRef<HTMLDivElement>(null);
@@ -164,11 +163,12 @@ const Applications: React.ForwardRefRenderFunction<IApplicationRefs, IProps> = (
                         ShowOpen={showOpen}
                         ShowClose={showClose}
                         HideSide={hideSide}
+                        NavBarContent={props.NavBarContent}
                         ref={navBarRef}
                     >
                         {props.children}
                     </HeaderContent>
-                    <MainDiv w={hideSide ? 0 : (collapsed ? 50 : 200)} h={navBarHeight}>
+                    <MainDiv left={hideSide ? 0 : (collapsed ? 50 : 200)} top={navBarHeight}>
                         <Routes>
                             <Route path={`${props.HomePath}`}>
                                 <Route index element={<Navigate to={`${props.HomePath}${props.DefaultPath}`} />} />
@@ -209,7 +209,7 @@ const Applications: React.ForwardRefRenderFunction<IApplicationRefs, IProps> = (
                     >
                         {props.children}
                     </HeaderContent>
-                    <MainDiv w={hideSide ? 0 : (collapsed ? 50 : 200)} h={navBarHeight}>
+                    <MainDiv left={hideSide ? 0 : (collapsed ? 50 : 200)} top={navBarHeight}>
                         {props.children}
                     </MainDiv>
                 </div>}
@@ -217,7 +217,7 @@ const Applications: React.ForwardRefRenderFunction<IApplicationRefs, IProps> = (
     </React.Suspense>;
 };
 
-export default React.forwardRef<IApplicationRefs, IProps>(Applications);
+export default React.forwardRef<IApplicationRefs, React.PropsWithChildren<IProps>>(Applications);
 
 interface IHeaderProps {
     Collapsed: boolean,
