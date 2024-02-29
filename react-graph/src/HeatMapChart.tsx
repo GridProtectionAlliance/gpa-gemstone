@@ -82,8 +82,9 @@ function HeatMapChart(props: IProps) {
     }, [data, context.XTransformation, props.sampleMs]);
 
    const createLegend = React.useCallback(() => {
-        return <HeatLegend 
+        return <HeatLegend size='lg'
             unitLabel={props.legendUnit}
+            enabled={true}
             minColor={HsvToHex(props.hue, props.saturation, 1)} maxColor={HsvToHex(props.hue, props.saturation, 0)}
             minValue={zLimits[0]} maxValue={zLimits[1]}/>;
     }, [props.legendUnit, zLimits, props.hue, props.saturation]);
@@ -98,7 +99,7 @@ function HeatMapChart(props: IProps) {
         context.UpdateData(guid, {
             axis: props.axis,
             legend: createLegend(),
-            legendSize: 'lg',
+            enabled: true,
             getMax: (t) => (data == null ? -Infinity : data.GetLimits(t[0],t[1],0)[1]),
             getMin: (t) => (data == null ?  Infinity : data.GetLimits(t[0],t[1],0)[0]),
         } as IDataSeries);
@@ -108,7 +109,7 @@ function HeatMapChart(props: IProps) {
         const id = context.AddData({
             axis: props.axis,
             legend: createLegend(),
-            legendSize: 'lg',
+            enabled: false,
             getMax: (t) => (data == null ? -Infinity : data.GetLimits(t[0],t[1],0)[1]),
             getMin: (t) => (data == null ?  Infinity : data.GetLimits(t[0],t[1],0)[0]),
         } as IDataSeries);

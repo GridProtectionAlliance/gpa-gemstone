@@ -25,7 +25,7 @@
 import * as React from 'react';
 import * as _ from 'lodash';
 import InteractiveButtons from './InteractiveButtons';
-import {IDataSeries, IHandlers, ContextWrapper, IActionFunctions, AxisIdentifier, AxisMap} from './GraphContext';
+import {IDataSeries, IHandlers, ContextWrapper, IActionFunctions, AxisIdentifier, AxisMap, SelectType} from './GraphContext';
 import {CreateGuid} from '@gpa-gemstone/helper-functions';
 import {cloneDeep, isEqual} from 'lodash';
 import TimeAxis from './TimeAxis';
@@ -51,6 +51,8 @@ const html2canvas: any = _html2canvas;
 export interface IProps {
     defaultTdomain: [number, number],
     defaultYdomain?: [number,number] | [number,number][],
+    yDomain?: 'Manual'|'AutoValue'|'HalfAutoValue',
+    limitZoom?: boolean
     height: number,
     width: number,
 
@@ -64,21 +66,21 @@ export interface IProps {
     Tlabel?: string,
     Ylabel?: string|string[],
     holdMenuOpen?: boolean,
-    moveMenuLeft?: boolean,
+    menuLocation?: 'left' | 'right' | 'hide',
     legend?: 'hidden'| 'bottom' | 'right',
-    showMouse: boolean,
+    // Boolean arguements deprecated
+    showMouse?: boolean | 'horizontal' | 'vertical' | 'none',
     legendHeight?: number,
     legendWidth?: number,
     useMetricFactors?: boolean,
     showDateOnTimeAxis?: boolean,
     cursorOverride?: string,
     onSelect?: (x: number, y: number[], actions: IActionFunctions) => void,
-    showDivCapture?: boolean,
-    divCaptureId?: string,
+    onCapture?: (legendHeightRequired: number) => string | undefined,
+    onCaptureComplete?: () => void,
     onDataInspect?: (tDomain: [number,number]) => void,
     Ymin?: number | number[],
     Ymax?: number | number[],
-    zoomMode?: 'Time'|'Rect'|'AutoValue'|'HalfAutoValue',
     snapMouse?: boolean
 }
 
@@ -97,12 +99,25 @@ const defaultLegendHeight = 50;
 const defaultLegendWidth = 100;
 
 const Plot: React.FunctionComponent<IProps> = (props) => {
+    // Type correcting functions to convert props into something usable
+    const typeCorrect: <T>(arg: T | T[] | undefined, arrayIndex: number) => T|undefined = React.useCallback((arg, arrayIndex) => {
+      if (arg == null) return undefined;
+      if (!Object.prototype.hasOwnProperty.call(arg, 'length')) return (arrayIndex === 0 ? arg : undefined);
+      return (arg as any)[arrayIndex];
+    }, []);
+    const typeCorrectDomain = React.useCallback((arg: [number, number] | [number, number][] | undefined): [number,number][]=> {
+      if (arg === undefined || arg.length === 0) return [[0,1], [0,1]];
+      if (typeof(arg[0]) === 'number') return [arg,[0,1]] as [number, number][];
+      return (arg as [number, number][]);
+    }, []);
     /*
       Actual plot that will handle Axis etc.
     */
     const SVGref = React.useRef<any>(null);
     const handlers = React.useRef<Map<string,IHandlers>>(new Map<string, IHandlers>());
     const wheelTimeout = React.useRef<{timeout?: NodeJS.Timeout, stopScroll: boolean}>({timeout: undefined, stopScroll: false});
+    const heightChange = React.useRef<{timeout?: NodeJS.Timeout, extraNeeded: number, captureID?: string}>(
+      {timeout: undefined, extraNeeded: 0, captureID: undefined});
     const widthTimeout = React.useRef<{timeout?: NodeJS.Timeout, requesterMap: Map<string,number>}>({timeout: undefined, requesterMap: new Map<string,number>()});
     
     const guid = React.useMemo(() => CreateGuid(),[]);
@@ -118,8 +133,8 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
     // ToDo: This is hardset to two because it's tied to display, 'left' and 'right'
     const [yHasData, setYHasData] = React.useState<boolean[]>(Array(2).fill(0));
 
-    const [mouseMode, setMouseMode] = React.useState<'none' | 'zoom' | 'pan' | 'select'>('none');
-    const [selectedMode, setSelectedMode] = React.useState<'pan' | 'zoom' | 'select'>('zoom');
+    const [mouseMode, setMouseMode] = React.useState<'none' | SelectType>('none');
+    const [selectedMode, setSelectedMode] = React.useState<SelectType>('zoom-rectangular');
     const [mouseIn, setMouseIn] = React.useState<boolean>(false);
     const [mousePosition, setMousePosition] = React.useState<[number, number]>([0, 0]);
     const [mousePositionSnap, setMousePositionSnap] = React.useState<[number, number]>([0, 0]);
@@ -134,6 +149,8 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
     const [offsetLeft, setOffsetLeft] = React.useState<number>(5);
     const [offsetRight, setOffsetRight] = React.useState<number>(5);
 
+    const [toolBarX, setToolBarX] = React.useState<number>(12);
+
     const [heightYFactor, setHeightYFactor] = React.useState<number>(0);
     const [heightXLabel, setHeightXLabel] = React.useState<number>(0);
     const [heightLeftYLabel, setHeightLeftYLabel] = React.useState<number>(0);
@@ -141,28 +158,15 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
 
     // States for Props to avoid change notification on ref change
     const [defaultTdomain, setDefaultTdomain]= React.useState<[number,number]>(props.defaultTdomain);
-    const [defaultYdomain, setDefaultYdomain] = React.useState<[number,number]|[number,number][]|undefined>(props.defaultYdomain);
+    const [defaultYdomain, setDefaultYdomain] = React.useState<[number,number][]>(typeCorrectDomain(props.defaultYdomain));
     const [updateFlag, setUpdateFlag] = React.useState<number>(0);
 
     const [legendHeight, setLegendHeight] = React.useState<number>(props.legendHeight ?? defaultLegendHeight);
     const [legendWidth, setLegendWidth] = React.useState<number>(props.legendWidth ?? defaultLegendWidth);
     const [svgHeight, setSVGheight] = React.useState<number>(props.height);
     const [svgWidth, setSVGwidth] = React.useState<number>(props.width);
-    
-    const zoomMode = props.zoomMode === undefined? 'AutoValue' : props.zoomMode;
 
-    // Type correcting functions to convert props into something usable
-    const typeCorrect: <T>(arg: T | T[] | undefined, arrayIndex: number) => T|undefined = (arg, arrayIndex) => {
-      if (arg == null) return undefined;
-      if (!Object.prototype.hasOwnProperty.call(arg, 'length')) return (arrayIndex === 0 ? arg : undefined);
-      return (arg as any)[arrayIndex];
-    }
-    const typeCorrectDomain = (arg: [number, number] | [number, number][] | undefined, arrayIndex: number): [number,number] | undefined => {
-      if (arg === undefined || arg.length === 0) return undefined;
-      if (typeof(arg[0]) === 'number') return (arrayIndex === 0 ? arg as [number, number] : undefined);
-      return (arg as [number, number][])[arrayIndex];
-    }
-    const applyToYDomain = (predicate: (domain: [number,number], axis: number, allDomains: [number, number][]) => boolean): void => {
+    const applyToYDomain = React.useCallback((predicate: (domain: [number,number], axis: number, allDomains: [number, number][]) => boolean): void => {
       const newDomain = [...yDomain];
       let apply = false;
       newDomain.forEach((d,i,a) => {
@@ -172,7 +176,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
       if (apply){
         setYdomain(newDomain);
       }
-    }
+    }, [yDomain]);
 
     // Effect to Reset the legend width/height
     React.useEffect(() => {
@@ -198,7 +202,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
         setTdomain((t) => ([props.Tmin?? 0, t[1]]));
       if (props.Tmax !== undefined && tDomain[1] > props.Tmax)
         setTdomain((t) => ([t[0], props.Tmax?? 0]));
-    }, [tDomain])
+    }, [tDomain]);
 
     // enforce Y limits
     React.useEffect(() => {
@@ -227,22 +231,21 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
 
     React.useEffect(() => {
       if (!isEqual(defaultYdomain, props.defaultYdomain))
-        setDefaultYdomain(props.defaultYdomain);
+        setDefaultYdomain(typeCorrectDomain(props.defaultYdomain));
     }, [props.defaultYdomain])
     
-
     React.useEffect(() => {
       setTdomain(defaultTdomain);
     }, [defaultTdomain])
 
     React.useEffect(() => {
-      ResetYDomain();
+      setYdomain(defaultYdomain);
     }, [defaultYdomain])
 
     // Adjust top and bottom Offset
     React.useEffect(() => {
       const top = heightYFactor + 10;
-      const bottom = heightXLabel + 10;
+      const bottom = heightXLabel;
       if (offsetTop !== top)
         setOffsetTop(top);
       if (offsetBottom !== bottom)
@@ -251,45 +254,46 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
 
     // Adjust Left Offset
     React.useEffect(() => {
-      const left = heightLeftYLabel + 10;
+      const left = heightLeftYLabel + (props.menuLocation === 'left' ? 28 : 10);
       if (offsetLeft !== left)
         setOffsetLeft(left);
-    }, [heightLeftYLabel]);
+    }, [heightLeftYLabel, props.menuLocation]);
 
     // Adjust Right Offset
     React.useEffect(() => {
-      const right = heightRightYLabel + 10;
+      const right = heightRightYLabel + (props.menuLocation === 'right' ? 28 : 10);
       if (offsetRight !== right)
         setOffsetRight(right);
-    }, [heightRightYLabel]);
+    }, [heightRightYLabel, props.menuLocation]);
 
-    // Adjust Y domain
+    // Adjust Y domain defaults
     React.useEffect(() => {
-      const mutateDomain = (domain: [number,number], axis: number, allDomains: [number, number][]): boolean => {
-        if (zoomMode === 'AutoValue' || zoomMode === 'HalfAutoValue') {
-          const dataReducerFunc = (result: number[], series: IDataSeries, func: (tDomain: [number, number]) => number|undefined) => {
-            // This part of the data may not belong to the axis we care about at the moment
-            const dataAxis = AxisMap.get(series.axis);
-            if (axis === dataAxis) {
-              const value =  func(tDomain);
-              if (value !== undefined) result.push(value);
-            }
-            return result;
-          }
-          const yMin = Math.min(...[...data.values()].reduce((result: number[], series: IDataSeries) => dataReducerFunc(result, series, series.getMin), []));
-          const yMax = Math.max(...[...data.values()].reduce((result: number[], series: IDataSeries) => dataReducerFunc(result, series, series.getMax), []));
-          if (!isNaN(yMin) && !isNaN(yMax) && isFinite(yMin) && isFinite(yMax)) {
-            if (zoomMode === 'AutoValue') allDomains[axis] = [yMin, yMax];
-            // If this condition is satisfied, it means our series is mostly positive range
-            else if (Math.abs(yMax) >= Math.abs(yMin)) allDomains[axis] = [0, yMax];
-            else allDomains[axis] = [yMin, 0];
-            return true;
-          }
+      if (props.yDomain !== 'AutoValue' && props.yDomain !== 'HalfAutoValue') return;
+
+      const dataReducerFunc = (result: number[], series: IDataSeries, func: (tDomain: [number, number]) => number|undefined, axis: number) => {
+        // This part of the data may not belong to the axis we care about at the moment
+        const dataAxis = AxisMap.get(series.axis);
+        if (axis === dataAxis) {
+          const value =  func([Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER]);
+          if (value !== undefined) result.push(value);
         }
-        return false;
+        return result;
       }
-      applyToYDomain(mutateDomain);
-    }, [tDomain, data]);
+
+      const newDefaultDomain: [number, number][] = defaultYdomain.map((yDomain, axis) => {
+        const yMin = Math.min(...[...data.values()].reduce((result: number[], series: IDataSeries) => dataReducerFunc(result, series, series.getMin, axis), []));
+        const yMax = Math.max(...[...data.values()].reduce((result: number[], series: IDataSeries) => dataReducerFunc(result, series, series.getMax, axis), []));
+        if (!isNaN(yMin) && !isNaN(yMax) && isFinite(yMin) && isFinite(yMax)) {
+          if (props.yDomain === 'AutoValue') return [yMin, yMax];
+          // If this condition is satisfied, it means our series is mostly positive range
+          else if (Math.abs(yMax) >= Math.abs(yMin)) return [0, yMax];
+          else return [yMin, 0];
+        }
+        return [0,1];
+      });
+
+      if (!_.isEqual(newDefaultDomain, defaultYdomain)) setDefaultYdomain(newDefaultDomain);
+    }, [data, props.yDomain]);
 
     React.useEffect(() => {
       const newHasData: boolean[] = Array<boolean>(2);
@@ -350,7 +354,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
             newCursor = 'pointer';
             break;
           default:
-            newCursor = 'default';
+            newCursor = 'crosshair';
         }
       } else newCursor = props.cursorOverride;
       setMouseStyle(newCursor);
@@ -365,8 +369,13 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
 
   // Execute Plot Capture and leave photo mode
   React.useEffect(() => {
-    if (photoReady){
-      const id = props.divCaptureId ?? guid;
+    // ToDo: We can clean this up some and improve performance using html2canvas options (but the biggest hurdle is the legend, which we don't have a lot of options for...)
+    if (!photoReady) return;
+    // we can't immediately complete the request, since some layout things may still be changing...
+    clearTimeout(heightChange.current.timeout);
+    // timeout to set if we don't see any more changes within 0.05 seconds
+    heightChange.current.timeout = setTimeout(() => {
+      const id = heightChange.current.captureID ?? guid;
       const element = document.getElementById(id);
       if (element == null) {
         console.error(`Could not find document element with id ${id}`);
@@ -385,16 +394,19 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
           document.body.removeChild(canvas);
         });
       }
-    setPhotoReady(false);
-    }
-  }, [photoReady]);
-
+      setPhotoReady(false);
+      if (props.onCaptureComplete !== undefined) props.onCaptureComplete();
+    }, 50);
+  });
+  
   // requests new legend height/width upto a defined maximum set by props
   const requestLegendHeightChange = React.useCallback((newHeight: number) =>  {
+    const heightLimit = props.legend !== 'bottom' ? svgHeight : (props.legendHeight ?? defaultLegendHeight);
+    if (!photoReady) heightChange.current.extraNeeded = Math.max(newHeight - heightLimit, 0);
     if (props.legend !== 'bottom') return;
-    const limitedHeight = Math.min(newHeight, props.legendHeight ?? defaultLegendHeight);
+    const limitedHeight = Math.min(newHeight, heightLimit);
     if (legendHeight !== limitedHeight) setLegendHeight(limitedHeight);
-  },[props.legendHeight, setLegendHeight, legendHeight, props.legend]);
+  },[props.legendHeight, setLegendHeight, legendHeight, props.legend, photoReady]);
 
   const requestLegendWidthChange = React.useCallback((newWidth: number, requesterID: string) =>  {
     if (newWidth < 0) {
@@ -428,23 +440,10 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
       return (p - yOffset[axis]) / yScale[axis];
     },[yOffset,yScale]);
 
-    function Reset(): void {
+    const Reset = React.useCallback(() => {
       setTdomain(defaultTdomain);
-      ResetYDomain();
-    }
-
-    function ResetYDomain(): void {
-      const mutateDomain = (domain: [number,number], axis: number, allDomains: [number, number][]): boolean => {
-        // Need to type correct our arguements
-        const defaults: [number, number] | undefined = typeCorrectDomain(defaultYdomain, axis);
-        if (defaults !== undefined && zoomMode !== 'AutoValue' && zoomMode !== 'HalfAutoValue') {
-          allDomains[axis] = defaults;
-          return true;
-        }
-        return false;
-      }
-      applyToYDomain(mutateDomain);
-    }
+      setYdomain(defaultYdomain);
+    }, [defaultYdomain, defaultTdomain]);
 
     // new X transformation from x value into Pixels
     const xTransform = React.useCallback((value: number) => {
@@ -492,7 +491,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
         setData((fld) => { const updated = cloneDeep(fld); updated.delete(d); return updated;})
     },[]);
 
-    const setLegend = React.useCallback((key: string, legend?:  HTMLElement| React.ReactElement| JSX.Element) =>  {
+    const setLegend = React.useCallback((key: string, legend?: React.ReactElement) =>  {
         setData((fld) => {
           const updated = cloneDeep(fld);
           const series = updated.get(key);
@@ -504,19 +503,23 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
         });
     }, []);
 
-    function snapMouseToClosestSeries(pixelPt: {x: number, y: number}) {
-      const findClosestPoint = (result: { x: number, y: number, distSqr: number|undefined }, series: IDataSeries) => {
-        if (series.getPoint != null) {
-          const pt = series.getPoint(xInvTransform(pixelPt.x));
-          if (pt === undefined) return result;
-          const ptPixel = [xTransform(pt[0]), yTransform(pt[1], AxisMap.get(series.axis))];
-          const distSqr = (ptPixel[1]-pixelPt.y)^2+(ptPixel[0]-pixelPt.x)^2;
-          if (result.distSqr === undefined || distSqr < result.distSqr)
-            return {x: ptPixel[0], y: ptPixel[1], distSqr: distSqr};
-        }
+    function snapMouseToClosestSeries(pixelPt: {x:number, y:number}): {x:number, y:number} {
+      const xVal = xInvTransform(pixelPt.x);
+      const findClosestPoint = (result: { pt: {x:number, y:number}, distSq: number|undefined }, series: IDataSeries) => {
+        const pointArray = series.getPoints(xVal, 7);
+        if (pointArray === undefined) return result;
+        const ptArrayResult = pointArray.reduce((result: { pt: {x:number, y:number}, distSq: number|undefined}, pt) => {
+          const point = [xTransform(pt[0]), yTransform(pt[1], AxisMap.get(series.axis))];
+          const newDistSq = (point[0] - pixelPt.x)**2 + (point[1] - pixelPt.y)**2;
+          if (result.distSq === undefined || newDistSq < result.distSq) return {pt: { x: point[0], y: point[1]}, distSq: newDistSq};
+          return result;
+
+        }, { pt: {x:0, y:0}, distSq: undefined });
+        if (ptArrayResult.distSq !== undefined && (result.distSq === undefined || ptArrayResult.distSq < result.distSq)) return ptArrayResult;
         return result;
       }
-      return [...data.values()].reduce((result: { x: number, y: number, distSqr: number|undefined }, series: IDataSeries) => findClosestPoint(result, series), { x: 0, y: 0, distSqr: undefined });
+      
+      return [...data.values()].reduce((result: { pt: {x:number, y:number}, distSq: number|undefined}, series) => findClosestPoint(result, series), { pt: {x:0, y:0}, distSq: undefined }).pt;
     }
 
     const registerSelect = React.useCallback((handler: IHandlers) => {
@@ -536,14 +539,35 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
     const setSelection = React.useCallback((s: string) => {
       if (s === "reset") Reset();
       else if (s === "download") { if (props.onDataInspect !== undefined) props.onDataInspect(tDomain); }
-      else if (s === "capture") setPhotoReady(true);
-      else setSelectedMode(s as ('zoom'|'pan'|'select'))
+      else if (s === "capture") {
+        setPhotoReady(true);
+        if (props.onCapture !== undefined) heightChange.current.captureID = props.onCapture(heightChange.current.extraNeeded);
+      }
+      else setSelectedMode(s as ('zoom-rectangular' | 'zoom-vertical' | 'zoom-horizontal' | 'pan' | 'select'))
     }, [tDomain, Reset, props.onDataInspect]);
+
+    const getConstrainedYDomain = React.useCallback((newTDomain: [number, number]): [number,number][] => {
+      const dataReducerFunc = (result: number[], series: IDataSeries, func: (tDomain: [number, number]) => number|undefined, axis: number) => {
+        // This part of the data may not belong to the axis we care about at the moment
+        const dataAxis = AxisMap.get(series.axis);
+        if (axis === dataAxis) {
+          const value =  func(newTDomain);
+          if (value !== undefined) result.push(value);
+        }
+        return result;
+      }
+      return yDomain.map((oldDomain, axis) => {
+        const yMin = Math.min(...[...data.values()].reduce((result: number[], series: IDataSeries) => dataReducerFunc(result, series, series.getMin, axis), []));
+        const yMax = Math.max(...[...data.values()].reduce((result: number[], series: IDataSeries) => dataReducerFunc(result, series, series.getMax, axis), []));
+        if (!isNaN(yMin) && !isNaN(yMax) && isFinite(yMin) && isFinite(yMax)) return [yMin, yMax];
+        return yDomain[axis];
+      });
+    }, [data, yDomain]);
 
     function handleMouseWheel(evt: any) {
           if (props.zoom !== undefined && !props.zoom)
               return;
-          if (!(selectedMode === 'zoom'))
+          if (!selectedMode.includes('zoom'))
               return;
           if (!mouseIn)
               return;
@@ -562,26 +586,32 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
           // event.deltaY positive is wheel down or out and negative is wheel up or in
           if (evt.deltaY < 0) multiplier = 0.75;
 
-          let x0 = xTransform(tDomain[0]);
-          let x1 = xTransform(tDomain[1]);
-
-          if (mousePosition[0] < offsetLeft) 
-              x1 = multiplier * (x1 - x0) + x0;
-          
-          else if (mousePosition[0] > (svgWidth - offsetRight)) 
-              x0 = x1 - multiplier * (x1 - x0);
-          
-          else {
-              const Xcenter = mousePosition[0];
-              x0 = Xcenter - (Xcenter - x0) * multiplier;
-              x1 = Xcenter + (x1 - Xcenter) * multiplier;
+          if (selectedMode !== 'zoom-horizontal'){
+            let x0 = xTransform(tDomain[0]);
+            let x1 = xTransform(tDomain[1]);
+            if (mousePosition[0] < offsetLeft) 
+                x1 = multiplier * (x1 - x0) + x0;
+            else if (mousePosition[0] > (svgWidth - offsetRight)) 
+                x0 = x1 - multiplier * (x1 - x0);
+            else {
+                const Xcenter = mousePosition[0];
+                x0 = Xcenter - (Xcenter - x0) * multiplier;
+                x1 = Xcenter + (x1 - Xcenter) * multiplier;
+            }
+            if ((x1-x0) > 10) {
+              let newTDomain: [number,number];
+              if (props.limitZoom ?? false) newTDomain = [Math.max(defaultTdomain[0],xInvTransform(x0)), Math.min(defaultTdomain[1], xInvTransform(x1))]
+              else newTDomain = [xInvTransform(x0), xInvTransform(x1)];
+              if (selectedMode === 'zoom-vertical') {
+                const newYDomain = getConstrainedYDomain(newTDomain);
+                if (!_.isEqual(newYDomain, yDomain)) setYdomain(newYDomain);
+              }
+              setTdomain(newTDomain);
+            }
           }
-
-          if ((x1-x0) > 10)
-            setTdomain([xInvTransform(x0), xInvTransform(x1)])
         
-          if (zoomMode === 'Rect') {
-            const zoomYAxis = (domain: [number,number], axis: number, allDomains: [number, number][]): boolean => {
+          if (selectedMode !== 'zoom-vertical') {
+            const newYDomain = yDomain.map((domain: [number,number], axis: number, allDomains: [number, number][]): [number,number] => {
               let y0 = yTransform(domain[0], axis);
               let y1 = yTransform(domain[1], axis);
   
@@ -598,12 +628,15 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
               }
   
               if (Math.abs(y1-y0) > 10) {
-                allDomains[axis] = [yInvTransform(y0, axis), yInvTransform(y1, axis)];
-                return true;
+                if (props.limitZoom ?? false) return [Math.max(defaultYdomain[axis][0],yInvTransform(y0, axis)), Math.min(defaultYdomain[axis][1], yInvTransform(y1, axis))];
+                return [yInvTransform(y0, axis), yInvTransform(y1, axis)];
               }
-              return false;
+              return domain;
+            });
+            if (!_.isEqual(newYDomain, yDomain)) {
+              // todo: added contraint to t domain when mode is zoom-horizontal
+              setYdomain(newYDomain);
             }
-            applyToYDomain(zoomYAxis);
           }
       }
 
@@ -623,32 +656,30 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
       const ptTransform = pt.matrixTransform(SVGref.current!.getScreenCTM().inverse());
 
       if (mouseMode === 'pan') {
-          const dP = mousePosition[0] - ptTransform.x;
-          const Plower = xTransform(tDomain[0]);
-          const Pupper = xTransform(tDomain[1])
-          const Tmin = xInvTransform(Plower + dP);
-          const Tmax = xInvTransform(Pupper + dP);
-          if (
-            (props.Tmin === undefined || Tmin >  props.Tmin) && 
-            (props.Tmax === undefined || Tmax < props.Tmax))
-            setTdomain([Tmin, Tmax]);
+        const dP = mousePosition[0] - ptTransform.x;
+        const Plower = xTransform(tDomain[0]);
+        const Pupper = xTransform(tDomain[1])
+        const Tmin = xInvTransform(Plower + dP);
+        const Tmax = xInvTransform(Pupper + dP);
+        if (
+          (props.Tmin === undefined || Tmin >  props.Tmin) && 
+          (props.Tmax === undefined || Tmax < props.Tmax))
+          setTdomain([Tmin, Tmax]);
 
-        if (zoomMode === 'Rect') {
-          const zoomYAxis = (domain: [number,number], axis: number, allDomains: [number, number][]): boolean => {
-            const dY = yInvTransform(mousePosition[1], axis) - yInvTransform(ptTransform.y, axis);
-            // Need to type correct our arguements
-            const propMin: number | undefined = typeCorrect<number>(props.Ymin, axis);
-            const propMax: number | undefined = typeCorrect<number>(props.Ymax, axis);
-            if (
-              (propMin === undefined || domain[0] + dY >  propMin) && 
-              (propMax === undefined || domain[1] + dY < propMax)) {
-                allDomains[axis] = [domain[0] + dY, domain[1] + dY];
-                return true;
-              }
-            return false;
-          }
-          applyToYDomain(zoomYAxis);
+        const zoomYAxis = (domain: [number,number], axis: number, allDomains: [number, number][]): boolean => {
+          const dY = yInvTransform(mousePosition[1], axis) - yInvTransform(ptTransform.y, axis);
+          // Need to type correct our arguements
+          const propMin: number | undefined = typeCorrect<number>(props.Ymin, axis);
+          const propMax: number | undefined = typeCorrect<number>(props.Ymax, axis);
+          if (
+            (propMin === undefined || domain[0] + dY >  propMin) && 
+            (propMax === undefined || domain[1] + dY < propMax)) {
+              allDomains[axis] = [domain[0] + dY, domain[1] + dY];
+              return true;
+            }
+          return false;
         }
+        applyToYDomain(zoomYAxis);
       }
       setMousePosition([ptTransform.x, ptTransform.y]);
       // Here on mouse is snapped (if neccessary)
@@ -669,8 +700,8 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
         pt.y = evt.clientY;
         const ptTransform = pt.matrixTransform(SVGref.current!.getScreenCTM().inverse())
         setMouseClick([ptTransform.x, ptTransform.y]);
-        if (selectedMode === 'zoom' && (props.zoom === undefined || props.zoom))
-            setMouseMode('zoom');
+        if (selectedMode.includes('zoom') && (props.zoom === undefined || props.zoom))
+            setMouseMode(selectedMode);
         if (selectedMode === 'pan' && (props.pan === undefined || props.pan)) {
             setMouseMode('pan');
             setMouseStyle('grabbing');
@@ -693,29 +724,37 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
           handlers.current.forEach((v) => (v.onClick !== undefined? v.onClick(xInvTransform(v.allowSnapping ? ptFinal.x : ptTransform.x), yInvTransform(v.allowSnapping ? ptFinal.y : ptTransform.y, v.axis)) : null));
     }
 
-    function handleMouseUp(_: any) {
+    function handleMouseUp() {
       if (selectedMode === 'pan' && (props.pan === undefined || props.pan))
           setMouseStyle('grab');
-      if (mouseMode === 'zoom') {
+      if (mouseMode.includes('zoom')) {
 
-          if (Math.abs(mousePosition[0] - mouseClick[0]) < 10) {
+          if ((Math.abs(mousePosition[0] - mouseClick[0]) < 10) && (Math.abs(mousePosition[1] - mouseClick[1]) < 10)) {
               setMouseMode('none');
               return;
           }
 
-          const t0 = Math.min(xInvTransform(mousePosition[0]), xInvTransform(mouseClick[0]));
-          const t1 = Math.max(xInvTransform(mousePosition[0]), xInvTransform(mouseClick[0]));
+          if (mouseMode !== 'zoom-horizontal'){
+            const t0 = Math.min(xInvTransform(mousePosition[0]), xInvTransform(mouseClick[0]));
+            const t1 = Math.max(xInvTransform(mousePosition[0]), xInvTransform(mouseClick[0]));
+            const newTDomain: [number,number]  = [Math.max(tDomain[0], t0), Math.min(tDomain[1], t1)];
+            if (selectedMode === 'zoom-vertical') {
+              const newYDomain = getConstrainedYDomain(newTDomain);
+              if (!_.isEqual(newYDomain, yDomain)) setYdomain(newYDomain);
+            }
+            setTdomain(newTDomain);
+          }
 
-          setTdomain((curr) =>  [Math.max(curr[0], t0), Math.min(curr[1], t1)]);
-
-          if (zoomMode === 'Rect') {
-            const zoomYAxis = (domain: [number,number], axis: number, allDomains: [number, number][]): boolean => {
+          if (mouseMode !== 'zoom-vertical') {
+            const newYDomain = yDomain.map((domain: [number,number], axis: number, allDomains: [number, number][]): [number, number] => {
               const y0 = Math.min(yInvTransform(mousePosition[1], axis), yInvTransform(mouseClick[1], axis));
               const y1 = Math.max(yInvTransform(mousePosition[1], axis), yInvTransform(mouseClick[1], axis));
-              allDomains[axis] = [Math.max(domain[0], y0), Math.min(domain[1], y1)];
-              return true;
+              return [Math.max(domain[0], y0), Math.min(domain[1], y1)];
+            });
+            if (!_.isEqual(newYDomain, yDomain)) {
+              // todo: added contraint to t domain when mode is zoom-horizontal
+              setYdomain(newYDomain);
             }
-            applyToYDomain(zoomYAxis);
           }
       }
       setMouseMode('none');
@@ -787,8 +826,6 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
         RegisterSelect={registerSelect}
         RemoveSelect={removeSelect}
         UpdateSelect={updateSelect}
-        RequestLegendWidth={requestLegendWidthChange}
-        RequestLegendHeight={requestLegendHeightChange}
       >
           <div id={guid} style={{ height: props.height, width: props.width, position: 'relative' }}>
               <div style={{ height: svgHeight, width: svgWidth, position: 'absolute', cursor: mouseStyle }}
@@ -824,28 +861,32 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
                                        return element;
                                    return null;
                                })}
-                         {!photoReady && (props.showMouse === undefined || props.showMouse) ?
-                              <path stroke='black' style={{ strokeWidth: 2, opacity: mouseIn? 0.8: 0.0 }} d={`M ${mousePosition[0]} ${offsetTop} V ${svgHeight - offsetBottom}`} />
+                         {!photoReady && (props.showMouse === undefined || (props.showMouse !== 'none' && props.showMouse !== false)) ?
+                              <path stroke='black' style={{ strokeWidth: 2, opacity: mouseIn? 0.8: 0.0 }} d={(props.showMouse !== 'horizontal' ? 
+                                `M ${mousePosition[0]} ${offsetTop} V ${svgHeight - offsetBottom}` :
+                                `M ${offsetLeft} ${mousePosition[1]} H ${svgWidth - offsetRight}`)
+                              } />
                               : null}
-                          {(props.zoom === undefined || props.zoom) && mouseMode === 'zoom' ?
-                              <rect fillOpacity={0.8} fill={'black'} x={Math.min(mouseClick[0], mousePosition[0])}
-                               y={zoomMode === 'Rect'? Math.min(mouseClick[1], mousePosition[1]) : offsetTop} 
-                               width={Math.abs(mouseClick[0] - mousePosition[0])}
-                               height={zoomMode === 'Rect'?  Math.abs(mouseClick[1] - mousePosition[1]) : (svgHeight - offsetTop - offsetBottom)} />
+                          {(props.zoom === undefined || props.zoom) && mouseMode.includes('zoom') ?
+                              <rect fillOpacity={0.8} fill={'black'}
+                               x={mouseMode !== 'zoom-horizontal' ? Math.min(mouseClick[0], mousePosition[0]) : offsetLeft}
+                               y={mouseMode !== 'zoom-vertical' ? Math.min(mouseClick[1], mousePosition[1]) : offsetTop} 
+                               width={mouseMode !== 'zoom-horizontal' ? Math.abs(mouseClick[0] - mousePosition[0]) : (svgWidth - offsetLeft - offsetRight)}
+                               height={mouseMode !== 'zoom-vertical' ? Math.abs(mouseClick[1] - mousePosition[1]) : (svgHeight - offsetTop - offsetBottom)} />
                               : null}
                       </g>
-                      {(photoReady) ? <></> :
+                      {(photoReady || props.menuLocation === 'hide') ? <></> :
                        <InteractiveButtons showPan={(props.pan === undefined || props.pan)}
                         showZoom={props.zoom === undefined || props.zoom}
                         showReset={!(props.pan !== undefined && props.zoom !== undefined && !props.zoom && !props.pan)}
                         showSelect={props.onSelect !== undefined || handlers.current.size > 0}
                         showDownload={props.onDataInspect !== undefined}
-                        showCapture={props.showDivCapture ?? false}
+                        showCapture={props.onCapture !== undefined}
                         currentSelection={selectedMode}
                         setSelection={setSelection}
                         holdOpen={props.holdMenuOpen}
-                        openTowardsRight={props.moveMenuLeft ?? false}
-                        x={(props.moveMenuLeft ?? false) ? (offsetLeft + 12) : (svgWidth - offsetRight - 12)}
+                        heightAvaliable={svgHeight-22}
+                        x={(props.menuLocation === 'left' ? 14 : (svgWidth -14))}
                         y={22} > 
                         {React.Children.map(props.children, (element) => {
                                    if (!React.isValidElement(element))
@@ -858,7 +899,11 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
                       }
                   </svg>
               </div>
-            {props.legend  !== undefined && props.legend !== 'hidden' ? <Legend location={props.legend} height={legendHeight} width={legendWidth} graphWidth={svgWidth} graphHeight={svgHeight} /> : null}
+            {props.legend  !== undefined && props.legend !== 'hidden' ? 
+            <Legend location={props.legend} height={legendHeight} width={legendWidth} graphWidth={svgWidth} graphHeight={svgHeight} 
+            RequestLegendWidth={requestLegendWidthChange} RequestLegendHeight={requestLegendHeightChange} HideDisabled={photoReady}
+            /> 
+            : null}
            </div>
       </ContextWrapper>
   )

@@ -32,7 +32,7 @@ export interface IGraphContext extends IHandlerRegistration, IDataRegistration {
   YHoverSnap: number[],
   YDomain: [number, number][],
 
-  CurrentMode: 'zoom'|'pan'|'select',
+  CurrentMode: SelectType,
   Data: Map<string, IDataSeries>,
   XApplyPixelOffset: (x: number) => number,
   YApplyPixelOffset: (y: number) => number,
@@ -42,9 +42,7 @@ export interface IGraphContext extends IHandlerRegistration, IDataRegistration {
   XInverseTransformation: (p: number) => number,
   YInverseTransformation: (p: number, axis: AxisIdentifier|number) => number,
   SetXDomain: React.SetStateAction<[number,number]> | ((t: [number,number]) => void),
-  SetYDomain:  React.SetStateAction<[number,number]> | ((t: [number,number][]) => void),
-  RequestLegendWidth: (width: number, requesterID: string) => void,
-  RequestLegendHeight: (height: number) => void
+  SetYDomain:  React.SetStateAction<[number,number]> | ((t: [number,number][]) => void)
 }
 
 export const GraphContext = React.createContext({
@@ -74,23 +72,32 @@ export const GraphContext = React.createContext({
   UpdateSelect: (_) => undefined,
   SetXDomain: (_) => undefined,
   SetYDomain: (_: any) => undefined,
-  RequestLegendWidth: (_: number, __: string) => undefined,
-  RequestLegendHeight: (_: number) => undefined,
   UpdateFlag: 0
 } as IGraphContext);
 
 export interface IDataSeries {
   getMin: (tDomain: [number, number]) => number| undefined,
   getMax: (tDomain: [number, number]) => number|undefined,
-  getPoint: (xValue: number) => [...number[]]|undefined,
+  getPoints: (xValue: number, pointsAround?: number) => [...number[]][]|undefined,
+  enabled: boolean,
   axis: AxisIdentifier|undefined,
-  legendSize?: 'sm'|'lg',
-  legend?: HTMLElement| React.ReactElement| JSX.Element
+  legend?: React.ReactElement
 }
 
-export type LineStyle = '-'|':';
+export type LineStyle = '-'|':'|'solid'|'dash'|'short-dash'|'long-dash';
+
+export const LineMap = new Map<LineStyle, string>([
+  ['-', 'none'],
+  ['solid', 'none'],
+  [':', '10,5'],
+  ['short-dash', '10,5'],
+  ['dash', '20,5'],
+  ['long-dash', '30,5']
+]);
+
 export type FillStyle = 'fill';
 export type AxisIdentifier = 'left'|'right'; 
+export type SelectType = 'zoom-rectangular' | 'zoom-vertical' | 'zoom-horizontal' | 'pan' | 'select';
 
 class AxisMapClass<T, U> {
   private mapBase: Map<T, U>;
@@ -126,7 +133,7 @@ export interface IDataRegistration {
   AddData: ((d: IDataSeries) => string),
   RemoveData: (key: string) => void,
   UpdateData: (key: string, d: IDataSeries) => void,
-  SetLegend: (key: string, legend?: HTMLElement| React.ReactElement| JSX.Element) => void,
+  SetLegend: (key: string, legend?: React.ReactElement) => void,
 }
 
 export interface IHandlerRegistration {
@@ -145,7 +152,7 @@ interface IContextWrapperProps extends IHandlerRegistration, IDataRegistration {
   MousePosition: [number,number],
   MousePositionSnap: [number,number],
   YDomain: [number,number][],
-  CurrentMode:  'zoom'|'pan'|'select',
+  CurrentMode: SelectType,
   MouseIn: boolean,
   UpdateFlag: number,
   Data: Map<string, IDataSeries>,
@@ -156,9 +163,7 @@ interface IContextWrapperProps extends IHandlerRegistration, IDataRegistration {
   XInvTransform: (p: number) => number,
   YInvTransform: (p: number, axis: AxisIdentifier|number) => number,
   SetXDomain: (x: [number,number]) => void,
-  SetYDomain: (y: [number, number][]) => void,
-  RequestLegendWidth: (width: number, requesterID: string) => void,
-  RequestLegendHeight: (height: number) => void
+  SetYDomain: (y: [number, number][]) => void
 }
 
 export const ContextWrapper: React.FC<IContextWrapperProps> = (props) => {
@@ -186,9 +191,7 @@ export const ContextWrapper: React.FC<IContextWrapperProps> = (props) => {
     props.SetLegend,
     props.RegisterSelect,
     props.RemoveSelect,
-    props.UpdateSelect,
-    props.RequestLegendWidth,
-    props.RequestLegendHeight,
+    props.UpdateSelect
   ]);
 
   function GetContext(): IGraphContext {
@@ -216,9 +219,7 @@ export const ContextWrapper: React.FC<IContextWrapperProps> = (props) => {
         UpdateSelect: props.UpdateSelect,
         UpdateFlag: props.UpdateFlag,
         SetXDomain: props.SetXDomain,
-        SetYDomain: props.SetYDomain,
-        RequestLegendWidth: props.RequestLegendWidth,
-        RequestLegendHeight: props.RequestLegendHeight,
+        SetYDomain: props.SetYDomain
     } as IGraphContext
   }
 

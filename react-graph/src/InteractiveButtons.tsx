@@ -23,6 +23,7 @@
 
 import * as React from 'react';
 import {MagnifyingGlass, House, Pan, InputNumbers, Point, Scroll} from '@gpa-gemstone/gpa-symbols'
+import {SelectType} from './GraphContext'
 import Button from './Button'
 
 interface IProps {
@@ -32,42 +33,45 @@ interface IProps {
     showSelect: boolean,
     showDownload: boolean,
     showCapture: boolean,
-    currentSelection: 'zoom'|'pan'|'select',
+    currentSelection: SelectType,
     setSelection: (selection: ButtonType) => void,
     x: number,
     y: number,
-    openTowardsRight: boolean,
-    holdOpen?: boolean
+    holdOpen?: boolean,
+    heightAvaliable: number,
+    children: React.ReactNode
 }
 
-type ButtonType = ('zoom' | 'pan' | 'reset' | 'select' | 'download' | 'capture');
+type ButtonType = SelectType | 'reset' | 'download' | 'capture' | 'collaspe' | 'custom';
 type Cleanup = ((() => void) | void);
+const heightPerButton = 25;
 
-const InteractiveButtons: React.FunctionComponent<IProps> = (props) => {
+const InteractiveButtons = React.memo((props: IProps) => {
     const btnCleanup = React.useRef<Cleanup>(undefined);
     const [selectIcon, setSelectIcon] = React.useState<React.ReactElement>(<>{Point}</>);
     const [expand, setExpand] = React.useState<boolean>(props.holdOpen ?? false);
-    const [currentSelect, setCurrentSelect] = React.useState<string>('regular');
+    const [currentSelect, setCurrentSelect] = React.useState<number>(-1);
 
-    const nButtons = React.useMemo(() =>
-      (props.holdOpen? 1 : 0) + 
-      (props.showZoom? 1 : 0) + 
+    const [nButtons, height] = React.useMemo(() => {
+      let nButtons = (props.holdOpen? 1 : 0) + 
+      (props.showZoom? 3 : 0) + 
       (props.showPan? 1 : 0) + 
       (props.showReset? 1 : 0) + 
       (props.showSelect? 1 : 0) + 
       (props.showDownload? 1 : 0) + 
       (props.showCapture? 1 : 0) + 
-      ((props.children == null) ? 0 : React.Children.count(props.children))
-      , [props.holdOpen, props.showZoom, props.showPan, props.showReset, props.showSelect, props.showDownload, props.showCapture, props.children]);
+      ((props.children == null) ? 0 : React.Children.count(props.children));
+      const buttonsAllowed = Math.floor((props.heightAvaliable - 20) / heightPerButton);
+      nButtons = Math.min(nButtons, buttonsAllowed)
+      return [nButtons, heightPerButton*(nButtons - 1)];
+    }, [props.holdOpen, props.showZoom, props.showPan, props.showReset, props.showSelect, props.showDownload, props.showCapture, props.children]);
 
-    const direction = React.useMemo<number>(() => {return props.openTowardsRight ? 1 : -1}, [props.openTowardsRight]);
-
-    const setBtnAndSelect = React.useCallback((newIcon: React.ReactElement, id?: string) => {
+    const setBtnAndSelect = React.useCallback((newIcon: React.ReactElement, id: number) => {
       setSelectIcon(newIcon);
-      setCurrentSelect(id ?? 'regular');
+      setCurrentSelect(id);
       props.setSelection('select');
       collaspeMenu(); 
-    }, [props.setSelection, setSelectIcon, setExpand]);
+    }, [props.setSelection]);
 
     const openTray = React.useCallback((evt: React.MouseEvent) => {
       evt.stopPropagation();
@@ -77,13 +81,15 @@ const InteractiveButtons: React.FunctionComponent<IProps> = (props) => {
     const collaspeMenu = React.useCallback(() => {
       if (!(props.holdOpen ?? false))
         setExpand(false);
-    }, [setExpand, props.holdOpen])
+    }, [props.holdOpen]);
 
-    const displayIcon = React.useCallback(()=>{
+    const displayIcon = React.useMemo(()=>{
       switch(props.currentSelection){
         default:
         case 'pan': return Pan;
-        case 'zoom': return MagnifyingGlass;
+        case 'zoom-rectangular': return MagnifyingGlass;
+        case 'zoom-vertical': return "\u2016";
+        case 'zoom-horizontal': return "\u2550";
         case 'select': return selectIcon;
       } 
     },[selectIcon, props.currentSelection]);
@@ -101,76 +107,93 @@ const InteractiveButtons: React.FunctionComponent<IProps> = (props) => {
             onMouseDown={(evt) => evt.stopPropagation()}
             onMouseUp={(evt) => evt.stopPropagation()} />
           <text fill={'black'} style={{ fontSize: '1em', textAnchor: 'middle', dominantBaseline: 'middle' }} x={props.x} y={props.y}>
-            {displayIcon()}
+            {displayIcon}
           </text>
-        </g>)
+        </g>);
 
-    const width = 25*nButtons - 25;
     const symbols = [] as React.ReactElement[];
     const symbolNames = [] as ButtonType[];
     if (props.holdOpen ?? false) {
       symbolNames.push('collaspe' as ButtonType);
-      symbols.push(<Button onClick={() => setExpand(false)}>{(props.openTowardsRight ?? false) ? "<" : ">"}</Button>)
+      symbols.push(<Button onClick={() => setExpand(false)}>^</Button>)
     }
     if (props.showZoom) {
-      symbolNames.push('zoom' as ButtonType);
-      symbols.push(<Button onClick={() => {props.setSelection('zoom'); collaspeMenu(); }}>{MagnifyingGlass}</Button>)
+      if (nButtons > symbols.length) {
+        symbolNames.push('zoom-rectangular');
+        symbols.push(<Button onClick={() => {props.setSelection('zoom-rectangular'); collaspeMenu(); }}>{MagnifyingGlass}</Button>);
+      }
+      if (nButtons > symbols.length) {
+        symbolNames.push('zoom-vertical');
+        symbols.push(<Button onClick={() => {props.setSelection('zoom-vertical'); collaspeMenu(); }}>{"\u2016"}</Button>);
+      }
+      if (nButtons > symbols.length) {
+        symbolNames.push('zoom-horizontal');
+        symbols.push(<Button onClick={() => {props.setSelection('zoom-horizontal'); collaspeMenu(); }}>{"\u2550"}</Button>);
+      }
     }
-    if (props.showPan) {
-      symbolNames.push('pan' as ButtonType);
+    if (props.showPan && nButtons > symbols.length) {
+      symbolNames.push('pan');
       symbols.push(<Button onClick={() => {props.setSelection('pan'); collaspeMenu(); }}>{Pan}</Button>)
     }
-    if (props.showSelect) {
-        symbolNames.push('select' as ButtonType);
-        symbols.push(<Button isSelect={true} onClick={() => {props.setSelection('select'); setCurrentSelect('regular'); collaspeMenu(); }}>{Point}</Button>)
+    if (props.showSelect && nButtons > symbols.length) {
+      symbolNames.push('select');
+      symbols.push(<Button isSelect={true} onClick={() => { setBtnAndSelect(<>{Point}</>, -1); }}>{Point}</Button>)
     }
-    if (props.showReset) {
-      symbolNames.push('reset' as ButtonType);
+    if (props.showReset && nButtons > symbols.length) {
+      symbolNames.push('reset');
       symbols.push(<Button onClick={() => {collaspeMenu(); props.setSelection('reset'); }}>{House}</Button>)
     }
-    if (props.showDownload) {
-      symbolNames.push('download' as ButtonType);
+    if (props.showDownload && nButtons > symbols.length) {
+      symbolNames.push('download');
       symbols.push(<Button onClick={() => {collaspeMenu(); props.setSelection('download');}}>{InputNumbers}</Button>)
     }
-    if (props.showCapture) {
-      symbolNames.push('capture' as ButtonType);
+    if (props.showCapture && nButtons > symbols.length) {
+      symbolNames.push('capture');
       symbols.push(<Button onClick={() => {collaspeMenu(); props.setSelection('capture');}}>{Scroll}</Button>)
     }
 
+    const customButtonsIndex = symbols.length -1;
+    React.Children.forEach(props.children, (element) => {
+      if (nButtons > symbols.length && React.isValidElement(element) && (element as React.ReactElement<any>).type === Button) {
+        symbols.push(element as React.ReactElement);
+        symbolNames.push('custom');
+      }
+    })
+
     return (
-     <g>
-         <path d={`M ${props.x} ${props.y + 10 * direction} A 10 10 180 0 1 ${props.x} ${props.y - 10 * direction} h ${width * direction} A 10 10 180 0 1 ${props.x + width * direction} ${props.y + 10 * direction} h ${-width * direction}`} style={{
-             fill: '#1e90ff'}} />
-          {symbols.map((s,i) => <CircleButton key={i} x={props.x + i*25*direction} 
-            y={props.y} active={props.currentSelection === symbolNames[i] && (props.currentSelection !== 'select' || currentSelect === 'regular')} button={s}
-            btnCleanup={btnCleanup} setSelectIcon={setSelectIcon}
-          />)}
+     <g style={{ cursor: 'default' }}>
+         <path d={`M ${props.x-10} ${props.y} A 10 10 180 0 1 ${props.x+10} ${props.y} v ${height} A 10 10 180 0 1 ${props.x-10} ${props.y+height} v ${-height}`} style={{
+             fill: '#1e90ff' }} />
+          {symbols.map((s,i) => 
+            <CircleButton key={i} selectId={i}
+              x={props.x} y={props.y + i*heightPerButton}
+              active={i < customButtonsIndex ? (props.currentSelection === symbolNames[i] && (props.currentSelection !== 'select' || currentSelect === -1)) :
+              props.currentSelection === 'select' && currentSelect === i}
+              button={s} btnCleanup={btnCleanup} setSelectIcon={i < customButtonsIndex ? undefined : setBtnAndSelect}
+            />)}
 
-          {React.Children.map(props.children, (element, i) => {
-                                    if (!React.isValidElement(element))
-                                        return null;
-                                    if ((element as React.ReactElement<any>).type === Button) {
-                                        const id = `custom_${i}`;
-                                        return <CircleButton key={id} active={props.currentSelection === 'select' && currentSelect === id}
-                                          x={props.x + (i+symbols.length)*25*direction} y={props.y}
-                                          button={element} setSelectIcon={setBtnAndSelect} selectName={id}
-                                          btnCleanup={btnCleanup} />
-                                        }
-                                    return null;
-                                })}
-
-         <path d={`M ${props.x} ${props.y + 10 * direction} A 10 10 180 0 1 ${props.x} ${props.y - 10 * direction} h ${width * direction} A 10 10 180 0 1 ${props.x + width * direction} ${props.y + 10 * direction} h ${-width * direction}`} stroke={'black'} />
+         <path d={`M ${props.x-10} ${props.y} A 10 10 180 0 1 ${props.x+10} ${props.y} v ${height} A 10 10 180 0 1 ${props.x-10} ${props.y+height} v ${-height}`} stroke={'black'} />
      </g>)
 
+});
+
+interface ICircleProps {
+  button: React.ReactElement, 
+  x: number,
+  y: number, 
+  active: boolean, 
+  btnCleanup: React.MutableRefObject<Cleanup>, 
+  selectId: number,
+  setSelectIcon?: (children: React.ReactElement, id: number) => void
 }
 
-function CircleButton(props: {button: React.ReactElement, x: number, y: number, active: boolean, btnCleanup: React.MutableRefObject<Cleanup>, selectName?: string, setSelectIcon?: (children: React.ReactElement, id?: string) => void}) {
+function CircleButton(props: ICircleProps) {
   return ( <>
     <circle r={10} cx={props.x} cy={props.y} style={{ fill: (props.active ? '#002eff' : '#1e90ff'), pointerEvents: 'all' }}
      onMouseDown={(evt) => evt.stopPropagation()}
      onClick={(evt) => { 
       evt.stopPropagation();
-      if ((props.setSelectIcon !== undefined) && (props.button.props.isSelect ?? false)) props.setSelectIcon(props.button.props.children, props.selectName);
+      if ((props.setSelectIcon !== undefined) && (props.button.props.isSelect ?? false)) props.setSelectIcon(props.button.props.children, props.selectId);
       if (props.btnCleanup.current !== undefined) props.btnCleanup.current();
       props.btnCleanup.current = props.button.props.onClick();
       }} onMouseUp={(evt) => evt.stopPropagation()}/>
