@@ -1,6 +1,6 @@
 {
   "name": "@gpa-gemstone/application-typings",
-  "version": "0.0.65",
+  "version": "0.0.66",
   "description": "Application typings for GPA products",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -27,7 +27,7 @@
   "license": "MIT",
   "bugs": {"url": "https://github.com/GridProtectionAlliance/gpa-gemstone/issues"},
   "homepage": "https://github.com/GridProtectionAlliance/gpa-gemstone#readme",
-  "devDependencies": {
+  "devDependencies":   {
     "@typescript-eslint/eslint-plugin": "^5.60.0",
     "@typescript-eslint/parser": "^5.60.0",
     "eslint": "^8.43.0",
