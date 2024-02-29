@@ -29,11 +29,6 @@ import SplitDrawer from './SplitDrawer';
 import SplitSection from './SplitSection';
 
 
-// Temporary Icon until we republish gpa-symbols
-export const CrossMark = <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2" >
-        <path d="M 2.2 23.197 L 0.387 21.384 L 10.356 11.415 L 0.387 1.446 L 2.2 -0.367 L 12.169 9.602 L 22.138 -0.367 L 23.951 1.446 L 13.982 11.415 L 23.951 21.384 L 22.138 23.197 L 12.169 13.228 L 2.2 23.197 Z"/>
-</svg>
-
 interface IProps {
     style?: any,
     sliderStyle?: any,
@@ -60,7 +55,6 @@ const VerticalSplit: React.FunctionComponent<IProps> = (props) => {
     const divRef = React.useRef<any>(null);
 
     const [currentWidth, setCurrentWidth] = React.useState<number>(0);
-    const [currentHeight, setCurrentHeight] = React.useState<number>(0);
 
     const [sections, setSections] = React.useState<React.ReactElement<any>[]>([]);
     const [drawer, setDrawer] = React.useState<React.ReactElement<any>[]>([]);
@@ -68,14 +62,12 @@ const VerticalSplit: React.FunctionComponent<IProps> = (props) => {
 
     const [totalPercent, setTotalPercent] = React.useState<number>(100);
     const [availableWidth, setAvailableWidth] = React.useState<number>(0);
-    const [lblSize, setLblSize] = React.useState<number>(12);
 
     const [activeSlider, setActiveSlider] = React.useState<number>(-1);
     const [sliderOriginal, setSliderOriginal] = React.useState<number>(0);
 
     React.useLayoutEffect(() => {
         setCurrentWidth(divRef.current.offsetWidth ?? 0);
-        setCurrentHeight(divRef.current.offsetHeight ?? 0);
     })
 
     React.useEffect(() => {
@@ -89,32 +81,16 @@ const VerticalSplit: React.FunctionComponent<IProps> = (props) => {
 
     // comute available width
     React.useEffect(() => {
+        const nDividers = elements.reduce((s,e) => s + ((!e.IsDrawer || e.Open)? 1 : 0), 0) -1;
+
         let drawerMargin = 0;
         if (drawer.some((d) => d.props.ShowClosed === undefined || d.props.ShowClosed))
-            drawerMargin = 5;
+            drawerMargin = 35;
 
-        drawerMargin = drawerMargin + elements.reduce((s,e) => s + (e.IsDrawer && e.Open? 20 : 0), 0);
+        drawerMargin = drawerMargin + elements.reduce((s,e) => s + (e.IsDrawer && e.Open? 35 : 0), 0);
 
-        setAvailableWidth(currentWidth - drawerMargin - elements.reduce((s,e) =>  s + ((!e.IsDrawer || e.Open) ? 5 : 0),0) -5);
+        setAvailableWidth(currentWidth - drawerMargin - nDividers*5);
     },[currentWidth, elements])
-
-    // Compute Font Size for Drawer Headings based on sum of Drawer Labels
-    React.useEffect(() => {
-
-        let fs = 1.5;
-        let l = drawer.reduce((s,d) => s + (d.props.ShowClosed === undefined || d.props.ShowClosed?  (GetTextWidth('','1rem',d.props.Title) + 30) : 0),0);
-
-        if (l === 0)
-            return;
-
-        while ((l > currentHeight) && fs > 0.5) {
-            fs = fs - 0.05;
-            l = drawer.reduce((s,d) => s + (d.props.ShowClosed === undefined || d.props.ShowClosed?  (GetTextWidth('','1rem',d.props.Title) + 30) : 0),0);
-        }
-        setLblSize(fs)
-
-    }, [drawer,currentHeight]);
-
 
 
     React.useEffect(() => {
@@ -239,17 +215,21 @@ const VerticalSplit: React.FunctionComponent<IProps> = (props) => {
         _.orderBy(elements,(e) => e.Order).forEach((e,index) => {
             const w = Math.floor(scaling * e.Width);
             if (e.IsDrawer && !e.Open)
-                return;
+                    return;
             if (e.IsDrawer)
-                result.push(<div style={{ width: isNaN(w) ? 0 : w, maxWidth: isNaN(w) ? 0 : w, float: 'left', minHeight: 1, height: '100%'}} key={'draw-'+ drawer[e.Index].key}>{drawer[e.Index]}</div>)
+                result.push(<div style={{ width: isNaN(w) ? 0 : w, float: 'left', minHeight: 1, height: '100%' }} key={'draw-'+ drawer[e.Index].key}>{drawer[e.Index]}</div>)
             else
-                result.push(<div style={{ width: isNaN(w) ? 0 : w, maxWidth: isNaN(w) ? 0 : w, float: 'left', minHeight: 1, height: '100%'}} key={'sec-'+ sections[e.Index].key}>{sections[e.Index]}</div>)
+                result.push(<div style={{ width: isNaN(w) ? 0 : w, float: 'left', minHeight: 1, height: '100%' }} key={'sec-'+ sections[e.Index].key}>{sections[e.Index]}</div>)
 
             if (e.IsDrawer)
-                result.push(<DrawerHeader
-                    title={e.Label} symbol={(e.ShowClosed === undefined || e.ShowClosed)? 'Close' : 'X'} textSize={lblSize}
-                    onClick={() => ToggleDrawer(e.Index)} key={drawer[e.Index].key} showTooltip={false}
-                />);
+                result.push(
+                    <div style={{ width: 35, float: 'left', minHeight: 1, height: '100%' }} key={drawer[e.Index].key}>
+                        <DrawerHeader
+                            title={e.Label} symbol={(e.ShowClosed === undefined || e.ShowClosed)? 'Close' : 'X'}
+                            onClick={() => ToggleDrawer(e.Index)} showTooltip={false}
+                        />
+                    </div>
+                    );
 
             // need to rescope otherwhise i will be max at time of callback.
             const scopedI = i*1;
@@ -370,15 +350,14 @@ const VerticalSplit: React.FunctionComponent<IProps> = (props) => {
     const hasDrawerLabels = elements.some(e => e.IsDrawer && (e.ShowClosed === undefined || e.ShowClosed));
     return (
         <div className="d-flex" style={{ ...props.style }} ref={divRef} onMouseUp={() => setActiveSlider(-1)} onMouseMove={MouseMove} onMouseLeave={() => setActiveSlider(-1)}>
-            {hasDrawerLabels ? <div className="row" style={{ background: '#6c757d', height: '100%', width: 20, marginRight: 20 }}>
+            {hasDrawerLabels ? <div style={{ width: 35, float: 'left', minHeight: 1, height: '100%', display: 'flex', flexDirection: 'column' }} >
                 {elements.map((e) => e.IsDrawer && (e.ShowClosed === undefined || e.ShowClosed) ? <DrawerHeader
                     showTooltip={!e.Open}
-                    title={e.Label} symbol={e.Open ? 'Close' : 'Open'} textSize={lblSize}
+                    title={e.Label} symbol={e.Open ? 'Close' : 'Open'}
                     onClick={() => ToggleDrawer(e.Index)} key={drawer[e.Index].key}
                 /> : null)}
-            </div> : null}
+                    </div>: null}
             {CreateSegments()}
-            <div style={{ clear: 'left' }}></div>
         </div>
     )
 }
@@ -402,26 +381,28 @@ const VerticalSplitDivider: React.FunctionComponent<IDividerProps> = (props) => 
 interface IDrawerHeaderProps {
     title: string,
     onClick: () => void,
-    textSize: number,
     symbol: 'Open'|'Close'|'X',
     showTooltip: boolean
 }
 const DrawerHeader: React.FunctionComponent<IDrawerHeaderProps> = (props) => {
     const [hover, setHover] = React.useState<boolean>(false);
     const [guid, setGuid] = React.useState<string>(CreateGuid());
-
     return <>
-        <div className="col-auto" style={{ background: '#f8f9fa', cursor: 'pointer', width: 35, zIndex: 1000 }}
+        <div style={{ background: '#f8f9fa', cursor: 'pointer', zIndex: 1000, width: '100%', overflow: 'hidden', flex: 1}}
             data-tooltip={guid + '-tooltip'}
-        onMouseDown={(evt: any) => {props.onClick();}}
+            onMouseDown={() => {props.onClick();}}
             onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
-        {props.symbol === 'Open'? SVGIcons.ArrowForward : null}
-        {props.symbol === 'Close'? SVGIcons.ArrowBackward : null}
-        {props.symbol === 'X'? CrossMark : null}
-        <span style={{margin: 'auto', writingMode: 'vertical-rl', textOrientation: 'sideways', fontSize: props.textSize + 'rem'}}>{props.title}</span>
-        </div>
-     {props.showTooltip? <ToolTip Show={hover} Position={'right'} Theme={'dark'} Target={guid + '-tooltip'} Zindex={9999}>
+            <div style={{height: 24, width: 35, paddingLeft: 5}}>
+                {props.symbol === 'Open' ? SVGIcons.ArrowForward : null}
+                {props.symbol === 'Close' ? SVGIcons.ArrowBackward : null}
+                {props.symbol === 'X' ? SVGIcons.CrossMark : null}
+            </div>
+            <span style={{ margin: 'auto', writingMode: 'vertical-rl', textOrientation: 'sideways', fontSize: 25, paddingTop: '5px'}}>
                 {props.title}
-              </ToolTip>: null}
+            </span>
+        </div>
+        {props.showTooltip ? <ToolTip Show={hover} Position={'right'} Theme={'dark'} Target={guid + '-tooltip'} Zindex={9999}>
+            {props.title}
+        </ToolTip> : null}
     </>
 }
