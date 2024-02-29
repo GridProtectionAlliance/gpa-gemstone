@@ -81,7 +81,7 @@ interface TableProps<T> {
      * @param data the item to be checked
      * @returns true if the row should be styled as selected
      */
-    Selected?: (data: T) => boolean;
+    Selected?: (data: T, index: number) => boolean;
     /**
      * 
      * @param data he information of the row including the item of the row
@@ -298,7 +298,7 @@ interface IRowProps<T> {
     BodyClass?: string,
     OnClick?: (data: { colKey: string, colField?: keyof T, row: T, data: T[keyof T] | null, index: number }, e: React.MouseEvent<HTMLElement, MouseEvent>) => void,
     DragStart?: ((data: { colKey: string, colField?: keyof T, row: T, data: T[keyof T] | null, index: number }, e: any) => void)
-    Selected?: ((data: T) => boolean);
+    Selected?: ((data: T, index: number) => boolean);
     KeySelector: (data: T, index?: number) => string|number;
     AdjWidth: Map<string,IAdjustedWidths>,
     FixedWidth: Map<string,number>,
@@ -322,7 +322,7 @@ function Rows<T>(props: React.PropsWithChildren<IRowProps<T>>) {
                 if (style.cursor === undefined && (props.OnClick !== undefined || props.DragStart !== undefined))
                     style.cursor = 'pointer';
         
-                if (props.Selected !== undefined && props.Selected(d))
+                if (props.Selected !== undefined && props.Selected(d, i))
                     style.backgroundColor = 'yellow';
                 
                 const key = props.KeySelector(d, i);
