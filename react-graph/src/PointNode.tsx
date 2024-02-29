@@ -140,7 +140,7 @@ export class PointNode {
         return this.PointBinarySearch(tVal, pointsRetrieved);
     }
 
-    public PointBinarySearch(tVal: number, pointsRetrieved = 1, bucketLowerNeighbor?: PointNode, bucketUpperNeighbor?: PointNode): [...number[]][] {
+    private PointBinarySearch(tVal: number, pointsRetrieved = 1, bucketLowerNeighbor?: PointNode, bucketUpperNeighbor?: PointNode): [...number[]][] {
         if (pointsRetrieved <= 0) throw new RangeError(`Requested number of points must be positive value.`);
         // round tVal back to whole integer 
 
