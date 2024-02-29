@@ -53,7 +53,7 @@ const BtnDropdown = (props: IProps) => {
 
     return (
         <div className={`btn-group btn-group-${size}`}>
-            <button className={`btn ${className} ${(!disabled ? "" : " disabled")}`}
+            <button type="button" className={`btn ${className} ${(!disabled ? "" : " disabled")}`}
                 data-tooltip={guid.current}
                 onMouseEnter={() => setHover(true)}
                 onMouseLeave={() => setHover(false)}
@@ -72,7 +72,7 @@ const BtnDropdown = (props: IProps) => {
                 {props.Options.map((t, i) => <React.Fragment key={t.Label + '-divider'}>
                     {i > 0 && props.Options[i].Group !== props.Options[i - 1].Group ?
                         <div key={t.Label + '-divider'} className="dropdown-divider"></div> : null}
-                    <a className="dropdown-item" key={t.Label}
+                    <a className="dropdown-item" key={t.Label} style={{cursor: 'pointer'}}
                         onClick={() => { setShowDropdown(false); t.Callback(); }}>
                         {t.Label}
                     </a>

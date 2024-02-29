@@ -20,7 +20,6 @@
 //       Generated original version of source code.
 //
 // ******************************************************************************************************
-
 namespace Application{
     export namespace Types{
 
