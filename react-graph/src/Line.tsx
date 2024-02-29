@@ -57,6 +57,20 @@ function Line(props: IProps) {
         ((props.autoShowPoints === undefined || props.autoShowPoints) && visibleData.length <= 100), 
         [props.showPoints, props.autoShowPoints, visibleData]);
 
+    const createLegend = React.useCallback(() => {
+        if (props.legend === undefined)
+        return undefined;
+    
+        let txt = props.legend;
+    
+        if (props.highlightHover && !isNaN(highlight[0]) && !isNaN(highlight[1]))
+        txt = txt + ` (${moment.utc(highlight[0]).format('MM/DD/YY hh:mm:ss')}: ${highlight[1].toPrecision(6)})`
+    
+        return <LineLegend 
+            size = 'sm' label={txt} color={props.color} lineStyle={props.lineStyle}
+            setEnabled={setEnabled} enabled={enabled} hasNoData={data == null}/>;
+    }, [props.color, props.lineStyle, enabled, data]);
+
     const createContextData = React.useCallback(() => {
         return {
             legend: createLegend(),
@@ -66,7 +80,7 @@ function Line(props: IProps) {
             getMin: (t) => (data == null|| !enabled? Infinity : data.GetLimits(t[0],t[1])[0]),
             getPoints: (t, n?) => (data == null|| !enabled? NaN : data.GetPoints(t, n ?? 1))
         } as IDataSeries;
-    }, [props.axis, enabled, dataGuid]);
+    }, [props.axis, enabled, dataGuid, createLegend]);
 
     React.useEffect(() => {
         if (guid === "")
@@ -117,20 +131,6 @@ function Line(props: IProps) {
         setGuid(id);
         return () => { context.RemoveData(id) }
     }, []);
-
-   function createLegend(): React.ReactElement| undefined {
-     if (props.legend === undefined)
-       return undefined;
-
-     let txt = props.legend;
-
-     if (props.highlightHover && !isNaN(highlight[0]) && !isNaN(highlight[1]))
-      txt = txt + ` (${moment.utc(highlight[0]).format('MM/DD/YY hh:mm:ss')}: ${highlight[1].toPrecision(6)})`
-
-       return <LineLegend 
-        size = 'sm' label={txt} color={props.color} lineStyle={props.lineStyle}
-        setEnabled={setEnabled} enabled={enabled} hasNoData={data == null}/>;
-   }
 
    function generateData() {
        let result = "M ";
