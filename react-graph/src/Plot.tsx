@@ -149,8 +149,6 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
     const [offsetLeft, setOffsetLeft] = React.useState<number>(5);
     const [offsetRight, setOffsetRight] = React.useState<number>(5);
 
-    const [toolBarX, setToolBarX] = React.useState<number>(12);
-
     const [heightYFactor, setHeightYFactor] = React.useState<number>(0);
     const [heightXLabel, setHeightXLabel] = React.useState<number>(0);
     const [heightLeftYLabel, setHeightLeftYLabel] = React.useState<number>(0);
@@ -887,7 +885,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
                         holdOpen={props.holdMenuOpen}
                         heightAvaliable={svgHeight-22}
                         x={(props.menuLocation === 'left' ? 14 : (svgWidth -14))}
-                        y={22} > 
+                        y={22} data-html2canvas-ignore="true"> 
                         {React.Children.map(props.children, (element) => {
                                    if (!React.isValidElement(element))
                                        return null;

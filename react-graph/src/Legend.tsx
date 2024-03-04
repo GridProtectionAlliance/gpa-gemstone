@@ -94,7 +94,8 @@ function Legend(props: IProps) {
     <LegendContext.Provider value={legendContextValue}>
       <div style={{ height, width, paddingLeft: `${leftPad}px`, position: (props.location === 'bottom'? 'absolute' : 'relative'), float:(props.location as any), display: 'flex', flexWrap: 'wrap', bottom: 0, 
         overflowY: hasScroll ? 'scroll' : 'hidden', overflowX: hasScroll ? 'visible' : 'hidden', cursor: 'default' }}>
-        {[...graphContext.Data.values()].map((series, index) => (series.legend !== undefined && (!props.HideDisabled || (series.legend.props.enabled ?? true)) ? <div key={index}>{series.legend}</div> : null))}
+        {[...graphContext.Data.values()].map((series, index) => (series.legend !== undefined && (!props.HideDisabled || (series.legend.props.enabled ?? true)) ? 
+          <div key={index} data-html2canvas-ignore={!(series.legend.props.enabled ?? true)}>{series.legend}</div> : null))}
       </div>
     </LegendContext.Provider>);
 }
