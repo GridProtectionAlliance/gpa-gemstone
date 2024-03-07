@@ -102,7 +102,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
     // Type correcting functions to convert props into something usable
     const typeCorrect: <T>(arg: T | T[] | undefined, arrayIndex: number) => T|undefined = React.useCallback((arg, arrayIndex) => {
       if (arg == null) return undefined;
-      if (!Object.prototype.hasOwnProperty.call(arg, 'length')) return (arrayIndex === 0 ? arg : undefined);
+      if (!(arg instanceof Object) || !Object.prototype.hasOwnProperty.call(arg, 'length')) return (arrayIndex === 0 ? arg : undefined);
       return (arg as any)[arrayIndex];
     }, []);
     const typeCorrectDomain = React.useCallback((arg: [number, number] | [number, number][] | undefined): [number,number][]=> {
