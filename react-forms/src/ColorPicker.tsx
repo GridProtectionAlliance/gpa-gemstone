@@ -28,7 +28,6 @@ import { GetNodeSize } from '@gpa-gemstone/helper-functions'
 import { Portal } from 'react-portal';
 
 interface IProps {
-    Show: boolean,
     CurrentColor: string,
     Colors: string[],
     OnColorChange: (updatedColor: ColorResult) => void,
@@ -71,10 +70,9 @@ const ColorPicker: React.FunctionComponent<IProps> = (props) => {
     const [targetTop, setTargetTop] = React.useState<number>(0);
     const [targetWidth, setTargetWidth] = React.useState<number>(0);
     const [targetHeight, setTargetHeight] = React.useState<number>(0);
-    const [show, setShow] = React.useState<boolean>(props.Show)
+    const [show, setShow] = React.useState<boolean>(false)
 
     React.useEffect(() => {
-        setShow(props.Show)
         const target = document.querySelectorAll(`[data-tooltip${`="color-picker"`}]`)
 
         if (target.length === 0) {
@@ -90,7 +88,7 @@ const ColorPicker: React.FunctionComponent<IProps> = (props) => {
             setTargetLeft(targetLocation.left);
             setTargetTop(targetLocation.top);
         }
-    }, [props.Show]);
+    }, []);
 
     React.useLayoutEffect(() => {
         const [t, l] = UpdatePosition();
