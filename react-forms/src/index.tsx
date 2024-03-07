@@ -34,19 +34,21 @@ import MultiCheckBoxSelect from './MutliCheckBoxSelect';
 import DoubleInput from './DoubleInput';
 import TimePicker from './TimePicker';
 import StylableSelect from './StylableSelect';
+import ColorPicker from './ColorPicker'
 
 export {
-  CheckBox,
-  Input,
-  DatePicker,
-  Select,
-  TextArea,
-  DateRangePicker,
-  EnumCheckBoxes,
-  ArrayMultiSelect,
-  ArrayCheckBoxes,
-  MultiCheckBoxSelect,
-  DoubleInput,
-  TimePicker,
-  StylableSelect
+    CheckBox,
+    Input,
+    DatePicker,
+    Select,
+    TextArea,
+    DateRangePicker,
+    EnumCheckBoxes,
+    ArrayMultiSelect,
+    ArrayCheckBoxes,
+    MultiCheckBoxSelect,
+    DoubleInput,
+    TimePicker,
+    StylableSelect,
+    ColorPicker
 };

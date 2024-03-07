@@ -388,7 +388,7 @@ const DrawerHeader: React.FunctionComponent<IDrawerHeaderProps> = (props) => {
     const [hover, setHover] = React.useState<boolean>(false);
     const [guid, setGuid] = React.useState<string>(CreateGuid());
     return <>
-        <div style={{ background: '#f8f9fa', cursor: 'pointer', zIndex: 1000, width: '100%', overflow: 'hidden', flex: 1}}
+        <div style={{ background: '#f8f9fa', cursor: 'pointer', zIndex: 1000, width: '100%', height: '100%', overflow: 'hidden', flex: 1}}
             data-tooltip={guid + '-tooltip'}
             onMouseDown={() => {props.onClick();}}
             onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
