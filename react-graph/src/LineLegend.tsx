@@ -66,7 +66,7 @@ function LineLegend(props: IProps) {
     let w = GetTextWidth(textFont, `${t}em`, label);
     let h = GetTextHeight(textFont, `${t}em`, label);
     let useML = false;
-    context.RequestLegendWidth(w, guid);
+    context.RequestLegendWidth(w + nonTextualWidth, guid);
 
     while (t > 0.4 &&  ( w > wLegend - nonTextualWidth || h > hLegend)) {
       t = t - 0.05;
