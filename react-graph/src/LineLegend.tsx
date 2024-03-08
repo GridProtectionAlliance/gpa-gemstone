@@ -36,11 +36,11 @@ export interface IProps extends ILegendRequiredProps {
     setEnabled: (arg: boolean) => void,
     hasNoData: boolean
 }
-
+const fontFamily = `-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";`
 const nonTextualWidth = 45;
 const textFont = "Segoe UI";
+
 function LineLegend(props: IProps) {
-  const fontFamily = `-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol"`
   const [label, setLabel] = React.useState<string>(props.label);
   const [legendWidth, setLegendWith] = React.useState<number>(100);
   const [legendHeight, setLegendHeight] = React.useState<number>(100);
@@ -63,14 +63,14 @@ function LineLegend(props: IProps) {
 
   React.useEffect(() => {
     let fontSize = 1;
-    let textWidth = GetTextWidth(textFont, `${fontSize}em`, label, `margin: auto auto auto 0px; display: inline-block; font-weight: 400; font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";`);
+    let textWidth = GetTextWidth(textFont, `${fontSize}em`, label, `margin: auto auto auto 0px; display: inline-block; font-weight: 400; font-family: ${fontFamily}`);
     let textHeight = GetTextHeight(textFont, `${fontSize}em`, label);
     let useML = false;
     context.RequestLegendWidth(textWidth + nonTextualWidth, guid);
         
     while (fontSize > 0.4 && (textWidth > legendWidth - nonTextualWidth || textHeight > legendHeight)) {
       fontSize = fontSize - 0.05;
-      textWidth = GetTextWidth(textFont, `${fontSize}em`, label, `margin: auto auto auto 0px; display: inline-block; font-weight: 400; font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";`, undefined, `${useML ? 'normal' : undefined}`);
+      textWidth = GetTextWidth(textFont, `${fontSize}em`, label, `margin: auto auto auto 0px; display: inline-block; font-weight: 400; font-family: ${fontFamily}`, undefined, `${useML ? 'normal' : undefined}`);
       textHeight = GetTextHeight(textFont, `${fontSize}em`, label);
       useML = false;
 
