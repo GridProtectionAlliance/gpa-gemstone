@@ -50,19 +50,20 @@ export function ContextlessCircle(props: IContextlessProps) {
   const [guid, setGuid] = React.useState<string>("");
   const [textSize, setTextSize] = React.useState<number>(1);
 
-   React.useEffect(() => {
-       if (guid === "")
-           return;
+  // Update data series information in the graph context based on circle properties
+  React.useEffect(() => {
+    if (guid === "")
+        return;
 
-       props.context.UpdateData(guid, {
-           axis: props.circleProps.axis,
-           legend: undefined,
-           getMax: (t) => (t[0] < props.circleProps.data[0] && t[1] > props.circleProps.data[0]? props.circleProps.data[1] : undefined ),
-           getMin: (t) => (t[0] < props.circleProps.data[0] && t[1] > props.circleProps.data[0]? props.circleProps.data[1] : undefined ),
-       } as IDataSeries)
-   }, [props.circleProps])
+    props.context.UpdateData(guid, {
+        axis: props.circleProps.axis,
+        legend: undefined,
+        getMax: (t) => (t[0] < props.circleProps.data[0] && t[1] > props.circleProps.data[0]? props.circleProps.data[1] : undefined ),
+        getMin: (t) => (t[0] < props.circleProps.data[0] && t[1] > props.circleProps.data[0]? props.circleProps.data[1] : undefined ),
+    } as IDataSeries)
+  }, [props.circleProps])
 
-
+   // Add a new data series on component mount / removing on unmount
    React.useEffect(() => {
        const id = props.context.AddData({
            axis: props.circleProps.axis,
@@ -74,6 +75,7 @@ export function ContextlessCircle(props: IContextlessProps) {
        return () => { props.context.RemoveData(id) }
    }, []);
 
+   // Adjust text size within the circle to ensure it fits
    React.useEffect(() => {
     if (props.circleProps.text === undefined)
       return;
@@ -92,7 +94,8 @@ export function ContextlessCircle(props: IContextlessProps) {
         
    }, [props.circleProps.text, props.circleProps.radius])
 
-   
+
+   // Set up a click handler if provided in props
    React.useEffect(() => {
     if (guid === "" || props.circleProps.onClick === undefined)
         return;
@@ -102,9 +105,12 @@ export function ContextlessCircle(props: IContextlessProps) {
       } as IHandlers)
     }, [props.circleProps.onClick, props.context.UpdateFlag ])
 
+    // Handle click events on the circle
     function onClick(x: number, y: number) {
       if (props.circleProps.onClick === undefined)
         return;
+
+      // Calculate positions and determine if the click was within the circle bounds
       const axis = AxisMap.get(props.circleProps.axis);
       const xP = props.context.XTransformation(x);
       const yP = props.context.YTransformation(y, axis);
@@ -118,26 +124,34 @@ export function ContextlessCircle(props: IContextlessProps) {
           setTDomain: props.context.SetXDomain as React.SetStateAction<[number,number]>
           });
 
- }
- 
-   if (!isFinite(props.context.XTransformation(props.circleProps.data[0])) || !isFinite(props.context.YTransformation(props.circleProps.data[1], AxisMap.get(props.circleProps.axis))))
-    return null;
-   return (
-    <g>
-       <circle r={props.circleProps.radius} 
-       cx={props.context.XTransformation(props.circleProps.data[0])} 
-       cy={props.context.YTransformation(props.circleProps.data[1], AxisMap.get(props.circleProps.axis))} 
-       fill={props.circleProps.color}
-       opacity={props.circleProps.opacity} 
-       stroke={props.circleProps.borderColor} strokeWidth={props.circleProps.borderThickness} />
-       {props.circleProps.text !== undefined? <text fill={'black'}
-       style={{ fontSize: textSize + 'em', textAnchor: 'middle', dominantBaseline: 'middle' }} 
-       y={props.context.YTransformation(props.circleProps.data[1], AxisMap.get(props.circleProps.axis))} 
-       x={props.context.XTransformation(props.circleProps.data[0])}>{props.circleProps.text}</text> : null}
-    </g>
-   );
+    }
+
+    // Render null if coordinates are not valid, otherwise render the circle / text
+    if (!isFinite(props.context.XTransformation(props.circleProps.data[0])) || !isFinite(props.context.YTransformation(props.circleProps.data[1], AxisMap.get(props.circleProps.axis))))
+        return null;
+
+     return (
+        <g>
+            <circle r={props.circleProps.radius} 
+                cx={props.context.XTransformation(props.circleProps.data[0])} 
+                cy={props.context.YTransformation(props.circleProps.data[1], AxisMap.get(props.circleProps.axis))} 
+                fill={props.circleProps.color}
+                opacity={props.circleProps.opacity} 
+                stroke={props.circleProps.borderColor} strokeWidth={props.circleProps.borderThickness}
+            />
+
+            {props.circleProps.text !== undefined? <text fill={'black'}
+                style={{ fontSize: textSize + 'em', textAnchor: 'middle', dominantBaseline: 'middle' }} 
+                y={props.context.YTransformation(props.circleProps.data[1], AxisMap.get(props.circleProps.axis))} 
+                x={props.context.XTransformation(props.circleProps.data[0])}
+            >
+
+            {props.circleProps.text}</text> : null}
+        </g>
+     );
 }
 
+// Higher-order component that uses GraphContext to pass down context to the ContextlessCircle
 const Circle = (props: IProps) => {
   const context = React.useContext(GraphContext);
   return <ContextlessCircle circleProps={props} context={context}/>

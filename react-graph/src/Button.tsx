@@ -33,7 +33,6 @@ const Button: React.FunctionComponent<IProps> = (props) => {
     Button that can be pressed.
   */
 
-
    return (
     <>
       {props.children}
