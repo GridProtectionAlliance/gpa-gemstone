@@ -60,9 +60,11 @@ function HeatLegend(props: IProps) {
   const [guid, setGuid] = React.useState<string>('');
   const context = React.useContext(LegendContext);
 
+  // Effect to update the legend's width and height based on the container's dimensions
   React.useEffect(() => setWLegend(props.size === 'sm' ? context.SmWidth : context.LgWidth), [context.LgWidth, context.SmWidth, props.size]);
   React.useEffect(() => setHLegend(props.size === 'sm' ? context.SmHeight : context.LgHeight), [context.SmHeight, context.LgHeight, props.size]);
 
+  // Determine the number of decimal digits to display based on the value range
   React.useEffect(() => {
     let delta = props.maxValue - props.minValue;
     if (delta === 0)
@@ -85,6 +87,7 @@ function HeatLegend(props: IProps) {
 
   }, [props.maxValue, props.minValue]);
 
+  // Generate a unique ID for the gradient and request space for the legend
   React.useEffect(() => {
       const id = CreateGuid();
       setGuid(id);
@@ -96,19 +99,29 @@ function HeatLegend(props: IProps) {
     <div style={{ height: hLegend, width: wLegend }}>
       <div style={{ width: '100%', display: 'flex', alignItems: 'center', marginRight: '5px', height:'100%' }}>
         <svg style={SvgStyle} viewBox={`0 0 ${wLegend} ${hLegend}`}>
-          <linearGradient id={guid} x1="0" x2={`${wLegend < hLegend ? 0 : 1}`} y1="0" y2={`${wLegend < hLegend ? 1 : 0}`}>
+          {/* Gradient */}
+        <linearGradient id={guid} x1="0" x2={`${wLegend < hLegend ? 0 : 1}`} y1="0" y2={`${wLegend < hLegend ? 1 : 0}`}>
             <stop offset="5%" stopColor={props.minColor} />
             <stop offset="95%" stopColor={props.maxColor} />
           </linearGradient>
-          <path stroke='black' fill={`url(#${guid})`} style={{ strokeWidth: 1, transition: 'd 0.5s' }} 
-          d={wLegend < hLegend ? 
-            `M ${0.05*wLegend} ${0.1*hLegend} H ${0.5*wLegend} V ${0.9*hLegend} H ${0.05*wLegend} V ${0.1*hLegend}` :
-            `M ${0.1*wLegend} ${0.05*hLegend} H ${0.9*wLegend} V ${0.5*hLegend} H ${0.1*wLegend} V ${0.05*hLegend}`}/>
-          <text fill={'black'} style={TextStyle} x={wLegend*(wLegend < hLegend ? 0.5 : 0.1)} y={hLegend*(wLegend < hLegend ? 0.1 : 0.5)}
+  
+        {/* Rectangle path filled with the defined gradient */}
+        <path 
+          stroke='black' 
+          fill={`url(#${guid})`} 
+          style={{ strokeWidth: 1, transition: 'd 0.5s' }} 
+            d={wLegend < hLegend ? 
+              `M ${0.05*wLegend} ${0.1*hLegend} H ${0.5*wLegend} V ${0.9*hLegend} H ${0.05*wLegend} V ${0.1*hLegend}` :
+              `M ${0.1*wLegend} ${0.05*hLegend} H ${0.9*wLegend} V ${0.5*hLegend} H ${0.1*wLegend} V ${0.05*hLegend}`}
+        />
+  
+        {/* Text elements for min and max values */}
+        <text fill={'black'} style={TextStyle} x={wLegend*(wLegend < hLegend ? 0.5 : 0.1)} y={hLegend*(wLegend < hLegend ? 0.1 : 0.5)}
           transform={`rotate(${wLegend < hLegend ? 270 : 0},${wLegend*(wLegend < hLegend ? 0.5 : 0.1)},${hLegend*(wLegend < hLegend ? 0.1 : 0.5)})`}>
             {`${props.minValue.toFixed(nDigits)}${props.unitLabel !== undefined ? `${props.unitLabel}` : ''}`}
           </text>
-          <text fill={'black'} style={TextStyle} x={wLegend*(wLegend < hLegend ? 0.5 : 0.9)} y={hLegend*(wLegend < hLegend ? 0.9 : 0.5)}
+  
+        <text fill={'black'} style={TextStyle} x={wLegend*(wLegend < hLegend ? 0.5 : 0.9)} y={hLegend*(wLegend < hLegend ? 0.9 : 0.5)}
           transform={`rotate(${wLegend < hLegend ? 270 : 0},${wLegend*(wLegend < hLegend ? 0.5 : 0.9)},${hLegend*(wLegend < hLegend ? 0.9 : 0.5)})`}>
             {`${props.maxValue.toFixed(nDigits)}${props.unitLabel !== undefined ? `${props.unitLabel}` : ''}`}
           </text>
