@@ -36,18 +36,18 @@ export interface IProps extends ILegendRequiredProps {
     setEnabled: (arg: boolean) => void,
     hasNoData: boolean
 }
-
+const fontFamily = `-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol"`
 const nonTextualWidth = 45;
 const textFont = "Segoe UI";
+
 function LineLegend(props: IProps) {
   const [label, setLabel] = React.useState<string>(props.label);
-  const [wLegend, setWLegend] = React.useState<number>(100);
-  const [hLegend, setHLegend] = React.useState<number>(100);
+  const [legendWidth, setLegendWith] = React.useState<number>(100);
+  const [legendHeight, setLegendHeight] = React.useState<number>(100);
   const [textSize, setTextSize] = React.useState<number>(1);
   const [useMultiLine, setUseMultiLine] = React.useState<boolean>(false);
   const [guid] = React.useState<string>(CreateGuid());
   const context = React.useContext(LegendContext);
-
   React.useEffect(() => {
     return () => {
       context.RequestLegendWidth(-1, guid);
@@ -58,40 +58,41 @@ function LineLegend(props: IProps) {
     setLabel((props.hasNoData ? Warning : "") + props.label);
   }, [props.hasNoData, props.label]);
 
-  React.useEffect(() => setWLegend(props.size === 'sm' ? context.SmWidth : context.LgWidth), [context.LgWidth, context.SmWidth, props.size]);
-  React.useEffect(() => setHLegend(props.size === 'sm' ? context.SmHeight : context.LgHeight), [context.SmHeight, context.LgHeight, props.size]);
+  React.useEffect(() => setLegendWith(props.size === 'sm' ? context.SmWidth : context.LgWidth), [context.LgWidth, context.SmWidth, props.size]);
+  React.useEffect(() => setLegendHeight(props.size === 'sm' ? context.SmHeight : context.LgHeight), [context.SmHeight, context.LgHeight, props.size]);
 
   React.useEffect(() => {
-    let t = 1;
-    let w = GetTextWidth(textFont, `${t}em`, label);
-    let h = GetTextHeight(textFont, `${t}em`, label);
+    let fontSize = 1;
+    let textWidth = GetTextWidth(textFont, `${fontSize}em`, label, `margin: auto auto auto 0px; display: inline-block; font-weight: 400; font-family: ${fontFamily};`);
+    let textHeight = GetTextHeight(textFont, `${fontSize}em`, label);
     let useML = false;
-    context.RequestLegendWidth(w, guid);
-
-    while (t > 0.4 &&  ( w > wLegend - nonTextualWidth || h > hLegend)) {
-      t = t - 0.05;
-      w = GetTextWidth(textFont, `${t}em`, label);
-      h = GetTextHeight(textFont, `${t}em`, label);
+    context.RequestLegendWidth(textWidth + nonTextualWidth, guid);
+        
+    while (fontSize > 0.4 && (textWidth > legendWidth - nonTextualWidth || textHeight > legendHeight)) {
+      fontSize = fontSize - 0.05;
+      textWidth = GetTextWidth(textFont, `${fontSize}em`, label, `margin: auto auto auto 0px; display: inline-block; font-weight: 400; font-family: ${fontFamily};`, undefined, `${useML ? 'normal' : undefined}`);
+      textHeight = GetTextHeight(textFont, `${fontSize}em`, label);
       useML = false;
+
       // Consider special case when width is limiting but height is available
-      if (w > (wLegend - nonTextualWidth) && h < hLegend) {
+      if (textWidth > (legendWidth - nonTextualWidth) && textHeight < legendHeight) {
         useML = true;
-        h = GetTextHeight(textFont, `${t}em`, label, undefined, `${wLegend-nonTextualWidth}px`, `normal`);
-        w = wLegend - nonTextualWidth;
+        textHeight = GetTextHeight(textFont, `${fontSize}em`, label, undefined, `${legendWidth-nonTextualWidth}px`, `normal`);
+        textWidth = legendWidth - nonTextualWidth;
       }
     }
-    setTextSize(t);
+    setTextSize(fontSize);
     setUseMultiLine(useML);
-  }, [label, wLegend, hLegend, props.size, props.hasNoData]);
+  }, [label, legendWidth, legendHeight, props.size, props.hasNoData]);
 
    return (
-    <div style={{ height: hLegend, width: wLegend }}>
+    <div style={{ height: legendHeight, width: legendWidth }}>
       <div onClick={() => props.setEnabled(!props.enabled)} style={{ width: '100%', display: 'flex', alignItems: 'center', marginRight: '5px', height: '100%' }}>
         {(props.lineStyle === '-' ?
           <div style={{ width: ' 10px', height: 0, borderTop: '2px solid', borderRight: '10px solid', borderBottom: '2px solid', borderLeft: '10px solid', borderColor: props.color, overflow: 'hidden', marginRight: '5px', opacity: (props.enabled? 1 : 0.5) }}></div> :
           <div style={{ width: ' 10px', height: '4px', borderTop: '0px solid', borderRight: '3px solid', borderBottom: '0px solid', borderLeft: '3px solid', borderColor: props.color, overflow: 'hidden', marginRight: '5px', opacity:(props.enabled? 1 : 0.5) }}></div>
         )}
-        <label style={{ margin: 'auto', marginLeft: 0, fontSize: textSize + 'em', whiteSpace: (useMultiLine? 'normal' : 'nowrap') }}> {label}</label>
+        <label style={{ fontFamily: fontFamily, fontWeight: 400, display: 'inline-block', margin: 'auto', marginLeft: 0, fontSize: textSize + 'em', whiteSpace: (useMultiLine? 'normal' : 'nowrap') }}> {label}</label>
       </div>
     </div>
 );
