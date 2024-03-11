@@ -71,7 +71,7 @@ const ColorPicker: React.FunctionComponent<IProps> = (props) => {
     const [targetWidth, setTargetWidth] = React.useState<number>(0);
     const [targetHeight, setTargetHeight] = React.useState<number>(0);
     const [show, setShow] = React.useState<boolean>(false)
-    const colorsArray = props.Colors ? props.Colors : ["#A30000", "#0029A3", "#007A29", "#d3d3d3", "#edc240",
+    const colorsArray = props.Colors ?? ["#A30000", "#0029A3", "#007A29", "#d3d3d3", "#edc240",
         "#afd8f8", "#cb4b4b", "#4da74d", "#9440ed", "#BD9B33", "#EE2E2F",
         "#008C48", "#185AA9", "#F47D23", "#662C91", "#A21D21", "#B43894",
         "#737373", "#ff904f", "#ff9999"]
