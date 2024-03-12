@@ -116,7 +116,7 @@ function LineWithThreshold(props: IProps) {
 
      let txt = props.legend;
 
-     if (props.highlightHover && !isNaN(highlight[0]) && !isNaN(highlight[1]))
+     if ((props.highlightHover ?? false) && !isNaN(highlight[0]) && !isNaN(highlight[1]))
       txt = txt + ` (${moment.utc(highlight[0]).format('MM/DD/YY hh:mm:ss')}: ${highlight[1].toPrecision(6)})`
 
       return <LineLegend 
@@ -144,7 +144,7 @@ function LineWithThreshold(props: IProps) {
        <g>
            <path d={generateData()} style={{ fill: 'none', strokeWidth: 3, stroke: props.color, transition: 'd 0.5s' }} strokeDasharray={LineMap.get(props.lineStyle)} />
            {data != null? data.GetFullData().map((pt, i) => <circle key={i} r={3} cx={context.XTransformation(pt[0])} cy={context.YTransformation(pt[1], AxisMap.get(props.axis))} fill={props.color} stroke={'black'} style={{ opacity: 0.8, transition: 'cx 0.5s,cy 0.5s' }} />) : null}
-           {props.highlightHover && !isNaN(highlight[0]) && !isNaN(highlight[1])?
+           {(props.highlightHover ?? false) && !isNaN(highlight[0]) && !isNaN(highlight[1])?
           <circle r={5} cx={context.XTransformation(highlight[0])} cy={context.YTransformation(highlight[1], AxisMap.get(props.axis))} fill={props.color} stroke={'black'} style={{ opacity: 0.8, transition: 'cx 0.5s,cy 0.5s' }} /> : null}
           {props.threshHolds.map((t,i) => <path key={i}
              d={`M ${context.XTransformation(context.XDomain[0])},${context.YTransformation(t.Value, AxisMap.get(props.axis))} H ${context.XTransformation(context.XDomain[1])}`}

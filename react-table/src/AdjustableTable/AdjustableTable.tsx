@@ -143,7 +143,7 @@ export default function AdjustableTable<T>(props: React.PropsWithChildren<TableP
         React.useEffect(() => {
             const element = tblref?.current;
         
-            if (!element) return;
+            if (element == null) return;
         
             const observer = new ResizeObserver(() => {
                 setTableWidth()

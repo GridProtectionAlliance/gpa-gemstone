@@ -38,7 +38,7 @@ export function TextFilter<T>(props: IProps<T>) {
             return;
         }
 
-        if (props.ApproxMatches || props.ApproxMatches === undefined)
+        if ((props.ApproxMatches ?? true))
             setTxt(props.Filter[0].SearchText.substring(1, props.Filter[0].SearchText.length -1 ));
         else
             setTxt(props.Filter[0].SearchText);

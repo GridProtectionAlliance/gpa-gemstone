@@ -81,13 +81,13 @@ const VerticalSplit: React.FunctionComponent<IProps> = (props) => {
 
     // comute available width
     React.useEffect(() => {
-        const nDividers = elements.reduce((s,e) => s + ((!e.IsDrawer || e.Open)? 1 : 0), 0) -1;
+        const nDividers = elements.reduce((s,e) => s + ((!e.IsDrawer || (e.Open ?? false))? 1 : 0), 0) -1;
 
         let drawerMargin = 0;
         if (drawer.some((d) => d.props.ShowClosed === undefined || d.props.ShowClosed))
             drawerMargin = 35;
 
-        drawerMargin = drawerMargin + elements.reduce((s,e) => s + (e.IsDrawer && e.Open? 35 : 0), 0);
+        drawerMargin = drawerMargin + elements.reduce((s,e) => s + (e.IsDrawer && (e.Open ?? false) ? 35 : 0), 0);
 
         setAvailableWidth(currentWidth - drawerMargin - nDividers*5);
     },[currentWidth, elements])
@@ -214,7 +214,7 @@ const VerticalSplit: React.FunctionComponent<IProps> = (props) => {
         let i = 0;
         _.orderBy(elements,(e) => e.Order).forEach((e,index) => {
             const w = Math.floor(scaling * e.Width);
-            if (e.IsDrawer && !e.Open)
+            if (e.IsDrawer && e.Open !== true)
                     return;
             if (e.IsDrawer)
                 result.push(<div style={{ width: isNaN(w) ? 0 : w, float: 'left', minHeight: 1, height: '100%' }} key={'draw-'+ drawer[e.Index].key}>{drawer[e.Index]}</div>)
@@ -339,9 +339,9 @@ const VerticalSplit: React.FunctionComponent<IProps> = (props) => {
         setElements((element) => {
             const updated = [...element];
             if (drawer[index].props.OnChange !== undefined)
-                drawer[index].props.OnChange(!updated[elementIndex].Open)
-            updated[elementIndex].Open = !updated[elementIndex].Open;
-            if ( updated[elementIndex].Open)
+                drawer[index].props.OnChange(updated[elementIndex].Open !== true)
+            updated[elementIndex].Open = updated[elementIndex].Open !== true;
+            if (updated[elementIndex].Open === true)
                 updated[elementIndex].Order = Math.min(...updated.map(item => item.Order)) - 1;
             return updated;
         })
@@ -352,8 +352,8 @@ const VerticalSplit: React.FunctionComponent<IProps> = (props) => {
         <div className="d-flex" style={{ ...props.style }} ref={divRef} onMouseUp={() => setActiveSlider(-1)} onMouseMove={MouseMove} onMouseLeave={() => setActiveSlider(-1)}>
             {hasDrawerLabels ? <div style={{ width: 35, float: 'left', minHeight: 1, height: '100%', display: 'flex', flexDirection: 'column' }} >
                 {elements.map((e) => e.IsDrawer && (e.ShowClosed === undefined || e.ShowClosed) ? <DrawerHeader
-                    showTooltip={!e.Open}
-                    title={e.Label} symbol={e.Open ? 'Close' : 'Open'}
+                    showTooltip={e.Open !== true}
+                    title={e.Label} symbol={(e.Open ?? false) ? 'Close' : 'Open'}
                     onClick={() => ToggleDrawer(e.Index)} key={drawer[e.Index].key}
                 /> : null)}
                     </div>: null}

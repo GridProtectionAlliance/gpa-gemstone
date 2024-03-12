@@ -135,18 +135,8 @@ export default function DateTimePicker<T>(props: IProps<T>) {
     }
    
     function getBoxFormat(type?: TimeUnit, accuracy?: Accuracy) {
-        let timeUnit;
-        let dateTime;
-
-        if (!type)
-            dateTime = 'date'
-        else 
-            dateTime = type
-
-        if (!accuracy)
-            timeUnit = 'second'
-        else
-            timeUnit = accuracy
+        let dateTime = type ??  'date'
+        let timeUnit = accuracy  ?? 'second'
 
         if (dateTime === 'time') {
             if (timeUnit === 'minute') {

@@ -28,7 +28,7 @@ import { Portal } from 'react-portal';
 interface IProps {
     Title: string,
     ShowX?: boolean,
-    CallBack: ((confirmed: boolean, isButton?: boolean, tertiary?: boolean) => void),
+    CallBack: ((confirmed: boolean, isButton: boolean, tertiary: boolean) => void),
     Show: boolean,
     Size?: ('lg' | 'sm' | 'xlg'),
     BodyStyle?: React.CSSProperties,
@@ -84,7 +84,7 @@ const Modal: React.FunctionComponent<IProps> = (props) => {
                     <div className="modal-content">
                         <div className="modal-header" style={(props.HeaderStyle ?? {})}>
                             <h4 className="modal-title">{props.Title}</h4>
-                            {props.ShowX? <button type="button" className="close" onClick={() => props.CallBack(false,false,false) }>&times;</button> : null}
+                            {(props.ShowX ?? false) ? <button type="button" className="close" onClick={() => props.CallBack(false,false,false) }>&times;</button> : null}
                         </div>
                         <div className="modal-body" style={props.BodyStyle ?? { maxHeight: 'calc(100vh - 210px)', overflowY: 'auto' }}>
                             {props.Show? props.children : null}

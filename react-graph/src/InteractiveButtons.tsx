@@ -53,7 +53,7 @@ const InteractiveButtons = React.memo((props: IProps) => {
     const [currentSelect, setCurrentSelect] = React.useState<number>(-1);
 
     const [nButtons, height] = React.useMemo(() => {
-      let nButtons = (props.holdOpen? 1 : 0) + 
+      let nButtons = ((props.holdOpen ?? false) ? 1 : 0) + 
       (props.showZoom? 3 : 0) + 
       (props.showPan? 1 : 0) + 
       (props.showReset? 1 : 0) + 
@@ -193,7 +193,7 @@ function CircleButton(props: ICircleProps) {
      onMouseDown={(evt) => evt.stopPropagation()}
      onClick={(evt) => { 
       evt.stopPropagation();
-      if ((props.setSelectIcon !== undefined) && (props.button.props.isSelect ?? false)) props.setSelectIcon(props.button.props.children, props.selectId);
+      if ((props.setSelectIcon !== undefined) && (props.button.props.isSelect as boolean ?? false)) props.setSelectIcon(props.button.props.children, props.selectId);
       if (props.btnCleanup.current !== undefined) props.btnCleanup.current();
       props.btnCleanup.current = props.button.props.onClick();
       }} onMouseUp={(evt) => evt.stopPropagation()}/>
