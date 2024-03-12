@@ -98,7 +98,7 @@ const Applications: React.ForwardRefRenderFunction<IApplicationRefs, React.Props
     const [navBarHeight, setNavBarHeight] = React.useState<number>(40);
 
     React.useLayoutEffect(() => {
-        if (navBarRef?.current && navBarRef?.current?.offsetHeight !== navBarHeight)
+        if ((navBarRef?.current != null) && navBarRef?.current?.offsetHeight !== navBarHeight)
             setNavBarHeight(navBarRef.current.offsetHeight)
     }, [props?.children]);
 
@@ -133,7 +133,7 @@ const Applications: React.ForwardRefRenderFunction<IApplicationRefs, React.Props
             routes.push(<Route path={`${props.HomePath}${element.props.Name}`} element={<Content>{element.props.children}</Content>} />);
 
         // Generate additional routes for Paths prop if it exists
-        if (element.props.Paths) {
+        if ((element.props.Paths != null)) {
             for (const path of element.props.Paths) {
                 const fullPath = `${props.HomePath}${element.props.Name}${path}`;
                 if (element.props.RequiredRoles !== undefined && element.props.RequiredRoles.filter((r: Application.Types.SecurityRoleName) => GetContext().userRoles.findIndex(i => i === r) > -1).length === 0)

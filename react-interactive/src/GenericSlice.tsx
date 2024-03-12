@@ -495,7 +495,7 @@ export default class GenericSlice<T extends U> {
     private GetRecords(ascending: (boolean | undefined), sortField: keyof T, parentID: number | void | string,): JQuery.jqXHR<T[]> {
         return $.ajax({
             type: "GET",
-            url: `${this.APIPath}${(parentID != null ? '/' + parentID : '')}/${sortField.toString()}/${ascending? '1' : '0'}`,
+            url: `${this.APIPath}${(parentID != null ? '/' + parentID : '')}/${sortField.toString()}/${(ascending ?? false)? '1' : '0'}`,
             contentType: "application/json; charset=utf-8",
             dataType: 'json',
             cache: true,

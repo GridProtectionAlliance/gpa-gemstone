@@ -181,11 +181,12 @@ export default function ConfigurableTable<T>(props: React.PropsWithChildren<IPro
         localStorage.setItem(props.LocalStorageKey, currentKeys.join(","));
     }
 
+
     function changeCollums(key: string) {
 
         setColumns((d) => {
             const u = _.cloneDeep(d);
-            u.get(key)!.Enabled = !u.get(key)?.Enabled ?? false
+            u.get(key)!.Enabled = !(u.get(key)?.Enabled ?? false);
             return u;
         });
     }
@@ -209,7 +210,7 @@ export default function ConfigurableTable<T>(props: React.PropsWithChildren<IPro
     function isEnabled(c: IColDesc|undefined, skipLocal = false) {
         const isSort = props.SortKey === c?.Key;
         const isLocal = checkLocal(c?.Key) && !skipLocal;
-        return c?.Default || isSort || isLocal;
+        return (c?.Default ?? false) || isSort || isLocal;
     }
 
     return (
@@ -258,7 +259,7 @@ export default function ConfigurableTable<T>(props: React.PropsWithChildren<IPro
                         disableAdd={false}
                     />
                 </Modal>
-                : (showSettings ? <Portal node={document && document.getElementById(props.SettingsPortal)}>
+                : (showSettings ? <Portal node={document.getElementById(props.SettingsPortal)}>
                     <div className="card">
                         <div className="card-header">
                             <h4 className="modal-title">Table Columns</h4>
