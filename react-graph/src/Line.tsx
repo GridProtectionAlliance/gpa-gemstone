@@ -63,7 +63,7 @@ function Line(props: IProps) {
     
         let txt = props.legend;
     
-        if (props.highlightHover && !isNaN(highlight[0]) && !isNaN(highlight[1]))
+        if ((props.highlightHover ?? false) && !isNaN(highlight[0]) && !isNaN(highlight[1]))
         txt = txt + ` (${moment.utc(highlight[0]).format('MM/DD/YY hh:mm:ss')}: ${highlight[1].toPrecision(6)})`
     
         return <LineLegend 
@@ -151,7 +151,7 @@ function Line(props: IProps) {
        <g>
            <path d={generateData()} style={{ fill: 'none', strokeWidth: props.width === undefined ? 3 : props.width, stroke: props.color }} strokeDasharray={LineMap.get(props.lineStyle)} />
            {showPoints && data != null? visibleData.map((pt, i) => <circle key={i} r={3} cx={context.XTransformation(pt[0])} cy={context.YTransformation(pt[1], AxisMap.get(props.axis))} fill={props.color} stroke={'black'} style={{ opacity: 0.8/*, transition: 'cx 0.5s,cy 0.5s'*/ }} />) : null}
-           {props.highlightHover && !isNaN(highlight[0]) && !isNaN(highlight[1])? 
+           {(props.highlightHover ?? false) && !isNaN(highlight[0]) && !isNaN(highlight[1])? 
             <circle r={5} cx={context.XTransformation(highlight[0])} cy={context.YTransformation(highlight[1], AxisMap.get(props.axis))} fill={props.color} stroke={'black'} style={{ opacity: 0.8/*, transition: 'cx 0.5s,cy 0.5s'*/ }} /> : null}
        </g > : null
    );
