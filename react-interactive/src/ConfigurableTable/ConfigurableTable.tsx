@@ -259,7 +259,7 @@ export default function ConfigurableTable<T>(props: React.PropsWithChildren<IPro
                         disableAdd={false}
                     />
                 </Modal>
-                : (showSettings ? <Portal node={document.getElementById(props.SettingsPortal)}>
+                : (showSettings ? <Portal node={document?.getElementById(props.SettingsPortal)}>
                     <div className="card">
                         <div className="card-header">
                             <h4 className="modal-title">Table Columns</h4>

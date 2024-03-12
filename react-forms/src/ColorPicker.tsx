@@ -140,7 +140,7 @@ const ColorPicker: React.FunctionComponent<IProps> = (props) => {
     return (
         <>
             <button className="btn btn-block" data-tooltip={"color-picker"} onMouseOver={() => setShow(true)} onMouseOut={() => setShow(false)} style={{ backgroundColor: props.CurrentColor, borderColor: props.CurrentColor }}>
-                {props.BtnText === undefined ? props.BtnText : "Color"}
+                {props.BtnText ?? "Color"}
             </button>
             <Portal>
                 <WrapperDiv Show={show} Top={top} Left={left} ref={toolTip} onMouseOver={() => setShow(true)} onMouseOut={() => setShow(false)}>
@@ -150,7 +150,7 @@ const ColorPicker: React.FunctionComponent<IProps> = (props) => {
                         onChangeComplete={(updatedColor) => {
                             props.OnColorChange(updatedColor);
                         }}
-                        triangle={props.Triangle === undefined ? props.Triangle : 'hide'}
+                        triangle={props.Triangle ?? 'hide'}
                     />
                 </WrapperDiv>
             </Portal>

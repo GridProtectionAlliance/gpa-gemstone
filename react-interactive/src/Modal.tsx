@@ -28,7 +28,7 @@ import { Portal } from 'react-portal';
 interface IProps {
     Title: string,
     ShowX?: boolean,
-    CallBack: ((confirmed: boolean, isButton?: boolean, tertiary?: boolean) => void),
+    CallBack: ((confirmed: boolean, isButton: boolean, tertiary: boolean) => void),
     Show: boolean,
     Size?: ('lg' | 'sm' | 'xlg'),
     BodyStyle?: React.CSSProperties,
