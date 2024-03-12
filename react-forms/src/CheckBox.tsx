@@ -39,8 +39,6 @@ export default function CheckBox<T>(props: IProps<T>) {
   const [showHelp, setShowHelp] = React.useState<boolean>(false);
 
   const showHelpIcon = props.Help !== undefined;
-  const showLabel = props.Label !== "";
-  const label = props.Label === undefined ? props.Field : props.Label;
   
   React.useEffect(() => {
     setGuid(CreateGuid());
@@ -57,8 +55,8 @@ export default function CheckBox<T>(props: IProps<T>) {
             record[props.Field] = evt.target.checked as any;
             props.Setter(record);
           }}
-          value={props.Record[props.Field] ? 'on' : 'off'}
-          checked={props.Record[props.Field] ? true : false}
+          value={props.Record[props.Field] != null ? 'on' : 'off'}
+          checked={props.Record[props.Field] != null ? true : false}
           disabled={props.Disabled == null ? false : props.Disabled}
         />
         <label className="form-check-label">{props.Label == null ? props.Field : props.Label}</label>

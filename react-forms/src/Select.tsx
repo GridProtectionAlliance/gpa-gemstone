@@ -88,7 +88,7 @@ export default function Select<T>(props: IProps<T>) {
         value={GetRecordValue()}
         disabled={props.Disabled == null ? false : props.Disabled}
       >
-        {props.EmptyOption ? <option value="">{props.EmptyLabel !== undefined? props.EmptyLabel : ''}</option> : null}
+        {props.EmptyOption === undefined ? <option value="">{props.EmptyLabel !== undefined? props.EmptyLabel : ''}</option> : null}
         {props.Options.map((a, i) => (
           <option key={i} value={a.Value}>
             {a.Label}

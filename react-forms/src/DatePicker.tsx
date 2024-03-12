@@ -138,12 +138,12 @@ export default function DateTimePicker<T>(props: IProps<T>) {
         let timeUnit;
         let dateTime;
 
-        if (!type)
+        if (type === undefined)
             dateTime = 'date'
         else 
             dateTime = type
 
-        if (!accuracy)
+        if (accuracy === undefined)
             timeUnit = 'second'
         else
             timeUnit = accuracy
