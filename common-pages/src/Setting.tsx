@@ -155,7 +155,7 @@ function Setting(props: IProps)  {
             dispatch(props.SettingsSlice.DBAction({verb: 'POST', record: editnewSetting}))
           if (conf && editNew === 'Edit')
             dispatch(props.SettingsSlice.DBAction({verb: 'PATCH', record: editnewSetting}))
-          if (!conf && isBtn)
+          if (!conf && (isBtn ?? false))
             setShowWarning(true);
           setShowModal(false);
         }}
