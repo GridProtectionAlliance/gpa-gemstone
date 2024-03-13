@@ -163,6 +163,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
     const [legendWidth, setLegendWidth] = React.useState<number>(props.legendWidth ?? defaultLegendWidth);
     const [svgHeight, setSVGheight] = React.useState<number>(props.height);
     const [svgWidth, setSVGwidth] = React.useState<number>(props.width);
+    const [menueWidth, setMenueWidth] = React.useState<number>(28);
 
     const applyToYDomain = React.useCallback((predicate: (domain: [number,number], axis: number, allDomains: [number, number][]) => boolean): void => {
       const newDomain = [...yDomain];
@@ -252,17 +253,17 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
 
     // Adjust Left Offset
     React.useEffect(() => {
-      const left = heightLeftYLabel + (props.menuLocation === 'left' ? 28 : 10);
+      const left = heightLeftYLabel + (props.menuLocation === 'left' ? (menueWidth + 2) : 10);
       if (offsetLeft !== left)
         setOffsetLeft(left);
-    }, [heightLeftYLabel, props.menuLocation]);
+    }, [heightLeftYLabel, props.menuLocation, menueWidth]);
 
     // Adjust Right Offset
     React.useEffect(() => {
-      const right = heightRightYLabel + (props.menuLocation === 'right' ? 28 : 10);
+      const right = heightRightYLabel + (props.menuLocation === 'right' ? (menueWidth + 2) : 10);
       if (offsetRight !== right)
         setOffsetRight(right);
-    }, [heightRightYLabel, props.menuLocation]);
+    }, [heightRightYLabel, props.menuLocation, menueWidth]);
 
     // Adjust Y domain defaults
     React.useEffect(() => {
@@ -884,7 +885,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
                         setSelection={setSelection}
                         holdOpen={props.holdMenuOpen}
                         heightAvaliable={svgHeight-22}
-                        setWidth={() => {}}
+                        setWidth={setMenueWidth}
                         x={(props.menuLocation === 'left' ? 14 : (svgWidth -14))}
                         y={22} data-html2canvas-ignore="true"> 
                         {React.Children.map(props.children, (element) => {
