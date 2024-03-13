@@ -39,6 +39,8 @@ interface IProps {
     y: number,
     holdOpen?: boolean,
     heightAvaliable: number,
+    /* Callback that sets the neccesarry Width */
+    setWidth: (w: number) => void,
     children: React.ReactNode
 }
 
@@ -52,7 +54,7 @@ const InteractiveButtons = React.memo((props: IProps) => {
     const [expand, setExpand] = React.useState<boolean>(props.holdOpen ?? false);
     const [currentSelect, setCurrentSelect] = React.useState<number>(-1);
 
-    const [nButtons, height] = React.useMemo(() => {
+    const [nButtons, height, width] = React.useMemo(() => {
       let nButtons = ((props.holdOpen ?? false) ? 1 : 0) + 
       (props.showZoom? 3 : 0) + 
       (props.showPan? 1 : 0) + 
@@ -62,8 +64,9 @@ const InteractiveButtons = React.memo((props: IProps) => {
       (props.showCapture? 1 : 0) + 
       ((props.children == null) ? 0 : React.Children.count(props.children));
       const buttonsAllowed = Math.floor((props.heightAvaliable - 20) / heightPerButton);
-      nButtons = Math.min(nButtons, buttonsAllowed)
-      return [nButtons, heightPerButton*(nButtons - 1)];
+      const width = 25 * Math.ceil(nButtons/buttonsAllowed);
+      nButtons = Math.min(nButtons, buttonsAllowed);
+      return [nButtons, heightPerButton*(nButtons - 1), width];
     }, [props.holdOpen, props.showZoom, props.showPan, props.showReset, props.showSelect, props.showDownload, props.showCapture, props.children]);
 
     const setBtnAndSelect = React.useCallback((newIcon: React.ReactElement, id: number) => {
@@ -94,6 +97,8 @@ const InteractiveButtons = React.memo((props: IProps) => {
       } 
     },[selectIcon, props.currentSelection]);
 
+    React.useEffect(() => { props.setWidth(width) }, [width])
+    
     if (nButtons === 0)
       return null;
 
