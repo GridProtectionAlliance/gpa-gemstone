@@ -254,15 +254,13 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
     // Adjust Left Offset
     React.useEffect(() => {
       const left = heightLeftYLabel + (props.menuLocation === 'left' ? (menueWidth + 2) : 10);
-      if (offsetLeft !== left)
-        setOffsetLeft(left);
+      setOffsetLeft(left);
     }, [heightLeftYLabel, props.menuLocation, menueWidth]);
 
     // Adjust Right Offset
     React.useEffect(() => {
-      const right = heightRightYLabel + (props.menuLocation === 'right' ? (menueWidth + 2) : 10);
-      if (offsetRight !== right)
-        setOffsetRight(right);
+      const right = heightRightYLabel + ((props.menuLocation === 'right' || props.menuLocation === undefined) ? (menueWidth + 2) : 10);
+      setOffsetRight(right);
     }, [heightRightYLabel, props.menuLocation, menueWidth]);
 
     // Adjust Y domain defaults
