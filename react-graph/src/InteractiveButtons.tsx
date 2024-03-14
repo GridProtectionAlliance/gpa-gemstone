@@ -167,7 +167,7 @@ const InteractiveButtons = React.memo((props: IProps) => {
 
     return (
      <g style={{ cursor: 'default' }} data-html2canvas-ignore="true">
-         <path d={`M ${props.x-10} ${props.y} A 10 10 180 0 1 ${props.x+10} ${props.y} v ${height} A 10 10 180 0 1 ${props.x-10} ${props.y+height} v ${-height}`} style={{
+         <path d={`M ${props.x-10} ${props.y} A 10 10 90 0 1 ${props.x} ${props.y-10} A 10 10 90 0 1 ${props.x+10} ${props.y} v ${height} A 10 10 90 0 1 ${props.x} ${props.y + height + 10} A 10 10 90 0 1 ${props.x-10} ${props.y+height} v ${-height}`} style={{
              fill: '#1e90ff' }} />
           {symbols.map((s,i) => 
             <CircleButton key={i} selectId={i}
