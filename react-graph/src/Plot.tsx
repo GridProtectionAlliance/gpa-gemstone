@@ -884,7 +884,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
                         holdOpen={props.holdMenuOpen}
                         heightAvaliable={svgHeight-22}
                         setWidth={setMenueWidth}
-                        x={(props.menuLocation === 'left' ? 14 : (svgWidth -14))}
+                        x={(props.menuLocation === 'left' ? 14 : (svgWidth - 14 - menueWidth + 20))}
                         y={22} data-html2canvas-ignore="true"> 
                         {React.Children.map(props.children, (element) => {
                                    if (!React.isValidElement(element))

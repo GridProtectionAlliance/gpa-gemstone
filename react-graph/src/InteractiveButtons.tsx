@@ -64,7 +64,7 @@ const InteractiveButtons = React.memo((props: IProps) => {
       (props.showCapture? 1 : 0) + 
       ((props.children == null) ? 0 : React.Children.count(props.children));
       const buttonsAllowed = Math.floor((props.heightAvaliable - 20) / heightPerButton);
-      const width = 25 * Math.ceil(nButtons/buttonsAllowed);
+      const width = 20 * Math.ceil(nButtons/buttonsAllowed);
       nButtons = Math.min(nButtons, buttonsAllowed);
       return [nButtons, heightPerButton*(nButtons - 1), width];
     }, [props.holdOpen, props.showZoom, props.showPan, props.showReset, props.showSelect, props.showDownload, props.showCapture, props.children]);
