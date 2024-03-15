@@ -98,7 +98,7 @@ const InteractiveButtons = React.memo((props: IProps) => {
       } 
     },[selectIcon, props.currentSelection]);
 
-    React.useEffect(() => { props.setWidth(width) }, [width])
+    React.useEffect(() => { if (expand) props.setWidth(width); else props.setWidth(20) }, [width, expand])
     
     if (nButtons === 0)
       return null;
