@@ -70,7 +70,7 @@ const InteractiveButtons = React.memo((props: IProps) => {
       return [nButtons, rows, heightPerButton*(nButtons - 1), width];
     }, [props.holdOpen, props.showZoom, props.showPan, props.showReset, props.showSelect, props.showDownload, props.showCapture, props.children]);
 
-    const setBtnAndSelect = React.useCallback((newIcon: React.ReactElement, id: ButtonType|'custom') => {
+    const setBtnAndSelect = React.useCallback((newIcon: React.ReactElement, id: ButtonType|string) => {
       setSelectIcon(newIcon);
       setCurrentSelect(id);
       props.setSelection('select');
@@ -118,7 +118,7 @@ const InteractiveButtons = React.memo((props: IProps) => {
         </g>);
 
     const symbols = [[]] as React.ReactElement[][];
-    const symbolNames = [[]] as ButtonType[][];
+    const symbolNames = [[]] as (ButtonType|string)[][];
     if (props.holdOpen ?? false) {
      
       if (symbols[symbols.length-1].length < nButtons) {
@@ -190,13 +190,13 @@ const InteractiveButtons = React.memo((props: IProps) => {
     }
 
     const customButtonsIndex = symbols.length -1;
-    React.Children.forEach(props.children, (element) => {
+    React.Children.forEach(props.children, (element,index) => {
       if (symbols[symbols.length-1].length < nButtons && React.isValidElement(element) && (element as React.ReactElement<any>).type === Button) {
         symbols[symbols.length-1].push(element as React.ReactElement);
-        symbolNames[symbols.length-1].push('custom');
+        symbolNames[symbols.length-1].push('custom-' + index);
       } else if (React.isValidElement(element) && (element as React.ReactElement<any>).type === Button) {
         symbols.push([element as React.ReactElement]);
-        symbolNames.push(['custom']);
+        symbolNames.push(['custom-' + index]);
       }
     })
 
@@ -210,7 +210,7 @@ const InteractiveButtons = React.memo((props: IProps) => {
               x={props.x + j*20} y={props.y + i*heightPerButton}
               active={i < customButtonsIndex ? (props.currentSelection === symbolNames[j][i] && (props.currentSelection !== 'select' || currentSelect === undefined)) :
               props.currentSelection === 'select' && currentSelect === symbolNames[j][i]}
-              button={s} btnCleanup={btnCleanup} setSelectIcon={symbolNames[j][i] != 'custom' ? undefined : setBtnAndSelect}
+              button={s} btnCleanup={btnCleanup} setSelectIcon={!symbolNames[j][i].startsWith('custom') ? undefined : setBtnAndSelect}
             />)}</>)}
 
          <path d={path} stroke={'black'} />
@@ -224,8 +224,8 @@ interface ICircleProps {
   y: number, 
   active: boolean, 
   btnCleanup: React.MutableRefObject<Cleanup>, 
-  selectId: ButtonType,
-  setSelectIcon?: (children: React.ReactElement, id: ButtonType|'custom') => void
+  selectId: ButtonType|string,
+  setSelectIcon?: (children: React.ReactElement, id: ButtonType|string) => void
 }
 
 function CircleButton(props: ICircleProps) {
