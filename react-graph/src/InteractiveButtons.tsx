@@ -165,9 +165,10 @@ const InteractiveButtons = React.memo((props: IProps) => {
       }
     })
 
+    const path = `M ${props.x-10} ${props.y} A 10 10 90 0 1 ${props.x} ${props.y-10} h ${width - 20} A 10 10 90 0 1 ${props.x+width - 10} ${props.y} v ${height} A 10 10 90 0 1 ${props.x + width - 20} ${props.y + height + 10} h ${-width+20} A 10 10 90 0 1 ${props.x-10} ${props.y+height} v ${-height}`
     return (
      <g style={{ cursor: 'default' }} data-html2canvas-ignore="true">
-         <path d={`M ${props.x-10} ${props.y} A 10 10 90 0 1 ${props.x} ${props.y-10} h ${width - 20} A 10 10 90 0 1 ${props.x+width - 10} ${props.y} v ${height} A 10 10 90 0 1 ${props.x + width - 10} ${props.y + height + 10} h ${-width+20} A 10 10 90 0 1 ${props.x-10} ${props.y+height} v ${-height}`} style={{
+         <path d={path} style={{
              fill: '#1e90ff' }} />
           {symbols.map((s,i) => 
             <CircleButton key={i} selectId={i}
@@ -177,7 +178,7 @@ const InteractiveButtons = React.memo((props: IProps) => {
               button={s} btnCleanup={btnCleanup} setSelectIcon={i < customButtonsIndex ? undefined : setBtnAndSelect}
             />)}
 
-         <path d={`M ${props.x-10} ${props.y} A 10 10 180 0 1 ${props.x+10} ${props.y} v ${height} A 10 10 180 0 1 ${props.x-10} ${props.y+height} v ${-height}`} stroke={'black'} />
+         <path d={path} stroke={'black'} />
      </g>)
 
 });
