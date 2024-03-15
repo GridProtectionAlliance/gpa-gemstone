@@ -54,7 +54,7 @@ const InteractiveButtons = React.memo((props: IProps) => {
     const [expand, setExpand] = React.useState<boolean>(props.holdOpen ?? false);
     const [currentSelect, setCurrentSelect] = React.useState<number>(-1);
 
-    const [nButtons, height, width] = React.useMemo(() => {
+    const [nButtons, nRows, height, width] = React.useMemo(() => {
       let nButtons = ((props.holdOpen ?? false) ? 1 : 0) + 
       (props.showZoom? 3 : 0) + 
       (props.showPan? 1 : 0) + 
@@ -64,9 +64,10 @@ const InteractiveButtons = React.memo((props: IProps) => {
       (props.showCapture? 1 : 0) + 
       ((props.children == null) ? 0 : React.Children.count(props.children));
       const buttonsAllowed = Math.floor((props.heightAvaliable - 20) / heightPerButton);
-      const width = 20 * Math.ceil(nButtons/buttonsAllowed);
+      const rows =  Math.ceil(nButtons/buttonsAllowed)
+      const width = 20 * rows;
       nButtons = Math.min(nButtons, buttonsAllowed);
-      return [nButtons, heightPerButton*(nButtons - 1), width];
+      return [nButtons, rows, heightPerButton*(nButtons - 1), width];
     }, [props.holdOpen, props.showZoom, props.showPan, props.showReset, props.showSelect, props.showDownload, props.showCapture, props.children]);
 
     const setBtnAndSelect = React.useCallback((newIcon: React.ReactElement, id: number) => {
@@ -116,52 +117,86 @@ const InteractiveButtons = React.memo((props: IProps) => {
           </text>
         </g>);
 
-    const symbols = [] as React.ReactElement[];
-    const symbolNames = [] as ButtonType[];
+    const symbols = [[]] as React.ReactElement[][];
+    const symbolNames = [[]] as ButtonType[][];
     if (props.holdOpen ?? false) {
-      symbolNames.push('collaspe' as ButtonType);
-      symbols.push(<Button onClick={() => setExpand(false)}>^</Button>)
+     
+      if (symbols[symbols.length-1].length < nButtons) {
+        symbols[symbols.length-1].push(<Button onClick={() => setExpand(false)}>^</Button>)
+        symbolNames[symbols.length-1].push('collaspe' as ButtonType);
+      }
+      else {
+        symbols.push([<Button onClick={() => setExpand(false)}>^</Button>])
+        symbolNames.push(['collaspe' as ButtonType]);
+      }
     }
     if (props.showZoom) {
-      if (nButtons > symbols.length) {
-        symbolNames.push('zoom-rectangular');
-        symbols.push(<Button onClick={() => {props.setSelection('zoom-rectangular'); collaspeMenu(); }}>{MagnifyingGlass}</Button>);
+      if (symbols[symbols.length-1].length < nButtons) {
+        symbolNames[symbols.length-1].push('zoom-rectangular');
+        symbols[symbols.length-1].push(<Button onClick={() => {props.setSelection('zoom-rectangular'); collaspeMenu(); }}>{MagnifyingGlass}</Button>);
+      } else {
+        symbolNames.push(['zoom-rectangular']);
+        symbols.push([<Button onClick={() => {props.setSelection('zoom-rectangular'); collaspeMenu(); }}>{MagnifyingGlass}</Button>]);
       }
-      if (nButtons > symbols.length) {
-        symbolNames.push('zoom-vertical');
-        symbols.push(<Button onClick={() => {props.setSelection('zoom-vertical'); collaspeMenu(); }}>{"\u2016"}</Button>);
+      if (symbols[symbols.length-1].length < nButtons) {
+        symbolNames[symbols.length-1].push('zoom-vertical');
+        symbols[symbols.length-1].push(<Button onClick={() => {props.setSelection('zoom-vertical'); collaspeMenu(); }}>{"\u2016"}</Button>);
+      } else {
+        symbolNames.push(['zoom-vertical']);
+        symbols.push([<Button onClick={() => {props.setSelection('zoom-vertical'); collaspeMenu(); }}>{"\u2016"}</Button>]);
+       }
+      if (symbols[symbols.length-1].length < nButtons) {
+        symbolNames[symbols.length-1].push('zoom-horizontal');
+        symbols[symbols.length-1].push(<Button onClick={() => {props.setSelection('zoom-horizontal'); collaspeMenu(); }}>{"\u2550"}</Button>);
+      } else {
+        symbolNames.push(['zoom-horizontal']);
+        symbols.push([<Button onClick={() => {props.setSelection('zoom-horizontal'); collaspeMenu(); }}>{"\u2550"}</Button>]);
       }
-      if (nButtons > symbols.length) {
-        symbolNames.push('zoom-horizontal');
-        symbols.push(<Button onClick={() => {props.setSelection('zoom-horizontal'); collaspeMenu(); }}>{"\u2550"}</Button>);
-      }
     }
-    if (props.showPan && nButtons > symbols.length) {
-      symbolNames.push('pan');
-      symbols.push(<Button onClick={() => {props.setSelection('pan'); collaspeMenu(); }}>{Pan}</Button>)
+    if (props.showPan && symbols[symbols.length-1].length < nButtons) {
+      symbolNames[symbols.length-1].push('pan');
+      symbols[symbols.length-1].push(<Button onClick={() => {props.setSelection('pan'); collaspeMenu(); }}>{Pan}</Button>)
+    } else if (props.showPan) {
+      symbolNames.push(['pan']);
+      symbols.push([<Button onClick={() => {props.setSelection('pan'); collaspeMenu(); }}>{Pan}</Button>])
     }
-    if (props.showSelect && nButtons > symbols.length) {
-      symbolNames.push('select');
-      symbols.push(<Button isSelect={true} onClick={() => { setBtnAndSelect(<>{Point}</>, -1); }}>{Point}</Button>)
+    if (props.showSelect && symbols[symbols.length-1].length < nButtons) {
+      symbolNames[symbols.length-1].push('select');
+      symbols[symbols.length-1].push(<Button isSelect={true} onClick={() => { setBtnAndSelect(<>{Point}</>, -1); }}>{Point}</Button>)
+    } else if (props.showSelect) {
+      symbolNames.push(['select']);
+      symbols.push([<Button isSelect={true} onClick={() => { setBtnAndSelect(<>{Point}</>, -1); }}>{Point}</Button>])
     }
-    if (props.showReset && nButtons > symbols.length) {
-      symbolNames.push('reset');
-      symbols.push(<Button onClick={() => {collaspeMenu(); props.setSelection('reset'); }}>{House}</Button>)
+    if (props.showReset && symbols[symbols.length-1].length < nButtons) {
+      symbolNames[symbols.length-1].push('reset');
+      symbols[symbols.length-1].push(<Button onClick={() => {collaspeMenu(); props.setSelection('reset'); }}>{House}</Button>)
+    } else if (props.showReset) {
+      symbolNames.push(['reset']);
+      symbols.push([<Button onClick={() => {collaspeMenu(); props.setSelection('reset'); }}>{House}</Button>])
     }
-    if (props.showDownload && nButtons > symbols.length) {
-      symbolNames.push('download');
-      symbols.push(<Button onClick={() => {collaspeMenu(); props.setSelection('download');}}>{InputNumbers}</Button>)
+    if (props.showDownload && symbols[symbols.length-1].length < nButtons) {
+      symbolNames[symbols.length-1].push('download');
+      symbols[symbols.length-1].push(<Button onClick={() => {collaspeMenu(); props.setSelection('download');}}>{InputNumbers}</Button>)
+    } else if (props.showDownload) {
+      symbolNames.push(['download']);
+      symbols.push([<Button onClick={() => {collaspeMenu(); props.setSelection('download');}}>{InputNumbers}</Button>])
     }
-    if (props.showCapture && nButtons > symbols.length) {
-      symbolNames.push('capture');
-      symbols.push(<Button onClick={() => {collaspeMenu(); props.setSelection('capture');}}>{Scroll}</Button>)
+    if (props.showCapture && symbols[symbols.length-1].length < nButtons) {
+      symbolNames[symbols.length-1].push('capture');
+      symbols[symbols.length-1].push(<Button onClick={() => {collaspeMenu(); props.setSelection('capture');}}>{Scroll}</Button>)
+    } else if (props.showCapture) {
+      symbolNames.push(['capture']);
+      symbols.push([<Button onClick={() => {collaspeMenu(); props.setSelection('capture');}}>{Scroll}</Button>])
     }
 
     const customButtonsIndex = symbols.length -1;
     React.Children.forEach(props.children, (element) => {
-      if (nButtons > symbols.length && React.isValidElement(element) && (element as React.ReactElement<any>).type === Button) {
-        symbols.push(element as React.ReactElement);
-        symbolNames.push('custom');
+      if (symbols[symbols.length-1].length < nButtons && React.isValidElement(element) && (element as React.ReactElement<any>).type === Button) {
+        symbols[symbols.length-1].push(element as React.ReactElement);
+        symbolNames[symbols.length-1].push('custom');
+      } else if (React.isValidElement(element) && (element as React.ReactElement<any>).type === Button) {
+        symbols.push([element as React.ReactElement]);
+        symbolNames.push(['custom']);
       }
     })
 
@@ -170,13 +205,13 @@ const InteractiveButtons = React.memo((props: IProps) => {
      <g style={{ cursor: 'default' }} data-html2canvas-ignore="true">
          <path d={path} style={{
              fill: '#1e90ff' }} />
-          {symbols.map((s,i) => 
+          {symbols.map((r,j) => <> {r.map((s,i) => 
             <CircleButton key={i} selectId={i}
-              x={props.x} y={props.y + i*heightPerButton}
-              active={i < customButtonsIndex ? (props.currentSelection === symbolNames[i] && (props.currentSelection !== 'select' || currentSelect === -1)) :
+              x={props.x + j*20} y={props.y + i*heightPerButton}
+              active={i < customButtonsIndex ? (props.currentSelection === symbolNames[j][i] && (props.currentSelection !== 'select' || currentSelect === -1)) :
               props.currentSelection === 'select' && currentSelect === i}
               button={s} btnCleanup={btnCleanup} setSelectIcon={i < customButtonsIndex ? undefined : setBtnAndSelect}
-            />)}
+            />)}</>)}
 
          <path d={path} stroke={'black'} />
      </g>)
