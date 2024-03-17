@@ -76,7 +76,7 @@ export default function StylableSelect<T>(props: IProps<T>){
   React.useEffect(() => {
     const element: IOption | undefined = props.Options.find(e => e.Value === props.Record[props.Field] as any);
     setSelected(element !== undefined ? element.Element : <div/>);
-  }, [props.Record]);
+  }, [props.Record, props.Options]);
 
   return (
     <div ref={stylableSelect} style={{ position: 'relative', display: 'inline-block', width: 'inherit' }}>
@@ -116,7 +116,7 @@ export default function StylableSelect<T>(props: IProps<T>){
       >
         <table className="table" style={{ margin: 0 }}>
           <tbody>
-            {props.Options.map((f, i) => (
+            {props.Options.map((f, i) => ( f.Value == props.Record[props.Field] ? null :
               <tr key={i} onClick={(evt) => {evt.preventDefault(); SetRecord(f); setShow(false);}}>
                 <td>
                   {f.Element}
