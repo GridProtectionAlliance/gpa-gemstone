@@ -41,7 +41,7 @@ interface IProps<T> {
 }
 
 export default function SearchableSelect<T>(props: IProps<T>) {
-    const [search, setSearch] = React.useState<string>(props.Record[props.Field] as string);
+    const [search, setSearch] = React.useState<string>((props.Record[props.Field] as any).toString());
     const [results, setResults] = React.useState<IStylableOption[]>([]);
     const [loading, setLoading] = React.useState<boolean>(false);
 
@@ -63,7 +63,7 @@ export default function SearchableSelect<T>(props: IProps<T>) {
                     className="form-control"
                     value={search}
                     onChange={(d) => setSearch(d.target.value)}
-                    onBlur={((props.AllowCustom ?? false) ? () => props.Setter({ ...props.Record, [props.Field]: search }) : () => setSearch(props.Record[props.Field] as string))}
+                    onBlur={((props.AllowCustom ?? false) ? () => props.Setter({ ...props.Record, [props.Field]: search }) : () => setSearch((props.Record[props.Field] as any).toString()))}
                 />
                 <div className="input-group-append">
                     <span className="input-group-text"><Icon/></span>
@@ -79,7 +79,7 @@ export default function SearchableSelect<T>(props: IProps<T>) {
     const update = React.useCallback((record: T) => {
         if ((record[props.Field] as any).startsWith('search-'))
             return;
-        props.Setter(record); setSearch(record[props.Field] as string)
+        props.Setter(record); setSearch((record[props.Field] as any).toString())
     }, [props.Setter, props.Field])
 
     return <StylableSelect<T>
