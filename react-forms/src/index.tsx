@@ -35,6 +35,7 @@ import DoubleInput from './DoubleInput';
 import TimePicker from './TimePicker';
 import StylableSelect from './StylableSelect';
 import ColorPicker from './ColorPicker'
+import SearchableSelect from './SearchableSelect';
 
 export {
     CheckBox,
@@ -50,5 +51,6 @@ export {
     DoubleInput,
     TimePicker,
     StylableSelect,
-    ColorPicker
+    ColorPicker,
+    SearchableSelect
 };

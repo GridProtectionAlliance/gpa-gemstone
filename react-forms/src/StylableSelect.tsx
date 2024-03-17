@@ -25,7 +25,7 @@ import * as React from 'react';
 import HelperMessage from './HelperMessage';
 import { CreateGuid } from '@gpa-gemstone/helper-functions';
 
-interface IOption {
+export interface IOption {
   Value: any;
   Element: React.ReactElement<any>
 }
