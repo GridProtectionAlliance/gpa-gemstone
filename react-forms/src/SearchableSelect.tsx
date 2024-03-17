@@ -77,7 +77,7 @@ export default function SearchableSelect<T>(props: IProps<T>) {
     }, [search, props.Record[props.Field], results, props.Disabled, loading]);
 
     const update = React.useCallback((record: T) => {
-        if ((record[props.Field] as any).startsWith('search-'))
+        if ((record[props.Field] as any).toString().startsWith('search-') as boolean)
             return;
         props.Setter(record); setSearch((record[props.Field] as any).toString())
     }, [props.Setter, props.Field])
