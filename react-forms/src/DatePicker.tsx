@@ -155,7 +155,7 @@ export default function DateTimePicker<T>(props: IProps<T>) {
         }
     }
 
-    function validateDate(date: moment.Moment): boolean {
+    function validateDate(date: moment.Moment) {
 
         const minStartDate = props.MinDate != null ? props.MinDate.startOf('day') : moment("1753-01-01", "YYYY-MM-DD").startOf('day');
 
