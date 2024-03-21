@@ -68,7 +68,7 @@ namespace OpenXDA {
         export interface MATLABAnalytic { ID: number, AssemblyName: string, MethodName: string, SettingSQL: string, LoadOrder: number }
         export interface MATLABAnalyticEventType { ID: number, MATLABAnalyticID: number, EventTypeID: number }
         export interface MATLABAnalyticAssetType { ID: number, MATLABAnalyticID: number, AssetTypeID: number }
-        export interface MagDurCurve { ID: number, Name: string, XHigh: number, XLow: number, YHigh: number, YLow: number, UpperCurve: string, LowerCurve: string, Area: string, Color: string }
+        export interface MagDurCurve { ID: number, Name: string, Area: string, Color: string }
 
         // Assets
         export interface Asset { ID: number, VoltageKV: number, AssetKey: string, Description: string, AssetName: string, AssetType: AssetTypeName, Spare:boolean, Channels: Array<Channel> }
