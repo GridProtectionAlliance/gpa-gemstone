@@ -161,15 +161,12 @@ export default function DateTimePicker<T>(props: IProps<T>) {
 
         if (!date.isValid()) {
             setFeedbackMessage(`Please enter a date as ${boxFormat}`);
-            return false;
         }
         else if (date.startOf('day').isBefore(minStartDate)) {
             setFeedbackMessage(`Date must be on or after ${minStartDate.format("MM-DD-YYYY")}`);
-            return false;
         }
         else {
             setFeedbackMessage("");
-            return true;
         }
     }
 
