@@ -73,8 +73,10 @@ export default function DateTimePicker<T>(props: IProps<T>) {
     }, []);
 
     React.useEffect(() => {
-        setPickerRecord(parse(props.Record));
-        setBoxRecord(parse(props.Record).format(boxFormat));
+        if (props.Record[props.Field] as any !== null) {
+            setPickerRecord(parse(props.Record));
+            setBoxRecord(parse(props.Record).format(boxFormat));
+        }
         recordChange.current = false;
     }, [props.Record]);
 
@@ -82,17 +84,27 @@ export default function DateTimePicker<T>(props: IProps<T>) {
         if (!recordChange.current) return;
         const date = moment(boxRecord, boxFormat);
 
-        validateDate(date);
+        const valid = validateDate(date);
+
+        if ((props.AllowEmpty ?? false) && !valid && props.Record !== null) 
+            props.Setter({ ...props.Record, [props.Field]: null });
 
         if ((props.AllowEmpty ?? false) && boxRecord.length === 0 && props.Record !== null)
             props.Setter({ ...props.Record, [props.Field]: null });
 
-        if (parse(props.Record).format(boxFormat) !== boxRecord)
+        if (valid && parse(props.Record).format(boxFormat) !== boxRecord)
             props.Setter({ ...props.Record, [props.Field]: moment(boxRecord, boxFormat).format(recordFormat) });
     }, [boxRecord])
 
     React.useEffect(() => {
         if (!recordChange.current) return;
+
+        const date = moment(pickerRecord, recordFormat);
+
+        const valid = validateDate(date);
+
+        if ((props.AllowEmpty ?? false) && !valid && props.Record !== null)
+            props.Setter({ ...props.Record, [props.Field]: null });
 
         if (pickerRecord.format(recordFormat) !== parse(props.Record).format(recordFormat))
             props.Setter({ ...props.Record, [props.Field]: pickerRecord.format(recordFormat) });
@@ -161,12 +173,15 @@ export default function DateTimePicker<T>(props: IProps<T>) {
 
         if (!date.isValid()) {
             setFeedbackMessage(`Please enter a date as ${boxFormat}`);
+            return false;
         }
         else if (date.startOf('day').isBefore(minStartDate)) {
             setFeedbackMessage(`Date must be on or after ${minStartDate.format("MM-DD-YYYY")}`);
+            return false;
         }
         else {
             setFeedbackMessage("");
+            return true;
         }
     }
 
@@ -229,8 +244,6 @@ export default function DateTimePicker<T>(props: IProps<T>) {
                 Setter={(d) => {
                     setPickerRecord(d);
                     recordChange.current = true;
-
-                    validateDate(d);
 
                     if (props.Type === 'date') setShowOverlay(false);
                 }}
