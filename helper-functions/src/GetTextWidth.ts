@@ -34,7 +34,9 @@
 function GetTextWidth(font: string, fontSize: string, word: string, cssStyle?: string, height?: string, whiteSpace?: string): number {
 
     const text = document.createElement("span");
-    document.body.appendChild(text);
+
+    if (cssStyle !== undefined)
+        text.style.cssText = cssStyle;
 
     text.style.font = font;
     text.style.fontSize = fontSize;
@@ -42,11 +44,8 @@ function GetTextWidth(font: string, fontSize: string, word: string, cssStyle?: s
     text.style.width = 'auto';
     text.style.position = 'absolute';
     text.style.whiteSpace = whiteSpace ?? 'no-wrap';
-
-    if (cssStyle !== undefined)
-        text.style.cssText = cssStyle;
-
     text.innerHTML = word;
+    document.body.appendChild(text);
 
     const width = Math.ceil(text.clientWidth);
     document.body.removeChild(text);

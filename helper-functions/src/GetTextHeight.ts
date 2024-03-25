@@ -34,7 +34,9 @@
 function GetTextHeight(font: string, fontSize: string, word: string, cssStyle?: string, width?: string, whiteSpace?: string): number {
 
     const text = document.createElement("span");
-    document.body.appendChild(text);
+
+    if (cssStyle !== undefined)
+        text.style.cssText = cssStyle
 
     text.style.font = font;
     text.style.fontSize = fontSize;
@@ -42,16 +44,13 @@ function GetTextHeight(font: string, fontSize: string, word: string, cssStyle?: 
     text.style.width = width ?? 'auto';
     text.style.position = 'absolute';
     text.style.whiteSpace = whiteSpace ?? 'no-wrap';
-    
-    if (cssStyle !== undefined)
-        text.style.cssText = cssStyle
-
     text.innerHTML = word;
+
+    document.body.appendChild(text);
 
     const height = Math.ceil(text.clientHeight);
     document.body.removeChild(text);
     return height;
-
 } 
 
 export {GetTextHeight};
