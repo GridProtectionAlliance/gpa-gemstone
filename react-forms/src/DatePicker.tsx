@@ -106,7 +106,7 @@ export default function DateTimePicker<T>(props: IProps<T>) {
         if ((props.AllowEmpty ?? false) && !valid && props.Record !== null)
             props.Setter({ ...props.Record, [props.Field]: null });
 
-        if (pickerRecord.format(recordFormat) !== parse(props.Record).format(recordFormat))
+        if (valid && pickerRecord.format(recordFormat) !== parse(props.Record).format(recordFormat))
             props.Setter({ ...props.Record, [props.Field]: pickerRecord.format(recordFormat) });
     }, [pickerRecord]);
 
