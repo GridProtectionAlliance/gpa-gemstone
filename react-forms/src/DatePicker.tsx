@@ -42,7 +42,8 @@ interface IProps<T> {
     Type?: TimeUnit; // Default to date
     Help?: string | JSX.Element;
     AllowEmpty?: boolean,
-    Accuracy?: Accuracy //Default to second
+    Accuracy?: Accuracy, //Default to second
+    MinDate?: moment.Moment // Default to 01/01/1753 (Database limit)
 }
 
 export default function DateTimePicker<T>(props: IProps<T>) {
@@ -72,33 +73,23 @@ export default function DateTimePicker<T>(props: IProps<T>) {
     }, []);
 
     React.useEffect(() => {
-        setPickerRecord(parse(props.Record));
-        setBoxRecord(parse(props.Record).format(boxFormat));
+        if (props.Record[props.Field] as any !== null) {
+            setPickerRecord(parse(props.Record));
+            setBoxRecord(parse(props.Record).format(boxFormat));
+        }
         recordChange.current = false;
     }, [props.Record]);
 
     React.useEffect(() => {
         if (!recordChange.current) return;
         const date = moment(boxRecord, boxFormat);
-        const validStartDate = moment("1753-01-01", "YYYY-MM-DD");
 
-        let valid = true;
+        const valid = validateDate(date);
 
-        // Invalid date format
-        if (!date.isValid()) {
-            setFeedbackMessage(`Please enter a date as ${boxFormat}`);
-            valid = false;
-        }
-        // Date before 1753
-        else if (date.isBefore(validStartDate)) {
-            setFeedbackMessage(`Date cannot be before ${validStartDate.format(boxFormat)}`);
-            valid = false;
-        }
-        else {
-            setFeedbackMessage("");
-        }
+        if ((props.AllowEmpty ?? false) && !valid && props.Record !== null) 
+            props.Setter({ ...props.Record, [props.Field]: null });
 
-        if ((props.AllowEmpty ?? false) && boxRecord.length === 0 && !valid && props.Record !== null)
+        if ((props.AllowEmpty ?? false) && boxRecord.length === 0 && props.Record !== null)
             props.Setter({ ...props.Record, [props.Field]: null });
 
         if (valid && parse(props.Record).format(boxFormat) !== boxRecord)
@@ -108,7 +99,14 @@ export default function DateTimePicker<T>(props: IProps<T>) {
     React.useEffect(() => {
         if (!recordChange.current) return;
 
-        if (pickerRecord.format(recordFormat) !== parse(props.Record).format(recordFormat))
+        const date = moment(pickerRecord, recordFormat);
+
+        const valid = validateDate(date);
+
+        if ((props.AllowEmpty ?? false) && !valid && props.Record !== null)
+            props.Setter({ ...props.Record, [props.Field]: null });
+
+        if (valid && pickerRecord.format(recordFormat) !== parse(props.Record).format(recordFormat))
             props.Setter({ ...props.Record, [props.Field]: pickerRecord.format(recordFormat) });
     }, [pickerRecord]);
 
@@ -169,6 +167,25 @@ export default function DateTimePicker<T>(props: IProps<T>) {
         }
     }
 
+    function validateDate(date: moment.Moment) {
+
+        const minStartDate = props.MinDate != null ? props.MinDate.startOf('day') : moment("1753-01-01", "YYYY-MM-DD").startOf('day');
+
+        if (!date.isValid()) {
+            setFeedbackMessage(`Please enter a date as ${boxFormat}`);
+            return false;
+        }
+        else if (date.startOf('day').isBefore(minStartDate)) {
+            setFeedbackMessage(`Date must be on or after ${minStartDate.format("MM-DD-YYYY")}`);
+            return false;
+        }
+        else {
+            setFeedbackMessage("");
+            return true;
+        }
+    }
+
+
     const showLabel = props.Label !== "";
     const showHelpIcon = props.Help !== undefined;
     const label = props.Label === undefined ? props.Field : props.Label;
@@ -224,7 +241,12 @@ export default function DateTimePicker<T>(props: IProps<T>) {
                 {getFeedbackMessage()}
             </div>
             <DateTimePopup
-                Setter={(d) => { setPickerRecord(d); recordChange.current = true; if (props.Type === 'date') setShowOverlay(false); }}
+                Setter={(d) => {
+                    setPickerRecord(d);
+                    recordChange.current = true;
+
+                    if (props.Type === 'date') setShowOverlay(false);
+                }}
                 Show={showOverlay}
                 DateTime={pickerRecord}
                 Valid={props.Valid(props.Field)}
