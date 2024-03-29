@@ -72,7 +72,7 @@ function Legend(props: IProps) {
   }, [props.height, props.graphHeight, props.location]);
 
   React.useEffect(() => {
-    const newNLegends = [...graphContext.Data.values()].reduce((s,c) => {
+    const newNLegends = [...graphContext.Data.current.values()].reduce((s,c) => {
       if (c.legend === undefined) return s;
       if (props.HideDisabled && !(c.legend?.props?.enabled as boolean ?? true)) return s;
       if ((c.legend?.props?.size ?? 'sm') === 'sm') s.sm = s.sm + 1;
@@ -80,7 +80,7 @@ function Legend(props: IProps) {
       return s;
     }, {sm: 0, lg: 0});
     if (newNLegends.sm !== nLegends.sm || newNLegends.lg !== nLegends.lg) setNLegends(newNLegends);
-  }, [graphContext.Data, props.HideDisabled]);
+  }, [graphContext.DataGuid, props.HideDisabled]);
 
   React.useEffect(() => {
     const requiredHeight = Math.ceil(nLegends.sm/ (props.location === 'bottom' ? itemsWhenBottom : 1)) * legendContextValue.SmHeight + nLegends.lg * legendContextValue.LgHeight;
@@ -94,7 +94,7 @@ function Legend(props: IProps) {
     <LegendContext.Provider value={legendContextValue}>
       <div style={{ height, width, paddingLeft: `${leftPad}px`, position: (props.location === 'bottom'? 'absolute' : 'relative'), float:(props.location as any), display: 'flex', flexWrap: 'wrap', bottom: 0, 
         overflowY: hasScroll ? 'scroll' : 'hidden', overflowX: hasScroll ? 'visible' : 'hidden', cursor: 'default' }}>
-        {[...graphContext.Data.values()].map((series, index) => (series.legend !== undefined && (!props.HideDisabled || (series.legend.props.enabled as boolean ?? true)) ? 
+        {[...graphContext.Data.current.values()].map((series, index) => (series.legend !== undefined && (!props.HideDisabled || (series.legend.props.enabled as boolean ?? true)) ? 
           <div key={index} data-html2canvas-ignore={!(series.legend.props.enabled as boolean ?? true)}>{series.legend}</div> : null))}
       </div>
     </LegendContext.Provider>);

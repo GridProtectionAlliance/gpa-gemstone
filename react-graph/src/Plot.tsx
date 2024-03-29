@@ -120,8 +120,10 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
       {timeout: undefined, extraNeeded: 0, captureID: undefined});
     const widthTimeout = React.useRef<{timeout?: NodeJS.Timeout, requesterMap: Map<string,number>}>({timeout: undefined, requesterMap: new Map<string,number>()});
     
-    const guid = React.useMemo(() => CreateGuid(),[]);
-    const [data, setData] = React.useState<Map<string, IDataSeries>>(new Map<string, IDataSeries>());
+    const guid = React.useMemo(() => CreateGuid(), []);
+
+    const data = React.useRef<Map<string, IDataSeries>>(new Map<string, IDataSeries>())
+    const [dataGuid, setDataGuid] = React.useState<string>("");
 
     const [tDomain, setTdomain] = React.useState<[number,number]>(props.defaultTdomain);
     const [tOffset, setToffset] = React.useState<number>(0);
@@ -278,8 +280,8 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
       }
 
       const newDefaultDomain: [number, number][] = defaultYdomain.map((yDomain, axis) => {
-        const yMin = Math.min(...[...data.values()].reduce((result: number[], series: IDataSeries) => dataReducerFunc(result, series, series.getMin, axis), []));
-        const yMax = Math.max(...[...data.values()].reduce((result: number[], series: IDataSeries) => dataReducerFunc(result, series, series.getMax, axis), []));
+        const yMin = Math.min(...[...data.current.values()].reduce((result: number[], series: IDataSeries) => dataReducerFunc(result, series, series.getMin, axis), []));
+        const yMax = Math.max(...[...data.current.values()].reduce((result: number[], series: IDataSeries) => dataReducerFunc(result, series, series.getMax, axis), []));
         if (!isNaN(yMin) && !isNaN(yMax) && isFinite(yMin) && isFinite(yMax)) {
           if (props.yDomain === 'AutoValue') return [yMin, yMax];
           // If this condition is satisfied, it means our series is mostly positive range
@@ -290,15 +292,15 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
       });
 
       if (!_.isEqual(newDefaultDomain, defaultYdomain)) setDefaultYdomain(newDefaultDomain);
-    }, [data, props.yDomain]);
+    }, [dataGuid, props.yDomain]);
 
     React.useEffect(() => {
       const newHasData: boolean[] = Array<boolean>(2);
-      const hasFunc = (axis: AxisIdentifier) => [...data.values()].some(series => AxisMap.get(axis) === AxisMap.get(series.axis));
+      const hasFunc = (axis: AxisIdentifier) => [...data.current.values()].some(series => AxisMap.get(axis) === AxisMap.get(series.axis));
       newHasData[0] = hasFunc('left');
       newHasData[1] = hasFunc('right');
       setYHasData(newHasData);
-    }, [data]);
+    }, [dataGuid]);
 
     // Adjust x axis
     React.useEffect(() => {
@@ -474,30 +476,27 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
         return Math.max(offsetTop, svgHeight - offsetBottom + value);
     }, [offsetTop,offsetBottom,svgHeight]);
 
+    const setData = React.useCallback((key: string, d?: IDataSeries) => {
+        setDataGuid(CreateGuid());
+        if (d != null)
+            data.current.set(key, d)
+        else
+            data.current.delete(key)
+    }, [])
+
     const addData = React.useCallback((d: IDataSeries) => {
       const key = CreateGuid();
-      setData((fld) => { const updated = cloneDeep(fld); updated.set(key, d); return updated; });
+      setData(key, d);
       return key;
     }, []);
 
-    const updateData = React.useCallback((key: string, d: IDataSeries) => {
-      setData((fld) => { const updated = cloneDeep(fld); updated.set(key, d); return updated; });
-    }, []);
+    const setLegend = React.useCallback((key: string, legend?: React.ReactElement) => {
+        const series = data.current.get(key);
+        if (series === undefined)
+            return;
 
-    const removeData = React.useCallback((d: string) => {
-        setData((fld) => { const updated = cloneDeep(fld); updated.delete(d); return updated;})
-    },[]);
-
-    const setLegend = React.useCallback((key: string, legend?: React.ReactElement) =>  {
-        setData((fld) => {
-          const updated = cloneDeep(fld);
-          const series = updated.get(key);
-          if (series === undefined)
-            return updated;
-          series.legend = legend;
-          updated.set(key, series!);
-          return updated;
-        });
+        series.legend = legend;
+        data.current.set(key, series);
     }, []);
 
     function snapMouseToClosestSeries(pixelPt: {x:number, y:number}): {x:number, y:number} {
@@ -516,7 +515,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
         return result;
       }
       
-      return [...data.values()].reduce((result: { pt: {x:number, y:number}, distSq: number|undefined}, series) => findClosestPoint(result, series), { pt: {x:0, y:0}, distSq: undefined }).pt;
+      return [...data.current.values()].reduce((result: { pt: {x:number, y:number}, distSq: number|undefined}, series) => findClosestPoint(result, series), { pt: {x:0, y:0}, distSq: undefined }).pt;
     }
 
     const registerSelect = React.useCallback((handler: IHandlers) => {
@@ -554,12 +553,12 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
         return result;
       }
       return yDomain.map((oldDomain, axis) => {
-        const yMin = Math.min(...[...data.values()].reduce((result: number[], series: IDataSeries) => dataReducerFunc(result, series, series.getMin, axis), []));
-        const yMax = Math.max(...[...data.values()].reduce((result: number[], series: IDataSeries) => dataReducerFunc(result, series, series.getMax, axis), []));
+        const yMin = Math.min(...[...data.current.values()].reduce((result: number[], series: IDataSeries) => dataReducerFunc(result, series, series.getMin, axis), []));
+        const yMax = Math.max(...[...data.current.values()].reduce((result: number[], series: IDataSeries) => dataReducerFunc(result, series, series.getMax, axis), []));
         if (!isNaN(yMin) && !isNaN(yMax) && isFinite(yMin) && isFinite(yMax)) return [yMin, yMax];
         return yDomain[axis];
       });
-    }, [data, yDomain]);
+    }, [dataGuid, yDomain]);
 
     function handleMouseWheel(evt: any) {
           if (props.zoom !== undefined && !props.zoom)
@@ -800,7 +799,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
 
     return (
       <ContextWrapper 
-        XDomain ={tDomain}
+        XDomain={tDomain}
         MousePosition={mousePosition}
         MousePositionSnap={mousePositionSnap}
         YDomain={yDomain}
@@ -808,6 +807,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
         MouseIn={mouseIn}
         UpdateFlag={updateFlag}
         Data={data}
+        DataGuid={dataGuid}
         XApplyPixelOffset={xApplyOffset}
         YApplyPixelOffset={yApplyOffset}
         XTransform={xTransform}
@@ -817,8 +817,8 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
         SetXDomain={updateXDomain}
         SetYDomain={updateYDomain}
         AddData={addData}
-        RemoveData={removeData}
-        UpdateData={updateData}
+        RemoveData={setData}
+        UpdateData={setData}
         SetLegend={setLegend}
         RegisterSelect={registerSelect}
         RemoveSelect={removeSelect}
