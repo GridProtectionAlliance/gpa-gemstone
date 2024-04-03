@@ -98,9 +98,20 @@ const Applications: React.ForwardRefRenderFunction<IApplicationRefs, React.Props
     const [navBarHeight, setNavBarHeight] = React.useState<number>(40);
 
     React.useLayoutEffect(() => {
-        if ((navBarRef?.current != null) && navBarRef?.current?.offsetHeight !== navBarHeight)
-            setNavBarHeight(navBarRef.current.offsetHeight)
-    }, [props?.children]);
+        if (navBarRef.current == null) return; 
+
+        const handleResize = () => {
+            if (navBarRef.current == null) return;
+            setNavBarHeight(navBarRef.current.offsetHeight);
+        };
+
+        const resizeObserver = new ResizeObserver(handleResize);
+        resizeObserver.observe(navBarRef.current);
+
+        handleResize();
+
+        return () => resizeObserver.disconnect();
+    }, [props?.children]); 
 
     React.useEffect(() => {
         const listener = (evt: any) => forceUpdate();
