@@ -23,7 +23,7 @@
 import * as React from 'react';
 import Modal from './Modal';
 import LoadingIcon from './LoadingIcon';
-import { Select } from '@gpa-gemstone/react-forms';
+import { DatePicker, Select } from '@gpa-gemstone/react-forms';
 import {TrashCan, Pencil} from '@gpa-gemstone/gpa-symbols';
 
 interface IProps<T> {
@@ -314,14 +314,16 @@ function FilterCreator<T>(props: IPropsFilterCreator<T> ) {
                         </select>
                     </div>
                     <div className='col'>
-                        <input type={'date'} className='form-control' value={props.Filter.SearchText.split(' ')[0]} onChange={(evt) => {
-                            const value = evt.target.value as string;
-                            props.Setter((prevState) => ({ ...prevState, SearchText: (value + ' ' + (prevState.SearchText.split(' ').length > 1? prevState.SearchText.split(' ')[1]: '0:00')) }));
-                        }} />
-                        <input type={'time'}className='form-control' value={props.Filter.SearchText.split(' ').length > 1? props.Filter.SearchText.split(' ')[1]: '0:00'} onChange={(evt) => {
-                            const value = evt.target.value as string;
-                            props.Setter((prevState) => ({ ...prevState, SearchText: (prevState.SearchText.split(' ')[0] + ' ' + value) }));
-                        }} />
+                        <DatePicker<Search.IFilter<T>> Record={props.Filter} Field="SearchText"
+                            Setter={(r) => {
+                                const value = r.SearchText;
+                                props.Setter((prevState) => ({ ...prevState, SearchText: value }));
+                            }}
+                            Label=''
+                            Type='datetime-local'
+                            Valid={() => true}
+                            Format={'MM/DD/YYYY HH:mm:ss.SSS'}
+                        />
                     </div>
 
                 </div>
