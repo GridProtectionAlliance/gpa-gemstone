@@ -125,7 +125,7 @@ export default function Input<T>(props: IProps<T>) {
         step='any'
       />
       <div className="invalid-feedback">
-        {props.Feedback == null ? props.Field + ' is a required field.' : props.Feedback}
+        {props.Feedback == null ? props.Field.toString() + ' is a required field.' : props.Feedback}
       </div>
     </div>
   );
