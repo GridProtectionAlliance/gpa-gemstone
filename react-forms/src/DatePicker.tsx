@@ -52,14 +52,13 @@ export default function DateTimePicker<T>(props: IProps<T>) {
     const recordFormat = props.Format !== undefined ? props.Format : "YYYY-MM-DD" + (props.Type === undefined || props.Type === 'date' ? "" : "[T]HH:mm:ss.SSS[Z]");
     const parse = (r: T) => moment(props.Record[props.Field] as any, recordFormat);
     const divRef = React.useRef<any | null>(null);
-    const recordChange = React.useRef<boolean>(false);
 
     const [guid, setGuid] = React.useState<string>("");
     const [showHelp, setShowHelp] = React.useState<boolean>(false);
 
     // Adds a buffer between the outside props and what the box is reading to prevent box overwriting every render with a keystroke
     const [boxRecord, setBoxRecord] = React.useState<string>(parse(props.Record).format(boxFormat));
-    const [pickerRecord, setPickerRecord] = React.useState<moment.Moment>(parse(props.Record));
+    const [pickerRecord, setPickerRecord] = React.useState<moment.Moment|undefined>(parse(props.Record));
 
     const [feedbackMessage, setFeedbackMessage] = React.useState("");
 
@@ -77,37 +76,21 @@ export default function DateTimePicker<T>(props: IProps<T>) {
             setPickerRecord(parse(props.Record));
             setBoxRecord(parse(props.Record).format(boxFormat));
         }
-        recordChange.current = false;
+        else {
+            setPickerRecord(undefined);
+            setBoxRecord('');
+        }
     }, [props.Record]);
 
     React.useEffect(() => {
-        if (!recordChange.current) return;
-        const date = moment(boxRecord, boxFormat);
-
-        const valid = validateDate(date);
-
-        if ((props.AllowEmpty ?? false) && !valid && props.Record !== null) 
+        if ((props.AllowEmpty ?? false) && pickerRecord === undefined && props.Record[props.Field] !== null)
             props.Setter({ ...props.Record, [props.Field]: null });
 
-        if ((props.AllowEmpty ?? false) && boxRecord.length === 0 && props.Record !== null)
-            props.Setter({ ...props.Record, [props.Field]: null });
+        const valid = pickerRecord != undefined && validateDate(pickerRecord);
 
-        if (valid && parse(props.Record).format(boxFormat) !== boxRecord)
-            props.Setter({ ...props.Record, [props.Field]: moment(boxRecord, boxFormat).format(recordFormat) });
-    }, [boxRecord])
-
-    React.useEffect(() => {
-        if (!recordChange.current) return;
-
-        const date = moment(pickerRecord, recordFormat);
-
-        const valid = validateDate(date);
-
-        if ((props.AllowEmpty ?? false) && !valid && props.Record !== null)
-            props.Setter({ ...props.Record, [props.Field]: null });
-
-        if (valid && pickerRecord.format(recordFormat) !== parse(props.Record).format(recordFormat))
+        if (valid && (props.Record[props.Field] as any).toString() !== pickerRecord.format(recordFormat))
             props.Setter({ ...props.Record, [props.Field]: pickerRecord.format(recordFormat) });
+    
     }, [pickerRecord]);
 
     React.useLayoutEffect(() => {
@@ -125,11 +108,20 @@ export default function DateTimePicker<T>(props: IProps<T>) {
         window.addEventListener('click', onWindowClick);
         return () => { window.removeEventListener('click', onWindowClick); }
 
-    }, []);
+    }, [props.Record, props.Field,boxFormat]);
 
     function onWindowClick(evt: any) {
-        if (evt.target.closest(`.gpa-gemstone-datetime`) == null)
+        if (evt.target.closest(`.gpa-gemstone-datetime`) == null) {
             setShowOverlay(false);
+            if (props.Record[props.Field] as any !== null) {
+                setPickerRecord(parse(props.Record));
+                setBoxRecord(parse(props.Record).format(boxFormat));
+            }
+            else {
+                setPickerRecord(undefined);
+                setBoxRecord('');
+            }
+        }
     }
    
     function getBoxFormat(type?: TimeUnit, accuracy?: Accuracy) {
@@ -172,7 +164,7 @@ export default function DateTimePicker<T>(props: IProps<T>) {
         const minStartDate = props.MinDate != null ? props.MinDate.startOf('day') : moment("1753-01-01", "YYYY-MM-DD").startOf('day');
 
         if (!date.isValid()) {
-            setFeedbackMessage(`Please enter a date as ${boxFormat}`);
+            setFeedbackMessage(`Please enter a valid date.`);
             return false;
         }
         else if (date.startOf('day').isBefore(minStartDate)) {
@@ -198,6 +190,24 @@ export default function DateTimePicker<T>(props: IProps<T>) {
     }
 
 
+    function valueChange(value: string) {
+    
+        const allowNull = props.AllowEmpty === undefined? false : props.AllowEmpty;
+        const date = moment(value, boxFormat);
+
+        if (allowNull && value === '') {
+            props.Setter({ ...props.Record, [props.Field]: null });
+            setPickerRecord(undefined);
+        }
+        else if (validateDate(date)) {
+            props.Setter({ ...props.Record, [props.Field]: moment(value, boxFormat).format(recordFormat) });
+            setPickerRecord(moment(value, boxFormat));
+        }
+        else {
+            setPickerRecord(undefined);
+        }
+        setBoxRecord(value);       
+      }
 
     return (
         <div className="form-group" ref={divRef}>
@@ -228,8 +238,7 @@ export default function DateTimePicker<T>(props: IProps<T>) {
                 className={`gpa-gemstone-datetime form-control ${IsValid() ? '' : 'is-invalid'}`}
                 type={props.Type === undefined ? 'date' : props.Type}
                 onChange={(evt) => {
-                    setBoxRecord(evt.target.value ?? "");
-                    recordChange.current = true;
+                    valueChange(evt.target.value);
                 }}
                 onFocus={() => { setShowOverlay(true) }}
                 value={boxRecord}
@@ -243,8 +252,6 @@ export default function DateTimePicker<T>(props: IProps<T>) {
             <DateTimePopup
                 Setter={(d) => {
                     setPickerRecord(d);
-                    recordChange.current = true;
-
                     if (props.Type === 'date') setShowOverlay(false);
                 }}
                 Show={showOverlay}
