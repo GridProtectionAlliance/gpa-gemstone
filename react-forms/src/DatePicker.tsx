@@ -43,7 +43,7 @@ interface IProps<T> {
     Help?: string | JSX.Element;
     AllowEmpty?: boolean,
     Accuracy?: Accuracy, //Default to second
-    MinDate?: moment.Moment // Default to 01/01/1753 (Database limit)
+    MinDate?: moment.Moment // Default to 01/01/1753 (SQL Database limit)
 }
 
 export default function DateTimePicker<T>(props: IProps<T>) {
@@ -161,9 +161,9 @@ export default function DateTimePicker<T>(props: IProps<T>) {
         if (feedbackMessage.length != 0) {
             return feedbackMessage;
         } else if (props.Feedback == null || props.Feedback.length == 0) {
-            return props.Field.toString();
-        } else {
             return `${props.Field.toString()} is a required field.`;
+        } else {
+            return props.Feedback;
         }
     }
 
