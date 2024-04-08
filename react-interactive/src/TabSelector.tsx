@@ -78,7 +78,7 @@ const TabSelector = (props: IProps) => {
     return <div style={{ width: '100%' }} id={guid}>
         <ul className="nav nav-tabs" style={{ maxHeight: 38 }}>
             {props.Tabs.map((t, i) => i > (nVisible - 1) ? null :
-                <li className="nav-item" key={i}>
+                <li className="nav-item" key={i} style={{ cursor: 'pointer' }}>
                     <a className={"nav-link" + (props.CurrentTab === t.Id ? " active" : "")} onClick={() => props.SetTab(t.Id)}>{t.Label}</a>
                 </li>
             )}
