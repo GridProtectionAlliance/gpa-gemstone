@@ -36,10 +36,10 @@ export default class GenericController<T> {
     APIPath = "";
     DefaultSort: keyof T;
     Ascending: boolean;
-    Fetch: (parentID: (void | number | string), sortField?: keyof T, ascending?: boolean) => JQuery.jqXHR<T[]>;
+    Fetch: (parentID: (void | number | string| null), sortField?: keyof T, ascending?: boolean) => JQuery.jqXHR<T[]>;
     DBAction: (verb: 'POST' | 'DELETE' | 'PATCH', record: T) => JQuery.jqXHR;
-    DBSearch: (filter: Search.IFilter<T>[], sortField?: keyof T, ascending?: boolean) => JQuery.jqXHR<T[]>;
-    PagedSearch: (filter: Search.IFilter<T>[], sortField?: keyof T, ascending?: boolean, page?: number) => JQuery.jqXHR<IPagedResult<T>>;
+    DBSearch: (filter: Search.IFilter<T>[], sortField?: keyof T, ascending?: boolean, parentID?: (number | string)) => JQuery.jqXHR<T[]>;
+    PagedSearch: (filter: Search.IFilter<T>[], sortField?: keyof T, ascending?: boolean, page?: number,  parentID?: (number | string)) => JQuery.jqXHR<IPagedResult<T>>;
 
     /**
      * Creates a new Controler of type T, which can be used to perform basic CRUD operations against
@@ -55,13 +55,13 @@ export default class GenericController<T> {
         this.Ascending = ascending;
     
 
-    const fetch = (parentID:number | void | string, sortField?: keyof T, ascending?: boolean,) => {
+    const fetch = (parentID:number | void | string | null, sortField?: keyof T, ascending?: boolean,) => {
         let sort = sortField;
         let asc = ascending;
 
         sort = sort === undefined ? this.DefaultSort : sort;
         asc = asc === undefined ? this.Ascending : asc;
-        const handle = this.GetRecords(asc, sort, parentID);
+        const handle = this.GetRecords(asc, sort, parentID ?? undefined);
 
         return handle.then(function (d) { 
             return $.Deferred().resolve(JSON.parse(d.toString())as T[]).promise();
