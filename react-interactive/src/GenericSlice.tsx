@@ -26,6 +26,7 @@ import { Application } from '@gpa-gemstone/application-typings';
 import * as $ from 'jquery';
 import { Search } from './SearchBar';
 import { WritableDraft } from 'immer/dist/types/types-external'
+import GenericController from './GenericController';
 
 interface IOptions<T extends U> {
     ActionDependencies? : (state: IState<T>, action: string , arg: any) => void,
@@ -81,6 +82,7 @@ interface IPagedState< T extends U> extends IState<T> {
 export default class GenericSlice<T extends U> {
     Name = "";
     APIPath = "";
+    
     Slice: ( Slice<IPagedState<T>> );
     Fetch: (AsyncThunk<any, void | number | string, {}>);
     SetChanged: (AsyncThunk<any, void, {}>);
@@ -94,6 +96,7 @@ export default class GenericSlice<T extends U> {
     private fetchHandle: JQuery.jqXHR<any>|null;
     private searchHandle: JQuery.jqXHR<any>|null;
     private pageHandle: JQuery.jqXHR<any>|null;
+    private controller: GenericController<T>;
 
     private actionDependency: ((state: IPagedState<T>, action: string, arg: any) => void)| null;
 
@@ -119,6 +122,7 @@ export default class GenericSlice<T extends U> {
         this.searchHandle = null;
         this.pageHandle = null;
         this.actionDependency = null;
+        this.controller = new GenericController<T>(apiPath, defaultSort, ascending);
 
         this.actionPendingDependency = null;
         this.actionFullfilledDependency = null;
@@ -189,7 +193,7 @@ export default class GenericSlice<T extends U> {
             if (this.fetchHandle != null && this.fetchHandle.abort != null)
                 this.fetchHandle.abort('Prev');
 
-            const handle = this.GetRecords(state.Ascending, state.SortField, parentID);
+            const handle = this.controller.Fetch(parentID, state.SortField,state.Ascending);
             this.fetchHandle = handle;
             
             signal.addEventListener('abort', () => {
@@ -200,7 +204,7 @@ export default class GenericSlice<T extends U> {
         });
 
         const dBAction = createAsyncThunk(`${name}/DBAction${name}`, async (args: {verb: 'POST' | 'DELETE' | 'PATCH', record: T}, { signal, getState }) => {
-          const handle = this.Action(args.verb, args.record);
+          const handle = this.controller.DBAction(args.verb, args.record);
 
           const state = (getState() as any)[name] as IPagedState<T>;
           if (this.actionDependency !== null)
@@ -228,7 +232,7 @@ export default class GenericSlice<T extends U> {
             if (this.searchHandle != null && this.searchHandle.abort != null)
                 this.searchHandle.abort('Prev');
 
-            const handle = this.Search(args.filter, asc,sortfield, state.ParentID);
+            const handle = this.controller.DBSearch(args.filter, sortfield, asc, state.ParentID ?? undefined);
             this.searchHandle = handle;
 
             signal.addEventListener('abort', () => {
@@ -257,7 +261,7 @@ export default class GenericSlice<T extends U> {
             if (this.fetchHandle != null && this.fetchHandle.abort != null)
                 this.fetchHandle.abort('Prev');
 
-            const handle = this.GetRecords(asc,sortFld,(state.ParentID != null? state.ParentID : undefined));
+            const handle = this.controller.Fetch(state.ParentID,sortFld,asc);
             this.fetchHandle = handle;
             
             signal.addEventListener('abort', () => {
@@ -284,7 +288,7 @@ export default class GenericSlice<T extends U> {
             if (this.pageHandle != null && this.pageHandle.abort != null)
                 this.pageHandle.abort('Prev');
 
-            const handle = this.FetchPage(args.filter, asc,sortfield, page, state.ParentID);
+            const handle = this.controller.PagedSearch(args.filter, sortfield, asc, page, state.ParentID ?? undefined);
             this.pageHandle = handle;
 
             signal.addEventListener('abort', () => {
@@ -397,10 +401,10 @@ export default class GenericSlice<T extends U> {
                     if (this.actionErrorDependency !== null)
                         this.actionErrorDependency(state as IPagedState<T>,`${name}/Search${name}`, action.meta.arg, action.meta.requestId)
                 });
-                builder.addCase(dBSearch.fulfilled, (state: WritableDraft<IPagedState<T>>, action: PayloadAction<string, string,  {arg: { filter:  Search.IFilter<T>[], sortfield?: keyof T, ascending?: boolean}, requestId: string},never>) => {
+                builder.addCase(dBSearch.fulfilled, (state: WritableDraft<IPagedState<T>>, action: PayloadAction<T[], string,  {arg: { filter:  Search.IFilter<T>[], sortfield?: keyof T, ascending?: boolean}, requestId: string},never>) => {
                     state.ActiveSearchID = state.ActiveSearchID.filter(id => id !== action.meta.requestId);
                     state.SearchStatus = 'idle';
-                    state.SearchResults = JSON.parse(action.payload);
+                    state.SearchResults = action.payload as Draft<T[]>;
                     state.Filter = action.meta.arg.filter;
                     if (this.actionFullfilledDependency !== null)
                         this.actionFullfilledDependency(state as IPagedState<T>,`${name}/Search${name}`, action.meta.arg, action.meta.requestId)
@@ -491,59 +495,6 @@ export default class GenericSlice<T extends U> {
         this.Reducer = slice.reducer;
         this.SetChanged = setChanged;
     }
-
-    private GetRecords(ascending: (boolean | undefined), sortField: keyof T, parentID: number | void | string,): JQuery.jqXHR<T[]> {
-        return $.ajax({
-            type: "GET",
-            url: `${this.APIPath}${(parentID != null ? '/' + parentID : '')}/${sortField.toString()}/${(ascending ?? false)? '1' : '0'}`,
-            contentType: "application/json; charset=utf-8",
-            dataType: 'json',
-            cache: true,
-            async: true
-        });
-    }
-
-    private Action(verb: 'POST' | 'DELETE' | 'PATCH', record: T): JQuery.jqXHR<T> {
-        let action = '';
-        if (verb === 'POST') action = 'Add';
-        else if (verb === 'DELETE') action = 'Delete';
-        else if (verb === 'PATCH') action = 'Update';
-
-        return $.ajax({
-            type: verb,
-            url: `${this.APIPath}/${action}`,
-            contentType: "application/json; charset=utf-8",
-            dataType: 'json',
-            data: JSON.stringify({ ...record }),
-            cache: false,
-            async: true
-        });
-    }
-
-    private Search(filter: Search.IFilter<T>[], ascending: (boolean | undefined), sortField: keyof T, parentID?: number | string | null): JQuery.jqXHR<string> {
-        return $.ajax({
-            type: 'POST',
-            url: `${this.APIPath}/${parentID != null ? `${parentID}/` : ''}SearchableList`,
-            contentType: "application/json; charset=utf-8",
-            dataType: 'json',
-            data: JSON.stringify({ Searches: filter, OrderBy: sortField, Ascending: ascending }),
-            cache: false,
-            async: true
-        });
-    }
-
-    private FetchPage(filter: Search.IFilter<T>[], ascending: (boolean | undefined), sortField: keyof T, page: number, parentID?: number | string | null): JQuery.jqXHR<string> {
-        return $.ajax({
-            type: 'POST',
-            url: `${this.APIPath}/${parentID != null ? `${parentID}/` : ''}PagedList/${page}`,
-            contentType: "application/json; charset=utf-8",
-            dataType: 'json',
-            data: JSON.stringify({ Searches: filter, OrderBy: sortField, Ascending: ascending }),
-            cache: false,
-            async: true
-        });
-    }
-
 
     public Data = (state: any) => state[this.Name].Data as T[];
 	public Error = (state: any) => state[this.Name].Error as IError;

@@ -1,7 +1,7 @@
 // ******************************************************************************************************
 //  Step.tsx - Gbtc
 //
-//  Copyright � 2020, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2023, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -20,7 +20,6 @@
 //       Generated original version of source code.
 //
 // ******************************************************************************************************
-
 import * as React from 'react'
 
 /// Styles for all Circles
@@ -47,7 +46,7 @@ interface IProps {
     onClick?: (currentStep: string|number, clickedStep: string|number) => void
 }
 
-function ProgressBar(props: IProps) {
+const ProgressBar = (props: IProps) => {
     const [activeStep, setActiveStep] = React.useState<number>(0);
 
     React.useEffect(() => {
