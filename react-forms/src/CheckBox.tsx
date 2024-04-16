@@ -55,8 +55,8 @@ export default function CheckBox<T>(props: IProps<T>) {
             record[props.Field] = evt.target.checked as any;
             props.Setter(record);
           }}
-          value={(props.Record[props.Field] as boolean) ? 'on' : 'off'}
-          checked={(props.Record[props.Field] as boolean)}
+          value={(props.Record[props.Field] as unknown as boolean) ? 'on' : 'off'}
+          checked={(props.Record[props.Field] as unknown as boolean)}
           disabled={props.Disabled == null ? false : props.Disabled}
         />
         <label className="form-check-label">{props.Label == null ? props.Field : props.Label}</label>
