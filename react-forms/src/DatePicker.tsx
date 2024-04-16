@@ -82,17 +82,6 @@ export default function DateTimePicker<T>(props: IProps<T>) {
         }
     }, [props.Record]);
 
-    React.useEffect(() => {
-        if ((props.AllowEmpty ?? false) && pickerRecord === undefined && props.Record[props.Field] !== null)
-            props.Setter({ ...props.Record, [props.Field]: null });
-
-        const valid = pickerRecord != undefined && validateDate(pickerRecord);
-
-        if (valid && (props.Record[props.Field] as any).toString() !== pickerRecord.format(recordFormat))
-            props.Setter({ ...props.Record, [props.Field]: pickerRecord.format(recordFormat) });
-    
-    }, [pickerRecord]);
-
     React.useLayoutEffect(() => {
         const node = (divRef.current !== null ? GetNodeSize(divRef.current) : { top, left, height: 0, width: 0 });
         if (node.height === 0 && node.width === 0) {
@@ -110,15 +99,27 @@ export default function DateTimePicker<T>(props: IProps<T>) {
 
     }, [props.Record, props.Field,boxFormat]);
 
+    function setPickerAndRecord(arg: moment.Moment|undefined) {
+        setPickerRecord(arg);
+
+        if ((props.AllowEmpty ?? false) && arg === undefined && props.Record[props.Field] !== null)
+            props.Setter({ ...props.Record, [props.Field]: null });
+
+        const valid = arg != undefined && validateDate(arg);
+
+        if (valid && (props.Record[props.Field] as any).toString() !== arg.format(recordFormat))
+            props.Setter({ ...props.Record, [props.Field]: arg.format(recordFormat) });
+    }
+
     function onWindowClick(evt: any) {
         if (evt.target.closest(`.gpa-gemstone-datetime`) == null) {
             setShowOverlay(false);
             if (props.Record[props.Field] as any !== null) {
-                setPickerRecord(parse(props.Record));
+                setPickerAndRecord(parse(props.Record));
                 setBoxRecord(parse(props.Record).format(boxFormat));
             }
             else {
-                setPickerRecord(undefined);
+                setPickerAndRecord(undefined);
                 setBoxRecord('');
             }
         }
@@ -197,14 +198,14 @@ export default function DateTimePicker<T>(props: IProps<T>) {
 
         if (allowNull && value === '') {
             props.Setter({ ...props.Record, [props.Field]: null });
-            setPickerRecord(undefined);
+            setPickerAndRecord(undefined);
         }
         else if (validateDate(date)) {
             props.Setter({ ...props.Record, [props.Field]: moment(value, boxFormat).format(recordFormat) });
-            setPickerRecord(moment(value, boxFormat));
+            setPickerAndRecord(moment(value, boxFormat));
         }
         else {
-            setPickerRecord(undefined);
+            setPickerAndRecord(undefined);
         }
         setBoxRecord(value);       
       }
@@ -251,7 +252,7 @@ export default function DateTimePicker<T>(props: IProps<T>) {
             </div>
             <DateTimePopup
                 Setter={(d) => {
-                    setPickerRecord(d);
+                    setPickerAndRecord(d);
                     if (props.Type === 'date') setShowOverlay(false);
                 }}
                 Show={showOverlay}
