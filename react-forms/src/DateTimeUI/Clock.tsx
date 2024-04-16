@@ -26,7 +26,7 @@ import * as moment from 'moment';
 import { IsInteger } from '@gpa-gemstone/helper-functions'
 
 interface IProps {
-    DateTime: moment.Moment,
+    DateTime: moment.Moment| undefined,
     Setter: (record: moment.Moment) => void,
     Accuracy?: Accuracy
 }
@@ -35,17 +35,17 @@ export type Accuracy = ('minute' | 'second' | 'millisecond');
 type Parameter = ('h' | 'm' | 's' | 'ms');
 
 export default function Clock(props: IProps) {
-    const [hour, setHour] = React.useState<string>(props.DateTime.format("HH"));
-    const [minute, setMinute] = React.useState<string>(props.DateTime.format("mm"));
-    const [second, setSecond] = React.useState<string>(props.DateTime.format("ss"));
-    const [millisecond, setMilliSecond] = React.useState<string>(props.DateTime.format("SSS"));
+    const [hour, setHour] = React.useState<string>(props.DateTime?.format("HH") ?? '00');
+    const [minute, setMinute] = React.useState<string>(props.DateTime?.format("mm") ?? '00');
+    const [second, setSecond] = React.useState<string>(props.DateTime?.format("ss") ?? '00');
+    const [millisecond, setMilliSecond] = React.useState<string>(props.DateTime?.format("SSS") ?? '000');
     const [hover, setHover] = React.useState<'increase_ms' | 'increase_s' | 'increase_m' | 'increase_h' | 'decrease_ms' | 'decrease_s' | 'decrease_m' | 'decrease_h' | 'none'>('none');
 
     React.useEffect(() => {
-        setHour(props.DateTime.format("HH"));
-        setMinute(props.DateTime.format("mm"))
-        setSecond(props.DateTime.format("ss"))
-        setMilliSecond(props.DateTime.format("SSS"))
+        setHour(props.DateTime?.format("HH") ?? '00');
+        setMinute(props.DateTime?.format("mm") ?? '00')
+        setSecond(props.DateTime?.format("ss") ?? '00')
+        setMilliSecond(props.DateTime?.format("SSS") ?? '000')
     }, [props.DateTime])
 
     React.useEffect(() => {
@@ -57,7 +57,7 @@ export default function Clock(props: IProps) {
         if (isNaN(h) || isNaN(m) || isNaN(s) || isNaN(ms))
             return;
 
-        if (h !== props.DateTime.hour() || m !== props.DateTime.minute() || s !== props.DateTime.second() || ms !== props.DateTime.millisecond()) {
+        if (h !== props.DateTime?.hour() || m !== props.DateTime?.minute() || s !== props.DateTime?.second() || ms !== props.DateTime?.millisecond()) {
             let d = moment(props.DateTime);
             if (!d.isValid())
                 d = moment.utc().startOf('d');

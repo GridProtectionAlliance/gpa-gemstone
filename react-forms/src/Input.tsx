@@ -45,9 +45,9 @@ interface IProps<T> {
 
 
 export default function Input<T>(props: IProps<T>) {
+  const internal = React.useRef<boolean>(false);
   const [guid, setGuid] = React.useState<string>("");
   const [showHelp, setShowHelp] = React.useState<boolean>(false);
-  const [internal, setInternal] = React.useState<boolean>(false);
   const [heldVal, setHeldVal] = React.useState<string>(''); // Need to buffer tha value because parseFloat will throw away trailing decimals or zeros
   
    React.useEffect(() => {
@@ -55,22 +55,22 @@ export default function Input<T>(props: IProps<T>) {
     }, []);
   
     React.useEffect(() => {
-      if (!internal) {
+      if (!internal.current) {
         setHeldVal(props.Record[props.Field] == null ? '' : (props.Record[props.Field] as any).toString());
       }
-      setInternal(false);
+      internal.current = false;
      }, [props.Record[props.Field]]);
 
   function onBlur() {
     const allowNull = props.AllowNull === undefined? false : props.AllowNull;
     if (!allowNull && (props.Type === 'number' || props.Type === 'integer' ) && heldVal === '') {
-      setInternal(false);
+      internal.current = false;
       props.Setter({ ...props.Record, [props.Field]: props.DefaultValue ?? 0 });
     }
   }
 
   function valueChange(value: string) {
-        setInternal(true);
+    internal.current = true;
 
     const allowNull = props.AllowNull === undefined? false : props.AllowNull;
     if (props.Type === 'number') {
@@ -125,7 +125,7 @@ export default function Input<T>(props: IProps<T>) {
         step='any'
       />
       <div className="invalid-feedback">
-        {props.Feedback == null ? props.Field + ' is a required field.' : props.Feedback}
+        {props.Feedback == null ? props.Field.toString() + ' is a required field.' : props.Feedback}
       </div>
     </div>
   );

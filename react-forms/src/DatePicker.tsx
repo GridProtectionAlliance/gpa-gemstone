@@ -42,7 +42,8 @@ interface IProps<T> {
     Type?: TimeUnit; // Default to date
     Help?: string | JSX.Element;
     AllowEmpty?: boolean,
-    Accuracy?: Accuracy //Default to second
+    Accuracy?: Accuracy, //Default to second
+    MinDate?: moment.Moment // Default to 01/01/1753 (SQL Database limit)
 }
 
 export default function DateTimePicker<T>(props: IProps<T>) {
@@ -51,14 +52,13 @@ export default function DateTimePicker<T>(props: IProps<T>) {
     const recordFormat = props.Format !== undefined ? props.Format : "YYYY-MM-DD" + (props.Type === undefined || props.Type === 'date' ? "" : "[T]HH:mm:ss.SSS[Z]");
     const parse = (r: T) => moment(props.Record[props.Field] as any, recordFormat);
     const divRef = React.useRef<any | null>(null);
-    const recordChange = React.useRef<boolean>(false);
 
     const [guid, setGuid] = React.useState<string>("");
     const [showHelp, setShowHelp] = React.useState<boolean>(false);
 
     // Adds a buffer between the outside props and what the box is reading to prevent box overwriting every render with a keystroke
     const [boxRecord, setBoxRecord] = React.useState<string>(parse(props.Record).format(boxFormat));
-    const [pickerRecord, setPickerRecord] = React.useState<moment.Moment>(parse(props.Record));
+    const [pickerRecord, setPickerRecord] = React.useState<moment.Moment|undefined>(parse(props.Record));
 
     const [feedbackMessage, setFeedbackMessage] = React.useState("");
 
@@ -72,45 +72,15 @@ export default function DateTimePicker<T>(props: IProps<T>) {
     }, []);
 
     React.useEffect(() => {
-        setPickerRecord(parse(props.Record));
-        setBoxRecord(parse(props.Record).format(boxFormat));
-        recordChange.current = false;
-    }, [props.Record]);
-
-    React.useEffect(() => {
-        if (!recordChange.current) return;
-        const date = moment(boxRecord, boxFormat);
-        const validStartDate = moment("1753-01-01", "YYYY-MM-DD");
-
-        let valid = true;
-
-        // Invalid date format
-        if (!date.isValid()) {
-            setFeedbackMessage(`Please enter a date as ${boxFormat}`);
-            valid = false;
-        }
-        // Date before 1753
-        else if (date.isBefore(validStartDate)) {
-            setFeedbackMessage(`Date cannot be before ${validStartDate.format(boxFormat)}`);
-            valid = false;
+        if (props.Record[props.Field] as any !== null) {
+            setPickerRecord(parse(props.Record));
+            setBoxRecord(parse(props.Record).format(boxFormat));
         }
         else {
-            setFeedbackMessage("");
+            setPickerRecord(undefined);
+            setBoxRecord('');
         }
-
-        if ((props.AllowEmpty ?? false) && boxRecord.length === 0 && !valid && props.Record !== null)
-            props.Setter({ ...props.Record, [props.Field]: null });
-
-        if (valid && parse(props.Record).format(boxFormat) !== boxRecord)
-            props.Setter({ ...props.Record, [props.Field]: moment(boxRecord, boxFormat).format(recordFormat) });
-    }, [boxRecord])
-
-    React.useEffect(() => {
-        if (!recordChange.current) return;
-
-        if (pickerRecord.format(recordFormat) !== parse(props.Record).format(recordFormat))
-            props.Setter({ ...props.Record, [props.Field]: pickerRecord.format(recordFormat) });
-    }, [pickerRecord]);
+    }, [props.Record]);
 
     React.useLayoutEffect(() => {
         const node = (divRef.current !== null ? GetNodeSize(divRef.current) : { top, left, height: 0, width: 0 });
@@ -127,11 +97,32 @@ export default function DateTimePicker<T>(props: IProps<T>) {
         window.addEventListener('click', onWindowClick);
         return () => { window.removeEventListener('click', onWindowClick); }
 
-    }, []);
+    }, [props.Record, props.Field,boxFormat]);
+
+    function setPickerAndRecord(arg: moment.Moment|undefined) {
+        setPickerRecord(arg);
+
+        if ((props.AllowEmpty ?? false) && arg === undefined && props.Record[props.Field] !== null)
+            props.Setter({ ...props.Record, [props.Field]: null });
+
+        const valid = arg != undefined && validateDate(arg);
+
+        if (valid && (props.Record[props.Field] as any).toString() !== arg.format(recordFormat))
+            props.Setter({ ...props.Record, [props.Field]: arg.format(recordFormat) });
+    }
 
     function onWindowClick(evt: any) {
-        if (evt.target.closest(`.gpa-gemstone-datetime`) == null)
+        if (evt.target.closest(`.gpa-gemstone-datetime`) == null) {
             setShowOverlay(false);
+            if (props.Record[props.Field] as any !== null) {
+                setPickerAndRecord(parse(props.Record));
+                setBoxRecord(parse(props.Record).format(boxFormat));
+            }
+            else {
+                setPickerAndRecord(undefined);
+                setBoxRecord('');
+            }
+        }
     }
    
     function getBoxFormat(type?: TimeUnit, accuracy?: Accuracy) {
@@ -163,11 +154,30 @@ export default function DateTimePicker<T>(props: IProps<T>) {
         if (feedbackMessage.length != 0) {
             return feedbackMessage;
         } else if (props.Feedback == null || props.Feedback.length == 0) {
-            return props.Field.toString();
-        } else {
             return `${props.Field.toString()} is a required field.`;
+        } else {
+            return props.Feedback;
         }
     }
+
+    function validateDate(date: moment.Moment) {
+
+        const minStartDate = props.MinDate != null ? props.MinDate.startOf('day') : moment("1753-01-01", "YYYY-MM-DD").startOf('day');
+
+        if (!date.isValid()) {
+            setFeedbackMessage(`Please enter a valid date.`);
+            return false;
+        }
+        else if (date.startOf('day').isBefore(minStartDate)) {
+            setFeedbackMessage(`Date must be on or after ${minStartDate.format("MM-DD-YYYY")}`);
+            return false;
+        }
+        else {
+            setFeedbackMessage("");
+            return true;
+        }
+    }
+
 
     const showLabel = props.Label !== "";
     const showHelpIcon = props.Help !== undefined;
@@ -181,6 +191,24 @@ export default function DateTimePicker<T>(props: IProps<T>) {
     }
 
 
+    function valueChange(value: string) {
+    
+        const allowNull = props.AllowEmpty === undefined? false : props.AllowEmpty;
+        const date = moment(value, boxFormat);
+
+        if (allowNull && value === '') {
+            props.Setter({ ...props.Record, [props.Field]: null });
+            setPickerAndRecord(undefined);
+        }
+        else if (validateDate(date)) {
+            props.Setter({ ...props.Record, [props.Field]: moment(value, boxFormat).format(recordFormat) });
+            setPickerAndRecord(moment(value, boxFormat));
+        }
+        else {
+            setPickerAndRecord(undefined);
+        }
+        setBoxRecord(value);       
+      }
 
     return (
         <div className="form-group" ref={divRef}>
@@ -211,8 +239,7 @@ export default function DateTimePicker<T>(props: IProps<T>) {
                 className={`gpa-gemstone-datetime form-control ${IsValid() ? '' : 'is-invalid'}`}
                 type={props.Type === undefined ? 'date' : props.Type}
                 onChange={(evt) => {
-                    setBoxRecord(evt.target.value ?? "");
-                    recordChange.current = true;
+                    valueChange(evt.target.value);
                 }}
                 onFocus={() => { setShowOverlay(true) }}
                 value={boxRecord}
@@ -224,7 +251,10 @@ export default function DateTimePicker<T>(props: IProps<T>) {
                 {getFeedbackMessage()}
             </div>
             <DateTimePopup
-                Setter={(d) => { setPickerRecord(d); recordChange.current = true; if (props.Type === 'date') setShowOverlay(false); }}
+                Setter={(d) => {
+                    setPickerAndRecord(d);
+                    if (props.Type === 'date') setShowOverlay(false);
+                }}
                 Show={showOverlay}
                 DateTime={pickerRecord}
                 Valid={props.Valid(props.Field)}

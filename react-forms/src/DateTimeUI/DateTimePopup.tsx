@@ -65,7 +65,7 @@ const WrapperDiv = styled.div<IWrapperProps>`
   }`
 
 interface IProps {
-    DateTime: moment.Moment,
+    DateTime: moment.Moment|undefined,
     Setter: (record: moment.Moment) => void,
     Valid: boolean,
     Feedback?: string,
