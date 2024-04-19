@@ -36,6 +36,7 @@ import TimePicker from './TimePicker';
 import StylableSelect from './StylableSelect';
 import ColorPicker from './ColorPicker'
 import SearchableSelect from './SearchableSelect';
+import ToggleSwitch from './ToggleSwitch'; 
 
 export {
     CheckBox,
@@ -52,5 +53,6 @@ export {
     TimePicker,
     StylableSelect,
     ColorPicker,
-    SearchableSelect
+    SearchableSelect,
+    ToggleSwitch
 };
