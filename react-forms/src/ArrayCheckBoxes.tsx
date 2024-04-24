@@ -22,6 +22,7 @@
 // ******************************************************************************************************
 
 import * as React from 'react';
+import {CreateGuid} from '@gpa-gemstone/helper-functions';
 
 export default function ArrayCheckBoxes<T>(props: {
   Record: T;
@@ -43,12 +44,14 @@ export default function ArrayCheckBoxes<T>(props: {
     a.sort();
     return a;
   };
+  const id = React.useRef("array-checkbox-" + CreateGuid());
   return (
     <div className="form-group">
       <label>{props.Label == null ? props.Field : props.Label}</label>
       <br />
       <div className="form-check form-check-inline">
           <input
+            id={`${id.current}-all`}
             className="form-check-input"
             type="checkbox"
             checked={JSON.stringify(props.Record[props.Field]) === JSON.stringify(props.Checkboxes.map(x => x.ID))}
@@ -56,11 +59,12 @@ export default function ArrayCheckBoxes<T>(props: {
               props.Setter({ ...props.Record, [props.Field]: evt.target.checked ? props.Checkboxes.map(x => x.ID): [] })
             }
           />
-          <label className="form-check-label">All</label>
+          <label htmlFor={`${id.current}-all`} className="form-check-label">All</label>
         </div>
       {props.Checkboxes.map((cb, i) => (
         <div key={i} className="form-check form-check-inline">
           <input
+            id={`${id.current}-${i}`}
             className="form-check-input"
             type="checkbox"
             checked={(props.Record[props.Field] as any).find((x: string) => cb.ID === x) !== undefined}
@@ -68,7 +72,7 @@ export default function ArrayCheckBoxes<T>(props: {
               props.Setter({ ...props.Record, [props.Field]: evt.target.checked ? Add(cb) : Remove(cb) })
             }
           />
-          <label className="form-check-label">{cb.Label}</label>
+          <label htmlFor={`${id.current}-${i}`} className="form-check-label">{cb.Label}</label>
         </div>
       ))}
     </div>
