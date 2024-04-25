@@ -105,10 +105,9 @@ export function SelectTable<T>(props: ISelectTableProps<T>) {
     const tableProps: TableProps<T> = {
         cols: [
             { key: 'gemstone-checkbox', field: props.KeyField, label: '', headerStyle: { width: '4em' }, rowStyle: { width: '4em' }, content: (item: T) => {
-                const index = selected.findIndex(i => i === item[props.KeyField])
-                if ( index > -1)
-                    return <div style={{ marginTop: '16px', textAlign: 'center' }}><i className="fa fa-check-square-o fa-3x"></i></div>
-                return null
+                const index = selected.findIndex(i => i === item[props.KeyField]);
+                const iconClass = index > -1 ? 'fa-check-square-o' : 'fa-square-o';
+                return <div style={{ textAlign: 'center', verticalAlign: 'middle' }}><i className={`fa ${iconClass} fa-3x`}></i></div>;
             }},
             ...props.cols
         ],
