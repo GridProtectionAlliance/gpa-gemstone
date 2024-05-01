@@ -31,7 +31,7 @@
   "license": "MIT",
   "bugs": {"url": "https://github.com/GridProtectionAlliance/gpa-gemstone/issues"},
   "homepage": "https://github.com/GridProtectionAlliance/gpa-gemstone#readme",
-  "devDependencies":   {
+  "devDependencies": {
     "@types/jest": "^27.0.0",
     "@types/react-color": "^3.0.12",
     "@types/react-portal": "4.0.4",
