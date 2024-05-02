@@ -1,7 +1,7 @@
 //******************************************************************************************************
-//  DataSourceWrapper.tsx - Gbtc
+//  ErrorBoundary.tsx - Gbtc
 //
-//  Copyright (c) 2020, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright (c) 2024, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -32,8 +32,8 @@ interface IError {
 interface IProps {
     HeaderErrorMessage: string,
     BodyErrorMessage: string,
-    Height: number, 
-    Width: number
+    Height: number | string, 
+    Width: number | string
 }
 
 export default class ErrorBoundary extends React.Component<IProps, IError> {
