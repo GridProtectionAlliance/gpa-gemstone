@@ -30,6 +30,7 @@ import User from './user/User';
 import { DefaultSearch } from './SearchBar';
 import SelectPopup from './StandardSelectPopup';
 import {DefaultSelects} from './SelectionPopup';
+import ErrorBoundary from './ErrorBoundary';
 
 export {
   Setting,
@@ -40,6 +41,6 @@ export {
   ByUser,
   DefaultSearch,
   SelectPopup,
-  DefaultSelects
-
+  DefaultSelects,
+  ErrorBoundary
 };
