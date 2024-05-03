@@ -31,8 +31,8 @@ interface IProps<T> {
     Setter: (record: T) => void;
     Valid: (field: keyof T) => boolean;
     Label?: string;
-    ButtonLabel: string;
-    OnButtonClick: (evt: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+    BtnLabel: string;
+    OnBtnClick: (evt: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
     BtnClass?: string;
     Feedback?: string;
     Disabled?: boolean;
@@ -42,7 +42,7 @@ interface IProps<T> {
     AllowNull?: boolean;
     Size?: 'small' | 'large',
     DefaultValue?: number,
-    ButtonDisabled?: boolean
+    BtnDisabled?: boolean
 }
 
 
@@ -129,7 +129,7 @@ export default function InputWithButton<T>(props: IProps<T>) {
                 />
 
                 <div className="input-group-prepend">
-                    <button className={props.BtnClass != null ? props.BtnClass : "btn btn-outline-secondary"} disabled={props.ButtonDisabled == null ? false : props.ButtonDisabled} type="button" onClick={(evt) => props.OnButtonClick(evt)}>{props.ButtonLabel}</button>
+                    <button className={props.BtnClass != null ? props.BtnClass : "btn btn-outline-secondary"} disabled={props.BtnDisabled == null ? false : props.BtnDisabled} type="button" onClick={(evt) => props.OnBtnClick(evt)}>{props.BtnLabel}</button>
                 </div>
             </div>
             <div className="invalid-feedback">
