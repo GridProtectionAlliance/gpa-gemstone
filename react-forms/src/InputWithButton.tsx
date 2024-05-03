@@ -41,7 +41,8 @@ interface IProps<T> {
     Style?: React.CSSProperties;
     AllowNull?: boolean;
     Size?: 'small' | 'large',
-    DefaultValue?: number
+    DefaultValue?: number,
+    ButtonDisabled?: boolean
 }
 
 
@@ -128,7 +129,7 @@ export default function InputWithButton<T>(props: IProps<T>) {
                 />
 
                 <div className="input-group-prepend">
-                    <button className={props.BtnClass != null ? props.BtnClass : "btn btn-outline-secondary"} type="button" onClick={(evt) => props.OnButtonClick(evt)}>{props.ButtonLabel}</button>
+                    <button className={props.BtnClass != null ? props.BtnClass : "btn btn-outline-secondary"} disabled={props.ButtonDisabled == null ? false : props.ButtonDisabled} type="button" onClick={(evt) => props.OnButtonClick(evt)}>{props.ButtonLabel}</button>
                 </div>
             </div>
             <div className="invalid-feedback">
