@@ -47,7 +47,7 @@ interface IProps<T> {
 }
 
 
-export default function InputWithButton<T>(props: IProps<T>) {
+function InputWithButton<T>(props: IProps<T>) {
     const internal = React.useRef<boolean>(false);
     const [guid, setGuid] = React.useState<string>("");
     const [showHelp, setShowHelp] = React.useState<boolean>(false);
@@ -130,11 +130,13 @@ export default function InputWithButton<T>(props: IProps<T>) {
                 />
                 <div className="input-group-prepend">
                     <button className={props.BtnClass != null ? props.BtnClass : "btn btn-outline-secondary"} style={props.BtnStyle} disabled={props.BtnDisabled == null ? false : props.BtnDisabled} type="button" onClick={(evt) => props.OnBtnClick(evt)}>{props.BtnLabel}</button>
-            </div>
-            <div className="invalid-feedback">
+                </div>
+                <div className="invalid-feedback">
                     {props.InputFeedback == null ? props.Field.toString() + ' is a required field.' : props.InputFeedback}
                 </div>
             </div>
         </div>
     );
 }
+
+export default React.memo(InputWithButton);
