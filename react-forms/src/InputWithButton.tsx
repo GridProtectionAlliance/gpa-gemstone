@@ -30,19 +30,20 @@ interface IProps<T> {
     Field: keyof T;
     Setter: (record: T) => void;
     Valid: (field: keyof T) => boolean;
-    Label?: string;
-    BtnLabel: string;
+    InputLabel?: string;
+    InputFeedback?: string;
+    InputDisabled?: boolean;
+    InputType?: 'number' | 'text' | 'password' | 'email' | 'color' | 'integer';
+    InputHelp?: string | JSX.Element;
+    InputStyle?: React.CSSProperties;
+    InputAllowNull?: boolean;
+    InputSize?: 'small' | 'large',
+    InputDefaultValue?: number,
     OnBtnClick: (evt: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+    BtnLabel: string;
     BtnClass?: string;
-    Feedback?: string;
-    Disabled?: boolean;
-    Type?: 'number' | 'text' | 'password' | 'email' | 'color' | 'integer';
-    Help?: string | JSX.Element;
-    Style?: React.CSSProperties;
-    AllowNull?: boolean;
-    Size?: 'small' | 'large',
-    DefaultValue?: number,
-    BtnDisabled?: boolean
+    BtnDisabled?: boolean;
+    BtnStyle?: React.CSSProperties;
 }
 
 
@@ -64,18 +65,18 @@ export default function InputWithButton<T>(props: IProps<T>) {
     }, [props.Record[props.Field]]);
 
     function onBlur() {
-        const allowNull = props.AllowNull === undefined ? false : props.AllowNull;
-        if (!allowNull && (props.Type === 'number' || props.Type === 'integer') && heldVal === '') {
+        const allowNull = props.InputAllowNull === undefined ? false : props.InputAllowNull;
+        if (!allowNull && (props.InputType === 'number' || props.InputType === 'integer') && heldVal === '') {
             internal.current = false;
-            props.Setter({ ...props.Record, [props.Field]: props.DefaultValue ?? 0 });
+            props.Setter({ ...props.Record, [props.Field]: props.InputDefaultValue ?? 0 });
         }
     }
 
     function valueChange(value: string) {
         internal.current = true;
 
-        const allowNull = props.AllowNull === undefined ? false : props.AllowNull;
-        if (props.Type === 'number') {
+        const allowNull = props.InputAllowNull === undefined ? false : props.InputAllowNull;
+        if (props.InputType === 'number') {
             const v = (value.length > 0 && value[0] === '.' ? ("0" + value) : value)
             if (IsNumber(v) || (v === '' && allowNull)) {
                 props.Setter({ ...props.Record, [props.Field]: v !== '' ? parseFloat(v) : null });
@@ -86,7 +87,7 @@ export default function InputWithButton<T>(props: IProps<T>) {
             }
 
         }
-        else if (props.Type === 'integer') {
+        else if (props.InputType === 'integer') {
             if (IsInteger(value) || (value === '' && allowNull)) {
                 props.Setter({ ...props.Record, [props.Field]: value !== '' ? parseFloat(value) : null });
                 setHeldVal(value);
@@ -101,39 +102,38 @@ export default function InputWithButton<T>(props: IProps<T>) {
         }
     }
 
-    const showLabel = props.Label !== "";
-    const showHelpIcon = props.Help !== undefined;
-    const label = props.Label === undefined ? props.Field : props.Label;
+    const showLabel = props.InputLabel !== "";
+    const showHelpIcon = props.InputHelp !== undefined;
+    const label = props.InputLabel === undefined ? props.Field : props.InputLabel;
 
     return (
-        <div className={"form-group " + (props.Size === 'large' ? 'form-group-lg' : '') + (props.Size === 'small' ? 'form-group-sm' : '')} style={props.Style}>
+        <div className={"form-group " + (props.InputSize === 'large' ? 'form-group-lg' : '') + (props.InputSize === 'small' ? 'form-group-sm' : '')} style={props.InputStyle}>
             {showHelpIcon || showLabel ?
                 <label>{showLabel ? label : ''}
                     {showHelpIcon ? <div style={{ width: 20, height: 20, borderRadius: '50%', display: 'inline-block', background: '#0D6EFD', marginLeft: 10, textAlign: 'center', fontWeight: 'bold' }} onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)}> ? </div> : null}
                 </label> : null}
             {showHelpIcon ?
                 <HelperMessage Show={showHelp} Target={guid}>
-                    {props.Help}
+                    {props.InputHelp}
                 </HelperMessage>
                 : null}
             <div className="input-group">
                 <input
                     data-help={guid}
-                    type={props.Type === undefined ? 'text' : props.Type}
+                    type={props.InputType === undefined ? 'text' : props.InputType}
                     className={props.Valid(props.Field) ? 'form-control' : 'form-control is-invalid'}
                     onChange={(evt) => valueChange(evt.target.value)}
                     value={heldVal}
-                    disabled={props.Disabled == null ? false : props.Disabled}
+                    disabled={props.InputDisabled == null ? false : props.InputDisabled}
                     onBlur={onBlur}
                     step='any'
                 />
-
                 <div className="input-group-prepend">
-                    <button className={props.BtnClass != null ? props.BtnClass : "btn btn-outline-secondary"} disabled={props.BtnDisabled == null ? false : props.BtnDisabled} type="button" onClick={(evt) => props.OnBtnClick(evt)}>{props.BtnLabel}</button>
-                </div>
+                    <button className={props.BtnClass != null ? props.BtnClass : "btn btn-outline-secondary"} style={props.BtnStyle} disabled={props.BtnDisabled == null ? false : props.BtnDisabled} type="button" onClick={(evt) => props.OnBtnClick(evt)}>{props.BtnLabel}</button>
             </div>
             <div className="invalid-feedback">
-                {props.Feedback == null ? props.Field.toString() + ' is a required field.' : props.Feedback}
+                    {props.InputFeedback == null ? props.Field.toString() + ' is a required field.' : props.InputFeedback}
+                </div>
             </div>
         </div>
     );
