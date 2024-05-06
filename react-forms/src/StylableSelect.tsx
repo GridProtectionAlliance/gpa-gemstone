@@ -22,6 +22,7 @@
 // ******************************************************************************************************
 
 import * as React from 'react';
+import { Portal } from 'react-portal';
 import HelperMessage from './HelperMessage';
 import { CreateGuid } from '@gpa-gemstone/helper-functions';
 
@@ -47,11 +48,18 @@ export default function StylableSelect<T>(props: IProps<T>){
 	const [guid, setGuid] = React.useState<string>("");
 	const [showHelp, setShowHelp] = React.useState<boolean>(false);
   const stylableSelect = React.useRef<HTMLDivElement>(null);
+  const [dropdownPosition, setDropdownPosition] = React.useState({ top: 0, left: 0 });
 
   function HandleShow(evt: React.MouseEvent<HTMLButtonElement, MouseEvent> | MouseEvent) {
     // Ignore if disabled or not a mousedown event
     if ((props.Disabled === undefined ? false : props.Disabled) || evt.type !== 'mousedown') return;
     
+    const rect = stylableSelect.current?.getBoundingClientRect();
+    setDropdownPosition({
+      top: rect ? rect.bottom : 0, 
+      left: rect ? rect.left : 0, 
+    });
+
     if (!(stylableSelect.current as HTMLDivElement).contains(evt.target as Node)) setShow(false);
     else setShow(!show);
   }
@@ -101,31 +109,35 @@ export default function StylableSelect<T>(props: IProps<T>){
           {selected}
         </div>
       </button>
-      <div
-        style={{
-          maxHeight: window.innerHeight * 0.75,
-          overflowY: 'auto',
-          padding: '10 5',
-          display: show ? 'block' : 'none',
-          position: 'absolute',
-          backgroundColor: '#fff',
-          boxShadow: '0px 8px 16px 0px rgba(0,0,0,0.2)',
-          zIndex: 401,
-          minWidth: '100%',
-        }}
-      >
-        <table className="table" style={{ margin: 0 }}>
-          <tbody>
-            {props.Options.map((f, i) => ( f.Value == props.Record[props.Field] ? null :
-              <tr key={i} onClick={(evt) => {evt.preventDefault(); SetRecord(f); setShow(false);}}>
-                <td>
-                  {f.Element}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <Portal>
+        <div
+          style={{
+            maxHeight: window.innerHeight * 0.75,
+            overflowY: 'auto',
+            padding: '10 5',
+            display: show ? 'block' : 'none',
+            position: 'absolute',
+            top: `${dropdownPosition.top}px`, 
+            left: `${dropdownPosition.left}px`,
+            backgroundColor: '#fff',
+            boxShadow: '0px 8px 16px 0px rgba(0,0,0,0.2)',
+            zIndex: 10001,
+            minWidth: '100%',
+          }}
+        >
+          <table className="table" style={{ margin: 0 }}>
+            <tbody>
+              {props.Options.map((f, i) => ( f.Value == props.Record[props.Field] ? null :
+                <tr key={i} onClick={(evt) => {evt.preventDefault(); SetRecord(f); setShow(false);}}>
+                  <td>
+                    {f.Element}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </Portal>
     </div>
   );
 }
