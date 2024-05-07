@@ -22,33 +22,141 @@
 // ******************************************************************************************************
 
 import { SVGIcons } from "./SVGIcons";
+import { ReactIcons } from "./ReactIcons";
 
+/**
+ * @deprecated use ReactIcons istead
+ */
 export const HeavyCheckMark = '✔️';
+
+/**
+ * @deprecated use ReactIcons istead
+ */
 export const Pencil = '✏️';
+
+/**
+ * @deprecated use ReactIcons istead
+ */
 export const TrashCan = '🗑️';
+
+/**
+ * @deprecated use ReactIcons istead
+ */
 export const CrossMark = '❌';
+
+/**
+ * @deprecated use ReactIcons istead
+ */
 export const Plus = '➕';
+
+/**
+ * @deprecated use ReactIcons istead
+ */
 export const Warning = '⚠️';
+
+/**
+ * @deprecated use ReactIcons istead
+ */
 export const Spinner = '🔄';
+
+/**
+ * @deprecated use ReactIcons istead
+ */
 export const Wrench = '🔧';
+
+/**
+ * @deprecated use ReactIcons istead
+ */
 export const Flag = '🚩';
+
+/**
+ * @deprecated use ReactIcons istead
+ */
 export const UpArrow = '⬆️';
+
+/**
+ * @deprecated use ReactIcons istead
+ */
 export const LeftArrow = '⬅';
+
+/**
+ * @deprecated use ReactIcons istead
+ */
 export const RightArrow = '➡';
+
+/**
+ * @deprecated use ReactIcons istead
+ */
 export const DownArrow = '⬇️';
+
+/**
+ * @deprecated use ReactIcons istead
+ */
 export const DNA = '🧬';
+
+/**
+ * @deprecated use ReactIcons istead
+ */
 export const InputNumbers = '🔢';
+
+/**
+ * @deprecated use ReactIcons istead
+ */
 export const FourWayArrow = '☩';
+
+/**
+ * @deprecated use ReactIcons istead
+ */
 export const MagnifyingGlass = '🔍';
+
+/**
+ * @deprecated use ReactIcons istead
+ */
 export const House = '🏠';
+
+/**
+ * @deprecated use ReactIcons istead
+ */
 export const Scroll = '📜';
+
+/**
+ * @deprecated use ReactIcons istead
+ */
 export const PlayButton = '▶️';
+
+/**
+ * @deprecated use ReactIcons istead
+ */
 export const StopButton = '⏹️';
+
+/**
+ * @deprecated use ReactIcons istead
+ */
 export const PauseButton = '⏸️';
+
+/**
+ * @deprecated use ReactIcons istead
+ */
 export const FastForwardButton = '⏩';
+
+/**
+ * @deprecated use ReactIcons istead
+ */
 export const RewindButton = '⏪';
+
+/**
+ * @deprecated use ReactIcons istead
+ */
 export const Questionmark = '?';
+
+/**
+ * @deprecated use ReactIcons istead
+ */
 export const Pan = '🤚';
+
+/**
+ * @deprecated use ReactIcons istead
+ */
 export const Point = '👆';
 
-export { SVGIcons };
+export { SVGIcons, ReactIcons };
