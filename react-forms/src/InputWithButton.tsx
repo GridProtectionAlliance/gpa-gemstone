@@ -139,4 +139,4 @@ function InputWithButton<T>(props: IProps<T>) {
     );
 }
 
-export default React.memo(InputWithButton);
+export default React.memo(InputWithButton) as typeof InputWithButton;
