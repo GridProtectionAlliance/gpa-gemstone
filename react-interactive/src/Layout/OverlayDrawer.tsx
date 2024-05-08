@@ -51,7 +51,7 @@ const ClosedOverlayDiv = styled.div<IClosedOverlayProps>`
     display: inline-block;
     font-size: 13px;
     position: fixed;
-    z-index: 999;
+    z-index: 1050;
     color: #fff;
     background: rgba(34, 2, 0, 0.6);
     top: ${props => props.Location === 'top' ? Math.floor(props.Top) : Math.ceil(props.Top)}px;
@@ -78,7 +78,7 @@ const ClosedOverlayDiv = styled.div<IClosedOverlayProps>`
     display: inline-block;
     position: fixed;
     transition: opacity 0.3s ease-out;
-    z-index: 999;
+    z-index: 1050;
     color: #fff;
     background: rgba(34, 2, 0, 0.8);
     top: ${props => `${props.Top}px`};
