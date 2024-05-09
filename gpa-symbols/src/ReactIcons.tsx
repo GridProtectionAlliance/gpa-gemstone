@@ -106,14 +106,14 @@ export namespace ReactIcons {
     </svg>
 
     export const CircledX: React.FC<IProps> = (props) => <svg xmlns="http://www.w3.org/2000/svg" width={props.Size ?? 24} height={props.Size ?? 24} viewBox="0 0 24 24" fill={props.Color ?? "currentColor"} stroke={props.Color ?? "currentColor"}  strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-file-text">
-        <circle stroke="rgb(139, 0, 0)" fill={'none'} cx="12" cy="12" r="11"/>
-        <path stroke="rgb(139, 0, 0)" strokeWidth={3} d="M 6 6 L 18 18" />
-        <path stroke="rgb(139, 0, 0)" strokeWidth={3} d="M 18 6 L 6 18" />
+        <circle fill={'none'} cx="12" cy="12" r="11"/>
+        <path strokeWidth={3} d="M 6 6 L 18 18" />
+        <path strokeWidth={3} d="M 18 6 L 6 18" />
     </svg>
 
     export const CircleCheck: React.FC<IProps> = (props) => <svg xmlns="http://www.w3.org/2000/svg" width={props.Size ?? 24} height={props.Size ?? 24} viewBox="0 0 24 24" fill={props.Color ?? "currentColor"} stroke={props.Color ?? "currentColor"}  strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-file-text">
-        <circle stroke="rgb(0, 100, 0)" fill={'none'} cx="12" cy="12" r="11" />
-        <path stroke="rgb(0, 100, 0)" fill={'none'}  strokeWidth={3} d="M 5 15 L 10 20 L 18 5"/>
+        <circle fill={'none'} cx="12" cy="12" r="11" />
+        <path fill={'none'}  strokeWidth={3} d="M 5 15 L 10 20 L 18 5"/>
     </svg>
 
     export const Phone: React.FC<IProps> = (props) => <svg xmlns="http://www.w3.org/2000/svg" width={props.Size ?? 24} height={props.Size ?? 24} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"}  strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-file">
