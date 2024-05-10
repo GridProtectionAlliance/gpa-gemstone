@@ -32,6 +32,7 @@ interface IProps<T> {
     Label?: string,
     Disabled?: boolean,
     Help?: string | JSX.Element;
+    Style?: React.CSSProperties;
 }
 
 export default function ToggleSwitch<T>(props: IProps<T>) {
@@ -47,7 +48,7 @@ export default function ToggleSwitch<T>(props: IProps<T>) {
     }, []);
 
     return (
-        <div className="custom-control custom-switch" data-help={helpID}>
+        <div className="custom-control custom-switch" data-help={helpID} style={props.Style}>
             <input
                 type="checkbox"
                 className="custom-control-input"
