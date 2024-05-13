@@ -106,7 +106,20 @@ namespace OpenXDA {
         export interface NoteType { ID: number, Name: NoteTypeName, ReferenceTableName: string, Label?: string }
 
         export interface MeterConfiguration { ID: number, MeterID: number, DiffID: number, ConfigKey: string, ConfigText: string, RevisionMajor: number, RevisionMinor: number }
-        export interface DataFile { ID: number, FileGroupID: number, FilePath: string, FilePathHash: number, FileSize: number, CreationTime: string, LastWriteTime: string, LastAccessTime: string, MeterID: number, DataStartTime: string, ProcessingEndTime: string }
+        export interface DataFile {
+            ID: number,
+            FileGroupID: number,
+            FilePath: string,
+            FilePathHash: number,
+            FileSize: number,
+            CreationTime: string,
+            LastWriteTime: string,
+            LastAccessTime: string,
+            MeterID: number,
+            DataStartTime: string,
+            ProcessingEndTime: string,
+            ProcessingState: number
+        }
 
         export interface CompanyType { ID: number, Name: string, Description: string }
         export interface CustomerAccess { ID: number, CustomerID: number, PQViewSiteID: number }
