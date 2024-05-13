@@ -21,11 +21,18 @@
 //
 // ******************************************************************************************************
 import * as React from 'react';
+import styled, { keyframes} from "styled-components";
 
 interface IProps {
     Size?: number,
     Color?: string
 }
+
+const spin = keyframes`
+ 0% { transform: rotate(0deg); }
+ 100% { transform: rotate(360deg); }
+`;
+
 export namespace ReactIcons {
         
     export const DataContainer: React.FC<IProps> = (props) => <svg xmlns="http://www.w3.org/2000/svg" width={props.Size ?? 24} height={props.Size ?? 24} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-file">
@@ -180,4 +187,14 @@ export namespace ReactIcons {
         <svg xmlns="http://www.w3.org/2000/svg" width={props.Size ?? 24} height={props.Size ?? 24} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-check">
             <polyline points="20 6 9 17 4 12"></polyline>
         </svg>
-}
+
+    export const SpiningIcon = styled.div<IconProps>`
+        animation: ${spin} 1s linear infinite;
+        border: ${props => props.size/5}px solid #f3f3f3;
+        border-Top: ${props => props.size/5}px solid #555;
+        border-Radius: 50%;
+        width: ${props => props.size}px;
+        height: ${props => props.size}px
+    `;
+
+    }

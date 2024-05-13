@@ -50,7 +50,8 @@
     "react": "18.2.0",
     "webpack": "^5.47.0",
     "webpack-cli": "^4.7.2",
-    "yarn": "^1.22.11"
+    "yarn": "^1.22.11",
+    "styled-components": "5.3.3"
   },
   "publishConfig": {"access": "public"}
 }
