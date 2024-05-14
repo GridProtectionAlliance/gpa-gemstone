@@ -330,7 +330,7 @@ export default class GenericSlice<T extends U> {
                     state.ActiveFetchID = state.ActiveFetchID.filter(id => id !== action.meta.requestId);
                     state.Status = 'idle';
                     state.Error = null;
-                    state.Data = JSON.parse(action.payload.toString()) as Draft<T[]>;
+                    state.Data = action.payload as Draft<T[]>;
                     if (this.actionFullfilledDependency !== null)
                         this.actionFullfilledDependency(state as IPagedState<T>,`${name}/Fetch${name}`, action.meta.arg, action.meta.requestId)
                 });
