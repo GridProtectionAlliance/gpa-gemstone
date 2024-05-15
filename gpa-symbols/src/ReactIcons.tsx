@@ -188,14 +188,13 @@ export namespace ReactIcons {
             <polyline points="20 6 9 17 4 12"></polyline>
         </svg>
 
-    export const SpiningIcon = styled.div<IProps>`
+    export const SpiningIcon = styled.div<IconProps>`
         animation: ${spin} 1s linear infinite;
-        border: ${props => props.Size/5}px solid #f3f3f3;
-        border-Top: ${props => props.Size/5}px solid #555;
+        border: ${props => props.size/5}px solid #f3f3f3;
+        border-Top: ${props => props.size/5}px solid #555;
         border-Radius: 50%;
-        width: ${props => props.Size}px;
-        height: ${props => props.Size}px
+        width: ${props => props.size}px;
+        height: ${props => props.size}px
     `;
-
 
     }
