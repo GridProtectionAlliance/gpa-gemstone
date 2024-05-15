@@ -28,6 +28,8 @@ import { Search } from './SearchBar';
 interface IPagedResult<T> {
     Data: T[],
     NumberOfPages: number,
+    TotalRecords: number,
+    RecordsPerPage: number
 }
 
 
@@ -100,7 +102,7 @@ export default class GenericController<T> {
 
         const handle = this.FetchPage(filter, asc,sort, pg, parentID);
        
-        return handle.done((d) => ({NumberOfPages: d.NumberOfPages, Data: JSON.parse(d.Data)} as IPagedResult<T>));
+        return handle.done((d) => ({NumberOfPages: d.NumberOfPages, Data: JSON.parse(d.Data), RecordsPerPage: d.RecordsPerPage, TotalRecords: d.TotalRecords} as IPagedResult<T>));
     };
 
         this.Fetch = fetch;
