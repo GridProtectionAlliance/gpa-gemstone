@@ -72,10 +72,10 @@ const BtnDropdown = (props: IProps) => {
                 {props.Options.map((option, i) => <React.Fragment key={option.Label + '-divider'}>
                     {i > 0 && props.Options[i].Group !== props.Options[i - 1].Group ?
                         <div key={option.Label + '-divider'} className="dropdown-divider"></div> : null}
-                    <a className={"dropdown-item" + (option?.Disabled === true ? " disabled" : "")} key={option.Label} style={{cursor: 'pointer'}}
+                    <a className={"dropdown-item" + ((option?.Disabled ?? false) ? " disabled" : "")} key={option.Label} style={{cursor: ((option?.Disabled ?? false) ? undefined :  'pointer')}}
                         onClick={() => {
                             setShowDropdown(false);
-                            if (option?.Disabled === false || option?.Disabled == null)
+                            if (!(option?.Disabled ?? false))
                                 option.Callback();
                         }}>
                         {option.Label}
