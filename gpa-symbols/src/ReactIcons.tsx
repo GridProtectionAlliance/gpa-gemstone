@@ -23,7 +23,7 @@
 import * as React from 'react';
 
 interface IProps {
-    Size?: number,
+    Size?: number|string,
     Color?: string
 }
 export namespace ReactIcons {
@@ -184,15 +184,15 @@ export namespace ReactIcons {
     export const SpiningIcon: React.FC<IProps> = (props) =>
         <svg xmlns="http://www.w3.org/2000/svg" width={props.Size ?? 24} height={props.Size ?? 24} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-check">
             <radialGradient id="RGLoading" cx=".66" fx=".66" cy=".3125" fy=".3125" gradientTransform="scale(1.5)">
-                <stop offset="0" stop-color={props.Color ?? "currentColor"} />
-                <stop offset=".3" stop-color={props.Color ?? "currentColor"} stop-opacity=".9" />
-                <stop offset=".6" stop-color={props.Color ?? "currentColor"} stop-opacity=".6" />
-                <stop offset=".8" stop-color={props.Color ?? "currentColor"} stop-opacity=".3" />
-                <stop offset="1" stop-color={props.Color ?? "currentColor"} stop-opacity="0" />
+                <stop offset="0" stopColor={props.Color ?? "currentColor"} />
+                <stop offset=".3" stopColor={props.Color ?? "currentColor"} stopOpacity=".9" />
+                <stop offset=".6" stopColor={props.Color ?? "currentColor"} stopOpacity=".6" />
+                <stop offset=".8" stopColor={props.Color ?? "currentColor"} stopOpacity=".3" />
+                <stop offset="1" stopColor={props.Color ?? "currentColor"} stopOpacity="0" />
             </radialGradient>
-            <circle transform-origin="center" fill="none" stroke="url(#RGLoading)" stroke-width="2" stroke-linecap="round" stroke-dasharray="200 1000" stroke-dashoffset="0" cx="12" cy="12" r="11">
+            <circle transform-origin="center" fill="none" stroke="url(#RGLoading)" strokeWidth="2" strokeLinecap="round" strokeDasharray="200 1000" strokeDashoffset="0" cx="12" cy="12" r="11">
                 <animateTransform type="rotate" attributeName="transform" calcMode="spline" dur="2" values="360;0" keyTimes="0;1" keySplines="0 0 1 1" repeatCount="indefinite"/>
             </circle>
-            <circle transform-origin="center" fill="none" opacity=".2" stroke={props.Color ?? "currentColor"} stroke-width="2" stroke-linecap="round" cx="12" cy="12" r="11"/>
+            <circle transform-origin="center" fill="none" opacity=".2" stroke={props.Color ?? "currentColor"} strokeWidth="2" strokeLinecap="round" cx="12" cy="12" r="11"/>
         </svg>
     }
