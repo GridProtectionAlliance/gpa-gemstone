@@ -37,7 +37,7 @@ interface TableProps<T> {
      * @param event the onClick Event to allow propagation as needed
      * @returns 
      */
-    OnClick?: (data: { colKey: string; colField?: keyof T; row: T; data: T[keyof T] | null, index: number }, event: any) => void;
+    OnClick?: (data: { colKey?: string; colField?: keyof T; row: T; data: T[keyof T] | null, index: number }, event: any) => void;
     /**
      * Key of the collumn to sort by
      */
@@ -84,11 +84,11 @@ interface TableProps<T> {
     Selected?: (data: T, index: number) => boolean;
     /**
      * 
-     * @param data he information of the row including the item of the row
+     * @param data the information of the row including the item of the row
      * @param e the event triggering this
      * @returns 
      */
-    OnDragStart?: (data: { colKey: string, colField?: keyof T, row: T, data: T[keyof T] | null, index: number }, e: any) => void;
+    OnDragStart?: (data: { colKey?: string, colField?: keyof T, row: T, data: T[keyof T] | null, index: number }, e: any) => void;
     /**
      * The default style for the tr element
      */
@@ -296,7 +296,7 @@ interface IRowProps<T> {
     RowStyle?: React.CSSProperties,
     BodyStyle?: React.CSSProperties,
     BodyClass?: string,
-    OnClick?: (data: { colKey: string, colField?: keyof T, row: T, data: T[keyof T] | null, index: number }, e: React.MouseEvent<HTMLElement, MouseEvent>) => void,
+    OnClick?: (data: { colKey?: string, colField?: keyof T, row: T, data: T[keyof T] | null, index: number }, e: React.MouseEvent<HTMLElement, MouseEvent>) => void,
     DragStart?: ((data: { colKey: string, colField?: keyof T, row: T, data: T[keyof T] | null, index: number }, e: any) => void)
     Selected?: ((data: T, index: number) => boolean);
     KeySelector: (data: T, index?: number) => string|number;
@@ -315,6 +315,18 @@ function Rows<T>(props: React.PropsWithChildren<IRowProps<T>>) {
             return props.AdjWidth.get(key)?.width;
         return undefined;
     }, [props.FixedWidth, props.AdjWidth]);
+
+    const onClick = React.useCallback((e, item: T, index: number) => {
+        if (props.OnClick !== undefined)
+         props.OnClick({
+            colKey: undefined, 
+            colField: undefined, 
+            row: item,
+            data: null,
+            index: index
+           }, e)
+    }, [props.OnClick])
+
     return (
         <tbody style={props.BodyStyle} className={props.BodyClass}>
             {props.Data.map((d,i) => {
@@ -326,7 +338,7 @@ function Rows<T>(props: React.PropsWithChildren<IRowProps<T>>) {
                     style.backgroundColor = 'yellow';
                 
                 const key = props.KeySelector(d, i);
-                return <tr key={key} style={{ display: (props.FixedLayout ? 'block' : undefined), ...style}}>
+                return <tr key={key} style={{ display: (props.FixedLayout ? 'block' : undefined), ...style}} onClick={(e) => onClick(e,d,i)}>
                  {React.Children.map(props.children, (element) => {
                     if (!React.isValidElement(element))
                         return null;
