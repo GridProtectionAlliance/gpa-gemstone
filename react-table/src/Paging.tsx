@@ -50,32 +50,32 @@ export default function (props: IProps) {
     }, [props.Total, props.Current]);
 
     return <ul className="pagination justify-content-center">
-        <li className={"page-item" + (minPg == 1 ? 'disabled' : "")}>
+        <li className={"page-item" + (minPg == 1 ? ' disabled' : "")} key="previous">
             <a className="page-link" onClick={() => {
                 if (minPg > 1)
                     props.SetPage(Math.max(props.Current - nPages,1))
             }}>Previous</a>
         </li>
         {minPg > 2 ? <>
-            <li className={"page-item"}>
+            <li className={"page-item"} key={"1"}>
                 <a className={"page-link"} onClick={() => props.SetPage(1)}>1</a>
             </li>
-            <li className={"page-item disabled"}>
+            <li className={"page-item disabled"} key={"skip-1"}>
                 <a className={"page-link"}>...</a>
             </li>
         </> : null}
-        {pages.map((p) => <li className={"page-item" + (p == props.Current ? " active" : "")}>
+        {pages.map((p) => <li className={"page-item" + (p == props.Current ? " active" : "")} key={p}>
             <a className={"page-link"} onClick={() => props.SetPage(p)}>{p}</a>
         </li>)}
-        {maxPg + 2 < props.Total ? <>
-            <li className={"page-item disabled"}>
+        {maxPg + 2 <= props.Total ? <>
+            <li className={"page-item disabled"} key={"skip-2"}>
                 <a className={"page-link"}>...</a>
             </li>
-            <li className={"page-item"}>
+            <li className={"page-item"} key={props.Total}>
                 <a className={"page-link"} onClick={() => props.SetPage(props.Total)}>{props.Total}</a>
             </li>
         </> : null}
-        <li className={"page-item" + (maxPg == props.Total ? 'disabled' : "")}>
+        <li className={"page-item" + (maxPg == props.Total ? ' disabled' : "")} key={'next'}>
             <a className="page-link" onClick={() => {
                 if (maxPg < props.Total)
                     props.SetPage(Math.min(props.Current + nPages, props.Total))
