@@ -33,6 +33,7 @@
   "homepage": "https://github.com/GridProtectionAlliance/gpa-gemstone#readme",
   "devDependencies":   {
     "@types/jest": "^27.0.0",
+    "@types/lodash": "^4.14.171",
     "@types/react-color": "^3.0.12",
     "@types/react-portal": "4.0.4",
     "@typescript-eslint/eslint-plugin": "^5.60.0",
@@ -47,6 +48,7 @@
     "@gpa-gemstone/helper-functions": "0.0.30",
     "@types/react": "^17.0.14",
     "@types/styled-components": "^5.1.11",
+    "lodash": "^4.17.21",
     "moment": "2.29.4",
     "react": "^18.2.0",
     "react-color": "^2.19.3",
