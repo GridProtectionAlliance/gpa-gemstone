@@ -69,12 +69,16 @@ const BtnDropdown = (props: IProps) => {
                 <span className="sr-only">Toggle Dropdown</span>
             </button>
             <div className={"dropdown-menu" + (showDropdown ? " show" : "")}>
-                {props.Options.map((t, i) => <React.Fragment key={t.Label + '-divider'}>
+                {props.Options.map((option, i) => <React.Fragment key={option.Label + '-divider'}>
                     {i > 0 && props.Options[i].Group !== props.Options[i - 1].Group ?
-                        <div key={t.Label + '-divider'} className="dropdown-divider"></div> : null}
-                    <a className="dropdown-item" key={t.Label} style={{cursor: 'pointer'}}
-                        onClick={() => { setShowDropdown(false); t.Callback(); }}>
-                        {t.Label}
+                        <div key={option.Label + '-divider'} className="dropdown-divider"></div> : null}
+                    <a className={"dropdown-item" + ((option?.Disabled ?? false) ? " disabled" : "")} key={option.Label} style={{cursor: ((option?.Disabled ?? false) ? undefined :  'pointer')}}
+                        onClick={() => {
+                            setShowDropdown(false);
+                            if (!(option?.Disabled ?? false))
+                                option.Callback();
+                        }}>
+                        {option.Label}
                     </a>
                 </React.Fragment>)}
             </div>
