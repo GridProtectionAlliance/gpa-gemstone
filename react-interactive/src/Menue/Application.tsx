@@ -220,7 +220,15 @@ const Applications: React.ForwardRefRenderFunction<IApplicationRefs, React.Props
                     <React.Suspense fallback={<LoadingScreen Show={true} />}>
                         <SideBarContent Collapsed={collapsed} HideSide={hideSide} Version={props.Version}>{props.children}</SideBarContent>
                         <MainDiv left={hideSide ? 0 : (collapsed ? 50 : 200)} top={navBarHeight}>
-                            {props.children}
+                            {React.Children.map(props.children, (element) => {
+                                if (!React.isValidElement(element))
+                                    return null;
+                                if ((element as React.ReactElement<any>).type === Page && React.Children.count(element.props.children) > 0)
+                                    return element.props.children;
+                                if ((element as React.ReactElement<any>).type === Section)
+                                    return null;
+                                return element;
+                            })}
                         </MainDiv>
                     </React.Suspense>
                 </div>}
