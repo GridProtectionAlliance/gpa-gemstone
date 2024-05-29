@@ -24,6 +24,7 @@
 import * as React from 'react';
 import HelperMessage from './HelperMessage';
 import { CreateGuid } from '@gpa-gemstone/helper-functions';
+import { isEqual } from 'lodash';
 
 export interface IOption {
   Value: any;
@@ -74,12 +75,12 @@ export default function StylableSelect<T>(props: IProps<T>){
   }, []);
 
   React.useEffect(() => {
-    const element: IOption | undefined = props.Options.find(e => e.Value === props.Record[props.Field] as any);
+    const element: IOption | undefined = props.Options.find(e => isEqual(e.Value, props.Record[props.Field] as any));
     setSelected(element !== undefined ? element.Element : <div/>);
   }, [props.Record, props.Options]);
 
   return (
-    <div ref={stylableSelect} style={{ position: 'relative', display: 'inline-block', width: 'inherit' }}>
+    <div ref={stylableSelect} style={{ position: 'absolute', display: 'inline-block', width: 'inherit' }}>
       {(props.Label !== "") ?
       <label>{props.Label === undefined ? props.Field : props.Label} 
       {props.Help !== undefined? <div style={{ width: 20, height: 20, borderRadius: '50%', display: 'inline-block', background: '#0D6EFD', marginLeft: 10, textAlign: 'center', fontWeight: 'bold' }} onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)}> ? </div> : null}
