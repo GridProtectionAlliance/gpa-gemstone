@@ -23,7 +23,7 @@
 //
 //  ******************************************************************************************************
 
-import { SVGIcons } from '@gpa-gemstone/gpa-symbols';
+import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import { GetNodeSize } from '@gpa-gemstone/helper-functions';
 import * as React from 'react';
 
@@ -113,7 +113,7 @@ export function ColumnHeaderWrapper (props: React.PropsWithChildren<IHeaderWrapp
     >
         {props.sorted? <div
             style={{ position: 'absolute', width: 25 }}>
-            {props.asc ? SVGIcons.ArrowDropUp : SVGIcons.ArrowDropDown}
+            {props.asc ? <ReactIcons.ArrowDropUp /> : <ReactIcons.ArrowDropDown />}
         </div> : null}
         <div style={{
             marginLeft: (props.sorted ? 25 : 0),
