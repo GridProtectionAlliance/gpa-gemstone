@@ -31,9 +31,10 @@ export default function ArrayMultiSelect<T>(props: {
   Label?: string;
   Disabled?: boolean;
   Style?: React.CSSProperties;
+  GroupStyle?: React.CSSProperties;
 }) {
   return (
-    <div className="form-group">
+    <div className="form-group" style={props.GroupStyle}>
       <label>{props.Label == null ? props.Field : props.Label}</label>
       <select
         multiple
