@@ -1,7 +1,7 @@
 // ******************************************************************************************************
 //  ToggleSwitch.tsx - Gbtc
 //
-//  Copyright © 2020, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright ï¿½ 2020, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -36,19 +36,14 @@ interface IProps<T> {
 }
 
 export default function ToggleSwitch<T>(props: IProps<T>) {
-    const [helpID, setHelpID] = React.useState<string>("");
-    const [switchID, setSwitchID] = React.useState<string>('');
+    const helpID = React.useRef<string>(CreateGuid());
+    const switchID = React.useRef<string>(CreateGuid());
     const [showHelp, setShowHelp] = React.useState<boolean>(false);
 
     const showHelpIcon = props.Help !== undefined;
 
-    React.useEffect(() => {
-        setHelpID(CreateGuid());
-        setSwitchID(CreateGuid());
-    }, []);
-
     return (
-        <div className="custom-control custom-switch" data-help={helpID} style={props.Style}>
+        <div className="custom-control custom-switch" data-help={helpID.current} style={props.Style}>
             <input
                 type="checkbox"
                 className="custom-control-input"
@@ -60,17 +55,15 @@ export default function ToggleSwitch<T>(props: IProps<T>) {
                 value={(props.Record[props.Field] as unknown as boolean) ? 'on' : 'off'}
                 checked={(props.Record[props.Field] as unknown as boolean)}
                 disabled={props.Disabled == null ? false : props.Disabled}
-                id={switchID}
+                id={switchID.current}
             />
-            <label className="custom-control-label" htmlFor={switchID}>{props.Label == null ? props.Field : props.Label}</label>
+            <label className="custom-control-label" htmlFor={switchID.current}>{props.Label == null ? props.Field : props.Label}</label>
             {showHelpIcon ?
                 <>
-                    <div style={{ width: 20, height: 20, borderRadius: '50%', display: 'inline-block', background: '#0D6EFD', marginLeft: 10, textAlign: 'center', fontWeight: 'bold' }}
-                        onMouseEnter={() => setShowHelp(true)}
-                        onMouseLeave={() => setShowHelp(false)}>
+                    <div style={{ width: 20, height: 20, borderRadius: '50%', display: 'inline-block', background: '#0D6EFD', marginLeft: 10, textAlign: 'center', fontWeight: 'bold' }} onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)}>
                         ?
                     </div>
-                    <HelperMessage Show={showHelp} Target={helpID} Zindex={9999}>
+                    <HelperMessage Show={showHelp} Target={helpID.current} Zindex={9999}>
                         {props.Help}
                     </HelperMessage>
                 </>
