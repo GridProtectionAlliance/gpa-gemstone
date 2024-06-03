@@ -39,8 +39,10 @@ interface IProps {
     Size?: 'sm' | 'lg' | 'xlg',
     BtnClass?: string,
     TooltipContent?: JSX.Element,
+    TooltipLocation?: ('top' | 'bottom' | 'left' | 'right'),
     ShowToolTip?: boolean,
 }
+
 const BtnDropdown = (props: IProps) => {
     const guid = React.useRef<string>(CreateGuid());
 
@@ -83,7 +85,7 @@ const BtnDropdown = (props: IProps) => {
                 </React.Fragment>)}
             </div>
             <ToolTip Show={hover && props.ShowToolTip != undefined && props.ShowToolTip}
-                Position={'top'} Theme={'dark'} Target={guid.current}>
+                Position={props.TooltipLocation ?? 'top'} Theme={'dark'} Target={guid.current}>
                 {props.TooltipContent}
             </ToolTip>
     </div>)
