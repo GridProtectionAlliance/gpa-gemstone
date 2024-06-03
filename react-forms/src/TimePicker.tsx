@@ -22,8 +22,10 @@
 // ******************************************************************************************************
 
 import * as React from 'react';
+import HelperMessage from './HelperMessage';
+import { CreateGuid } from '@gpa-gemstone/helper-functions';
 
-export default function DatePicker<T>(props: {
+export default function TimePicker<T>(props: {
   Record: T;
   Field: keyof T;
   Setter: (record: T) => void;
@@ -32,11 +34,23 @@ export default function DatePicker<T>(props: {
   Disabled?: boolean;
   Feedback?: string;
   Step?: number;
+  Help?: string|JSX.Element;
 }) {
+  const [guid] = React.useState<string>(CreateGuid());
+  const [showHelp, setShowHelp] = React.useState<boolean>(false);
+
   return (
     <div className="form-group">
-      {(props.Label !== "") ?
-      <label>{props.Label == null ? props.Field : props.Label}</label> : null}
+      {(props.Help != null || props.Label !== "") ?
+      <label>{props.Label == null ? props.Field : props.Label}
+        {props.Help != null ? 
+          <div style={{ width: 20, height: 20, borderRadius: '50%', display: 'inline-block', background: '#0D6EFD', marginLeft: 10, textAlign: 'center', fontWeight: 'bold' }} 
+          onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)}> ? </div> : <></>}
+      </label> 
+      : <></>}
+      <HelperMessage Show={showHelp} Target={guid}>
+        {props.Help}
+      </HelperMessage>
       <input
         className={'form-control' + (props.Valid(props.Field) ? '' : ' is-invalid')}
         type="time"
