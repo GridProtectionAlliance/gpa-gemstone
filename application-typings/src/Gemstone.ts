@@ -25,7 +25,7 @@ namespace Gemstone {
     export namespace Types { }
 
     export namespace Interfaces {
-        export interface ISize {
+        export interface IElementSize {
             Top: number,
             Left: number,
             Width: number,
