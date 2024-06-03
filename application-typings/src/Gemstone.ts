@@ -1,7 +1,7 @@
 // ******************************************************************************************************
-//  index.ts - Gbtc
+//  Gemstone.tsx - Gbtc
 //
-//  Copyright © 2021, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2024, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -16,16 +16,23 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  09/30/2020 - Billy Ernest
+//  06/03/2024 - Preston Crawford
 //       Generated original version of source code.
 //
 // ******************************************************************************************************
-import PqDiff from './PqDiff'
-import OpenHistorian from './OpenHistorian';
-import SOETools from './SOETools';
-import SystemCenter from './SystemCenter';
-import Application from './Application';
-import OpenXDA from './OpenXDA';
-import PQI from './PQI';
 
-export { PqDiff, SOETools, OpenHistorian, SystemCenter, Application, OpenXDA, PQI}
+namespace Gemstone {
+    export namespace Types { }
+
+    export namespace Interfaces {
+        export interface ISize {
+            Top: number,
+            Left: number,
+            Width: number,
+            Height: number
+        }
+    }
+
+}
+
+export default Gemstone;
