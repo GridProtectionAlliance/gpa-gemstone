@@ -22,17 +22,17 @@
 // ******************************************************************************************************
 
 namespace Gemstone {
-    export namespace Types { }
-
-    export namespace Interfaces {
-        export interface IElementPosition {
-            Top: number,
-            Left: number,
-            Width: number,
-            Height: number
+    export namespace TSX {
+        export namespace Types { }
+        export namespace Interfaces {
+            export interface IElementPosition {
+                Top: number,
+                Left: number,
+                Width: number,
+                Height: number
+            }
         }
     }
-
 }
 
 export default Gemstone;
