@@ -24,24 +24,28 @@
 import * as React from 'react';
 import styled from "styled-components";
 import { GetNodeSize } from '@gpa-gemstone/helper-functions'
-import {Portal } from 'react-portal'
+import { Portal } from 'react-portal'
+import { isEqual } from 'lodash';
+import { Gemstone } from '@gpa-gemstone/application-typings';
 
 interface IProps {
-    Show: boolean,
-    Target?: string,
-    Zindex?: number,
-    Color?: string,
-    Background?: string
+  Show: boolean,
+  Target?: string,
+  Zindex?: number,
+  Color?: string,
+  Background?: string
 }
 
 interface IWrapperProps {
   Show: boolean,
   Top: number,
   Left: number,
-  Width: number,
   Zindex: number,
   Color?: string,
-  Background?: string
+  Background?: string,
+  TargetLeft: number,
+  TargetWidth: number,
+  Width: number
 }
 
 const WrapperDiv = styled.div<IWrapperProps>`
@@ -59,16 +63,15 @@ const WrapperDiv = styled.div<IWrapperProps>`
     background: ${props => props.Background ?? '#0DCAF0'};
     top: ${props => `${props.Top}px`};
     left: ${props => `${props.Left}px`};
-  width: ${props => `${props.Width}px`};
+    width: ${props => `${props.Width}px`};
     border: 1px solid transparent;
   }
-  
   ${props => `
     &::before {
      border-left: 8px solid transparent;
      border-right: 8px solid transparent;
      border-bottom: 8px solid ${props.Background ?? '#0DCAF0'};
-     left: 50%;
+     left: ${props.TargetLeft - props.Left + props.TargetWidth / 2}px;
      top: -6px;
      margin-left: -8px;
      content: "";
@@ -77,72 +80,68 @@ const WrapperDiv = styled.div<IWrapperProps>`
      position: absolute
     }
   `}`
-  
-  
-  const HelperMessage: React.FunctionComponent<IProps> = (props) => {
-    const helpMessage = React.useRef(null);
 
-    const [top, setTop] = React.useState<number>(0);
-    const [left, setLeft] = React.useState<number>(0);
-    const [width, setWidth] = React.useState<number>(0);
+const HelperMessage: React.FunctionComponent<IProps> = (props) => {
+  const helpMessage = React.useRef<HTMLDivElement | null>(null);
 
-    const [targetLeft, setTargetLeft] = React.useState<number>(0);
-    const [targetTop, setTargetTop] = React.useState<number>(0);
-    const [targetWidth, setTargetWidth] = React.useState<number>(0);
-    const [targetHeight, setTargetHeight] = React.useState<number>(0);
+  const [top, setTop] = React.useState<number>(0);
+  const [left, setLeft] = React.useState<number>(0);
+  const [targetPosition, setTargetPosition] = React.useState<Gemstone.Interfaces.IElementSize>({ Top: -999, Left: -999, Width: 0, Height: 0 })
 
-    React.useEffect(() => {
-      const target = document.querySelectorAll(`[data-help${props.Target === undefined ? '' : `="${props.Target}"`}]`);
+  React.useEffect(() => {
+    const target = document.querySelectorAll(`[data-help${props.Target === undefined ? '' : `="${props.Target}"`}]`);
 
-      if (target.length === 0) {
-        setTargetHeight(0);
-        setTargetWidth(0);
-        setTargetLeft(-999);
-        setTargetTop(-999);
+    if (target.length === 0) {
+      setTargetPosition({ Height: 0, Top: -999, Left: -999, Width: 0 })
+      return;
     }
-    else {  
-        const targetLocation = GetNodeSize(target[0] as HTMLElement);
-        setTargetHeight(targetLocation.height);
-        setTargetWidth(targetLocation.width);
-        setTargetLeft(targetLocation.left);
-        setTargetTop(targetLocation.top);
-    }
+
+    const targetLocation = GetNodeSize(target[0] as HTMLElement);
+    let newPosition = { Height: targetLocation.height, Top: targetLocation.top, Left: targetLocation.left, Width: targetLocation.width }
+    if (!isEqual(newPosition, targetPosition))
+      setTargetPosition(newPosition)
+
   }, [props.Show]);
 
 
-    React.useLayoutEffect(() => {
-    const [t,l,w] = UpdatePosition();
-      setTop(t);
-      setLeft(l);
-      setWidth(w);
-    })
+  React.useLayoutEffect(() => {
+    const [t, l] = UpdatePosition(helpMessage, targetPosition);
+    setTop(t);
+    setLeft(l);
+  }, [targetPosition])
 
-  const zIndex = (props.Zindex === undefined? 9999: props.Zindex);
-  
-  function UpdatePosition() {
-    if (helpMessage.current === null)
-      return [-999,-999];
+  const zIndex = (props.Zindex === undefined ? 9999 : props.Zindex);
 
-    const offset = 5;
-
-    const result: [number, number, number] = [0,0,0];
-
-    result[0] = targetTop + targetHeight + offset;
-    result[1] = targetLeft;
-    result[2] = targetWidth;
-    
-    return result;
-  }
-
-    return (
-      <Portal>
-      <WrapperDiv Show={props.Show} Top={top} Left={left} Width={width} ref={helpMessage} Zindex={zIndex} Color={props.Color} Background={props.Background}>
+  return (
+    <Portal>
+      <WrapperDiv Show={props.Show} Top={top} Left={left} ref={helpMessage} Zindex={zIndex} Color={props.Color} Background={props.Background} TargetLeft={targetPosition.Left} TargetWidth={targetPosition.Width} Width={targetPosition.Width}>
         {props.children}
       </WrapperDiv>
-      </Portal>
-    )
+    </Portal>
+  )
 }
 
 
+const UpdatePosition = (helpMessage: React.MutableRefObject<HTMLDivElement | null>, targetPosition: Gemstone.Interfaces.IElementSize) => {
+  if (helpMessage.current === null)
+    return [-999, -999];
+
+  const offset = 5;
+  const windowWidth = window.innerWidth;
+
+  let top = targetPosition.Top + targetPosition.Height + offset
+  let left = targetPosition.Left
+  let width = targetPosition.Width;
+
+  // If tooltip goes beyond the right viewport boundary, adjust the left position to fit
+  if (left + width >= windowWidth)
+    left = windowWidth - width - offset;
+
+  // If tooltip goes beyond the left viewport boundary, adjust the left position to fit
+  if (left <= 0)
+    left = offset;
+
+  return [top, left, width];
+}
+
 export default HelperMessage;
-  
