@@ -86,7 +86,7 @@ const HelperMessage: React.FunctionComponent<IProps> = (props) => {
 
   const [top, setTop] = React.useState<number>(0);
   const [left, setLeft] = React.useState<number>(0);
-  const [targetPosition, setTargetPosition] = React.useState<Gemstone.Interfaces.IElementSize>({ Top: -999, Left: -999, Width: 0, Height: 0 })
+  const [targetPosition, setTargetPosition] = React.useState<Gemstone.TSX.Interfaces.IElementPosition>({ Top: -999, Left: -999, Width: 0, Height: 0 })
 
   React.useEffect(() => {
     const target = document.querySelectorAll(`[data-help${props.Target === undefined ? '' : `="${props.Target}"`}]`);
@@ -122,7 +122,7 @@ const HelperMessage: React.FunctionComponent<IProps> = (props) => {
 }
 
 
-const UpdatePosition = (helpMessage: React.MutableRefObject<HTMLDivElement | null>, targetPosition: Gemstone.Interfaces.IElementSize) => {
+const UpdatePosition = (helpMessage: React.MutableRefObject<HTMLDivElement | null>, targetPosition: Gemstone.TSX.Interfaces.IElementPosition) => {
   if (helpMessage.current === null)
     return [-999, -999];
 
