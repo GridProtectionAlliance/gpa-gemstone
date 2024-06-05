@@ -123,7 +123,6 @@ const WrapperDiv = styled.div<IWrapperProps>`
 // The other element needs to have data-tooltip attribute equal the target prop used for positioning
 const ToolTip: React.FunctionComponent<IProps> = (props) => {
   const toolTip = React.useRef<HTMLDivElement | null>(null);
-
   const [top, setTop] = React.useState<number>(0);
   const [left, setLeft] = React.useState<number>(0);
 
@@ -146,7 +145,7 @@ const ToolTip: React.FunctionComponent<IProps> = (props) => {
     const [t, l] = getPosition(toolTip, targetPosition, props.Position ?? 'top');
     setTop(t);
     setLeft(l);
-  }, [targetPosition]);
+  }, [targetPosition, props?.children]);
 
   const zIndex = (props.Zindex === undefined ? 2000 : props.Zindex);
   const theme = (props.Theme === undefined ? 'dark' : props.Theme);
