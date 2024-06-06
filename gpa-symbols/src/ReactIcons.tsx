@@ -23,7 +23,17 @@
 import * as React from 'react';
 
 interface IProps {
+    /**
+    * Width and height of icon
+    * @type {number | string}
+    * @optional
+   */
     Size?: number | string,
+    /**
+    * Color of the icon
+    * @type {string}
+    * @optional
+   */
     Color?: string,
     Style?: React.CSSProperties
 }
