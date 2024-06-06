@@ -30,11 +30,34 @@ import { Gemstone } from '@gpa-gemstone/application-typings';
 
 // Interface for the props
 interface IProps {
-  Show: boolean,
-  Target?: string,
-  Zindex?: number,
-  Color?: string,
-  Background?: string
+    /**
+    * Flag to show the helper message
+    * @type {boolean}
+   */
+    Show: boolean,
+    /**
+    * Value of the target element's data-help attribute
+    * @type {string}
+    * @optional
+    */
+    Target?: string,
+    /**
+    * z-index for the helper message
+    * @type {number}
+   */
+    Zindex?: number,
+    /**
+    * Text color for the helper message
+    * @type {string}
+    * @optional
+   */
+    Color?: string,
+    /**
+    * Background color for the helper message
+    * @type {string}
+    * @optional
+    */
+    Background?: string
 }
 
 // Interface for the properties of the WrapperDiv component

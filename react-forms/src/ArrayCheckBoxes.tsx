@@ -24,13 +24,36 @@
 import * as React from 'react';
 import {CreateGuid} from '@gpa-gemstone/helper-functions';
 
-export default function ArrayCheckBoxes<T>(props: {
+interface IProps<T> {
+  /**
+    * Record to be used in form
+    * @type {T}
+  */
   Record: T;
+  /**
+    * Field of the record to be edited
+    * @type {keyof T}
+  */
   Field: keyof T;
+  /**
+    * Setter function to update the Record
+    * @param record - Updated Record
+  */
   Setter: (record: T) => void;
+  /**
+    * Array of checkboxes with their IDs and labels
+    * @type {{ ID: string; Label: string }[]}
+  */
   Checkboxes: { ID: string; Label: string }[];
+    /**
+    * Label to display for the form, defaults to the Field prop
+    * @type {string}
+    * @optional
+  */
   Label?: string;
-}) {
+}
+
+export default function ArrayCheckBoxes<T>(props: IProps<T>) {
 
   // Remove an ID from the array
   const Remove = (cb: { ID: string; Label: string }) => {

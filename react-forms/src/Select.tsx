@@ -28,14 +28,55 @@ import HelperMessage from './HelperMessage';
 import { CreateGuid } from '@gpa-gemstone/helper-functions'
 
 interface IProps<T> {
+  /**
+    * Record to be used in form
+    * @type {T}
+  */
   Record: T;
+  /**
+    * Field of the record to be edited
+    * @type {keyof T}
+  */
   Field: keyof T;
+  /**
+    * Options for the select dropdown
+    * @type {{ Value: string; Label: string }[]}
+  */
   Options: { Value: string; Label: string }[];
+  /**
+    * Setter function to update the Record
+    * @param record - Updated Record
+  */
   Setter: (record: T) => void;
+  /**
+    * Label to display for the form, defaults to the Field prop
+    * @type {string}
+    * @optional
+  */
   Label?: string;
+  /**
+    * Flag to disable the input field
+    * @type {boolean}
+    * @optional
+  */
   Disabled?: boolean;
+  /**
+    * Flag to include an empty option in the select dropdown
+    * @type {boolean}
+    * @optional
+  */
   EmptyOption?: boolean;
+  /**
+    * Label to display for the empty option
+    * @type {string}
+    * @optional
+  */
   EmptyLabel?: string;
+  /**
+    * Help message or element to display
+    * @type {string | JSX.Element}
+    * @optional
+  */
   Help?: string|JSX.Element;
 }
 

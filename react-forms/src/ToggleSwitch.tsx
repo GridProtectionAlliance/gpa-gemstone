@@ -26,13 +26,45 @@ import { CreateGuid } from '@gpa-gemstone/helper-functions'
 import HelperMessage from './HelperMessage';
 
 interface IProps<T> {
-    Record: T,
-    Field: keyof T,
-    Setter: (record: T) => void;
-    Label?: string,
-    Disabled?: boolean,
-    Help?: string | JSX.Element;
-    Style?: React.CSSProperties;
+  /**
+    * Record to be used in form
+    * @type {T}
+  */
+  Record: T;
+  /**
+    * Field of the record to be edited
+    * @type {keyof T}
+  */
+  Field: keyof T;
+  /**
+      * Setter function to update the Record
+      * @param record - Updated Record
+  */
+  Setter: (record: T) => void;
+  /**
+    * Label to display for the form, defaults to the Field prop
+    * @type {string}
+    * @optional
+  */
+  Label?: string,
+  /**
+    * Flag to disable the input field
+    * @type {boolean}
+    * @optional
+  */
+  Disabled?: boolean,
+  /**
+    * Help message or element to display
+    * @type {string | JSX.Element}
+    * @optional
+  */
+  Help?: string | JSX.Element;
+  /**
+    * CSS styles to apply to the form group
+    * @type {React.CSSProperties}
+    * @optional
+  */
+  Style?: React.CSSProperties;
 }
 
 export default function ToggleSwitch<T>(props: IProps<T>) {

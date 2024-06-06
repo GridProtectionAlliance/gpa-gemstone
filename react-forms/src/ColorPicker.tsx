@@ -29,15 +29,59 @@ import { Portal } from 'react-portal';
 import { isEqual } from 'lodash';
 
 interface IProps<T> {
+    /**
+      * Record to be used in the form
+      * @type {T}
+    */
     Record: T;
+    /**
+      * Field of the record to be edited
+      * @type {keyof T}
+    */
     Field: keyof T;
+    /**
+      * Setter function to update the Record
+      * @param record - Updated record of type T
+      * @param color - Color result from the picker
+      * @returns {void}
+    */
     Setter: (record: T, color: ColorResult) => void;
+    /**
+      * Label to display for the form, defaults to the Field prop
+      * @type {string}
+      * @optional
+    */
     Label: string;
+    /**
+      * Flag to disable the input field
+      * @type {boolean}
+      * @optional
+    */
     Disabled?: boolean;
+    /**
+      * Feedback message to show when input is invalid
+      * @type {string}
+      * @optional
+    */
     Feedback?: string;
+    /**
+      * CSS styles to apply to the button
+      * @type {React.CSSProperties}
+      * @optional
+    */
     Style?: React.CSSProperties;
-    Colors?: string[],
-    Triangle?: ('hide' | 'top'),
+    /**
+      * List of colors to be used in the color picker
+      * @type {string[]}
+      * @optional
+    */
+    Colors?: string[];
+    /**
+      * Position of the triangle pointer in the color picker
+      * @type {'hide' | 'top'}
+      * @optional
+    */
+    Triangle?: 'hide' | 'top';
 }
 
 interface IWrapperProps {

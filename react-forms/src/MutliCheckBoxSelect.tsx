@@ -26,12 +26,38 @@ import * as React from 'react';
 import HelperMessage from './HelperMessage';
 
 interface IProps {
+  /**
+    * Label to display for the form, defaults to the Field prop
+    * @type {string}
+    * @optional
+  */
   Label?: string;
+  /**
+    * Array of options for the multi-select checkboxe
+    * @type {{ Value: number | string; Text: string; Selected: boolean }[]}
+  */
   Options: { Value: number | string; Text: string; Selected: boolean }[];
+  /**
+    * Function to handle changes in the selection
+    * @param evt - The change event
+    * @param Options - The updated options array
+    * @returns {void}
+  */
   OnChange: (evt: any, Options: { Value: number | string; Text: string; Selected: boolean }[]) => void;
-  Help?: string|JSX.Element;
-  ItemTooltip?: 'no-tip'|'dark'|'light';
+  /**
+    * Help message or element to display
+    * @type {string | JSX.Element}
+    * @optional
+  */
+  Help?: string | JSX.Element;
+  /**
+    * Tooltip style for the items
+    * @type {'no-tip' | 'dark' | 'light'}
+    * @optional
+  */
+  ItemTooltip?: 'no-tip' | 'dark' | 'light';
 }
+
 const MultiSelect = (props: IProps) => {
     // State hooks for managing the visibility of the dropdown and help message.
   const [show, setShow] = React.useState<boolean>(false);

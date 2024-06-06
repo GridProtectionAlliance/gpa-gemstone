@@ -23,17 +23,50 @@
 
 import * as React from 'react';
 
-// Generic component designed for selecting multiple options from a dropdown
-export default function ArrayMultiSelect<T>(props: {
+interface IProps<T> {
+  /**
+      * Record to be used in form
+      * @type {T}
+    */
   Record: T;
+  /**
+    * Field of the record to be edited
+    * @type {keyof T}
+  */
   Field: keyof T;
-  Setter: (record: T) => void;
+  /**
+    * Options for the select dropdown
+    * @type {{ Value: string; Label: string }[]}
+  */
   Options: { Value: string; Label: string }[];
+  /**
+    * Setter function to update the Record
+    * @param record - Updated Record
+  */
+  Setter: (record: T) => void;
+  /**
+    * Label to display for the form, defaults to the Field prop
+    * @type {string}
+    * @optional
+  */
   Label?: string;
+  /**
+    * Flag to disable the input field
+    * @type {boolean}
+    * @optional
+  */
   Disabled?: boolean;
+  /**
+    * CSS styles to apply to the select element
+    * @type {React.CSSProperties}
+    * @optional
+  */
   Style?: React.CSSProperties;
   GroupStyle?: React.CSSProperties;
-}) {
+}
+
+// Generic component designed for selecting multiple options from a dropdown
+export default function ArrayMultiSelect<T>(props: IProps<T>) {
   return (
     <div className="form-group" style={props.GroupStyle}>
       <label>{props.Label == null ? props.Field : props.Label}</label>

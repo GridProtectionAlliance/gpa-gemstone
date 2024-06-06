@@ -27,11 +27,38 @@ import HelperMessage from './HelperMessage';
 
 // Interface defining the props for other components. 
 interface IProps<T>{
-  Record: T,
-  Field: keyof T,
+  /**
+    * Record to be used in form
+    * @type {T}
+  */
+  Record: T;
+  /**
+    * Field of the record to be edited
+    * @type {keyof T}
+  */
+  Field: keyof T;
+  /**
+    * Setter function to update the Record
+    * @param record - Updated Record
+  */
   Setter: (record: T) => void;
+  /**
+    * Label to display for the form, defaults to the Field prop
+    * @type {string}
+    * @optional
+  */
   Label?: string,
+  /**
+    * Flag to disable the input field
+    * @type {boolean}
+    * @optional
+  */
   Disabled?: boolean,
+  /**
+    * Help message or element to display
+    * @type {string | JSX.Element}
+    * @optional
+  */
   Help?: string|JSX.Element;
 }
 

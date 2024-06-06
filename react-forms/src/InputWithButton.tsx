@@ -26,23 +26,109 @@ import HelperMessage from './HelperMessage';
 import { CreateGuid, IsInteger, IsNumber } from '@gpa-gemstone/helper-functions'
 
 interface IProps<T> {
-    Record: T;
-    Field: keyof T;
-    Setter: (record: T) => void;
-    Valid: (field: keyof T) => boolean;
-    Label?: string;
-    Feedback?: string;
+  /**
+    * Record to be used in form
+    * @type {T}
+  */
+  Record: T;
+  /**
+    * Field of the record to be edited
+    * @type {keyof T}
+  */
+  Field: keyof T;
+  /**
+    * Setter function to update the Record
+    * @param record - Updated Record
+  */
+  Setter: (record: T) => void;
+  /**
+    * Function to determine the validity of a field
+    * @param field - Field of the record to check
+    * @returns {boolean}
+  */
+  Valid: (field: keyof T) => boolean;
+  /**
+    * Label to display for the form, defaults to the Field prop
+    * @type {string}
+    * @optional
+  */
+  Label?: string;
+  /**
+    * Feedback message to show when input is invalid
+    * @type {string}
+    * @optional
+  */
+  Feedback?: string;
+    /**
+    * Flag to disable the input element
+    * @type {boolean}
+    * @optional
+    */
     InputDisabled?: boolean;
+    /**
+    * Type of the input field
+    * @type {'number' | 'text' | 'password' | 'email' | 'color' | 'integer'}
+    * @optional
+   */
     Type?: 'number' | 'text' | 'password' | 'email' | 'color' | 'integer';
+    /**
+    * Help message or element to display
+    * @type {string | JSX.Element}
+    * @optional
+   */
     Help?: string | JSX.Element;
+    /**
+    * CSS styles to apply to the input group
+    * @type {React.CSSProperties}
+    * @optional
+    */
     InputStyle?: React.CSSProperties;
+    /**
+    * Flag to allow null values
+    * @type {boolean}
+    * @optional
+   */
     AllowNull?: boolean;
+    /**
+    * Size of the input field
+    * @type {'small' | 'large'}
+    * @optional
+    */
     Size?: 'small' | 'large',
+    /**
+    * Default value for the input field if it's null
+    * @type {number}
+    * @optional
+    */
     DefaultValue?: number,
+    /**
+    * Function to handle button click event
+    * @param evt - React mouse event
+    * @returns {void}
+    */
     OnBtnClick: (evt: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+    /**
+    * Label for the button
+    * @type {string}
+    */
     BtnLabel: string;
+    /**
+    * CSS class for the button
+    * @type {string}
+    * @optional
+   */
     BtnClass?: string;
+    /**
+    * Flag to disable the button
+    * @type {boolean}
+    * @optional
+    */
     BtnDisabled?: boolean;
+    /**
+    * CSS styles to apply to the button
+    * @type {React.CSSProperties}
+    * @optional
+   */
     BtnStyle?: React.CSSProperties;
 }
 

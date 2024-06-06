@@ -28,18 +28,80 @@ import HelperMessage from './HelperMessage';
 import { CreateGuid, IsInteger, IsNumber } from '@gpa-gemstone/helper-functions'
 
 interface IProps<T> {
+  /**
+    * Record to be used in form
+    * @type {T}
+  */
   Record: T;
+  /**
+    * Field of the record to be edited
+    * @type {keyof T}
+  */
   Field: keyof T;
+  /**
+    * Setter function to update the Record
+    * @param record - Updated Record
+  */
   Setter: (record: T) => void;
+  /**
+    * Function to determine the validity of a field
+    * @param field - Field of the record to check
+    * @returns {boolean}
+  */
   Valid: (field: keyof T) => boolean;
+  /**
+    * Label to display for the form, defaults to the Field prop
+    * @type {string}
+    * @optional
+  */
   Label?: string;
+  /**
+    * Feedback message to show when input is invalid
+    * @type {string}
+    * @optional
+  */
   Feedback?: string;
+  /**
+    * Flag to disable the input field
+    * @type {boolean}
+    * @optional
+  */
   Disabled?: boolean;
+  /**
+    * Type of the input field
+    * @type {'number' | 'text' | 'password' | 'email' | 'color' | 'integer'}
+    * @optional
+  */
   Type?: 'number' | 'text' | 'password' | 'email' | 'color' | 'integer';
-  Help?: string|JSX.Element;
+  /**
+    * Help message or element to display
+    * @type {string | JSX.Element}
+    * @optional
+  */
+  Help?: string | JSX.Element;
+  /**
+    * CSS styles to apply to the form group
+    * @type {React.CSSProperties}
+    * @optional
+  */
   Style?: React.CSSProperties;
+  /**
+    * Flag to allow null values
+    * @type {boolean}
+    * @optional
+  */
   AllowNull?: boolean;
-  Size?: 'small'|'large',
+  /**
+    * Size of the input field
+    * @type {'small' | 'large'}
+    * @optional
+  */
+  Size?: 'small' | 'large',
+  /**
+    * Default value for the input field if it's null
+    * @type {number}
+    * @optional
+  */
   DefaultValue?: number
 }
 
@@ -49,12 +111,12 @@ export default function Input<T>(props: IProps<T>) {
   const [guid, setGuid] = React.useState<string>("");
   const [showHelp, setShowHelp] = React.useState<boolean>(false);
   const [heldVal, setHeldVal] = React.useState<string>(''); // Need to buffer tha value because parseFloat will throw away trailing decimals or zeros
-  
+
   // Effect to generate a unique ID for the component.
   React.useEffect(() => {
     setGuid(CreateGuid());
   }, []);
-  
+
   // Handle changes to the record's field value.
   React.useEffect(() => {
     if (!internal.current) {
@@ -65,8 +127,8 @@ export default function Input<T>(props: IProps<T>) {
 
   // Handle blur event (loss of focus) on the input.
   function onBlur() {
-    const allowNull = props.AllowNull === undefined? false : props.AllowNull;
-    if (!allowNull && (props.Type === 'number' || props.Type === 'integer' ) && heldVal === '') {
+    const allowNull = props.AllowNull === undefined ? false : props.AllowNull;
+    if (!allowNull && (props.Type === 'number' || props.Type === 'integer') && heldVal === '') {
       internal.current = false;
       props.Setter({ ...props.Record, [props.Field]: props.DefaultValue ?? 0 });
     }
@@ -76,50 +138,50 @@ export default function Input<T>(props: IProps<T>) {
   function valueChange(value: string) {
     internal.current = true;
 
-    const allowNull = props.AllowNull === undefined? false : props.AllowNull;
+    const allowNull = props.AllowNull === undefined ? false : props.AllowNull;
     if (props.Type === 'number') {
-      const v = (value.length > 0 && value[0] === '.'? ("0" + value) : value)
+      const v = (value.length > 0 && value[0] === '.' ? ("0" + value) : value)
       if (IsNumber(v) || (v === '' && allowNull)) {
-          props.Setter({ ...props.Record, [props.Field]: v !== '' ? parseFloat(v) : null });
-          setHeldVal(v);
-        }
-        else if (v === '') {
-          setHeldVal(v);
-        } 
+        props.Setter({ ...props.Record, [props.Field]: v !== '' ? parseFloat(v) : null });
+        setHeldVal(v);
+      }
+      else if (v === '') {
+        setHeldVal(v);
+      }
     }
     else if (props.Type === 'integer') {
-        if (IsInteger(value) || (value === '' && allowNull)) {
-            props.Setter({ ...props.Record, [props.Field]: value !== '' ? parseFloat(value) : null });
-            setHeldVal(value);
-        }
-        else if (value === '') {
-          setHeldVal(value);
-        }
+      if (IsInteger(value) || (value === '' && allowNull)) {
+        props.Setter({ ...props.Record, [props.Field]: value !== '' ? parseFloat(value) : null });
+        setHeldVal(value);
+      }
+      else if (value === '') {
+        setHeldVal(value);
+      }
     }
     else {
-        props.Setter({ ...props.Record, [props.Field]: value !== '' ? value : null });
-        setHeldVal(value);
+      props.Setter({ ...props.Record, [props.Field]: value !== '' ? value : null });
+      setHeldVal(value);
     }
   }
-  
+
   // Variables to control the rendering of label and help icon.
   const showLabel = props.Label !== "";
   const showHelpIcon = props.Help !== undefined;
   const label = props.Label === undefined ? props.Field : props.Label;
-  
+
   return (
-    <div className={"form-group " + (props.Size === 'large'? 'form-group-lg' : '') + (props.Size === 'small'? 'form-group-sm' : '')} style={props.Style}>
+    <div className={"form-group " + (props.Size === 'large' ? 'form-group-lg' : '') + (props.Size === 'small' ? 'form-group-sm' : '')} style={props.Style}>
       {/* Rendering label and help icon */}
       {showHelpIcon || showLabel ?
-        <label>{showLabel ? label : ''} 
-        {showHelpIcon? <div style={{ width: 20, height: 20, borderRadius: '50%', display: 'inline-block', background: '#0D6EFD', marginLeft: 10, textAlign: 'center', fontWeight: 'bold' }} onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)}> ? </div> : null}
+        <label>{showLabel ? label : ''}
+          {showHelpIcon ? <div style={{ width: 20, height: 20, borderRadius: '50%', display: 'inline-block', background: '#0D6EFD', marginLeft: 10, textAlign: 'center', fontWeight: 'bold' }} onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)}> ? </div> : null}
         </label> : null}
 
-      {showHelpIcon? 
+      {showHelpIcon ?
         <HelperMessage Show={showHelp} Target={guid}>
           {props.Help}
         </HelperMessage>
-      : null}
+        : null}
 
       {/* Input element */}
       <input

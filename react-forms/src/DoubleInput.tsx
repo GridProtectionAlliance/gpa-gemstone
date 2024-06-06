@@ -23,21 +23,64 @@
 
 import * as React from 'react';
 
+interface IProps<T> {
+    /**
+    * Record to be used in form
+    * @type {T}
+   */
+    Record: T;
+    /**
+      * First field of the record to be edited
+      * @type {keyof T}
+    */
+    Field1: keyof T;
+    /**
+      * Second field of the record to be edited
+      * @type {keyof T}
+    */
+    Field2: keyof T;
+    /**
+    * Setter function to update the Record
+    * @param record - Updated Record
+    */
+    Setter: (record: T) => void;
+    /**
+    * Function to determine the validity of a field
+    * @param field - Field of the record to check
+    * @returns {boolean}
+   */
+    Valid: (field: keyof T) => boolean;
+    /**
+    * Label to display for the form, defaults to the Field prop
+    * @type {string}
+    * @optional
+    */
+    Label?: string;
+    /**
+    * Feedback message to show when input is invalid
+    * @type {string}
+    * @optional
+    */
+    Feedback?: string;
+    /**
+    * Flag to disable the input field
+    * @type {boolean}
+    * @optional
+    */
+    Disabled?: boolean;
+    /**
+      * Type of the input fields
+      * @type {'number' | 'text' | 'password' | 'email' | 'color'}
+      * @optional
+    */
+    Type?: 'number' | 'text' | 'password' | 'email' | 'color';
+}
+
 /**
  * DoubleInput Component.
  * A component that renders two input fields, allowing input for two related fields in a single record.
  */
-export default function DoubleInput<T>(props: {
-    Record: T;
-    Field1: keyof T;
-    Field2: keyof T;
-    Setter: (record: T) => void;
-    Valid: (field: keyof T) => boolean;
-    Label?: string;
-    Feedback?: string;
-    Disabled?: boolean;
-    Type?: 'number' | 'text' | 'password' | 'email' | 'color'; 
-}) {
+export default function DoubleInput<T>(props: IProps<T>) {
     return (
         <div className="form-group">
             {/* Label for the input group. Defaults to concatenating the names of the two fields if no label is provided. */}

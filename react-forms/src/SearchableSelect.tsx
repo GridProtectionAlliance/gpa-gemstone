@@ -24,19 +24,61 @@
 import * as React from 'react';
 import HelperMessage from './HelperMessage';
 import { CreateGuid } from '@gpa-gemstone/helper-functions';
-import StylableSelect, {IOption as IStylableOption} from './StylableSelect';
+import StylableSelect, { IOption as IStylableOption } from './StylableSelect';
 import styled, { keyframes } from 'styled-components';
 interface IOption { Value: string; Label: string }
 
 interface IProps<T> {
+    /**
+      * Record to be used in form
+      * @type {T}
+    */
     Record: T;
+    /**
+      * Field of the record to be edited
+      * @type {keyof T}
+    */
     Field: keyof T;
+    /**
+    * Setter function to update the Record
+    * @param record - Updated Record
+    */
     Setter: (record: T) => void;
+    /**
+    * Flag to allow custom input values
+    * @type {boolean}
+    * @optional
+    */
     AllowCustom?: boolean
+    /**
+    * Function to perform a search and return a promise with a list of IOption and an optional callback
+    * @param search - Search string
+    * @returns {[promise: Promise<IOption[]>, callback?: () => void]}
+    */
     Search: (search: string) => [promise: Promise<IOption[]>, callback?: () => void];
+    /**
+    * Label to display for the form, defaults to the Field prop
+    * @type {string}
+    * @optional
+   */
     Label?: string;
+    /**
+    * Flag to disable the input field
+    * @type {boolean}
+    * @optional
+    */
     Disabled?: boolean;
+    /**
+    * Help message or element to display
+    * @type {string | JSX.Element}
+    * @optional
+    */
     Help?: string | JSX.Element;
+    /**
+    * CSS styles to apply to the form group
+    * @type {React.CSSProperties}
+    * @optional
+    */
     Style?: React.CSSProperties;
 }
 
@@ -58,7 +100,7 @@ export default function SearchableSelect<T>(props: IProps<T>) {
             r.push({ Value: search, Element: <p>{search}</p> });
         r.push({
             Value: props.Record[props.Field], Element: <div className='input-group'>
-                 <input
+                <input
                     type="text"
                     className="form-control"
                     value={search}
@@ -66,8 +108,8 @@ export default function SearchableSelect<T>(props: IProps<T>) {
                     onBlur={((props.AllowCustom ?? false) ? () => props.Setter({ ...props.Record, [props.Field]: search }) : () => setSearch((props.Record[props.Field] as any).toString()))}
                 />
                 <div className="input-group-append">
-                    <span className="input-group-text"><Icon/></span>
-                    </div>s
+                    <span className="input-group-text"><Icon /></span>
+                </div>s
             </div>
         })
         r.push(...results.filter(f => f.Value !== search && f.Value !== props.Record[props.Field]));

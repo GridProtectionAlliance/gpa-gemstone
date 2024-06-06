@@ -23,18 +23,47 @@
 
 import * as React from 'react';
 
+interface IProps<T>{
+  /**
+    * Record to be used in form
+    * @type {T}
+  */
+  Record: T;
+  /**
+    * Field of the record to be edited
+    * @type {keyof T}
+  */
+  Field: keyof T;
+  /**
+    * Setter function to update the Record
+    * @param record - Updated Record
+  */
+  Setter: (record: T) => void;
+  /**
+    * Array of enumerable values to create checkboxes for
+    * @type {string[]}
+  */
+  Enum: string[];
+  /**
+    * Label to display for the form, defaults to the Field prop
+    * @type {string}
+    * @optional
+  */
+  Label?: string;
+  /**
+    * Function to determine if a checkbox should be disabled
+    * @param item - The enumeration value
+    * @returns {boolean}
+    * @optional
+  */
+  IsDisabled?: (item: string) => boolean
+}
+
 /**
  * EnumCheckBoxes Component.
  * Renders a set of checkboxes based on an enumeration, allowing multiple selection.
  */
-export default function EnumCheckBoxes<T>(props: {
-  Record: T;
-  Field: keyof T;
-  Setter: (record: T) => void;
-  Enum: string[];
-  Label?: string;
-  IsDisabled?: (item: string) => boolean
-}) {
+export default function EnumCheckBoxes<T>(props: ) {
   // Determine if an enum flag is set.
   /* tslint:disable-next-line:no-bitwise */
   const EquateFlag = (index: number) => (((props.Record[props.Field] as any) / Math.pow(2, index)) & 1) !== 0;
