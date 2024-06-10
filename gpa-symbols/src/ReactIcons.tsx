@@ -184,7 +184,7 @@ export namespace ReactIcons {
         </svg>
 
     export const CircleCheckMark: React.FC<IProps> = (props) =>
-        <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? 24, height: props.Size ?? 24 }} viewBox="0 0 24 24" fill="none"stroke={props.Color ?? "currentColor"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-check-circle">
+        <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? 24, height: props.Size ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-check-circle">
             <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
             <polyline points="22 4 12 14.01 9 11.01"></polyline>
         </svg>
@@ -211,10 +211,19 @@ export namespace ReactIcons {
             <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
         </svg>
 
-    export const Share: React.FC<IProps> = (props) =>
+    export const ShareArrow: React.FC<IProps> = (props) =>
         <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? 24, height: props.Size ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-share">
             <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
             <polyline points="16 6 12 2 8 6"></polyline>
             <line x1="12" y1="2" x2="12" y2="15"></line>
+        </svg>
+
+    export const ShareNetwork: React.FC<IProps> = (props) =>
+        <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? 24, height: props.Size ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-share-2">
+            <circle cx="18" cy="5" r="3"></circle>
+            <circle cx="6" cy="12" r="3"></circle>
+            <circle cx="18" cy="19" r="3"></circle>
+            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
         </svg>
 }
