@@ -31,7 +31,8 @@ interface IProps<T> {
     Setter: (record: T) => void;
     Help?: string | JSX.Element;
     Position?: ('vertical' | 'horizontal'),
-    Options: { Value: string; Label: string, Disabled?: boolean}[];
+    Options: { Value: string; Label: string, Disabled?: boolean }[];
+    Label?: string
 }
 
 export default function RadioButtons<T>(props: IProps<T>) {
@@ -41,7 +42,8 @@ export default function RadioButtons<T>(props: IProps<T>) {
     const showHelpIcon = props.Help !== undefined;
 
     return (
-        <div data-help={guid.current}>
+        <div className="form-group" data-help={guid.current}>
+            <label className="form-check-label d-block">{props.Label ?? props.Field}</label>
             {props.Options.map((option, index) => (
                 <div key={index} className={`form-check ${props.Position == 'vertical' ? '' : 'form-check-inline'}`}>
                     <input
