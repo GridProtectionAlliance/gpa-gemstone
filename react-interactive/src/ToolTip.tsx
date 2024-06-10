@@ -136,7 +136,7 @@ const ToolTip: React.FunctionComponent<IProps> = (props) => {
     }
 
     const targetLocation = GetNodeSize(target[0] as HTMLElement);
-    let newPosition = { Height: targetLocation.height, Top: targetLocation.top, Left: targetLocation.left, Width: targetLocation.width }
+    const newPosition = { Height: targetLocation.height, Top: targetLocation.top, Left: targetLocation.left, Width: targetLocation.width }
     if (!isEqual(newPosition, targetPosition))
       setTargetPosition(newPosition)
   }, [props.Show]);
