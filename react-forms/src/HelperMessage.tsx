@@ -97,7 +97,7 @@ const HelperMessage: React.FunctionComponent<IProps> = (props) => {
     }
 
     const targetLocation = GetNodeSize(target[0] as HTMLElement);
-    let newPosition = { Height: targetLocation.height, Top: targetLocation.top, Left: targetLocation.left, Width: targetLocation.width }
+    const newPosition = { Height: targetLocation.height, Top: targetLocation.top, Left: targetLocation.left, Width: targetLocation.width }
     if (!isEqual(newPosition, targetPosition))
       setTargetPosition(newPosition)
 
@@ -129,9 +129,9 @@ const UpdatePosition = (helpMessage: React.MutableRefObject<HTMLDivElement | nul
   const offset = 5;
   const windowWidth = window.innerWidth;
 
-  let top = targetPosition.Top + targetPosition.Height + offset
+  const top = targetPosition.Top + targetPosition.Height + offset
   let left = targetPosition.Left
-  let width = targetPosition.Width;
+  const width = targetPosition.Width;
 
   // If tooltip goes beyond the right viewport boundary, adjust the left position to fit
   if (left + width >= windowWidth)
