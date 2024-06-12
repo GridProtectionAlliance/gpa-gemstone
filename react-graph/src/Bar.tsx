@@ -23,27 +23,23 @@
 
 
 import * as React from 'react';
-import { IDataSeries, GraphContext, LineStyle, AxisIdentifier, AxisMap, LineMap } from './GraphContext';
+import { IDataSeries, GraphContext, AxisIdentifier, AxisMap } from './GraphContext';
 import * as moment from 'moment';
 import { PointNode } from './PointNode';
-import LineLegend from './LineLegend';
+import DataLegend from './DataLegend';
 import { CreateGuid } from '@gpa-gemstone/helper-functions';
 
-export interface IBarData {
-    Color: string, 
-    DataPoints: [number, number][],
-    Name: string
-}
-
-export interface IProps {
-    LegendName?: string,
+interface IProps {
     HighlightHover?: boolean,
-    Data?: IBarData,
-    LineStyle?: LineStyle,
-    Axis?: AxisIdentifier, 
+    Data: [number, number][],
+    Name: string,
+    Color: string,
+    Axis?: AxisIdentifier,
+    Legend?: string,
+    Stacked?: boolean //this will be used to determine if we should stack each bar by its time value
 }
 
-function StackedBar(props: IProps) {
+function Bar(props: IProps) {
     /*
         Single Bar with ability to turn off and on.
     */
@@ -51,24 +47,24 @@ function StackedBar(props: IProps) {
     const [dataGuid, setDataGuid] = React.useState<string>("");
     const [highlight, setHighlight] = React.useState<[number, number]>([NaN, NaN]);
     const [enabled, setEnabled] = React.useState<boolean>(true);
-    const [data, setData] = React.useState<any | null>(null);
+    const [data, setData] = React.useState<PointNode | null>(null);
     const [visibleData, setVisibleData] = React.useState<[...number[]][]>([]);
     const context = React.useContext(GraphContext);
 
 
     const createLegend = React.useCallback(() => {
-        if (props.LegendName === undefined)
+        if (props.Legend === undefined)
             return undefined;
 
-        let txt = props.LegendName;
+        let txt = props.Legend;
 
         if ((props.HighlightHover ?? false) && !isNaN(highlight[0]) && !isNaN(highlight[1]))
             txt = txt + ` (${moment.utc(highlight[0]).format('MM/DD/YY hh:mm:ss')}: ${highlight[1].toPrecision(6)})`
 
-        return <LineLegend
-            size='sm' label={txt} color={"#A30000"} lineStyle={"-"}
+        return <DataLegend
+            size='sm' label={txt} color={props.Color} legendStyle={'bar'}
             setEnabled={setEnabled} enabled={enabled} hasNoData={data == null} />;
-    }, [props.LineStyle, enabled, data]);
+    }, [props.Color, enabled, data]);
 
     const createContextData = React.useCallback(() => {
         return {
@@ -91,8 +87,9 @@ function StackedBar(props: IProps) {
         setDataGuid(CreateGuid());
     }, [data]);
 
+    
     React.useEffect(() => {
-        if (data == null || props.Data == null || props.Data.DataPoints.length === 0 || isNaN(context.XHover))
+        if (data == null || props.Data == null || props.Data.length === 0 || isNaN(context.XHover))
             setHighlight([NaN, NaN]);
         else {
             try {
@@ -105,11 +102,13 @@ function StackedBar(props: IProps) {
         }
     }, [data, context.XHover])
 
+
     React.useEffect(() => {
-        if (props.Data == null || props.Data.DataPoints.length === 0) setData(null);
-        else setData(props.Data);
+        if (props.Data == null || props.Data.length === 0) setData(null);
+        else setData(new PointNode(props.Data));
     }, [props.Data]);
 
+    
     React.useEffect(() => {
         if (guid === "")
             return;
@@ -131,28 +130,50 @@ function StackedBar(props: IProps) {
         return () => { context.RemoveData(id) }
     }, []);
 
-    function generateData() {
-        //this could be used to generate a bar.. 
+    function generateBars() {
+        if (!visibleData || visibleData.length === 0) return null;
+
+        // Calculate intervals between points for bar width
+        const intervals = [];
+        for (let i = 0; i < visibleData.length - 1; i++) {
+            const currentX = context.XTransformation(visibleData[i][0]);
+            const nextX = context.XTransformation(visibleData[i + 1][0]);
+            intervals.push(nextX - currentX);
+        }
+
+        if (visibleData.length > 1)
+            intervals.push(intervals[intervals.length - 1]); // Use the last calculated interval for the last bar
+        else
+            intervals.push(50); // if one bar just use 50 for now..
+
+
+        // Determine the bar width as the smallest interval
+        const barWidth = Math.min(...intervals);
+
+        return visibleData.map((pt, index) => {
+            const x = context.XTransformation(pt[0]);
+            const y = context.YTransformation(pt[1], AxisMap.get(props.Axis));
+            const baseY = context.YTransformation(0, AxisMap.get(props.Axis));
+            let height = baseY - y;
+            if (height < 0 || isNaN(height))
+                height = 0
+            return (
+                <rect key={index}
+                    x={x - barWidth / 2}
+                    y={y}
+                    width={barWidth}
+                    height={height}
+                    fill={"none"}
+                    stroke={props.Color} />
+            );
+        });
     }
 
     return (
-        enabled ?
-            <>
-                <g>
-                    <rect width={100} height={75} x={65} y={400} stroke="#A30000" />
-                    <rect width={100} height={75} x={65} y={325} stroke="#3399FF" />
-                    <rect width={100} height={75} x={65} y={250} stroke="#33FF77" />
-                    <rect width={100} height={75} x={65} y={175} stroke="#E3FF33" />
-                </g>
-                <g>
-                    <rect width={100} height={75} x={165} y={400} stroke="#A30000" />
-                    <rect width={100} height={75} x={165} y={325} stroke="#3399FF" />
-                    <rect width={100} height={75} x={165} y={250} stroke="#33FF77" />
-                    <rect width={100} height={75} x={165} y={175} stroke="#E3FF33" />
-                </g >
-            </>
-            : null
+        <g>
+            {enabled && generateBars()}
+        </g>
     );
 }
 
-export default StackedBar;
+export default Bar;

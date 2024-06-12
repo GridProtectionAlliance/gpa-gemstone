@@ -10,7 +10,7 @@ import AggregatingCircles from './AggregatingCircles';
 import Circle from './Circle';
 import Infobox from './Infobox';
 import { AxisMap } from './GraphContext';
-import StackedBar from './StackedBar'
+import Bar from './Bar'
 
 export { 
     Plot,
@@ -25,5 +25,5 @@ export {
     AggregatingCircles,
     Infobox,
     AxisMap,
-    StackedBar
+    Bar
  };

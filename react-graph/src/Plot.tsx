@@ -35,7 +35,7 @@ import Legend from './Legend';
 import LineWithThreshold from './LineWithThreshold';
 import Line from './Line';
 import Button from './Button';
-import StackedBar from './StackedBar'
+import Bar from './Bar'
 import HorizontalMarker from './HorizontalMarker';
 import VerticalMarker from './VerticalMarker';
 import SymbolicMarker from './SymbolicMarker';
@@ -855,7 +855,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
                                    if ((element as React.ReactElement<any>).type === Line || (element as React.ReactElement<any>).type === LineWithThreshold || (element as React.ReactElement<any>).type === Infobox ||
                                    (element as React.ReactElement<any>).type === HorizontalMarker || (element as React.ReactElement<any>).type === VerticalMarker || (element as React.ReactElement<any>).type === SymbolicMarker
                                    || (element as React.ReactElement<any>).type === Circle || (element as React.ReactElement<any>).type === AggregatingCircles || (element as React.ReactElement<any>).type === HeatMapChart
-                                    || (element as React.ReactElement<any>).type === StackedBar)
+                                    || (element as React.ReactElement<any>).type === Bar)
                                        return element;
                                    return null;
                                })}
