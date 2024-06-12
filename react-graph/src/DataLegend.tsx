@@ -28,10 +28,12 @@ import { GetTextWidth, GetTextHeight,  CreateGuid } from '@gpa-gemstone/helper-f
 import { Warning } from '@gpa-gemstone/gpa-symbols';
 import { ILegendRequiredProps, LegendContext } from './LegendContext';
 
+type LegendStyle = LineStyle | 'bar'
+
 export interface IProps extends ILegendRequiredProps {
     label: string,
     color: string,
-    lineStyle: LineStyle,
+    legendStyle: LegendStyle,
     setEnabled: (arg: boolean) => void,
     hasNoData: boolean
 }
@@ -39,7 +41,7 @@ const fontFamily = `-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetic
 const nonTextualWidth = 45;
 const cssStyle = `margin: auto auto auto 0px; display: inline-block; font-weight: 400; font-family: ${fontFamily};`
 
-function LineLegend(props: IProps) {
+function DataLegend(props: IProps) {
     const [label, setLabel] = React.useState<string>(props.label);
     const [legendWidth, setLegendWith] = React.useState<number>(100);
     const [legendHeight, setLegendHeight] = React.useState<number>(100);
@@ -87,8 +89,9 @@ function LineLegend(props: IProps) {
     return (
         <div style={{ height: legendHeight, width: legendWidth }}>
             <div onClick={() => props.setEnabled(!props.enabled)} style={{ width: '100%', display: 'flex', alignItems: 'center', marginRight: '5px', height: '100%' }}>
-                {(props.lineStyle === '-' ?
+                {(props.legendStyle === '-' ?
                     <div style={{ width: ' 10px', height: 0, borderTop: '2px solid', borderRight: '10px solid', borderBottom: '2px solid', borderLeft: '10px solid', borderColor: props.color, overflow: 'hidden', marginRight: '5px', opacity: (props.enabled ? 1 : 0.5) }}></div> :
+                    props.legendStyle === 'bar' ? <div style={{ width: '10px', height: '20px', borderTop: '2px solid', borderRight: '10px solid', borderBottom: '2px solid', borderLeft: '10px solid', borderColor: props.color, overflow: 'hidden', marginRight: '5px', opacity: (props.enabled ? 1 : 0.5) }}></div> :
                     <div style={{ width: ' 10px', height: '4px', borderTop: '0px solid', borderRight: '3px solid', borderBottom: '0px solid', borderLeft: '3px solid', borderColor: props.color, overflow: 'hidden', marginRight: '5px', opacity: (props.enabled ? 1 : 0.5) }}></div>
                 )}
                 <label style={{ fontFamily: fontFamily, fontWeight: 400, display: 'inline-block', margin: 'auto', marginLeft: 0, fontSize: textSize + 'em', whiteSpace: (useMultiLine ? 'normal' : 'nowrap') }}> {label}</label>
@@ -97,4 +100,4 @@ function LineLegend(props: IProps) {
     );
 }
 
-export default LineLegend;
+export default DataLegend;
