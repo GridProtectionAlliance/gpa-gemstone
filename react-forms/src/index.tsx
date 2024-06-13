@@ -38,6 +38,7 @@ import ColorPicker from './ColorPicker'
 import SearchableSelect from './SearchableSelect';
 import ToggleSwitch from './ToggleSwitch'; 
 import InputWithButton from './InputWithButton';
+import RadioButtons from './RadioButtons';
 
 export {
     CheckBox,
@@ -56,5 +57,6 @@ export {
     ColorPicker,
     SearchableSelect,
     ToggleSwitch,
-    InputWithButton
+    InputWithButton,
+    RadioButtons
 };
