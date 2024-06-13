@@ -39,14 +39,16 @@ interface IProps {
     Size?: 'sm' | 'lg' | 'xlg',
     BtnClass?: string,
     TooltipContent?: JSX.Element,
+    TooltipLocation?: ('top' | 'bottom' | 'left' | 'right'),
     ShowToolTip?: boolean,
 }
+
 const BtnDropdown = (props: IProps) => {
     const guid = React.useRef<string>(CreateGuid());
 
-    const size = props.Size === undefined ? 'sm' : props.Size;
-    const className = props.BtnClass === undefined ? 'btn-primary' : props.BtnClass;
-    const disabled = props.Disabled === undefined ? false : props.Disabled;
+    const size = props.Size ?? 'sm';
+    const className = props.BtnClass ?? 'btn-primary';
+    const disabled = props.Disabled ?? false;
     
     const [hover, setHover] = React.useState<boolean>(false);
     const [showDropdown, setShowDropdown] = React.useState<boolean>(false);
@@ -82,8 +84,8 @@ const BtnDropdown = (props: IProps) => {
                     </a>
                 </React.Fragment>)}
             </div>
-            <ToolTip Show={hover && props.ShowToolTip != undefined && props.ShowToolTip}
-                Position={'top'} Theme={'dark'} Target={guid.current}>
+            <ToolTip Show={hover && (props.ShowToolTip ?? false)} 
+                Position={props.TooltipLocation ?? 'top'} Theme={'dark'} Target={guid.current}>
                 {props.TooltipContent}
             </ToolTip>
     </div>)
