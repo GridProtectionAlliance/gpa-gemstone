@@ -186,7 +186,7 @@ export default function ConfigurableTable<T>(props: React.PropsWithChildren<IPro
     }
 
 
-    function changeCollums(key: string) {
+    function changeColumns(key: string) {
 
         setColumns((d) => {
             const u = _.cloneDeep(d);

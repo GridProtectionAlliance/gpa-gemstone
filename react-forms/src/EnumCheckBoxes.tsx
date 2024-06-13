@@ -63,7 +63,7 @@ interface IProps<T>{
  * EnumCheckBoxes Component.
  * Renders a set of checkboxes based on an enumeration, allowing multiple selection.
  */
-export default function EnumCheckBoxes<T>(props: ) {
+export default function EnumCheckBoxes<T>(props: IProps<T>) {
   // Determine if an enum flag is set.
   /* tslint:disable-next-line:no-bitwise */
   const EquateFlag = (index: number) => (((props.Record[props.Field] as any) / Math.pow(2, index)) & 1) !== 0;

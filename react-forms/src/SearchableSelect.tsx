@@ -109,7 +109,7 @@ export default function SearchableSelect<T>(props: IProps<T>) {
                 />
                 <div className="input-group-append">
                     <span className="input-group-text"><Icon /></span>
-                </div>s
+                </div>
             </div>
         })
         r.push(...results.filter(f => f.Value !== search && f.Value !== props.Record[props.Field]));

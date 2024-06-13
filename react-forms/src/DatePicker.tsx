@@ -272,38 +272,6 @@ export default function DateTimePicker<T>(props: IProps<T>) {
                 Type={props.Type === undefined ? 'date' : props.Type}
                 Accuracy={props.Accuracy}
             />
-            {/* Input element */}
-            {(props.Label !== "") ?
-                <label>{props.Label == null ? props.Field : props.Label}</label> : null}
-
-            <input
-                data-help={guid}
-                className={"gpa-gemstone-datetime form-control" + (props.Valid(props.Field) ? '' : ' is-invalid')}
-                type={props.Type === undefined ? 'date' : props.Type}
-                onChange={(evt) => {
-                    setBoxRecord(evt.target.value ?? "");
-                }}
-                onFocus={() => { setShowOverlay(true) }}
-                value={boxRecord}
-                disabled={props.Disabled === undefined ? false : props.Disabled}
-                onClick={(e) => { e.preventDefault() }}
-                step="1"
-            />
-
-            {/* Invalid feedback message */}
-            <div className="invalid-feedback">
-                {props.Feedback == null ? props.Field.toString() + ' is a required field.' : props.Feedback}
-            </div>
-
-            {/* DateTime popup */}
-            <DateTimePopup
-                Setter={(d) => { setPickerRecord(d); if (props.Type === 'date') setShowOverlay(false); }}
-                Show={showOverlay}
-                DateTime={pickerRecord}
-                Valid={props.Valid(props.Field)}
-                Top={top} Center={left}
-                Type={props.Type === undefined ? 'date' : props.Type}
-            />
         </div>
     );
 }
