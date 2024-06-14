@@ -43,7 +43,7 @@ const LayoutGrid: React.FC<React.PropsWithChildren<IProps>> = (props) => {
         let numOfRows = lowestSquare; // Default values assumes a perfect square grid
         let rowsNeedingExtraItems = totalNumOfItems - lowestSquare**2; // Adds these overflow items to beginning rows 1:1
         
-        if(props.colMax !== null && props.colMax <= lowestSquare) {
+        if(props.colMax !== undefined && props.colMax <= lowestSquare) {
             rowsNeedingExtraItems = 0;
             const itemsInRow = props.colMax;
             numOfRows = Math.ceil(totalNumOfItems / itemsInRow);
