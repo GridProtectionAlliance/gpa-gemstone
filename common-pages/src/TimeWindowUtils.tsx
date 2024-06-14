@@ -34,36 +34,19 @@ export interface ITimeFilter {
 }
 
 export type TimeUnit = 'y'|'M'|'w'|'d'|'h'|'m'|'s'|'ms'
+export const units = ['ms','s','m','h','d','w','M','y'] as TimeUnit[]
 
-export function momentUnit(unit: number) {
-    if (unit == 7) {
-        return 'y';
-    } else if (unit == 6) {
-        return 'M';
-    } else if (unit == 5) {
-        return 'w';
-    } else if (unit == 4) {
-        return 'd';
-    } else if (unit == 3) {
-        return 'h';
-    } else if (unit == 2) {
-        return 'm';
-    } else if (unit == 1) {
-        return 's';
-    } 
-    return 'ms';
-}
+export function findAppropriateUnit(startTime: moment.Moment, endTime: moment.Moment, unit?: TimeUnit, useHalfWindow?: boolean) {
 
-export function findAppropriateUnit(startTime: moment.Moment, endTime: moment.Moment, unit?: number, useHalfWindow?: boolean) {
-
+    let unitIndex = units.findIndex(u => u == unit);
     if (unit === undefined) 
-        unit = 7;
+        unitIndex = 7;
 
-    let diff = endTime.diff(startTime, momentUnit(unit), true);
+    let diff = endTime.diff(startTime, units[unitIndex], true);
     if (useHalfWindow !== undefined && useHalfWindow)
         diff = diff / 2;
 
-    for (let i = unit; i >= 1; i--) {
+    for (let i = unitIndex; i >= 1; i--) {
         if (i == 6) // Remove month as appropriate due to innacuracy in definition (31/30/28/29 days)
             continue;
         if (Number.isInteger(diff)) {
@@ -73,12 +56,12 @@ export function findAppropriateUnit(startTime: moment.Moment, endTime: moment.Mo
         if (nextI == 6)
             nextI = 5;
           
-        diff = endTime.diff(startTime, momentUnit(nextI), true);
+        diff = endTime.diff(startTime, units[nextI], true);
         if (useHalfWindow !== undefined && useHalfWindow)
             diff = diff / 2;
 
         if (diff > 65000) {
-            diff = endTime.diff(startTime, momentUnit(i), true);
+            diff = endTime.diff(startTime, units[i], true);
             if (useHalfWindow !== undefined && useHalfWindow)
                 diff = diff / 2;
             return [i, Math.round(diff)];
@@ -89,8 +72,8 @@ export function findAppropriateUnit(startTime: moment.Moment, endTime: moment.Mo
     return [0, Math.round(diff)];
 }
 
-export function getStartEndTime(center: moment.Moment, duration: number, unit: number): [moment.Moment, moment.Moment] {
-    const d = moment.duration(duration, momentUnit(unit));
+export function getStartEndTime(center: moment.Moment, duration: number, unit: TimeUnit): [moment.Moment, moment.Moment] {
+    const d = moment.duration(duration, unit);
     const start = center.clone().subtract(d.asHours(), 'h');
     const end = center.clone().add(d.asHours(), 'h');
     return [start, end]
@@ -103,20 +86,20 @@ export function getMoment(date: string, time?: string) {
 }
 
 
-export function readableUnit(unit: number) {
-    if (unit == 7) {
+export function readableUnit(unit: TimeUnit) {
+    if (unit == 'y') {
         return 'Year(s)';
-    } else if (unit == 6) {
+    } else if (unit == 'M') {
         return 'Month(s)';
-    } else if (unit == 5) {
+    } else if (unit == 'w') {
         return 'Week(s)';
-    } else if (unit == 4) {
+    } else if (unit == 'd') {
         return 'Day(s)';
-    } else if (unit == 3) {
+    } else if (unit == 'h') {
         return 'Hour(s)';
-    } else if (unit == 2) {
+    } else if (unit == 'm') {
         return 'Minute(s)';
-    } else if (unit == 1) {
+    } else if (unit == 's') {
         return 'Second(s)';
     }
     return 'Millisecond(s)';

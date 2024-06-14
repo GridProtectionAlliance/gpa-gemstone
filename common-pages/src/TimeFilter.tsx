@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  ReportTimeFilter.tsx - Gbtc
+//  TimeFilter.tsx - Gbtc
 //
 //  Copyright © 2020, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -24,7 +24,7 @@ import * as React from 'react';
 import moment from 'moment';
 import momentTZ from 'moment-timezone';
 import { DatePicker, Select, Input } from '@gpa-gemstone/react-forms'
-import { findAppropriateUnit, getMoment, getStartEndTime, momentUnit } from './TimeWindowUtils';
+import { findAppropriateUnit, getMoment, getStartEndTime, units } from './TimeWindowUtils';
 import { ITimeFilter } from './TimeWindowUtils';
 
 interface IProps {
@@ -47,7 +47,7 @@ const AvailableQuickSelects: IQuickSelect[] = [
             const offset = momentTZ.tz(moment.utc().startOf('hour').format('YYYY-MM-DDTHH:mm:ss.SSSSS'), tz).utcOffset();
             const t = moment.utc().add(offset, 'minutes').startOf('hour');
             t.add(30, 'minutes');
-            const [start, end] =  getStartEndTime(t, 30, 2);
+            const [start, end] =  getStartEndTime(t, 30, 'm');
             return {         
                 centerTime: t.format('MM/DD/YYYY HH:mm:ss.SSS'),
                 startTime: start.format('MM/DD/YYYY HH:mm:ss.SSS'),
@@ -63,7 +63,7 @@ const AvailableQuickSelects: IQuickSelect[] = [
             const offset = momentTZ.tz(moment.utc().startOf('hour').subtract(1, 'hour').format('YYYY-MM-DDTHH:mm:ss.SSSSS'), tz).utcOffset();
             const t = moment.utc().add(offset, 'minutes').startOf('hour').subtract(1, 'hour');
             t.add(30, 'minutes')
-            const [start, end] =  getStartEndTime(t, 30, 2);
+            const [start, end] =  getStartEndTime(t, 30, 'm');
             return {         
                 centerTime: t.format('MM/DD/YYYY HH:mm:ss.SSS'),
                 startTime: start.format('MM/DD/YYYY HH:mm:ss.SSS'),
@@ -79,7 +79,7 @@ const AvailableQuickSelects: IQuickSelect[] = [
             const offset = momentTZ.tz(moment.utc().startOf('minute').subtract(1, 'hour').format('YYYY-MM-DDTHH:mm:ss.SSSSS'), tz).utcOffset();
             const t = moment.utc().add(offset, 'minutes').startOf('minute').subtract(1, 'hour');
             t.add(30, 'minutes');
-            const [start, end] =  getStartEndTime(t, 30, 2);
+            const [start, end] =  getStartEndTime(t, 30, 'm');
             return {         
                 centerTime: t.format('MM/DD/YYYY HH:mm:ss.SSS'),
                 startTime: start.format('MM/DD/YYYY HH:mm:ss.SSS'),
@@ -95,7 +95,7 @@ const AvailableQuickSelects: IQuickSelect[] = [
             const offset = momentTZ.tz(moment.utc().startOf('day').format('YYYY-MM-DDTHH:mm:ss.SSSSS'), tz).utcOffset();
             const t = moment.utc().add(offset, 'minutes').startOf('day');
             t.add(12, 'hours');
-            const [start, end] =  getStartEndTime(t, 12, 3);
+            const [start, end] =  getStartEndTime(t, 12, 'h');
             return {         
                 centerTime: t.format('MM/DD/YYYY HH:mm:ss.SSS'),
                 startTime: start.format('MM/DD/YYYY HH:mm:ss.SSS'),
@@ -111,7 +111,7 @@ const AvailableQuickSelects: IQuickSelect[] = [
             const offset = momentTZ.tz(moment.utc().startOf('day').subtract(1, 'days').format('YYYY-MM-DDTHH:mm:ss.SSSSS'), tz).utcOffset();
             const t = moment.utc().add(offset, 'minutes').startOf('day').subtract(1, 'days');
             t.add(12, 'hours');
-            const [start, end] =  getStartEndTime(t, 12, 3);
+            const [start, end] =  getStartEndTime(t, 12, 'h');
             return {         
                 centerTime: t.format('MM/DD/YYYY HH:mm:ss.SSS'),
                 startTime: start.format('MM/DD/YYYY HH:mm:ss.SSS'),
@@ -127,7 +127,7 @@ const AvailableQuickSelects: IQuickSelect[] = [
             const offset = momentTZ.tz(moment.utc().startOf('hour').subtract(24, 'hours').format('YYYY-MM-DDTHH:mm:ss.SSSSS'), tz).utcOffset();
             const t = moment.utc().add(offset, 'minutes').subtract(24, 'hours');
             t.add(12, 'hours');
-            const [start, end] =  getStartEndTime(t, 12, 3);
+            const [start, end] =  getStartEndTime(t, 12, 'h');
             return {         
                 centerTime: t.format('MM/DD/YYYY HH:mm:ss.SSS'),
                 startTime: start.format('MM/DD/YYYY HH:mm:ss.SSS'),
@@ -143,7 +143,7 @@ const AvailableQuickSelects: IQuickSelect[] = [
             const offset = momentTZ.tz(moment.utc().startOf('week').format('YYYY-MM-DDTHH:mm:ss.SSSSS'), tz).utcOffset();
             const t = moment.utc().add(offset, 'minutes').startOf('week');
             t.add(3.5 * 24, 'hours');
-            const [start, end] =  getStartEndTime(t, 3.5 * 24, 3);
+            const [start, end] =  getStartEndTime(t, 3.5 * 24, 'h');
             return {         
                 centerTime: t.format('MM/DD/YYYY HH:mm:ss.SSS'),
                 startTime: start.format('MM/DD/YYYY HH:mm:ss.SSS'),
@@ -159,7 +159,7 @@ const AvailableQuickSelects: IQuickSelect[] = [
             const offset = momentTZ.tz(moment.utc().startOf('week').format('YYYY-MM-DDTHH:mm:ss.SSSSS'), tz).utcOffset();
             const t = moment.utc().add(offset, 'minutes').startOf('week');
             t.subtract(3.5 * 24, 'hours');
-            const [start, end] =  getStartEndTime(t, 3.5 * 24, 3);
+            const [start, end] =  getStartEndTime(t, 3.5 * 24, 'h');
             return {         
                 centerTime: t.format('MM/DD/YYYY HH:mm:ss.SSS'),
                 startTime: start.format('MM/DD/YYYY HH:mm:ss.SSS'),
@@ -175,7 +175,7 @@ const AvailableQuickSelects: IQuickSelect[] = [
             const offset = momentTZ.tz(moment.utc().startOf('day').format('YYYY-MM-DDTHH:mm:ss.SSSSS'), tz).utcOffset();
             const t = moment.utc().add(offset, 'minutes').startOf('day');
             t.subtract(3.5 * 24, 'hours');
-            const [start, end] =  getStartEndTime(t, 3.5 * 24, 3);
+            const [start, end] =  getStartEndTime(t, 3.5 * 24, 'h');
             return {         
                 centerTime: t.format('MM/DD/YYYY HH:mm:ss.SSS'),
                 startTime: start.format('MM/DD/YYYY HH:mm:ss.SSS'),
@@ -193,7 +193,7 @@ const AvailableQuickSelects: IQuickSelect[] = [
             t.add(12 * t.daysInMonth(), 'hours');
             const window = (t.daysInMonth() * 24);
 
-            const [start, end] =  getStartEndTime(t, window / 2.0, 3);
+            const [start, end] =  getStartEndTime(t, window / 2.0, 'h');
             return {         
                 centerTime: t.format('MM/DD/YYYY HH:mm:ss.SSS'),
                 startTime: start.format('MM/DD/YYYY HH:mm:ss.SSS'),
@@ -211,7 +211,7 @@ const AvailableQuickSelects: IQuickSelect[] = [
             t.add(12 * t.daysInMonth(), 'hours');
             const window = (t.daysInMonth() * 24);
 
-            const [start, end] =  getStartEndTime(t, window / 2.0, 3);
+            const [start, end] =  getStartEndTime(t, window / 2.0, 'h');
             return {         
                 centerTime: t.format('MM/DD/YYYY HH:mm:ss.SSS'),
                 startTime: start.format('MM/DD/YYYY HH:mm:ss.SSS'),
@@ -227,7 +227,7 @@ const AvailableQuickSelects: IQuickSelect[] = [
             const offset = momentTZ.tz(moment.utc().startOf('day').format('YYYY-MM-DDTHH:mm:ss.SSSSS'), tz).utcOffset();
             const t = moment.utc().add(offset, 'minutes').startOf('day');
             t.subtract(15, 'days');
-            const [start, end] =  getStartEndTime(t, 15, 4);
+            const [start, end] =  getStartEndTime(t, 15, 'd');
             return {         
                 centerTime: t.format('MM/DD/YYYY HH:mm:ss.SSS'),
                 startTime: start.format('MM/DD/YYYY HH:mm:ss.SSS'),
@@ -247,7 +247,7 @@ const AvailableQuickSelects: IQuickSelect[] = [
             tend.add(1, 'quarter')
             const h = moment.duration(tend.diff(t)).asDays();
             t.add(h * 0.5, 'day');
-            const [start, end] =  getStartEndTime(t, h * 0.5, 4);
+            const [start, end] =  getStartEndTime(t, h * 0.5, 'd');
             return {         
                 centerTime: t.format('MM/DD/YYYY HH:mm:ss.SSS'),
                 startTime: start.format('MM/DD/YYYY HH:mm:ss.SSS'),
@@ -267,7 +267,7 @@ const AvailableQuickSelects: IQuickSelect[] = [
             t.subtract(1, 'quarter');
             const h = moment.duration(tend.diff(t)).asDays();
             t.add(h * 0.5, 'day');
-            const [start, end] =  getStartEndTime(t, h * 0.5, 4);
+            const [start, end] =  getStartEndTime(t, h * 0.5, 'd');
             return {         
                 centerTime: t.format('MM/DD/YYYY HH:mm:ss.SSS'),
                 startTime: start.format('MM/DD/YYYY HH:mm:ss.SSS'),
@@ -283,7 +283,7 @@ const AvailableQuickSelects: IQuickSelect[] = [
             const offset = momentTZ.tz(moment.utc().startOf('day').subtract(45, 'days').format('YYYY-MM-DDTHH:mm:ss.SSSSS'), tz).utcOffset();
             const t = moment.utc().add(offset, 'minutes').startOf('day');
             t.subtract(45, 'days');
-            const [start, end] =  getStartEndTime(t, 45, 4);
+            const [start, end] =  getStartEndTime(t, 45, 'd');
             return {         
                 centerTime: t.format('MM/DD/YYYY HH:mm:ss.SSS'),
                 startTime: start.format('MM/DD/YYYY HH:mm:ss.SSS'),
@@ -299,7 +299,7 @@ const AvailableQuickSelects: IQuickSelect[] = [
             const offset = momentTZ.tz(moment.utc().startOf('year').add(6, 'month').format('YYYY-MM-DDTHH:mm:ss.SSSSS'), tz).utcOffset();
             const t = moment.utc().add(offset, 'minutes').startOf('year');
             t.add(0.5, 'year');
-            const [start, end] =  getStartEndTime(t, 6, 6);
+            const [start, end] =  getStartEndTime(t, 6, 'd');
             return {         
                 centerTime: t.format('MM/DD/YYYY HH:mm:ss.SSS'),
                 startTime: start.format('MM/DD/YYYY HH:mm:ss.SSS'),
@@ -315,7 +315,7 @@ const AvailableQuickSelects: IQuickSelect[] = [
             const offset = momentTZ.tz(moment.utc().startOf('year').subtract(1, 'year').format('YYYY-MM-DDTHH:mm:ss.SSSSS'), tz).utcOffset();
             const t = moment.utc().add(offset, 'minute').startOf('year').subtract(0.5, 'year');
             
-            const [start, end] =  getStartEndTime(t, 6, 6);
+            const [start, end] =  getStartEndTime(t, 6, 'd');
             return {         
                 centerTime: t.format('MM/DD/YYYY HH:mm:ss.SSS'),
                 startTime: start.add(1, 'day').format('MM/DD/YYYY HH:mm:ss.SSS'),
@@ -331,7 +331,7 @@ const AvailableQuickSelects: IQuickSelect[] = [
             const offset = momentTZ.tz(moment.utc().startOf('day').subtract(182.5, 'days').format('YYYY-MM-DDTHH:mm:ss.SSSSS'), tz).utcOffset();
             const t = moment.utc().add(offset, 'minute').startOf('day');
             t.subtract(182.5, 'days');
-            const [start, end] =  getStartEndTime(t, 182.5, 4);
+            const [start, end] =  getStartEndTime(t, 182.5, 'd');
             return {         
                 centerTime: t.format('MM/DD/YYYY HH:mm:ss.SSS'),
                 startTime: start.format('MM/DD/YYYY HH:mm:ss.SSS'),
@@ -409,7 +409,7 @@ const TimeFilter = (props: IProps) => {
                         <DatePicker< ITimeFilter > Record={filter} Field="centerTime" Help={`All times are in system time. System time is currently set to ${props.timeZone}. `}
                             Setter={(r) => {
                                 const centerTime = getMoment(r.centerTime);
-                                const [startTime, endTime] = getStartEndTime(centerTime, filter.halfWindowSize, filter.timeWindowUnits);
+                                const [startTime, endTime] = getStartEndTime(centerTime, filter.halfWindowSize, units[filter.timeWindowUnits]);
 
                                 setFilter(prevFilter => ({
                                     ...prevFilter,
@@ -421,7 +421,7 @@ const TimeFilter = (props: IProps) => {
                             }}
                             Label='Time Window Center:'
                             Type='datetime-local'
-                            Valid={(record) => { return true; }} Format={momentDateFormat + ' ' + momentTimeFormat} />
+                            Valid={() => true} Format={momentDateFormat + ' ' + momentTimeFormat} />
                     </div>
                 </div>
                 : null
@@ -438,7 +438,7 @@ const TimeFilter = (props: IProps) => {
                                     [unit, window] = findAppropriateUnit(startTime, getMoment(filter.endTime), undefined, true);
                                 }
 
-                                const d = moment.duration(window, momentUnit(unit));
+                                const d = moment.duration(window, units[unit]);
                                 const centerTime = startTime.clone().add(d);
                                 const endTime = centerTime.clone().add(d);
                                 setFilter({
@@ -471,7 +471,7 @@ const TimeFilter = (props: IProps) => {
                                 if (props.dateTimeSetting === 'startEnd') {
                                     [unit, window] = findAppropriateUnit(getMoment(filter.startTime), endTime, undefined, true);
                                 }
-                                const d = moment.duration(window, momentUnit(unit));
+                                const d = moment.duration(window, units[unit]);
                                 const centerTime = endTime.clone().subtract(d);
                                 const startTime = centerTime.clone().subtract(d);
                                 setFilter({
@@ -500,7 +500,7 @@ const TimeFilter = (props: IProps) => {
                         <div className='col-6'>
                             <Input<ITimeFilter> Record={filter} Field='halfWindowSize' Setter={(r) => {
                                 const centerTime = getMoment(filter.centerTime);
-                                const [startTime, endTime] = getStartEndTime(centerTime, r.halfWindowSize, filter.timeWindowUnits);
+                                const [startTime, endTime] = getStartEndTime(centerTime, r.halfWindowSize, units[filter.timeWindowUnits]);
 
                                 setFilter(prevFilter => ({
                                     ...prevFilter,
@@ -510,7 +510,7 @@ const TimeFilter = (props: IProps) => {
                                     endTime: endTime.format(momentDateFormat + ' ' + momentTimeFormat)
                                 }));
                                 setActiveQP(-1);
-                            }} Label='' Valid={(record) => { return true; }}
+                            }} Label='' Valid={() => true}
                                 Type='number' />
                         </div>
                         <div className='col-6'>
@@ -518,7 +518,7 @@ const TimeFilter = (props: IProps) => {
                                 Field='timeWindowUnits'
                                 Setter={(r) => {
                                     const centerTime = getMoment(filter.centerTime);
-                                    const [startTime, endTime] = getStartEndTime(centerTime, filter.halfWindowSize, r.timeWindowUnits);
+                                    const [startTime, endTime] = getStartEndTime(centerTime, filter.halfWindowSize, units[r.timeWindowUnits]);
                                     setFilter(prevFilter => ({
                                         ...prevFilter,
                                         timeWindowUnits: r.timeWindowUnits,
@@ -549,7 +549,7 @@ const TimeFilter = (props: IProps) => {
                         <div className='col-6'>
                             <Input<ITimeFilter> Record={filter} Field='windowSize' Setter={(r) => {
                                 const startTime = getMoment(filter.startTime);
-                                const d = moment.duration(r.halfWindowSize, momentUnit(filter.timeWindowUnits));
+                                const d = moment.duration(r.halfWindowSize, units[filter.timeWindowUnits]);
                                 const centerTime = startTime.clone().add(d);
                                 const endTime = centerTime.clone().add(d);
                                 setFilter(prevFilter => ({
@@ -560,7 +560,7 @@ const TimeFilter = (props: IProps) => {
                                     endTime: endTime.format(momentDateFormat + ' ' + momentTimeFormat)
                                 }));
                                 setActiveQP(-1);
-                            }} Label='' Valid={(record) => { return true; }}
+                            }} Label='' Valid={() => true}
                                 Type='number' />
                         </div>
                         <div className='col-6'>
@@ -568,7 +568,7 @@ const TimeFilter = (props: IProps) => {
                                 Field='timeWindowUnits'
                                 Setter={(r) => {
                                     const startTime = getMoment(filter.startTime);
-                                    const d = moment.duration(filter.halfWindowSize, momentUnit(r.timeWindowUnits));
+                                    const d = moment.duration(filter.halfWindowSize, units[r.timeWindowUnits]);
                                     const centerTime = startTime.clone().add(d);
                                     const endTime = centerTime.clone().add(d);
                                     setFilter(prevFilter => ({
@@ -601,7 +601,7 @@ const TimeFilter = (props: IProps) => {
                         <div className='col-6'>
                             <Input<ITimeFilter> Record={filter} Field='windowSize' Setter={(r) => {
                                 const endTime = getMoment(filter.endTime);
-                                const d = moment.duration(r.halfWindowSize, momentUnit(filter.timeWindowUnits));
+                                const d = moment.duration(r.halfWindowSize, units[filter.timeWindowUnits]);
                                 const centerTime = endTime.clone().subtract(d);
                                 const startTime = centerTime.clone().subtract(d);
                                 setFilter(prevFilter => ({
@@ -612,7 +612,7 @@ const TimeFilter = (props: IProps) => {
                                     startTime: startTime.format(momentDateFormat + ' ' + momentTimeFormat)
                                 }));
                                 setActiveQP(-1);
-                            }} Label='' Valid={(record) => { return true; }}
+                            }} Label='' Valid={() => true}
                                 Type='number' />
                         </div>
                         <div className='col-6'>
@@ -620,7 +620,7 @@ const TimeFilter = (props: IProps) => {
                                 Field='timeWindowUnits'
                                 Setter={(r) => {
                                     const endTime = getMoment(filter.endTime);
-                                    const d = moment.duration(filter.halfWindowSize, momentUnit(r.timeWindowUnits));
+                                    const d = moment.duration(filter.halfWindowSize, units[r.timeWindowUnits]);
                                     const centerTime = endTime.clone().subtract(d);
                                     const startTime = centerTime.clone().subtract(d);
                                     setFilter(prevFilter => ({
