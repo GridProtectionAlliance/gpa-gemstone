@@ -132,7 +132,6 @@ export default function Select<T>(props: IProps<T>) {
       {/* Rendering the select input */}
       <select
         data-help={guid}
-        data-help={guid}
         className="form-control"
         onChange={(evt) => SetRecord(evt.target.value)}
         value={GetRecordValue()}
