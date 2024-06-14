@@ -24,25 +24,27 @@ import * as React from 'react';
 import styled from "styled-components";
 import { GetNodeSize } from '@gpa-gemstone/helper-functions'
 import { Portal } from 'react-portal';
+import { isEqual } from 'lodash';
+import { Gemstone } from '@gpa-gemstone/application-typings';
 
 interface IProps {
-    Show: boolean,
-    Position?: ('top'|'bottom'|'left'|'right'),
-    Theme?: ('dark'|'light'),
-    Target?: string,
-    Zindex?: number,
+  Show: boolean,
+  Position?: ('top' | 'bottom' | 'left' | 'right'),
+  Theme?: ('dark' | 'light'),
+  Target?: string,
+  Zindex?: number,
 }
 
 interface IWrapperProps {
   Show: boolean,
-  Theme: ('dark'|'light'),
+  Theme: ('dark' | 'light'),
   Top: number,
   Left: number,
-  Location: ('top'|'bottom'|'left'|'right'),
+  Location: ('top' | 'bottom' | 'left' | 'right'),
   Zindex: number,
-  
+  TargetLeft: number,
+  TargetWidth: number
 }
-
 
 const WrapperDiv = styled.div<IWrapperProps>`
   & {
@@ -55,18 +57,18 @@ const WrapperDiv = styled.div<IWrapperProps>`
     transition: opacity 0.3s ease-out;
     z-index: ${props => props.Zindex};
     opacity: ${props => props.Show ? "0.9" : "0"};
-    color: ${props => (props.Theme === 'dark' ? "#fff" :'#222')};
-    background: ${props => (props.Theme === 'dark' ? "#222" :'#fff')};
+    color: ${props => (props.Theme === 'dark' ? "#fff" : '#222')};
+    background: ${props => (props.Theme === 'dark' ? "#222" : '#fff')};
     top: ${props => `${props.Top}px`};
     left: ${props => `${props.Left}px`};
     border: 1px solid transparent;
   }
-  ${props => (props.Location === 'top'? `
+  ${props => (props.Location === 'top' ? `
     &::after {
      border-left: 8px solid transparent;
      border-right: 8px solid transparent;
-     border-top: 8px solid ${(props.Theme === 'dark' ? "#222" :'#fff')};
-     left: 50%;
+     border-top: 8px solid ${(props.Theme === 'dark' ? "#222" : '#fff')};
+     left: ${props.TargetLeft - props.Left + props.TargetWidth / 2}px;
      bottom: -6px;
      margin-left: -8px;
      content: "";
@@ -75,12 +77,12 @@ const WrapperDiv = styled.div<IWrapperProps>`
      position: absolute
     }
   ` : '')}
-  ${props => (props.Location === 'bottom'? `
+  ${props => (props.Location === 'bottom' ? `
     &::before {
      border-left: 8px solid transparent;
      border-right: 8px solid transparent;
-     border-bottom: 8px solid ${(props.Theme === 'dark' ? "#222" :'#fff')};
-     left: 50%;
+     border-bottom: 8px solid ${(props.Theme === 'dark' ? "#222" : '#fff')};
+     left: ${props.TargetLeft - props.Left + props.TargetWidth / 2}px;
      top: -6px;
      margin-left: -8px;
      content: "";
@@ -89,11 +91,11 @@ const WrapperDiv = styled.div<IWrapperProps>`
      position: absolute
     }
   `: '')}
-  ${props => (props.Location === 'left'? `
+  ${props => (props.Location === 'left' ? `
     &::before {
      border-top: 8px solid transparent;
      border-bottom: 8px solid transparent;
-     border-left: 8px solid ${(props.Theme === 'dark' ? "#222" :'#fff')};
+     border-left: 8px solid ${(props.Theme === 'dark' ? "#222" : '#fff')};
      top: 50%;
      left: 100%;
      margin-top: -8px;
@@ -103,11 +105,11 @@ const WrapperDiv = styled.div<IWrapperProps>`
      position: absolute
     }
   `: '')}
-  ${props => (props.Location === 'right'? `
+  ${props => (props.Location === 'right' ? `
     &::before {
      border-top: 8px solid transparent;
      border-bottom: 8px solid transparent;
-     border-right: 8px solid ${(props.Theme === 'dark' ? "#222" :'#fff')};
+     border-right: 8px solid ${(props.Theme === 'dark' ? "#222" : '#fff')};
      top: 50%;
      left: -6px;
      margin-top: -8px;
@@ -118,85 +120,91 @@ const WrapperDiv = styled.div<IWrapperProps>`
     }
   `: '')}`
 
-// The other element needs to be labeld as data-tooltip that will only be used for positioning
+// The other element needs to have data-tooltip attribute equal the target prop used for positioning
 const ToolTip: React.FunctionComponent<IProps> = (props) => {
-  const toolTip = React.useRef(null);
-
+  const toolTip = React.useRef<HTMLDivElement | null>(null);
   const [top, setTop] = React.useState<number>(0);
   const [left, setLeft] = React.useState<number>(0);
 
-  const [targetLeft, setTargetLeft] = React.useState<number>(0);
-  const [targetTop, setTargetTop] = React.useState<number>(0);
-  const [targetWidth, setTargetWidth] = React.useState<number>(0);
-  const [targetHeight, setTargetHeight] = React.useState<number>(0);
+  const [targetPosition, setTargetPosition] = React.useState<Gemstone.TSX.Interfaces.IElementPosition>({ Top: -999, Left: -999, Width: 0, Height: 0 })
 
   React.useEffect(() => {
     const target = document.querySelectorAll(`[data-tooltip${props.Target === undefined ? '' : `="${props.Target}"`}]`)
-
     if (target.length === 0) {
-        setTargetHeight(0);
-        setTargetWidth(0);
-        setTargetLeft(-999);
-        setTargetTop(-999);
+      setTargetPosition({ Top: -999, Left: -999, Width: 0, Height: 0 })
+      return;
     }
-    else {  
-        const targetLocation = GetNodeSize(target[0] as HTMLElement);
-        setTargetHeight(targetLocation.height);
-        setTargetWidth(targetLocation.width);
-        setTargetLeft(targetLocation.left);
-        setTargetTop(targetLocation.top);
-    }
+
+    const targetLocation = GetNodeSize(target[0] as HTMLElement);
+    const newPosition = { Height: targetLocation.height, Top: targetLocation.top, Left: targetLocation.left, Width: targetLocation.width }
+    if (!isEqual(newPosition, targetPosition))
+      setTargetPosition(newPosition)
   }, [props.Show]);
 
   React.useLayoutEffect(() => {
-    const [t, l] = UpdatePosition();
+    const [t, l] = getPosition(toolTip, targetPosition, props.Position ?? 'top');
     setTop(t);
     setLeft(l);
-  });
-   
-  const zIndex = (props.Zindex === undefined? 2000: props.Zindex);
-  
-  function UpdatePosition() {
-   
-    if (toolTip.current === null)
-      return [-999,-999];
-  
-    const tipLocation = GetNodeSize(toolTip.current);
+  }, [targetPosition, props?.children]);
 
-    const offset = 5;
+  const zIndex = (props.Zindex === undefined ? 2000 : props.Zindex);
+  const theme = (props.Theme === undefined ? 'dark' : props.Theme);
 
-    const result: [number,number] = [0,0];
-
-    if (props.Position === 'left') {
-      result[0] = targetTop + 0.5*targetHeight - 0.5*tipLocation.height;
-      result[1] = targetLeft - tipLocation.width - offset;
-    }
-    else if (props.Position === 'right') {
-      result[0] = targetTop + 0.5*targetHeight - 0.5*tipLocation.height
-      result[1] = targetLeft + targetWidth + offset;
-    }
-    else if (props.Position === 'top' || props.Position === undefined) {
-      result[0] = targetTop - tipLocation.height - offset;
-      result[1] = targetLeft + 0.5* targetWidth - 0.5* tipLocation.width;
-    }
-    else if (props.Position === 'bottom') {
-      result[0] = targetTop + targetHeight + offset;
-      result[1] = targetLeft + 0.5* targetWidth - 0.5* tipLocation.width;
-    }
-
-    return result;
-  }
-
-  const theme = (props.Theme === undefined? 'dark' : props.Theme);
-
-    return (
-      <Portal>
-      <WrapperDiv Show={props.Show} Theme={theme} Top={top} Left={left} ref={toolTip} Location={props.Position === undefined? 'top' : props.Position} Zindex={zIndex}>
+  return (
+    <Portal>
+      <WrapperDiv Show={props.Show} Theme={theme} Top={top} Left={left} ref={toolTip} Location={props.Position === undefined ? 'top' : props.Position} Zindex={zIndex} TargetLeft={targetPosition.Left} TargetWidth={targetPosition.Width}>
         {props.children}
       </WrapperDiv>
-      </Portal>
-    )
+    </Portal>
+  )
 }
 
+//Helper function
+const getPosition = (toolTip: React.MutableRefObject<HTMLDivElement | null>, targetPosition: Gemstone.TSX.Interfaces.IElementPosition, position: ('top' | 'bottom' | 'left' | 'right')) => {
+  if (toolTip.current === null)
+    return [-999, -999];
+
+  const tipLocation = GetNodeSize(toolTip.current);
+  const offset = 5;
+  let top = 0;
+  let left = 0;
+
+  const windowWidth = window.innerWidth;
+
+  if (position === 'left') {
+    top = targetPosition.Top + 0.5 * targetPosition.Height - 0.5 * tipLocation.height;
+    left = targetPosition.Left - tipLocation.width - offset;
+  }
+  else if (position === 'right') {
+    top = targetPosition.Top + 0.5 * targetPosition.Height - 0.5 * tipLocation.height
+    left = targetPosition.Left + targetPosition.Width + offset;
+  }
+  else if (position === 'top' || position === undefined) {
+    top = targetPosition.Top - tipLocation.height - offset;
+    left = targetPosition.Left + 0.5 * targetPosition.Width - 0.5 * tipLocation.width;
+
+    // If tooltip goes beyond right viewport boundary adjust left position to fit
+    if (left + tipLocation.width > windowWidth) 
+      left = windowWidth - tipLocation.width - offset;
+    
+    // If tooltip goes beyond left viewport boundary adjust left position to fit
+    if (left < 0) 
+      left = offset;
+  }
+  else if (position === 'bottom') {
+    top = targetPosition.Top + targetPosition.Height + offset;
+    left = targetPosition.Left + 0.5 * targetPosition.Width - 0.5 * tipLocation.width;
+
+    //If tooltip goes beyond right viewport boundary adjust left position to fit
+    if (left + tipLocation.width >= windowWidth)
+      left = windowWidth - tipLocation.width - offset;
+
+    //If tooltip goes beyond left viewport boundary adjust left position to fit
+    if (left <= 0)
+      left = offset;
+  }
+
+  return [top, left];
+}
 
 export default ToolTip;

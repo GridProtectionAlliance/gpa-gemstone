@@ -1,7 +1,7 @@
-﻿// ******************************************************************************************************
-//  ToggleSwitch.tsx - Gbtc
+// ******************************************************************************************************
+//  RadioButtons.tsx - Gbtc
 //
-//  Copyright © 2020, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2024, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -16,7 +16,7 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  04/19/2024 - Preston Crawford
+//  06/10/2024 - Preston Crawford
 //       Generated original version of source code.
 //
 // ******************************************************************************************************
@@ -29,47 +29,51 @@ interface IProps<T> {
     Record: T,
     Field: keyof T,
     Setter: (record: T) => void;
-    Label?: string,
-    Disabled?: boolean,
     Help?: string | JSX.Element;
-    Style?: React.CSSProperties;
+    Position?: ('vertical' | 'horizontal'),
+    Options: { Value: string; Label: string, Disabled?: boolean }[];
+    Label?: string
 }
 
-export default function ToggleSwitch<T>(props: IProps<T>) {
-    const helpID = React.useRef<string>(CreateGuid());
-    const switchID = React.useRef<string>(CreateGuid());
+export default function RadioButtons<T>(props: IProps<T>) {
+    const guid = React.useRef<string>(CreateGuid());
     const [showHelp, setShowHelp] = React.useState<boolean>(false);
 
     const showHelpIcon = props.Help !== undefined;
 
     return (
-        <div className="custom-control custom-switch" data-help={helpID.current} style={props.Style}>
-            <input
-                type="checkbox"
-                className="custom-control-input"
-                onChange={(evt) => {
-                    const record: T = { ...props.Record };
-                    record[props.Field] = evt.target.checked as any;
-                    props.Setter(record);
-                }}
-                value={(props.Record[props.Field] as unknown as boolean) ? 'on' : 'off'}
-                checked={(props.Record[props.Field] as unknown as boolean)}
-                disabled={props.Disabled == null ? false : props.Disabled}
-                id={switchID.current}
-            />
-            <label className="custom-control-label" htmlFor={switchID.current}>{props.Label == null ? props.Field : props.Label}</label>
+        <div className="form-group" data-help={guid.current}>
+            <label className="form-check-label d-block">{props.Label ?? props.Field}</label>
+            {props.Options.map((option, index) => (
+                <div key={index} className={`form-check ${props.Position == 'vertical' ? '' : 'form-check-inline'}`}>
+                    <input
+                        type="radio"
+                        className="form-check-input"
+                        style={{ zIndex: 1 }}
+                        onChange={() => {
+                            const record: T = { ...props.Record };
+                            record[props.Field] = option.Value as any;
+                            props.Setter(record);
+                        }}
+                        value={option.Value}
+                        checked={props.Record[props.Field] === option.Value as any}
+                        disabled={option.Disabled ?? false}
+                        id={`${option.Label}-${index}`}
+                    />
+                    <label className="form-check-label" htmlFor={`${option.Label}-${index}`}>{option.Label}</label>
+                </div>
+            ))}
             {showHelpIcon ?
                 <>
                     <div style={{ width: 20, height: 20, borderRadius: '50%', display: 'inline-block', background: '#0D6EFD', marginLeft: 10, textAlign: 'center', fontWeight: 'bold' }}
-                     onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)}>
+                        onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)}>
                         ?
                     </div>
-                    <HelperMessage Show={showHelp} Target={helpID.current} Zindex={9999}>
+                    <HelperMessage Show={showHelp} Target={guid.current}>
                         {props.Help}
                     </HelperMessage>
                 </>
                 : null}
-
         </div>
     );
 

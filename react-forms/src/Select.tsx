@@ -82,13 +82,13 @@ export default function Select<T>(props: IProps<T>) {
       </HelperMessage>
     : null}
       <select
-    data-help={guid}
+        data-help={guid}
         className="form-control"
         onChange={(evt) => SetRecord(evt.target.value)}
         value={GetRecordValue()}
         disabled={props.Disabled == null ? false : props.Disabled}
       >
-        {(props.EmptyOption ?? true) ? <option value="">{props.EmptyLabel !== undefined? props.EmptyLabel : ''}</option> : null}
+        {(props.EmptyOption ?? false) ? <option value="">{props.EmptyLabel !== undefined? props.EmptyLabel : ''}</option> : null}
         {props.Options.map((a, i) => (
           <option key={i} value={a.Value}>
             {a.Label}
