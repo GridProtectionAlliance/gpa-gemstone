@@ -18,15 +18,14 @@
 //  ----------------------------------------------------------------------------------------------------
 //  09/16/2021 - Christoph Lackner
 //       Generated original version of source code.
+//  06/17/2024 - Ali Karrar
 //******************************************************************************************************
 
 import * as React from 'react';
 import moment from 'moment';
 import momentTZ from 'moment-timezone';
 import { DatePicker, Select, Input } from '@gpa-gemstone/react-forms'
-import { findAppropriateUnit, getMoment, getStartEndTime, units } from './TimeWindowUtils';
-import { ITimeFilter } from './TimeWindowUtils';
-import { IsAny } from '@reduxjs/toolkit/dist/tsHelpers';
+import { findAppropriateUnit, getMoment, getStartEndTime, units, ITimeFilter } from './TimeWindowUtils';
 
 interface IProps {
     filter: ITimeFilter;
