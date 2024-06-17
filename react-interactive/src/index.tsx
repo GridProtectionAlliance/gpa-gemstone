@@ -45,6 +45,7 @@ import ProgressBar from './ProgressBar';
 import BtnDropdown from './DropdownButton';
 import ConfigurableColumn from './ConfigurableTable/ConfigurableColumn';
 import GenericController from './GenericController';
+import LayoutGrid from './LayoutGrid';
 
 const ConfigTable = {
   Table: ConfigurableTable,
@@ -74,5 +75,6 @@ export {
   OverlayDrawer,
   ProgressBar,
   BtnDropdown,
-  GenericController
+  GenericController,
+  LayoutGrid
 };
