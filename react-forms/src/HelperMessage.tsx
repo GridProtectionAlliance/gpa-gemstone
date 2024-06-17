@@ -28,14 +28,39 @@ import { Portal } from 'react-portal'
 import { isEqual } from 'lodash';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 
+// Interface for the props
 interface IProps {
-  Show: boolean,
-  Target?: string,
-  Zindex?: number,
-  Color?: string,
-  Background?: string
+    /**
+    * Flag to show the helper message
+    * @type {boolean}
+   */
+    Show: boolean,
+    /**
+    * Value of the target element's data-help attribute
+    * @type {string}
+    * @optional
+    */
+    Target?: string,
+    /**
+    * z-index for the helper message
+    * @type {number}
+   */
+    Zindex?: number,
+    /**
+    * Text color for the helper message
+    * @type {string}
+    * @optional
+   */
+    Color?: string,
+    /**
+    * Background color for the helper message
+    * @type {string}
+    * @optional
+    */
+    Background?: string
 }
 
+// Interface for the properties of the WrapperDiv component
 interface IWrapperProps {
   Show: boolean,
   Top: number,
@@ -48,6 +73,7 @@ interface IWrapperProps {
   Width: number
 }
 
+// Styled component for the wrapper of the helper message.
 const WrapperDiv = styled.div<IWrapperProps>`
   & {
     border-radius: 3px;
@@ -57,16 +83,16 @@ const WrapperDiv = styled.div<IWrapperProps>`
     position: fixed;
     pointer-events: none;
     transition: opacity 0.3s ease-out;
-    z-index: ${props => props.Zindex};
-    opacity: ${props => props.Show ? "1.0" : "0"};
-    color: ${props => props.Color ?? '#000'};;
-    background: ${props => props.Background ?? '#0DCAF0'};
-    top: ${props => `${props.Top}px`};
-    left: ${props => `${props.Left}px`};
-    width: ${props => `${props.Width}px`};
+    z-index: ${(props: IWrapperProps) => props.Zindex};
+    opacity: ${(props: IWrapperProps) => props.Show ? "1.0" : "0"};
+    color: ${(props: IWrapperProps) => props.Color ?? '#000'};;
+    background: ${(props: IWrapperProps) => props.Background ?? '#0DCAF0'};
+    top: ${(props: IWrapperProps) => `${props.Top}px`};
+    left: ${(props: IWrapperProps) => `${props.Left}px`};
+    width: ${(props: IWrapperProps) => `${props.Width}px`};
     border: 1px solid transparent;
   }
-  ${props => `
+  ${(props: IWrapperProps) => `
     &::before {
      border-left: 8px solid transparent;
      border-right: 8px solid transparent;
@@ -80,35 +106,44 @@ const WrapperDiv = styled.div<IWrapperProps>`
      position: absolute
     }
   `}`
+  
+  /**
+   * HelperMessage Component.
+   * Displays a floating message box.
+   */
+  const HelperMessage: React.FunctionComponent<IProps> = (props) => {
+    const helpMessage = React.useRef(null);
 
-const HelperMessage: React.FunctionComponent<IProps> = (props) => {
-  const helpMessage = React.useRef<HTMLDivElement | null>(null);
+    // State variables for positioning and sizing the helper message.
+    const [top, setTop] = React.useState<number>(0);
+    const [left, setLeft] = React.useState<number>(0);
 
-  const [top, setTop] = React.useState<number>(0);
-  const [left, setLeft] = React.useState<number>(0);
+
+    // State variables for the target element's position and size.
   const [targetPosition, setTargetPosition] = React.useState<Gemstone.TSX.Interfaces.IElementPosition>({ Top: -999, Left: -999, Width: 0, Height: 0 })
 
-  React.useEffect(() => {
-    const target = document.querySelectorAll(`[data-help${props.Target === undefined ? '' : `="${props.Target}"`}]`);
-
-    if (target.length === 0) {
-      setTargetPosition({ Height: 0, Top: -999, Left: -999, Width: 0 })
-      return;
-    }
-
-    const targetLocation = GetNodeSize(target[0] as HTMLElement);
-    const newPosition = { Height: targetLocation.height, Top: targetLocation.top, Left: targetLocation.left, Width: targetLocation.width }
-    if (!isEqual(newPosition, targetPosition))
-      setTargetPosition(newPosition)
-
-  }, [props.Show]);
-
-
-  React.useLayoutEffect(() => {
-    const [t, l] = UpdatePosition(helpMessage, targetPosition);
-    setTop(t);
-    setLeft(l);
-  }, [targetPosition])
+    // Effect for updating the target element's position and size.
+    React.useEffect(() => {
+      const target = document.querySelectorAll(`[data-help${props.Target === undefined ? '' : `="${props.Target}"`}]`);
+  
+      if (target.length === 0) {
+        setTargetPosition({ Height: 0, Top: -999, Left: -999, Width: 0 })
+        return;
+      }
+  
+      const targetLocation = GetNodeSize(target[0] as HTMLElement);
+      const newPosition = { Height: targetLocation.height, Top: targetLocation.top, Left: targetLocation.left, Width: targetLocation.width }
+      if (!isEqual(newPosition, targetPosition))
+        setTargetPosition(newPosition)
+  
+    }, [props.Show]);
+  
+  
+    React.useLayoutEffect(() => {
+      const [t, l] = UpdatePosition(helpMessage, targetPosition);
+      setTop(t);
+      setLeft(l);
+    }, [targetPosition])
 
   const zIndex = (props.Zindex === undefined ? 9999 : props.Zindex);
 

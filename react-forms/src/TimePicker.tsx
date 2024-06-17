@@ -25,17 +25,56 @@ import * as React from 'react';
 import HelperMessage from './HelperMessage';
 import { CreateGuid } from '@gpa-gemstone/helper-functions';
 
-export default function TimePicker<T>(props: {
+interface IProps<T>{
+  /**
+    * Record to be used in form
+    * @type {T}
+  */
   Record: T;
+  /**
+    * Field of the record to be edited
+    * @type {keyof T}
+  */
   Field: keyof T;
+  /**
+    * Setter function to update the Record
+    * @param record - Updated Record
+  */
   Setter: (record: T) => void;
+  /**
+    * Function to determine the validity of a field
+    * @param field - Field of the record to check
+    * @returns {boolean}
+  */
   Valid: (field: keyof T) => boolean;
+  /**
+    * Label to display for the form, defaults to the Field prop
+    * @type {string}
+    * @optional
+  */
   Label?: string;
+  /**
+    * Flag to disable the input field
+    * @type {boolean}
+    * @optional
+  */
   Disabled?: boolean;
+  /**
+    * Feedback message to show when input is invalid
+    * @type {string}
+    * @optional
+  */
   Feedback?: string;
+  /**
+    * Defines the number of intervals for time value
+    * @type {number}
+    * @optional
+  */
   Step?: number;
   Help?: string|JSX.Element;
-}) {
+}
+
+export default function DatePicker<T>(props: IProps<T>) {
   const guid = React.useRef<string>(CreateGuid());
   const [showHelp, setShowHelp] = React.useState<boolean>(false);
 
@@ -67,9 +106,11 @@ export default function TimePicker<T>(props: {
         }
         disabled={props.Disabled == null ? false : props.Disabled}
       />
+
+      {/* Feedback message for validation errors */}
       <div className="invalid-feedback">
-      {props.Feedback == null ? props.Field.toString() + ' is a required field.' : props.Feedback}
-    </div>
+        {props.Feedback == null ? props.Field.toString() + ' is a required field.' : props.Feedback}
+      </div>
     </div>
   );
 }

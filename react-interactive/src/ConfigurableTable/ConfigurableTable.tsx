@@ -44,16 +44,16 @@ interface TableProps<T> {
      */
     OnClick?: (data: { colKey: string; colField?: keyof T; row: T; data: T[keyof T] | null, index: number }, event: any) => void;
     /**
-     * Key of the collumn to sort by
+     * Key of the column to sort by
      */
     SortKey: string;
     /**
-     * Boolen to indicate whether the sort is ascending or descending
+     * Boolean to indicate whether the sort is ascending or descending
      */
     Ascending: boolean;
     /**
      * Callback when the data should be sorted
-     * @param data the information of the collumn including the Key of the collumn
+     * @param data the information of the column including the Key of the column
      * @param event The onCLick event to allow Propagation as needed
      */
     OnSort(data: { colKey: string; colField?: keyof T; ascending: boolean }, event: any): void;
@@ -166,6 +166,10 @@ export default function ConfigurableTable<T>(props: React.PropsWithChildren<IPro
         saveLocal();
     }, [columns]);
 
+    /**
+     * 
+     * @returns
+     */
     function saveLocal() {
         if (props.LocalStorageKey === undefined)
             return;
@@ -182,7 +186,7 @@ export default function ConfigurableTable<T>(props: React.PropsWithChildren<IPro
     }
 
 
-    function changeCollums(key: string) {
+    function changeColumns(key: string) {
 
         setColumns((d) => {
             const u = _.cloneDeep(d);
@@ -254,7 +258,7 @@ export default function ConfigurableTable<T>(props: React.PropsWithChildren<IPro
                 </div> : null*/}
                     <ColumnSelection<T>
                         columns={Array.from(columns.values())}
-                        onChange={changeCollums}
+                        onChange={changeColumns}
                         sortKey={props.SortKey}
                         disableAdd={false}
                     />
@@ -271,7 +275,7 @@ export default function ConfigurableTable<T>(props: React.PropsWithChildren<IPro
             </div> : null*/}
                             <ColumnSelection<T>
                                 columns={Array.from(columns.values())}
-                                onChange={changeCollums}
+                                onChange={changeColumns}
                                 sortKey={props.SortKey}
                                 disableAdd={false}
                             />

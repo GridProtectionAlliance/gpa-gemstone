@@ -30,6 +30,7 @@ import { Accuracy } from './DateTimeUI/Clock'
 
 export type TimeUnit = ('datetime-local' | 'date' | 'time');
 
+// Interface for the DateTimePicker component props. 
 interface IProps<T> {
     Record: T;
     Field: keyof T;
@@ -46,11 +47,18 @@ interface IProps<T> {
     MinDate?: moment.Moment // Default to 01/01/1753 (SQL Database limit)
 }
 
+/**
+ * Component that allows a user to pick a date or datetime.
+*/
 export default function DateTimePicker<T>(props: IProps<T>) {
-    // Formats that will be used for dateBoxes
+    // Formats for displaying dates in the input box and storing in the record.
     const boxFormat = getBoxFormat(props.Type, props.Accuracy)
     const recordFormat = props.Format !== undefined ? props.Format : "YYYY-MM-DD" + (props.Type === undefined || props.Type === 'date' ? "" : "[T]HH:mm:ss.SSS[Z]");
+
+    // Parse the date from the record.
     const parse = (r: T) => moment(props.Record[props.Field] as any, recordFormat);
+
+    // State and ref declarations.
     const divRef = React.useRef<any | null>(null);
 
     const [guid, setGuid] = React.useState<string>("");
@@ -58,7 +66,7 @@ export default function DateTimePicker<T>(props: IProps<T>) {
 
     // Adds a buffer between the outside props and what the box is reading to prevent box overwriting every render with a keystroke
     const [boxRecord, setBoxRecord] = React.useState<string>(parse(props.Record).format(boxFormat));
-    const [pickerRecord, setPickerRecord] = React.useState<moment.Moment|undefined>(parse(props.Record));
+    const [pickerRecord, setPickerRecord] = React.useState<moment.Moment | undefined>(parse(props.Record));
 
     const [feedbackMessage, setFeedbackMessage] = React.useState("");
 
@@ -97,9 +105,9 @@ export default function DateTimePicker<T>(props: IProps<T>) {
         window.addEventListener('click', onWindowClick);
         return () => { window.removeEventListener('click', onWindowClick); }
 
-    }, [props.Record, props.Field,boxFormat]);
+    }, [props.Record, props.Field, boxFormat]);
 
-    function setPickerAndRecord(arg: moment.Moment|undefined) {
+    function setPickerAndRecord(arg: moment.Moment | undefined) {
         setPickerRecord(arg);
 
         if ((props.AllowEmpty ?? false) && arg === undefined && props.Record[props.Field] !== null)
@@ -111,6 +119,7 @@ export default function DateTimePicker<T>(props: IProps<T>) {
             props.Setter({ ...props.Record, [props.Field]: arg.format(recordFormat) });
     }
 
+    // Handle clicks outside the component.
     function onWindowClick(evt: any) {
         if (evt.target.closest(`.gpa-gemstone-datetime`) == null) {
             setShowOverlay(false);
@@ -124,10 +133,10 @@ export default function DateTimePicker<T>(props: IProps<T>) {
             }
         }
     }
-   
+
     function getBoxFormat(type?: TimeUnit, accuracy?: Accuracy) {
-        const dateTime = type ??  'date'
-        const timeUnit = accuracy  ?? 'second'
+        const dateTime = type ?? 'date'
+        const timeUnit = accuracy ?? 'second'
 
         if (dateTime === 'time') {
             if (timeUnit === 'minute') {
@@ -179,6 +188,7 @@ export default function DateTimePicker<T>(props: IProps<T>) {
     }
 
 
+    // Variables for rendering labels and help icons.
     const showLabel = props.Label !== "";
     const showHelpIcon = props.Help !== undefined;
     const label = props.Label === undefined ? props.Field : props.Label;
@@ -192,8 +202,8 @@ export default function DateTimePicker<T>(props: IProps<T>) {
 
 
     function valueChange(value: string) {
-    
-        const allowNull = props.AllowEmpty === undefined? false : props.AllowEmpty;
+
+        const allowNull = props.AllowEmpty === undefined ? false : props.AllowEmpty;
         const date = moment(value, boxFormat);
 
         if (allowNull && value === '') {
@@ -207,11 +217,12 @@ export default function DateTimePicker<T>(props: IProps<T>) {
         else {
             setPickerAndRecord(undefined);
         }
-        setBoxRecord(value);       
-      }
+        setBoxRecord(value);
+    }
 
     return (
         <div className="form-group" ref={divRef}>
+            {/* Label and help icon */}
             {showHelpIcon || showLabel ?
                 <label>{showLabel ? label : ''}
                     {showHelpIcon ? <div
@@ -233,7 +244,6 @@ export default function DateTimePicker<T>(props: IProps<T>) {
                     {props.Help}
                 </HelperMessage>
                 : null}
-
             <input
                 data-help={guid}
                 className={`gpa-gemstone-datetime form-control ${IsValid() ? '' : 'is-invalid'}`}

@@ -23,21 +23,70 @@
 
 import * as React from 'react';
 
-export default function DoubleInput<T>(props: {
+interface IProps<T> {
+    /**
+    * Record to be used in form
+    * @type {T}
+   */
     Record: T;
+    /**
+      * First field of the record to be edited
+      * @type {keyof T}
+    */
     Field1: keyof T;
+    /**
+      * Second field of the record to be edited
+      * @type {keyof T}
+    */
     Field2: keyof T;
+    /**
+    * Setter function to update the Record
+    * @param record - Updated Record
+    */
     Setter: (record: T) => void;
+    /**
+    * Function to determine the validity of a field
+    * @param field - Field of the record to check
+    * @returns {boolean}
+   */
     Valid: (field: keyof T) => boolean;
+    /**
+    * Label to display for the form, defaults to the Field prop
+    * @type {string}
+    * @optional
+    */
     Label?: string;
+    /**
+    * Feedback message to show when input is invalid
+    * @type {string}
+    * @optional
+    */
     Feedback?: string;
+    /**
+    * Flag to disable the input field
+    * @type {boolean}
+    * @optional
+    */
     Disabled?: boolean;
+    /**
+      * Type of the input fields
+      * @type {'number' | 'text' | 'password' | 'email' | 'color'}
+      * @optional
+    */
     Type?: 'number' | 'text' | 'password' | 'email' | 'color';
-}) {
+}
+
+/**
+ * DoubleInput Component.
+ * A component that renders two input fields, allowing input for two related fields in a single record.
+ */
+export default function DoubleInput<T>(props: IProps<T>) {
     return (
         <div className="form-group">
+            {/* Label for the input group. Defaults to concatenating the names of the two fields if no label is provided. */}
             <label>{props.Label == null ? (props.Field1 + ' ' + props.Field2) : props.Label}</label>
             <div className="input-group">
+                {/* First input field */}
                 <input
                     type={props.Type === undefined ? 'text' : props.Type}
                     className={props.Valid(props.Field1) ? 'form-control' : 'form-control is-invalid'}
@@ -47,6 +96,8 @@ export default function DoubleInput<T>(props: {
                     value={props.Record[props.Field1] == null ? '' : (props.Record[props.Field1] as any).toString()}
                     disabled={props.Disabled == null ? false : props.Disabled}
                 />
+
+                {/* Second input field */}
                 <input
                     type={props.Type === undefined ? 'text' : props.Type}
                     className={props.Valid(props.Field2) ? 'form-control' : 'form-control is-invalid'}
@@ -57,6 +108,8 @@ export default function DoubleInput<T>(props: {
                     disabled={props.Disabled == null ? false : props.Disabled}
                 />
             </div>
+
+            {/* Feedback message for validation errors. */}
             <div className="invalid-feedback">
                 {props.Feedback == null ? (props.Field1 + ' ' + props.Field2 + ' is a required field.') : props.Feedback}
             </div>

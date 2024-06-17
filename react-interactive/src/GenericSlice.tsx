@@ -29,10 +29,44 @@ import { WritableDraft } from 'immer/dist/types/types-external'
 import GenericController from './GenericController';
 
 interface IOptions<T extends U> {
-    ActionDependencies? : (state: IState<T>, action: string , arg: any) => void,
-    ActionPendingDependencies? : (state: IState<T>, action: string , arg: any, requestID: string) => void,
-    ActionErrorDependencies? : (state: IState<T>, action: string , arg: any, requestID: string) => void,
-    ActionFullfilledDependencies? : (state: IState<T>, action: string , arg: any, requestID: string) => void,
+    /**
+    * Optional function triggered on specific action dependencies.
+    * @param state - The current state of type IState<T>.
+    * @param action - The action triggering the dependency.     
+    * @param arg - Additional argument for the dependency.
+    */
+    ActionDependencies?: (state: IState<T>, action: string, arg: any) => void,
+
+    /**
+    * Optional function triggered on pending action dependencies.
+    * @param state - The current state of type IState<T>.
+    * @param action - The action triggering the dependency.
+    * @param arg - Additional argument for the dependency.
+    * @param requestID - The ID associated with the request.
+    * */
+    ActionPendingDependencies?: (state: IState<T>, action: string, arg: any, requestID: string) => void,
+
+    /**
+    * Optional function triggered on action error dependencies.
+    * @param state - The current state of type IState<T>.
+    * @param action - The action triggering the dependency.
+    * @param arg - Additional argument for the dependency.
+    * @param requestID - The ID associated with the request.
+    */
+    ActionErrorDependencies?: (state: IState<T>, action: string, arg: any, requestID: string) => void,
+
+    /**
+    * Optional function triggered on action fulfilled dependencies.
+    * @param state - The current state of type IState<T>.
+    * @param action - The action triggering the dependency.
+    * @param arg - Additional argument for the dependency.
+    * @param requestID - The ID associated with the request.
+    */
+    ActionFullfilledDependencies?: (state: IState<T>, action: string, arg: any, requestID: string) => void,
+
+    /**
+    * Array of additional thunks of type IAdditionalThunk<T>.
+    */
     AddionalThunks?: IAdditionalThunk<T>[]
 }
 
@@ -44,15 +78,20 @@ interface IAdditionalThunk<T extends U> {
     OnPending?: (state: WritableDraft<IState<T>>, requestId: string, args: any|void) => void
 }
 
-
+/**
+* Common properties of an object type U with an ID of type number or string, including error message, verb, and time in string format.
+*/
 interface U { ID: number|string }
 
 interface IError {
-	Message: string,
-	Verb: 'POST' | 'DELETE' | 'PATCH' | 'FETCH' | 'SEARCH' | 'PAGE'
+    Message: string,
+    Verb: 'POST' | 'DELETE' | 'PATCH' | 'FETCH' | 'SEARCH' | 'PAGE'
 	Time: string
 }
 
+/**
+* Represents the state of the application with generic type T extending U.
+*/
 export interface IState<T extends U> {
     Status: Application.Types.Status,
     ActiveFetchID: string[],
@@ -67,6 +106,9 @@ export interface IState<T extends U> {
     Filter: Search.IFilter<T>[]
 }
 
+/**
+ * Interface representing a state with paging capabilities, extending IState<T>.
+ */
 interface IPagedState< T extends U> extends IState<T> {
     PagedStatus: Application.Types.Status,
     ActivePagedID: string[],
@@ -79,6 +121,9 @@ interface IPagedState< T extends U> extends IState<T> {
     PagedFilter:  Search.IFilter<T>[]
 }
 
+/**
+ * A generic class providing functionalities related to a slice of data.
+ */
 export default class GenericSlice<T extends U> {
     Name = "";
     APIPath = "";
