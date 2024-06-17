@@ -400,6 +400,11 @@ function ColumnSelection<T>(props: IColSelectionProps<T>) {
           )}
         </div>
       </div>
+      <div>
+        {props.disableAdd ? (
+          <div className="alert alert-primary mb-0 mt-2">Additional categories disabled due to table size.</div>
+        ) : null}
+      </div>
     </>
   );
 }
