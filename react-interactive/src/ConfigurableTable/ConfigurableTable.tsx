@@ -186,6 +186,11 @@ export default function ConfigurableTable<T>(props: React.PropsWithChildren<IPro
     saveLocal();
   }, [columns]);
 
+  function saveLocal() {
+    if (props.LocalStorageKey === undefined) return;
+    const currentState = localStorage.getItem(props.LocalStorageKey);
+    let currentKeys: string[] = [];
+    if (currentState !== null) currentKeys = currentState.split(',');
   /**
    *
    * @returns
