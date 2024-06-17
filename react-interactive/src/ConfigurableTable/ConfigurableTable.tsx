@@ -144,8 +144,8 @@ interface IColDesc {
   Key: string;
 }
 /**
- * Table with modal to show and hide columns
- */
+* Table with modal to show and hide columns
+*/
 export default function ConfigurableTable<T>(props: React.PropsWithChildren<IProps<T>>) {
   const getKeyMappings: () => Map<string, IColDesc> = () => {
     const u = new Map<string, IColDesc>();
