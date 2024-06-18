@@ -64,7 +64,7 @@ export default function Column<T>(props: React.PropsWithChildren<IColumnProps<T>
 
 export interface IHeaderWrapperProps {
     setWidth: (w: number) => void,
-    onSort: ( event: any) => void,
+    onSort: React.MouseEventHandler<HTMLTableCellElement>,
     sorted: boolean,
     asc: boolean,
     style: React.CSSProperties,
