@@ -43,20 +43,20 @@ interface TableProps<T> {
    * @returns
    */
   OnClick?: (
-    data: { colKey: string; colField?: keyof T; row: T; data: T[keyof T] | null; index: number },
+    data: { colKey?: string; colField?: keyof T; row: T; data: T[keyof T] | null; index: number },
     event: any,
   ) => void;
   /**
-   * Key of the column to sort by
+   * Key of the collumn to sort by
    */
   SortKey: string;
   /**
-   * Boolean to indicate whether the sort is ascending or descending
+   * Boolen to indicate whether the sort is ascending or descending
    */
   Ascending: boolean;
   /**
    * Callback when the data should be sorted
-   * @param data the information of the column including the Key of the column
+   * @param data the information of the collumn including the Key of the collumn
    * @param event The onCLick event to allow Propagation as needed
    */
   OnSort(data: { colKey: string; colField?: keyof T; ascending: boolean }, event: any): void;
@@ -97,7 +97,7 @@ interface TableProps<T> {
    * @returns
    */
   OnDragStart?: (
-    data: { colKey: string; colField?: keyof T; row: T; data: T[keyof T] | null; index: number },
+    data: { colKey?: string; colField?: keyof T; row: T; data: T[keyof T] | null; index: number },
     e: any,
   ) => void;
   /**
@@ -333,7 +333,6 @@ export default function ConfigurableTable<T>(props: React.PropsWithChildren<IPro
     </>
   );
 }
-
 interface IColSelectionProps<T> {
   requiredColumns?: string[];
   columns: IColDesc[];
