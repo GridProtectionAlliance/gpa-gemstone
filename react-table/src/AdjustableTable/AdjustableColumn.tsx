@@ -35,7 +35,7 @@ export default function AdjustableColumn<T>(props: React.PropsWithChildren<IColu
 
 interface IAdjustableHeaderWrapperProps extends IHeaderWrapperProps {
     adjustment: number,
-    startAdjustment: (e: any) => void,
+    startAdjustment: React.MouseEventHandler<HTMLDivElement>,
     setMinWidth: (w: number) => void,
     minWidth?: number,
     setMaxWidth: (w: number) => void,
