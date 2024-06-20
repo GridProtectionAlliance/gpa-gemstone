@@ -23,6 +23,7 @@ import moment from 'moment';
 
 /**
  * Description
+ * update timefilter
  */
 export interface ITimeFilter {
     centerTime: string,
@@ -36,6 +37,12 @@ export interface ITimeFilter {
 export type TimeUnit = 'y'|'M'|'w'|'d'|'h'|'m'|'s'|'ms'
 export const units = ['ms','s','m','h','d','w','M','y'] as TimeUnit[]
 
+export const momentDateFormat = "MM/DD/YYYY";
+export const momentTimeFormat = "HH:mm:ss.SSS"; // Also is the gemstone format
+
+/*
+* A Function to determine the most appropriate unit for a window of time specified by start and end time
+*/
 export function findAppropriateUnit(startTime: moment.Moment, endTime: moment.Moment, unit?: TimeUnit, useHalfWindow?: boolean) {
 
     let unitIndex = units.findIndex(u => u == unit);
@@ -72,6 +79,9 @@ export function findAppropriateUnit(startTime: moment.Moment, endTime: moment.Mo
     return [0, Math.round(diff)];
 }
 
+/*
+* This Function determines a start time and end time for a window given by center time and duration
+*/
 export function getStartEndTime(center: moment.Moment, duration: number, unit: TimeUnit): [moment.Moment, moment.Moment] {
     const d = moment.duration(duration, unit);
     const start = center.clone().subtract(d.asHours(), 'h');
@@ -79,6 +89,9 @@ export function getStartEndTime(center: moment.Moment, duration: number, unit: T
     return [start, end]
 }
 
+/*
+* This Function returns a formatted version of date and time provided
+*/
 export function getMoment(date: string, time?: string) {
     if (time === undefined)
         return moment(date, 'MM/DD/YYYY HH:mm:ss.SSS');
@@ -86,6 +99,9 @@ export function getMoment(date: string, time?: string) {
 }
 
 
+/*
+* This Function returns a unit string based on unit char input
+*/
 export function readableUnit(unit: TimeUnit) {
     if (unit == 'y') {
         return 'Year(s)';
