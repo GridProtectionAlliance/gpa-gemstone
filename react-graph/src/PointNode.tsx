@@ -1,4 +1,4 @@
-// ******************************************************************************************************
+﻿// ******************************************************************************************************
 //  PointNode.tsx - Gbtc
 //
 //  Copyright © 2020, Grid Protection Alliance.  All Rights Reserved.
@@ -226,5 +226,10 @@ export class PointNode {
             return this.children[childIndex].PointBinarySearch(tVal, pointsRetrieved, lowerNeighbor, upperNeighbor);
         }
         else throw new RangeError(`Both children and points are null for PointNode, unabled to find point with time value of ${tVal}`);
+    }
+
+    public AggregateData = (tStart: number, tEnd: number, numPoints: number): [...number[]] => {
+        const center = ( tStart + tEnd ) / 2;
+        return this.GetPoint(center);
     }
 }
