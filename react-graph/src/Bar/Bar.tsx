@@ -163,6 +163,7 @@ export const ContexlessBar = (props: IContextlessProps) => {
             return;
         }
         setVisibleData(data.GetData(props.Context.XDomain[0], props.Context.XDomain[1], true));
+        //setVisibleData([data.AggregateData(props.Context.XDomain[0], props.Context.XDomain[1], 100)]);
     }, [data, props.Context.XDomain[0], props.Context.XDomain[1]])
 
     React.useEffect(() => {
@@ -176,16 +177,15 @@ export const ContexlessBar = (props: IContextlessProps) => {
 
         // Calculate intervals between points for bar width
         const intervals = [];
-        for (let i = 0; i < visibleData.length - 1; i++) {
-            const currentX = props.Context.XTransformation(visibleData[i][0]);
-            const nextX = props.Context.XTransformation(visibleData[i + 1][0]);
-            intervals.push(nextX - currentX);
-        }
-        
-        if (visibleData.length > 1)
-            intervals.push(intervals[intervals.length - 1]);
-        else
+        if(visibleData.length === 1)
             intervals.push(50); // if one bar just use 50 for now..
+        else{
+            for (let i = 0; i < visibleData.length - 1; i++) {
+                const currentX = props.Context.XTransformation(visibleData[i][0]);
+                const nextX = props.Context.XTransformation(visibleData[i + 1][0]);
+                intervals.push(nextX - currentX);
+            }
+        }
 
         // Determine the bar width as the smallest interval
         let barWidth = Math.min(...intervals);
