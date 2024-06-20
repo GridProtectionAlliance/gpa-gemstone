@@ -1,4 +1,4 @@
-﻿// ******************************************************************************************************
+// ******************************************************************************************************
 //  Plot.tsx - Gbtc
 //
 //  Copyright © 2020, Grid Protection Alliance.  All Rights Reserved.
@@ -35,7 +35,7 @@ import Legend from './Legend';
 import LineWithThreshold from './LineWithThreshold';
 import Line from './Line';
 import Button from './Button';
-import Bar from './Bar'
+import Bar from './Bar/Bar';
 import HorizontalMarker from './HorizontalMarker';
 import VerticalMarker from './VerticalMarker';
 import SymbolicMarker from './SymbolicMarker';
