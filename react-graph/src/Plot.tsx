@@ -1,4 +1,4 @@
-// ******************************************************************************************************
+﻿// ******************************************************************************************************
 //  Plot.tsx - Gbtc
 //
 //  Copyright © 2020, Grid Protection Alliance.  All Rights Reserved.
@@ -679,7 +679,8 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
         }
         applyToYDomain(zoomYAxis);
       }
-      setMousePosition([ptTransform.x, ptTransform.y]);
+      if(!_.isEqual(mousePosition, [ptTransform.x, ptTransform.y]))
+        setMousePosition([ptTransform.x, ptTransform.y]);
       // Here on mouse is snapped (if neccessary)
       let ptFinal: {x: number, y: number};
       if (props.snapMouse ?? false) ptFinal = snapMouseToClosestSeries(ptTransform);
@@ -715,8 +716,8 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
             xInvTransform(ptFinal.x),
             [...AxisMap.values()].map(axis => yInvTransform(ptFinal.y, axis)),
             {
-            setTDomain: updateXDomain as React.SetStateAction<[number,number]>, 
-            setYDomain: updateYDomain as React.SetStateAction<[number,number][]>
+              setTDomain: updateXDomain as React.SetStateAction<[number,number]>, 
+              setYDomain: updateYDomain as React.SetStateAction<[number,number][]>
             });
         if (handlers.current.size > 0 && selectedMode === 'select')
           handlers.current.forEach((v) => (v.onClick !== undefined? v.onClick(xInvTransform(v.allowSnapping ? ptFinal.x : ptTransform.x), yInvTransform(v.allowSnapping ? ptFinal.y : ptTransform.y, v.axis)) : null));
