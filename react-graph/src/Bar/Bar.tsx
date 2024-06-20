@@ -133,7 +133,7 @@ export const ContexlessBar = (props: IContextlessProps) => {
         try {
             const point = data.GetPoint(props.Context.XHover);
             if (point != null)
-                props.BarProps.OnHover(point[0], props.Context.XTransformation(point[0]), props.Context.YTransformation(props.Context.YHover[0], props.BarProps.Axis as any))
+                props.BarProps.OnHover(point[0], props.Context.XTransformation(point[0]), props.Context.YTransformation(props.Context.YHover[0], props.BarProps.Axis as AxisIdentifier))
 
         } catch {
             props.BarProps.OnHover(NaN, NaN, NaN)
@@ -181,7 +181,7 @@ export const ContexlessBar = (props: IContextlessProps) => {
             const nextX = props.Context.XTransformation(visibleData[i + 1][0]);
             intervals.push(nextX - currentX);
         }
-
+        
         if (visibleData.length > 1)
             intervals.push(intervals[intervals.length - 1]);
         else
@@ -194,18 +194,23 @@ export const ContexlessBar = (props: IContextlessProps) => {
             barWidth = props.BarProps.MinWidth
         if (props.BarProps.MaxWidth != null && barWidth > props.BarProps.MaxWidth)
             barWidth = props.BarProps.MaxWidth
+        
+        const baseY = props.Context.YTransformation(0, AxisMap.get(props.BarProps.Axis));
 
         return visibleData.map((pt, index) => {
-            //ACCOUNT FOR ENGATIVE Y VALUES
-            const x = props.Context.XTransformation(pt[0]);
-            const baseY = props.Context.YTransformation(0, AxisMap.get(props.BarProps.Axis));
             let height = baseY - props.Context.YTransformation(pt[1], AxisMap.get(props.BarProps.Axis));
-            if (height < 0 || isNaN(height) || height > 9999)
+            if (isNaN(height) || height > 9999)
                 height = 0
 
-            let y = props.Context.GetYPosition == null ? baseY - height : props.Context.GetYPosition(pt[0], height, baseY)
+            const x = props.Context.XTransformation(pt[0]);
+            let y = props.Context.GetYPosition == null ? baseY - height : props.Context.GetYPosition(pt[0], height, baseY, pt[1])
             if (isNaN(y))
                 y = -999
+
+            if(pt[1] < 0 && props.Context != null){
+                height = Math.abs(height)
+                y = baseY
+            }
 
             return (
                 <rect
@@ -225,10 +230,11 @@ export const ContexlessBar = (props: IContextlessProps) => {
 
 
     return (
-        <g>
-            {enabled ? generateBars() : null}
-        </g>
+        <>
+            {enabled ? <g>{generateBars()}</g> : null}
+        </>
     );
+    
 }
 
 /**

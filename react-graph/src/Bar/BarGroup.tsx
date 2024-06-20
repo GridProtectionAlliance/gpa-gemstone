@@ -26,23 +26,32 @@ import Bar, { ContexlessBar } from './Bar';
 import { IGraphContext, GraphContext } from '../GraphContext';
 
 export interface IBarContext extends IGraphContext {
-    GetYPosition?: (timeValue: number, barHeight: number, baseY: number) => number
+    GetYPosition?: (timeValue: number, barHeight: number, baseY: number, yValue: number) => number
 }
 
 /**
     Wraps bar components to vertically stacks bars with matching time values. 
 */
 const BarGroup: React.FC = (props) => {
-    const barHeightsRef = React.useRef<Map<number, number>>(new Map());
+    const barHeightsRef = React.useRef<Map<number, {positive: number, negative: number}>>(new Map());
     const context = React.useContext(GraphContext);
 
-    const GetYPosition = (timeValue: number, barHeight: number, baseYPosition: number) => {
-        const cumulativeBarHeight = barHeightsRef.current.get(timeValue) ?? 0;
-        const newBarHeight = cumulativeBarHeight + barHeight;
-        barHeightsRef.current.set(timeValue, newBarHeight);
-        return baseYPosition - newBarHeight;
-    };
+    const GetYPosition = (timeValue: number, barHeight: number, baseYPosition: number, yValue: number) => {
+        const barHeights = barHeightsRef.current.get(timeValue) ?? {positive: 0, negative: 0};
+        let newYPosition;
+        
+        if (yValue >= 0) {
+            newYPosition = baseYPosition - barHeights.positive - barHeight;
+            barHeights.positive += barHeight;
+        } else {
+            newYPosition = baseYPosition + barHeights.negative;
+            barHeights.negative += barHeight;
+        }
 
+        barHeightsRef.current.set(timeValue, barHeights);
+        return newYPosition;
+    };
+    
     const barContext = React.useMemo(() => {
         return {
             ...context,
