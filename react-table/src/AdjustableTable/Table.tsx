@@ -186,7 +186,6 @@ export default function AdjustableTable<T>(props: React.PropsWithChildren<TableP
             t = t + v.maxColWidth;
         });
         
-        if (colCountRef.current !== null) clearTimeout(colCountRef.current);
         if (t > currentTableWidth - 17 && currentTableWidth > 0) {
             const hideKeys: string[] = [];
             const showKeys: string[] = [];
@@ -196,11 +195,15 @@ export default function AdjustableTable<T>(props: React.PropsWithChildren<TableP
                 if (t < currentTableWidth - 17) showKeys.push(k);
                 else hideKeys.push(k);
             });
+            if (Array.from(autoWidth.current.values()).filter(autoWidth => !autoWidth.enabled).length == hideKeys.length) {
+                return;
+            }
+            if (colCountRef.current !== null) clearTimeout(colCountRef.current);
             colCountRef.current = setTimeout(() => {
                 hideKeys.forEach((k) => (autoWidth.current.get(k)!.enabled = false));
                 showKeys.forEach((k) => (autoWidth.current.get(k)!.enabled = true));
-                setAutoWidthVersion((v) => v + 1);
                 props.ReduceWidthCallback!(hideKeys);
+                setAutoWidthVersion((v) => v + 1);
             }, 500);
         } else if (currentTableWidth > 0) {
             props.ReduceWidthCallback!([]);
@@ -209,21 +212,24 @@ export default function AdjustableTable<T>(props: React.PropsWithChildren<TableP
     
     React.useEffect(() => {
         // if there are keys in the map not present in children, map is old
-        let oldMap = false;
-        React.Children.forEach(props.children, (element) => {
-            if (!React.isValidElement(element)) return;
-            if (
-                (element as React.ReactElement<any>).type === Column ||
-                (element as React.ReactElement<any>).type === AdjustableColumn
-            ) {
-                autoWidth.current.forEach((value, key) => {
-                    oldMap = element.props.Key !== key ? true : false;
-                });
-            }
+        const children = React.Children.toArray(props.children);
+        const childKeys: string[] = [];
+        const mapKeys = autoWidth.current.keys();
+
+        children.forEach(child => {
+            if (!React.isValidElement(child)) return;
+            if ((child as React.ReactElement<any>).type === Column ||
+                (child as React.ReactElement<any>).type === AdjustableColumn)
+                childKeys.push(child.props.Key);
         });
-        if (oldMap) {
-            autoWidth.current.clear();
-            setAutoWidthVersion(0);
+        for (const key of mapKeys) {
+            if (childKeys.includes(key)) {
+                continue;
+            } else {
+                autoWidth.current.clear();
+                setAutoWidthVersion(0);
+                break;
+            }
         }
     }, [props.children]);
     
