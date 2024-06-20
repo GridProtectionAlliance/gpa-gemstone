@@ -228,6 +228,14 @@ export class PointNode {
         else throw new RangeError(`Both children and points are null for PointNode, unabled to find point with time value of ${tVal}`);
     }
 
+     /**
+     * Returns the size of the Tree below this PointNode
+     */
+    public GetTreeSize(): number {
+        if (this.children == null) return 1;
+        return 1 + this.children[0].GetTreeSize();
+    }
+
     public AggregateData = (tStart: number, tEnd: number, numPoints: number): [...number[]] => {
         const center = ( tStart + tEnd ) / 2;
         return this.GetPoint(center);
