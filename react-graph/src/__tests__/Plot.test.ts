@@ -105,3 +105,24 @@ test('Node Get Point for 40 Pts', () => {
   expect(dat[0]).toBe(33);
   expect(dat[1]).toBe(33*1.5);
 });
+
+test('Fundamental Tree size', () => {
+  const d: [number,number][] = [... new Array(20)].map((_,i) => [i,1.5*i] as [number,number]);
+  const node = new PointNode(d);
+  const n = node.GetTreeSize();
+  expect(n).toBe(1);
+});
+
+test('Low number of points Tree size', () => {
+  const d: [number,number][] = [... new Array(45)].map((_,i) => [i,1.5*i] as [number,number]);
+  const node = new PointNode(d);
+  const n = node.GetTreeSize();
+  expect(n).toBe(2);
+});
+
+test('Large number of points Tree size', () => {
+  const d: [number,number][] = [... new Array(9000)].map((_,i) => [i,1.5*i] as [number,number]);
+  const node = new PointNode(d);
+  const n = node.GetTreeSize();
+  expect(n).toBe(4);
+});
