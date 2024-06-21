@@ -32,7 +32,8 @@ export class PointNode {
     maxT: number;
     minV: number[];
     maxV: number[];
-    avgV: number[];
+    sum: number[];
+    count: number;
     // Count of all dimensions (including time)
     dim: number;
 
@@ -46,7 +47,8 @@ export class PointNode {
         // The maximum time stamp that might fit in this bucket
         this.maxT = data[data.length - 1][0];
         // Intializing other vars
-        this.avgV = Array(this.dim-1).fill(0);
+        this.sum = Array(this.dim-1).fill(0);
+        this.count = 0;
         this.minV = Array(this.dim-1).fill(0);
         this.maxV = Array(this.dim-1).fill(0);
         this.children = null;
@@ -60,12 +62,13 @@ export class PointNode {
                 const values = data.filter(pt => !isNaN(pt[index])).map(pt => pt[index]);
                 this.minV[index - 1] = Math.min(...values);
                 this.maxV[index - 1] = Math.max(...values);
-                this.avgV[index - 1] = values.reduce((sum, val) => sum + val, 0) / values.length;
+                this.sum[index - 1] = values.reduce((sum, val) => sum + val, 0);
             }
+            this.count = data.length;
             return;
         }
 
-        const nLevel = Math.floor((Math.log((data.length) / Math.log(MaxPoints)))) -1;
+        const nLevel = Math.floor((Math.log((data.length) / Math.log(MaxPoints)))) - 1;
         const blockSize = nLevel * MaxPoints;
 
         let index = 0;
@@ -78,8 +81,9 @@ export class PointNode {
         for (let index = 0; index < this.dim-1; index++){
             this.minV[index] = Math.min(...this.children.map(node => node.minV[index]));
             this.maxV[index] = Math.max(...this.children.map(node => node.maxV[index]));
-            this.avgV[index] = Math.max(...this.children.map(node => node.avgV[index]));
+            this.sum[index] = this.children.reduce((s,node) => s + node.sum[index], 0);
         }
+        this.count = this.children.reduce((s,node) => s + node.count, 0);
     }
 
     public GetData(Tstart: number, Tend: number, IncludeEdges?: boolean): [...number[]][] {
