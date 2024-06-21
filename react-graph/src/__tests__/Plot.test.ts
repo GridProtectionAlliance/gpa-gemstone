@@ -126,3 +126,19 @@ test('Large number of points Tree size', () => {
   const n = node.GetTreeSize();
   expect(n).toBe(4);
 });
+
+test('Limits for given Timeframe', () => {
+  const d: [number,number][] = [[0,1],[1,2],[2,1],[3,3]];
+  const node = new PointNode(d);
+  const lim = node.GetLimits(0.5,2.5);
+  expect(lim[0]).toBe(1);
+  expect(lim[1]).toBe(2);
+});
+
+test('Limits for entire Timeframe', () => {
+  const d: [number,number][] = [[0,1],[1,2],[2,1],[3,3]];
+  const node = new PointNode(d);
+  const lim = node.GetLimits(-1,4);
+  expect(lim[0]).toBe(1);
+  expect(lim[1]).toBe(3);
+});
