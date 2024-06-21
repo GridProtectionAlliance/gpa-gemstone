@@ -173,7 +173,7 @@ export const ContexlessBar = (props: IContextlessProps) => {
     }, []);
 
     const generateBars = () => {
-        if (!visibleData || visibleData.length === 0) return null;
+        if (visibleData == null || visibleData.length === 0) return null;
 
         // Calculate intervals between points for bar width
         const intervals = [];
