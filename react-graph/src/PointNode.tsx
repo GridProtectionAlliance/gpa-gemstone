@@ -38,9 +38,9 @@ export class PointNode {
     dim: number;
 
     private children: PointNode[] | null;
-    private points: [...number[]][] | null;
+    private points: number[][] | null;
 
-    constructor(data: [...number[]][]) {
+    constructor(data: number[][]) {
         this.dim = data[0].length;
         // That minimum time stamp that fits in this bucket
         this.minT = data[0][0];
@@ -104,7 +104,7 @@ export class PointNode {
     }
 
 
-    public GetFullData(): [...number[]][] {
+    public GetFullData(): number[][] {
       return this.GetData(this.minT,this.maxT);
     }
 
@@ -154,7 +154,7 @@ export class PointNode {
      * Retrieves a point from the PointNode tree
      * @param {number} tVal - The time value of the point to retrieve from the tree.
      */
-    public GetPoint(tVal: number): [...number[]] {
+    public GetPoint(tVal: number): number[] {
         return this.PointBinarySearch(tVal, 1)[0];
     }
 
@@ -167,7 +167,7 @@ export class PointNode {
         return this.PointBinarySearch(tVal, pointsRetrieved);
     }
 
-    private PointBinarySearch(tVal: number, pointsRetrieved = 1, bucketLowerNeighbor?: PointNode, bucketUpperNeighbor?: PointNode): [...number[]][] {
+    private PointBinarySearch(tVal: number, pointsRetrieved = 1, bucketLowerNeighbor?: PointNode, bucketUpperNeighbor?: PointNode): number[][] {
         if (pointsRetrieved <= 0) throw new RangeError(`Requested number of points must be positive value.`);
         // round tVal back to whole integer 
 
@@ -251,7 +251,7 @@ export class PointNode {
      */
     public GetTreeSize(): number {
         if (this.children == null) return 1;
-        return 1 + this.children[0].GetTreeSize();
+        return 1 + Math.max(...this.children.map((node) => node.GetTreeSize()));
     }
 
     /**
@@ -262,8 +262,11 @@ export class PointNode {
      * @returns 
      */
     /* Note that this is broken left and right edge for now*/
-    public AggregateData = (Tstart: number, Tend: number, numPoints: number): [...number[]] => {
+    public AggregateData = (Tstart: number, Tend: number, numPoints: number, dimension?: number): number[][] => {
+        if (this.points != null && Tstart <= this.minT && Tend >= this.maxT && numPoints >= this.points.length)
+            return this.points;
+
         const center = ( Tstart + Tend ) / 2;
-        return this.GetPoint(center);
+        return [this.GetPoint(center)];
     }
 }
