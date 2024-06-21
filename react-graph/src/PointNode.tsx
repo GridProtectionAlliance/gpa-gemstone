@@ -65,7 +65,7 @@ export class PointNode {
             return;
         }
 
-        const nLevel = Math.floor(Math.pow(data.length, 1 / MaxPoints));
+        const nLevel = Math.floor((Math.log((data.length) / Math.log(MaxPoints)))) -1;
         const blockSize = nLevel * MaxPoints;
 
         let index = 0;
@@ -257,7 +257,7 @@ export class PointNode {
      * @param numPoints The approximate number of points requested
      * @returns 
      */
-    /* Note that this is broken for Log axis for the time being */
+    /* Note that this is broken left and right edge for now*/
     public AggregateData = (Tstart: number, Tend: number, numPoints: number): [...number[]] => {
         const center = ( Tstart + Tend ) / 2;
         return this.GetPoint(center);
