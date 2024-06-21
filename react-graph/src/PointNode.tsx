@@ -99,10 +99,17 @@ export class PointNode {
             ).map(node => node.GetData(Tstart, Tend, IncludeEdges)));
     }
 
+
     public GetFullData(): [...number[]][] {
       return this.GetData(this.minT,this.maxT);
     }
 
+    /**
+     * Get Limits for all dimensions
+     * @param Tstart start time of the timerange to be looked at
+     * @param Tend end time of the timerange to be looked at
+     * @returns The min and max value of the data in the given timerange
+     */
     public GetAllLimits(Tstart: number, Tend: number): [number,number][] {
         const result: [number, number][] = Array(this.dim-1); 
         for(let index = 0; index < this.dim-1; index++)
@@ -110,6 +117,13 @@ export class PointNode {
         return result;
     }
 
+    /**
+     * Retrieves the limits of the data in the given timerange
+     * @param Tstart start time of the timerange to be looked at
+     * @param Tend end time of the timerange to be looked at
+     * @param dimension dimension of the data to be retrieved (x,y,z) to get y use 0
+     * @returns The min and max value of the data in the given timerange
+     */
     // Note: Dimension indexing does not include time, I.E. in (x,y), y would be dimension 0;
     public GetLimits(Tstart: number, Tend: number, dimension?: number): [number,number] {
       const currentIndex = dimension ?? 0;
@@ -236,8 +250,16 @@ export class PointNode {
         return 1 + this.children[0].GetTreeSize();
     }
 
-    public AggregateData = (tStart: number, tEnd: number, numPoints: number): [...number[]] => {
-        const center = ( tStart + tEnd ) / 2;
+    /**
+     * Returns an aggregates data set for the given timerange
+     * @param Tstart start time of the timerange to be looked at
+     * @param Tend end time of the timerange to be looked at
+     * @param numPoints The approximate number of points requested
+     * @returns 
+     */
+    /* Note that this is broken for Log axis for the time being */
+    public AggregateData = (Tstart: number, Tend: number, numPoints: number): [...number[]] => {
+        const center = ( Tstart + Tend ) / 2;
         return this.GetPoint(center);
     }
 }
