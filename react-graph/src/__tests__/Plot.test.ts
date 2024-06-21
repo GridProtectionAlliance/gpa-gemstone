@@ -142,3 +142,17 @@ test('Limits for entire Timeframe', () => {
   expect(lim[0]).toBe(1);
   expect(lim[1]).toBe(3);
 });
+
+test('Summ of all points', () => {
+  const d: [number,number][] = [... new Array(9000)].map((_,i) => [i,1.5*i] as [number,number]);
+  const node = new PointNode(d);
+  const s = node.sum;
+  expect(s[0]).toBe(d.reduce((a,b) => a+b[1],0));
+});
+
+test('Count of all points', () => {
+  const d: [number,number][] = [... new Array(9000)].map((_,i) => [i,1.5*i] as [number,number]);
+  const node = new PointNode(d);
+  const c = node.count;
+  expect(c).toBe(9000);
+});
