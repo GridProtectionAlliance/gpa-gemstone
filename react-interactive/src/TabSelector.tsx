@@ -96,7 +96,7 @@ const TabSelector = (props: IProps) => {
                 </li>
             )}
             {showExp ?
-                <li className={`nav-item dropdown ${dropDownOpen ? ' show' : ''}`}> 
+                <li className={`nav-item dropdown ${dropDownOpen ? ' show' : ''}`} style={{zIndex: 1040}}> 
                     <a className="nav-link dropdown-toggle" onClick={() => setDropDownOpen(s => !s)} >...</a>
                     <div className={`dropdown-menu dropdown-menu-right ${dropDownOpen? ' show' : ''}`}>
                         {props.Tabs.map((t, i) => i > (nVisible - 1) ?
