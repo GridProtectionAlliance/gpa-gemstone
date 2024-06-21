@@ -100,7 +100,7 @@ const TabSelector = (props: IProps) => {
                     <a className="nav-link dropdown-toggle" onClick={() => setDropDownOpen(s => !s)} >...</a>
                     <div className={`dropdown-menu dropdown-menu-right ${dropDownOpen? ' show' : ''}`}>
                         {props.Tabs.map((t, i) => i > (nVisible - 1) ?
-                            <a className={"dropdown-item" + props.CurrentTab === t.Id ? ' active' : ''} onClick={() => props.SetTab(t.Id)} key={i}>{t.Label}</a> : null)
+                            <a className={`dropdown-item ${props.CurrentTab === t.Id ? ' active' : ''}`} onClick={() => props.SetTab(t.Id)} key={i}>{t.Label}</a> : null)
                         }
                     </div>
                 </li> : null}
