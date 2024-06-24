@@ -56,6 +56,11 @@ function ValueAxis(props: IProps) {
   React.useEffect(() => {
     const axis = AxisMap.get(props.axis);
     const dY = context.YDomain[axis][1] - context.YDomain[axis][0];
+    if (!isFinite(dY) || isNaN(dY)) {
+      setTick([]);
+      return;
+    }
+
     let newTicks;
     if (dY === 0) {
       newTicks = [context.YDomain[axis][0]]
