@@ -51,6 +51,7 @@ const html2canvas: any = _html2canvas;
 export interface IProps {
     defaultTdomain: [number, number],
     defaultYdomain?: [number,number] | [number,number][],
+    defaultMouseMode?: SelectType,
     yDomain?: 'Manual'|'AutoValue'|'HalfAutoValue',
     limitZoom?: boolean
     height: number,
@@ -136,7 +137,8 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
     const [yHasData, setYHasData] = React.useState<boolean[]>(Array(2).fill(0));
 
     const [mouseMode, setMouseMode] = React.useState<'none' | SelectType>('none');
-    const [selectedMode, setSelectedMode] = React.useState<SelectType>('zoom-rectangular');
+    const [selectedMode, setSelectedMode] = React.useState<SelectType>(props.defaultMouseMode ?? 'zoom-rectangular');
+    
     const [mouseIn, setMouseIn] = React.useState<boolean>(false);
     const [mousePosition, setMousePosition] = React.useState<[number, number]>([0, 0]);
     const [mousePositionSnap, setMousePositionSnap] = React.useState<[number, number]>([0, 0]);
