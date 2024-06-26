@@ -18,21 +18,41 @@
 //  ----------------------------------------------------------------------------------------------------
 //  07/11/2023 - C. Lackner
 //       Generated original version of source code.
+//  06/20/2024 - Ali Karrar
+//       Moved TimeWindowUtil from SEBrowser to gemstone
 //******************************************************************************************************
 import moment from 'moment';
 
-/**
- * Description
- * update timefilter
- */
-export interface ITimeFilter {
+export interface ITimeWindow {
     centerTime: string,
     startTime: string,
     endTime: string,
-    timeWindowUnits: number,
+    timeWindowUnits: TimeUnit,
     windowSize: number,
     halfWindowSize: number,
 }
+
+export interface IStartEnd {
+    startTime: string;
+    endTime: string;
+}
+export interface IStartDuration {
+    startTime: string;
+    windowSize: number;
+    timeWindowUnits: TimeUnit;
+}
+export interface IEndDuration {
+    endTime: string,
+    windowSize: number;
+    timeWindowUnits: TimeUnit;
+}
+export interface ICenterDuration {
+    centerTime: string;
+    halfWindowSize: number;
+    timeWindowUnits: TimeUnit;
+}
+
+export type ITimeFilter = IStartEnd | IStartDuration | IEndDuration | ICenterDuration
 
 export type TimeUnit = 'y'|'M'|'w'|'d'|'h'|'m'|'s'|'ms'
 export const units = ['ms','s','m','h','d','w','M','y'] as TimeUnit[]
@@ -40,10 +60,66 @@ export const units = ['ms','s','m','h','d','w','M','y'] as TimeUnit[]
 export const momentDateFormat = "MM/DD/YYYY";
 export const momentTimeFormat = "HH:mm:ss.SSS"; // Also is the gemstone format
 
+
+
+// Takes ITimeFilter as input and returns type
+export const isStartEnd = (filter: ITimeFilter): filter is IStartEnd => 'startTime' in filter && 'endTime' in filter;
+export const isStartDuration = (filter: ITimeFilter): filter is IStartDuration => 'startTime' in filter && 'windowSize' in filter;
+export const isEndDuration = (filter: ITimeFilter): filter is IEndDuration => 'endTime' in filter && 'windowSize' in filter;
+export const isCenterDuration = (filter: ITimeFilter): filter is ICenterDuration => 'centerTime' in filter && 'halfWindowSize' in filter;
+
+
+// Converts ITimeFilter to an ITimeWindow filter
+export function getTimeWindow (flt: ITimeFilter){
+    let center, start, end, unit, window, halfWindow;
+
+    if (isCenterDuration(flt)){
+        center = getMoment(flt.centerTime);
+        [start, end] = getStartEndTime(center, flt.halfWindowSize, flt.timeWindowUnits);        
+        unit = flt.timeWindowUnits;
+        halfWindow = flt.halfWindowSize
+        window = halfWindow * 2;
+    }
+    else if (isStartDuration(flt)){
+        start = getMoment(flt.startTime)
+        const d = moment.duration(flt.windowSize / 2.0, flt.timeWindowUnits);
+        center = start.clone().add(d);
+        end= center.clone().add(d);
+        unit = flt.timeWindowUnits;
+        window = flt.windowSize,
+        halfWindow = window / 2.0;
+    }
+    else if (isEndDuration(flt)){
+        end = getMoment(flt.endTime)
+        const d = moment.duration(flt.windowSize / 2.0, flt.timeWindowUnits);
+        center = end.clone().subtract(d);
+        start = center.clone().subtract(d);
+        unit = flt.timeWindowUnits;
+        window = flt.windowSize,
+        halfWindow = window / 2.0;
+    }
+    else if (isStartEnd(flt)){
+        start = getMoment(flt.startTime)
+        end = getMoment(flt.endTime)
+        const e = end.format(momentDateFormat + ' ' + momentTimeFormat);
+        [unit, halfWindow] = findAppropriateUnit(start, getMoment(e), undefined, true);
+        const d = moment.duration(halfWindow, unit);
+        center = start.clone().add(d);
+        window = halfWindow * 2;
+    }
+
+    return {center: center?.format(momentDateFormat + ' ' + momentTimeFormat) ?? '',
+            start: start?.format(momentDateFormat + ' ' + momentTimeFormat) ?? '',
+            end: end?.format(momentDateFormat + ' ' + momentTimeFormat) ?? '', 
+            unit: unit ?? 'ms', 
+            window: window ?? 0, 
+            halfWindow: halfWindow ?? 0}
+}
+
 /*
 * A Function to determine the most appropriate unit for a window of time specified by start and end time
 */
-export function findAppropriateUnit(startTime: moment.Moment, endTime: moment.Moment, unit?: TimeUnit, useHalfWindow?: boolean) {
+export function findAppropriateUnit(startTime: moment.Moment, endTime: moment.Moment, unit?: TimeUnit, useHalfWindow?: boolean): [TimeUnit, number] {
 
     let unitIndex = units.findIndex(u => u == unit);
     if (unit === undefined) 
@@ -57,7 +133,7 @@ export function findAppropriateUnit(startTime: moment.Moment, endTime: moment.Mo
         if (i == 6) // Remove month as appropriate due to innacuracy in definition (31/30/28/29 days)
             continue;
         if (Number.isInteger(diff)) {
-            return [i, diff];
+            return [units[i], diff];
         }
         let nextI = i - 1;
         if (nextI == 6)
@@ -71,16 +147,16 @@ export function findAppropriateUnit(startTime: moment.Moment, endTime: moment.Mo
             diff = endTime.diff(startTime, units[i], true);
             if (useHalfWindow !== undefined && useHalfWindow)
                 diff = diff / 2;
-            return [i, Math.round(diff)];
+            return [units[i], Math.round(diff)];
         }
             
     }
 
-    return [0, Math.round(diff)];
+    return [units[0], Math.round(diff)];
 }
 
 /*
-* This Function determines a start time and end time for a window given by center time and duration
+* Determines a start time and end time for a window given by center time and duration
 */
 export function getStartEndTime(center: moment.Moment, duration: number, unit: TimeUnit): [moment.Moment, moment.Moment] {
     const d = moment.duration(duration, unit);
@@ -90,7 +166,7 @@ export function getStartEndTime(center: moment.Moment, duration: number, unit: T
 }
 
 /*
-* This Function returns a formatted version of date and time provided
+* Returns a formatted version of date and time provided
 */
 export function getMoment(date: string, time?: string) {
     if (time === undefined)
@@ -100,7 +176,7 @@ export function getMoment(date: string, time?: string) {
 
 
 /*
-* This Function returns a unit string based on unit char input
+* Returns a unit string based on unit char input
 */
 export function readableUnit(unit: TimeUnit) {
     if (unit == 'y') {
