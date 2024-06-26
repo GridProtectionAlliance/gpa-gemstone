@@ -59,53 +59,6 @@ export const isEndDuration = (filter: ITimeFilter): filter is IEndDuration => 'e
 export const isCenterDuration = (filter: ITimeFilter): filter is ICenterDuration => 'center' in filter && 'halfDuration' in filter;
 
 
-// Converts ITimeFilter to an ITimeWindow filter
-export function getTimeWindow (flt: ITimeFilter){
-    let center, start, end, unit, window, halfWindow;
-
-    if (isCenterDuration(flt)){
-        center = getMoment(flt.center);
-        [start, end] = getStartEndTime(center, flt.halfDuration, flt.unit);        
-        unit = flt.unit;
-        halfWindow = flt.halfDuration
-        window = halfWindow * 2;
-    }
-    else if (isStartDuration(flt)){
-        start = getMoment(flt.start)
-        const d = moment.duration(flt.duration / 2.0, flt.unit);
-        center = start.clone().add(d);
-        end= center.clone().add(d);
-        unit = flt.unit;
-        window = flt.duration,
-        halfWindow = window / 2.0;
-    }
-    else if (isEndDuration(flt)){
-        end = getMoment(flt.end)
-        const d = moment.duration(flt.duration / 2.0, flt.unit);
-        center = end.clone().subtract(d);
-        start = center.clone().subtract(d);
-        unit = flt.unit;
-        window = flt.duration,
-        halfWindow = window / 2.0;
-    }
-    else if (isStartEnd(flt)){
-        start = getMoment(flt.start)
-        end = getMoment(flt.end)
-        const e = end.format(momentDateFormat + ' ' + momentTimeFormat);
-        [unit, halfWindow] = findAppropriateUnit(start, getMoment(e), undefined, true);
-        const d = moment.duration(halfWindow, unit);
-        center = start.clone().add(d);
-        window = halfWindow * 2;
-    }
-
-    return {center: center?.format(momentDateFormat + ' ' + momentTimeFormat) ?? '',
-            start: start?.format(momentDateFormat + ' ' + momentTimeFormat) ?? '',
-            end: end?.format(momentDateFormat + ' ' + momentTimeFormat) ?? '', 
-            unit: unit ?? 'ms', 
-            window: window ?? 0, 
-            halfWindow: halfWindow ?? 0}
-}
-
 /*
 * A Function to determine the most appropriate unit for a window of time specified by start and end time
 */
