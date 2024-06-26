@@ -216,7 +216,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             const t = moment.utc().add(offset, 'minutes').startOf('year');
             return {         
                 startTime: t.format('MM/DD/YYYY HH:mm:ss.SSS'),
-                endTime: t.add(365, 'day').format('MM/DD/YYYY HH:mm:ss.SSS')
+                endTime: t.add(365, 'day').endOf('year').format('MM/DD/YYYY HH:mm:ss.SSS')
             }
         }
     },
@@ -226,7 +226,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             const t = moment.utc().add(offset, 'minute').startOf('year').subtract(1, 'year');
             return {         
                 startTime: t.startOf('day').format('MM/DD/YYYY HH:mm:ss.SSS'),
-                endTime: t.add(1, 'year').startOf('year').format('MM/DD/YYYY HH:mm:ss.SSS'),
+                endTime: t.add(1, 'year').startOf('year').format('MM/DD/YYYY HH:mm:ss.SSS')
             }
         }
     },
