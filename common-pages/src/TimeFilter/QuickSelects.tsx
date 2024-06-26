@@ -22,7 +22,7 @@
 //       Moved QuickSelects from TimeFilter to new file
 //******************************************************************************************************
 
-import { ITimeFilter } from '../TimeWindowUtils';
+import { ITimeFilter } from '../TimeFilter';
 import moment from 'moment';
 import momentTZ from 'moment-timezone';
 
@@ -37,9 +37,9 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             const offset = momentTZ.tz(moment.utc().startOf('hour').format('YYYY-MM-DDTHH:mm:ss.SSSSS'), tz).utcOffset();
             const t = moment.utc().add(offset, 'minutes').startOf('hour');
             return {         
-                startTime: t.format('MM/DD/YYYY HH:mm:ss.SSS'),
-                timeWindowUnits: 'm',
-                windowSize: 60,
+                start: t.format('MM/DD/YYYY HH:mm:ss.SSS'),
+                unit: 'm',
+                duration: 60,
             }
         }
     },
@@ -48,9 +48,9 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             const offset = momentTZ.tz(moment.utc().startOf('hour').subtract(1, 'hour').format('YYYY-MM-DDTHH:mm:ss.SSSSS'), tz).utcOffset();
             const t = moment.utc().add(offset, 'minutes').startOf('hour');
             return {         
-                endTime: t.format('MM/DD/YYYY HH:mm:ss.SSS'),
-                timeWindowUnits: 'm',
-                windowSize: 60,
+                end: t.format('MM/DD/YYYY HH:mm:ss.SSS'),
+                unit: 'm',
+                duration: 60,
             }
         }
     },
@@ -60,9 +60,9 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             const t = moment.utc().add(offset, 'minutes').startOf('minute');
 
             return {         
-                endTime: t.format('MM/DD/YYYY HH:mm:ss.SSS'),
-                timeWindowUnits: 'm',
-                windowSize: 60,
+                end: t.format('MM/DD/YYYY HH:mm:ss.SSS'),
+                unit: 'm',
+                duration: 60,
             }
         }
     },
@@ -71,9 +71,9 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             const offset = momentTZ.tz(moment.utc().startOf('day').format('YYYY-MM-DDTHH:mm:ss.SSSSS'), tz).utcOffset();
             const t = moment.utc().add(offset, 'minutes').startOf('day');
             return {         
-                startTime: t.format('MM/DD/YYYY HH:mm:ss.SSS'),
-                timeWindowUnits: 'h',
-                windowSize: 24,
+                start: t.format('MM/DD/YYYY HH:mm:ss.SSS'),
+                unit: 'h',
+                duration: 24,
             }
         }
     },
@@ -82,9 +82,9 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             const offset = momentTZ.tz(moment.utc().startOf('day').subtract(1, 'days').format('YYYY-MM-DDTHH:mm:ss.SSSSS'), tz).utcOffset();
             const t = moment.utc().add(offset, 'minutes').startOf('day');
             return {         
-                endTime: t.format('MM/DD/YYYY HH:mm:ss.SSS'),
-                timeWindowUnits: 'h',
-                windowSize: 24,
+                end: t.format('MM/DD/YYYY HH:mm:ss.SSS'),
+                unit: 'h',
+                duration: 24,
             }
         }
     },
@@ -93,9 +93,9 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             const offset = momentTZ.tz(moment.utc().startOf('hour').subtract(24, 'hours').format('YYYY-MM-DDTHH:mm:ss.SSSSS'), tz).utcOffset();
             const t = moment.utc().add(offset, 'minutes');
             return {         
-                endTime: t.format('MM/DD/YYYY HH:mm:ss.SSS'),
-                timeWindowUnits: 'h',
-                windowSize: 24,
+                end: t.format('MM/DD/YYYY HH:mm:ss.SSS'),
+                unit: 'h',
+                duration: 24,
             }
         }
     },
@@ -104,9 +104,9 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             const offset = momentTZ.tz(moment.utc().startOf('week').format('YYYY-MM-DDTHH:mm:ss.SSSSS'), tz).utcOffset();
             const t = moment.utc().add(offset, 'minutes').startOf('week');
             return {         
-                startTime: t.format('MM/DD/YYYY HH:mm:ss.SSS'),
-                timeWindowUnits: 'h',
-                windowSize: 7 * 24,
+                start: t.format('MM/DD/YYYY HH:mm:ss.SSS'),
+                unit: 'h',
+                duration: 7 * 24,
             }
         }
     },
@@ -115,9 +115,9 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             const offset = momentTZ.tz(moment.utc().startOf('week').format('YYYY-MM-DDTHH:mm:ss.SSSSS'), tz).utcOffset();
             const t = moment.utc().add(offset, 'minutes').startOf('week');
             return {         
-                endTime: t.format('MM/DD/YYYY HH:mm:ss.SSS'),
-                timeWindowUnits: 'h',
-                windowSize: 7 * 24,
+                end: t.format('MM/DD/YYYY HH:mm:ss.SSS'),
+                unit: 'h',
+                duration: 7 * 24,
             }
         }
     },
@@ -126,9 +126,9 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             const offset = momentTZ.tz(moment.utc().startOf('day').format('YYYY-MM-DDTHH:mm:ss.SSSSS'), tz).utcOffset();
             const t = moment.utc().add(offset, 'minutes').startOf('day');
             return {         
-                endTime: t.format('MM/DD/YYYY HH:mm:ss.SSS'),
-                timeWindowUnits: 'h',
-                windowSize: 7 * 24,
+                end: t.format('MM/DD/YYYY HH:mm:ss.SSS'),
+                unit: 'h',
+                duration: 7 * 24,
             }
         }
     },
@@ -138,9 +138,9 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             const t = moment.utc().add(offset, 'minutes').startOf('month');
             const window = (t.daysInMonth() * 24);
             return {         
-                startTime: t.format('MM/DD/YYYY HH:mm:ss.SSS'),
-                timeWindowUnits: 'h',
-                windowSize: window,
+                start: t.format('MM/DD/YYYY HH:mm:ss.SSS'),
+                unit: 'h',
+                duration: window,
             }
         }
     },
@@ -150,9 +150,9 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             const t = moment.utc().add(offset, 'minutes').startOf('month').subtract(1, 'month');
             const window = (t.daysInMonth() * 24);
             return {         
-                startTime: t.format('MM/DD/YYYY HH:mm:ss.SSS'),
-                timeWindowUnits: 'h',
-                windowSize: window,
+                start: t.format('MM/DD/YYYY HH:mm:ss.SSS'),
+                unit: 'h',
+                duration: window,
             }
         }
     },
@@ -161,9 +161,9 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             const offset = momentTZ.tz(moment.utc().startOf('day').format('YYYY-MM-DDTHH:mm:ss.SSSSS'), tz).utcOffset();
             const t = moment.utc().add(offset, 'minutes').startOf('day');
             return {         
-                endTime: t.format('MM/DD/YYYY HH:mm:ss.SSS'),
-                timeWindowUnits: 'd',
-                windowSize: 30,
+                end: t.format('MM/DD/YYYY HH:mm:ss.SSS'),
+                unit: 'd',
+                duration: 30,
             }
         }
     },
@@ -177,9 +177,9 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             const h = moment.duration(tend.diff(t)).asDays();
 
             return {         
-                startTime: t.format('MM/DD/YYYY HH:mm:ss.SSS'),
-                timeWindowUnits: 'd',
-                windowSize: h,
+                start: t.format('MM/DD/YYYY HH:mm:ss.SSS'),
+                unit: 'd',
+                duration: h,
             }
         }
     },
@@ -193,9 +193,9 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             const h = moment.duration(tend.diff(t)).asDays();
 
             return {         
-                startTime: t.format('MM/DD/YYYY HH:mm:ss.SSS'),
-                timeWindowUnits: 'd',
-                windowSize: h,
+                start: t.format('MM/DD/YYYY HH:mm:ss.SSS'),
+                unit: 'd',
+                duration: h,
             }
         }
     },
@@ -204,9 +204,9 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             const offset = momentTZ.tz(moment.utc().startOf('day').subtract(45, 'days').format('YYYY-MM-DDTHH:mm:ss.SSSSS'), tz).utcOffset();
             const t = moment.utc().add(offset, 'minutes').startOf('day');
             return {         
-                endTime: t.format('MM/DD/YYYY HH:mm:ss.SSS'),
-                timeWindowUnits: 'd',
-                windowSize: 90,
+                end: t.format('MM/DD/YYYY HH:mm:ss.SSS'),
+                unit: 'd',
+                duration: 90,
             }
         }
     },
@@ -215,8 +215,8 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             const offset = momentTZ.tz(moment.utc().startOf('year').format('YYYY-MM-DDTHH:mm:ss.SSSSS'), tz).utcOffset();
             const t = moment.utc().add(offset, 'minutes').startOf('year');
             return {         
-                startTime: t.format('MM/DD/YYYY HH:mm:ss.SSS'),
-                endTime: t.add(365, 'day').endOf('year').format('MM/DD/YYYY HH:mm:ss.SSS')
+                start: t.format('MM/DD/YYYY HH:mm:ss.SSS'),
+                end: t.endOf('year').format('MM/DD/YYYY HH:mm:ss.SSS')
             }
         }
     },
@@ -225,8 +225,8 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             const offset = momentTZ.tz(moment.utc().startOf('year').subtract(1, 'year').format('YYYY-MM-DDTHH:mm:ss.SSSSS'), tz).utcOffset();
             const t = moment.utc().add(offset, 'minute').startOf('year').subtract(1, 'year');
             return {         
-                startTime: t.startOf('day').format('MM/DD/YYYY HH:mm:ss.SSS'),
-                endTime: t.add(1, 'year').startOf('year').format('MM/DD/YYYY HH:mm:ss.SSS')
+                start: t.format('MM/DD/YYYY HH:mm:ss.SSS'),
+                end: t.endOf('year').format('MM/DD/YYYY HH:mm:ss.SSS'),
             }
         }
     },
@@ -235,9 +235,9 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             const offset = momentTZ.tz(moment.utc().startOf('day').subtract(182.5, 'days').format('YYYY-MM-DDTHH:mm:ss.SSSSS'), tz).utcOffset();
             const t = moment.utc().add(offset, 'minute').startOf('day');
             return {         
-                endTime: t.format('MM/DD/YYYY HH:mm:ss.SSS'),
-                timeWindowUnits: 'd',
-                windowSize: 365,
+                end: t.format('MM/DD/YYYY HH:mm:ss.SSS'),
+                unit: 'd',
+                duration: 365,
             }
         }
     }

@@ -22,37 +22,28 @@
 //       Moved TimeWindowUtil from SEBrowser to gemstone
 //******************************************************************************************************
 import moment from 'moment';
-
-export interface ITimeWindow {
-    centerTime: string,
-    startTime: string,
-    endTime: string,
-    timeWindowUnits: TimeUnit,
-    windowSize: number,
-    halfWindowSize: number,
-}
+import { ITimeFilter } from './TimeFilter'
 
 export interface IStartEnd {
-    startTime: string;
-    endTime: string;
+    start: string;
+    end: string;
 }
 export interface IStartDuration {
-    startTime: string;
-    windowSize: number;
-    timeWindowUnits: TimeUnit;
+    start: string;
+    duration: number;
+    unit: TimeUnit;
 }
 export interface IEndDuration {
-    endTime: string,
-    windowSize: number;
-    timeWindowUnits: TimeUnit;
+    end: string,
+    duration: number;
+    unit: TimeUnit;
 }
 export interface ICenterDuration {
-    centerTime: string;
-    halfWindowSize: number;
-    timeWindowUnits: TimeUnit;
+    center: string;
+    halfDuration: number;
+    unit: TimeUnit;
 }
 
-export type ITimeFilter = IStartEnd | IStartDuration | IEndDuration | ICenterDuration
 
 export type TimeUnit = 'y'|'M'|'w'|'d'|'h'|'m'|'s'|'ms'
 export const units = ['ms','s','m','h','d','w','M','y'] as TimeUnit[]
@@ -61,12 +52,11 @@ export const momentDateFormat = "MM/DD/YYYY";
 export const momentTimeFormat = "HH:mm:ss.SSS"; // Also is the gemstone format
 
 
-
 // Takes ITimeFilter as input and returns type
-export const isStartEnd = (filter: ITimeFilter): filter is IStartEnd => 'startTime' in filter && 'endTime' in filter;
-export const isStartDuration = (filter: ITimeFilter): filter is IStartDuration => 'startTime' in filter && 'windowSize' in filter;
-export const isEndDuration = (filter: ITimeFilter): filter is IEndDuration => 'endTime' in filter && 'windowSize' in filter;
-export const isCenterDuration = (filter: ITimeFilter): filter is ICenterDuration => 'centerTime' in filter && 'halfWindowSize' in filter;
+export const isStartEnd = (filter: ITimeFilter): filter is IStartEnd => 'start' in filter && 'end' in filter;
+export const isStartDuration = (filter: ITimeFilter): filter is IStartDuration => 'start' in filter && 'duration' in filter;
+export const isEndDuration = (filter: ITimeFilter): filter is IEndDuration => 'end' in filter && 'duration' in filter;
+export const isCenterDuration = (filter: ITimeFilter): filter is ICenterDuration => 'center' in filter && 'halfDuration' in filter;
 
 
 // Converts ITimeFilter to an ITimeWindow filter
@@ -74,33 +64,33 @@ export function getTimeWindow (flt: ITimeFilter){
     let center, start, end, unit, window, halfWindow;
 
     if (isCenterDuration(flt)){
-        center = getMoment(flt.centerTime);
-        [start, end] = getStartEndTime(center, flt.halfWindowSize, flt.timeWindowUnits);        
-        unit = flt.timeWindowUnits;
-        halfWindow = flt.halfWindowSize
+        center = getMoment(flt.center);
+        [start, end] = getStartEndTime(center, flt.halfDuration, flt.unit);        
+        unit = flt.unit;
+        halfWindow = flt.halfDuration
         window = halfWindow * 2;
     }
     else if (isStartDuration(flt)){
-        start = getMoment(flt.startTime)
-        const d = moment.duration(flt.windowSize / 2.0, flt.timeWindowUnits);
+        start = getMoment(flt.start)
+        const d = moment.duration(flt.duration / 2.0, flt.unit);
         center = start.clone().add(d);
         end= center.clone().add(d);
-        unit = flt.timeWindowUnits;
-        window = flt.windowSize,
+        unit = flt.unit;
+        window = flt.duration,
         halfWindow = window / 2.0;
     }
     else if (isEndDuration(flt)){
-        end = getMoment(flt.endTime)
-        const d = moment.duration(flt.windowSize / 2.0, flt.timeWindowUnits);
+        end = getMoment(flt.end)
+        const d = moment.duration(flt.duration / 2.0, flt.unit);
         center = end.clone().subtract(d);
         start = center.clone().subtract(d);
-        unit = flt.timeWindowUnits;
-        window = flt.windowSize,
+        unit = flt.unit;
+        window = flt.duration,
         halfWindow = window / 2.0;
     }
     else if (isStartEnd(flt)){
-        start = getMoment(flt.startTime)
-        end = getMoment(flt.endTime)
+        start = getMoment(flt.start)
+        end = getMoment(flt.end)
         const e = end.format(momentDateFormat + ' ' + momentTimeFormat);
         [unit, halfWindow] = findAppropriateUnit(start, getMoment(e), undefined, true);
         const d = moment.duration(halfWindow, unit);
