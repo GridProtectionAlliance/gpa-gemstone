@@ -31,9 +31,11 @@ import { DefaultSearch } from './SearchBar';
 import SelectPopup from './StandardSelectPopup';
 import {DefaultSelects} from './SelectionPopup';
 import ErrorBoundary from './ErrorBoundary';
+import TimeFilter from './TimeFilter';
 
 export {
   Setting,
+  TimeFilter,
   Note,
   ValueList,
   ByValueList,
