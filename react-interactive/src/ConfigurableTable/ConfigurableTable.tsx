@@ -252,7 +252,6 @@ export default function ConfigurableTable<T>(props: React.PropsWithChildren<IPro
             if (!React.isValidElement(element)) return null;
             if ((element as React.ReactElement<any>).type === ConfigurableColumn)
                 return columns.get(element.props.Key)?.Enabled ?? false ? element.props.children : null;
-            return columns.get(element.props.Key)?.Enabled ?? false ? element.props.children : null;
             return element;
         })}
         </ReactTable.Table>
@@ -405,7 +404,7 @@ export default function ConfigurableTable<T>(props: React.PropsWithChildren<IPro
                 </div>
                 <div>
                 {props.disableAdd ? (
-                    <div className="alert alert-primary mb-0 mt-2">Additional categories disabled due to table size.</div>
+                    <div className="alert alert-primary mb-0 mt-2">Additional columns disabled due to table size.</div>
                 ) : null}
                 </div>
                 </>
