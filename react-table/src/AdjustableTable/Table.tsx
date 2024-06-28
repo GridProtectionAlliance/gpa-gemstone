@@ -165,8 +165,9 @@ export default function AdjustableTable<T>(props: React.PropsWithChildren<TableP
         
         if (element == null) return;
         
-        const observer = new ResizeObserver(() => {
+        const observer = new ResizeObserver((entries) => {
             setTableWidth();
+            console.log('called settbwidth from observer ' + entries.forEach((e) => console.log(e)))
         });
         
         observer.observe(element);
@@ -177,6 +178,7 @@ export default function AdjustableTable<T>(props: React.PropsWithChildren<TableP
     
     React.useEffect(() => {
         autoWidth.current = new Map<string, IAutoWidth>();
+        console.log('CURRENTTABLEWIDTH changed, cleared')
         setAutoWidthVersion(0);
     }, [currentTableWidth]);
     
@@ -227,6 +229,7 @@ export default function AdjustableTable<T>(props: React.PropsWithChildren<TableP
                 continue;
             } else {
                 autoWidth.current.clear();
+                console.log('cleared map CHILDREN changed')
                 setAutoWidthVersion(0);
                 break;
             }
@@ -244,24 +247,29 @@ export default function AdjustableTable<T>(props: React.PropsWithChildren<TableP
     );
     
     const setWidth = React.useCallback((colKey: string, key: string | number, width: number) => {
-        if (!autoWidth.current.has(colKey))
-            autoWidth.current.set(colKey, {
+        if (!autoWidth.current.has(colKey)) {                                     // does the column exist
+            autoWidth.current.set(colKey, {                                       // if not, add it.
             maxColWidth: width,
             width: new Map<string | number, number>([[key, width]]),
             enabled: true,
             adjustement: 0,
-        });
-        else if (!(autoWidth.current.get(colKey)?.width.has(key) ?? false)) {
-            autoWidth.current.get(colKey)?.width.set(key, width);
-            if (width > (autoWidth.current.get(colKey)?.maxColWidth ?? 9e10))
-                autoWidth.current.get(colKey)!.maxColWidth = width;
-        } else if (autoWidth.current.get(colKey)!.width.get(key) == width) {
+            })
+        } else if (!(autoWidth.current.get(colKey)?.width.has(key) ?? false)) {   // it exists but the key does not
+            autoWidth.current.get(colKey)?.width.set(key, width);                 // add the width for this key
+
+            if (width > (autoWidth.current.get(colKey)?.maxColWidth ?? 9e10))     // if width is > to max col
+                autoWidth.current.get(colKey)!.maxColWidth = width;               // set max to width
+
+        } else if (autoWidth.current.get(colKey)!.width.get(key) == width) {      // width doesnt need to update
             return;
+
         } else {
-            autoWidth.current.get(colKey)!.width.set(key, width);
-            if (width == autoWidth.current.get(colKey)?.maxColWidth)
+            autoWidth.current.get(colKey)!.width.set(key, width);                 // otherwise, it exists, just set the width
+
+            if (width == autoWidth.current.get(colKey)?.maxColWidth)              // width == max width, update max from the available widths
                 autoWidth.current.get(colKey)!.maxColWidth = Math.max(...autoWidth.current.get(colKey)!.width.values());
         }
+        
         //cancel ref
         //Add a Timer - runs within 10 ms from when the Timer started to avoid React thinking this is an indinfinte loop....
         if (throtleRef.current !== null) clearTimeout(throtleRef.current);
@@ -271,15 +279,18 @@ export default function AdjustableTable<T>(props: React.PropsWithChildren<TableP
     }, []);
     
     const setAdjustment = React.useCallback((colKey: string, w: number) => {
-        if (!autoWidth.current.has(colKey))
-            autoWidth.current.set(colKey, {
+        if (!autoWidth.current.has(colKey) || autoWidth.current.get(colKey) == undefined) {  // doesnt exist/is undefined
+            autoWidth.current.set(colKey, {                                                  // create it
             maxColWidth: 0,
             width: new Map<string | number, number>(),
             enabled: true,
             adjustement: w,
-        });
-        else autoWidth.current.get(colKey)!.adjustement = autoWidth.current.get(colKey)?.adjustement ?? 0 + w;
-        
+        })
+        } else {
+            const x = autoWidth.current.get(colKey);
+            if (x != undefined)
+                x.adjustement = 0 + w; 
+        }
         //cancel ref
         //Add a Timer - runs within 10 ms from when the Timer started to avoid React thinking this is an indinfinte loop....
         if (throtleRef.current !== null) clearTimeout(throtleRef.current);
@@ -299,8 +310,11 @@ export default function AdjustableTable<T>(props: React.PropsWithChildren<TableP
             minWidth: w,
         });
         else if (autoWidth.current.get(colKey)?.minWidth == w) return;
-        
         autoWidth.current.get(colKey)!.minWidth = w;
+        console.log(`\n
+            w: ${w}\n 
+            autoWidth.current.get(colKey):           ${autoWidth.current.get(colKey)}\n 
+            autoWidth.current.get(colKey)!.minWidth: ${autoWidth.current.get(colKey)!.minWidth}`);
         
         //cancel ref
         //Add a Timer - runs within 10 ms from when the Timer started to avoid React thinking this is an indinfinte loop....
@@ -586,9 +600,9 @@ function Rows<T>(props: React.PropsWithChildren<IRowProps<T>>) {
                     let leftAdjustment = -d;
                     let rightAdjustment = d;
                     
-                    const minLeft = props.AutoWidth.current.get(currentKeys[0])?.minWidth ?? 100;
+                    const minLeft  = props.AutoWidth.current.get(currentKeys[0])?.minWidth ?? 100;
                     const minRight = props.AutoWidth.current.get(currentKeys[1])?.minWidth ?? 100;
-                    const maxLeft = props.AutoWidth.current.get(currentKeys[0])?.maxWidth ?? 9e10;
+                    const maxLeft  = props.AutoWidth.current.get(currentKeys[0])?.maxWidth ?? 9e10;
                     const maxRight = props.AutoWidth.current.get(currentKeys[1])?.maxWidth ?? 9e10;
                     
                     const widthLeft =
