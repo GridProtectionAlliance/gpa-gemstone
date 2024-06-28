@@ -31,8 +31,10 @@ import { DefaultSearch } from './SearchBar';
 import SelectPopup from './StandardSelectPopup';
 import {DefaultSelects} from './SelectionPopup';
 import ErrorBoundary from './ErrorBoundary';
+import EventSearchTypeFilter from './EventSearchTypeFilter';
 
 export {
+  EventSearchTypeFilter,
   Setting,
   Note,
   ValueList,
