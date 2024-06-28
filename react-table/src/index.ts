@@ -28,14 +28,14 @@ import {SelectTable, ISelectTableProps} from './SelectTable';
 import { SearchableTable } from './SearchableTable';
 import { DynamicTableProps, DynamicTable } from './DynamicTable';
 import Paging from './Paging';
-import AdjustableTable from './AdjustableTable/AdjustableTable';
+import AdjustableTable from './AdjustableTable/Table';
 import UpdatedColumn from './AdjustableTable/Column';
-import AdjustableCol from './AdjustableTable/AdjustableColumn';
+import AdjustableColumn from './AdjustableTable/AdjustableColumn';
 
 const ReactTable = {
 	Table: AdjustableTable,
 	Column: UpdatedColumn,
-	AdjustableCol: AdjustableCol,
+	AdjustableColumn: AdjustableColumn,
 }
 
 export {
