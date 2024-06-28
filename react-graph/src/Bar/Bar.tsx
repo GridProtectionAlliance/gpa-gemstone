@@ -31,13 +31,13 @@ import { IBarContext } from './BarGroup';
 interface IProps {
     /**
      * Callback function triggered on mouse position.
-     * @param timeValue - The time value of the hovered bar
+     * @param xValue - The x value of the hovered bar
      * @param xPosition - The x position of the hovered bar
      * @param yPosition - The y position of the hovered bar
      */
-    OnHover?: (timeValue: number, xPosition: number, yPosition: number) => void,
+    OnHover?: (xValue: number, xPosition: number, yPosition: number) => void,
     /**
-     * Array of data points to be represented by bars, each point as a [time, value] tuple.
+     * Array of data points to be represented by bars, each point as a [x, y] tuple.
     */
     Data: [number, number][],
     /**
@@ -92,10 +92,9 @@ export const ContexlessBar = (props: IContextlessProps) => {
         if (props.BarProps.Legend === undefined)
             return undefined;
 
-        let txt = props.BarProps.Legend;
         return <DataLegend
             size='sm'
-            label={txt}
+            label={props.BarProps.Legend}
             color={props.BarProps.Color}
             legendStyle={'bar'}
             setEnabled={setEnabled}
@@ -126,21 +125,22 @@ export const ContexlessBar = (props: IContextlessProps) => {
 
     React.useEffect(() => {
         if (props.BarProps.OnHover == null) return;
-        if (data == null || props.BarProps.Data == null || props.BarProps.Data.length === 0 || isNaN(props.Context.XHover) || props.Context.XHover > data.maxT || props.Context.XHover < data.minT) {
+        const isDataInValid = data == null || props.BarProps.Data == null || props.BarProps.Data.length === 0;
+
+        if (isDataInValid || isNaN(props.Context.XHover) || props.Context.XHover > data.maxT || props.Context.XHover < data.minT) {
             props.BarProps.OnHover(NaN, NaN, NaN)
             return;
         }
+
         try {
             const point = data.GetPoint(props.Context.XHover);
             if (point != null)
-                props.BarProps.OnHover(point[0], props.Context.XTransformation(point[0]), props.Context.YTransformation(props.Context.YHover[0], props.BarProps.Axis as AxisIdentifier))
-
+                props.BarProps.OnHover(point[0], props.Context.XTransformation(props.Context.XHover), props.Context.YTransformation(props.Context.YHover[0], AxisMap.get(props.BarProps.Axis)))
         } catch {
             props.BarProps.OnHover(NaN, NaN, NaN)
         }
 
-    }, [data, props.Context.XHover, props.Context.YHover])
-
+    }, [props.Context.XHover, props.Context.YHover, data])
 
     React.useEffect(() => {
         if (props.BarProps.Data == null || props.BarProps.Data.length === 0)
@@ -148,7 +148,6 @@ export const ContexlessBar = (props: IContextlessProps) => {
         else
             setData(new PointNode(props.BarProps.Data));
     }, [props.BarProps.Data]);
-
 
     React.useEffect(() => {
         if (guid === "")
@@ -172,30 +171,11 @@ export const ContexlessBar = (props: IContextlessProps) => {
         return () => { props.Context.RemoveData(id) }
     }, []);
 
-    const generateBars = () => {
-        if (visibleData == null || visibleData.length === 0) return null;
+    const Bars = React.useMemo(() => {
+        if(visibleData.length === 0) return <></>
 
-        // Calculate intervals between points for bar width
-        const intervals = [];
-        if(visibleData.length === 1)
-            intervals.push(50); // if one bar just use 50 for now..
-        else{
-            for (let i = 0; i < visibleData.length - 1; i++) {
-                const currentX = props.Context.XTransformation(visibleData[i][0]);
-                const nextX = props.Context.XTransformation(visibleData[i + 1][0]);
-                intervals.push(nextX - currentX);
-            }
-        }
-
-        // Determine the bar width as the smallest interval
-        let barWidth = Math.min(...intervals);
-
-        if (props.BarProps.MinWidth != null && barWidth < props.BarProps.MinWidth)
-            barWidth = props.BarProps.MinWidth
-        if (props.BarProps.MaxWidth != null && barWidth > props.BarProps.MaxWidth)
-            barWidth = props.BarProps.MaxWidth
-        
         const baseY = props.Context.YTransformation(0, AxisMap.get(props.BarProps.Axis));
+        const barWidth = getBarWidth(visibleData, props.Context, props.BarProps.MinWidth, props.BarProps.MaxWidth)
 
         return visibleData.map((pt, index) => {
             let height = baseY - props.Context.YTransformation(pt[1], AxisMap.get(props.BarProps.Axis));
@@ -207,7 +187,8 @@ export const ContexlessBar = (props: IContextlessProps) => {
             if (isNaN(y))
                 y = -999
 
-            if(pt[1] < 0 && props.Context != null){
+            //Cover negative values
+            if (pt[1] < 0 && props.Context != null) {
                 height = Math.abs(height)
                 y = baseY
             }
@@ -215,7 +196,7 @@ export const ContexlessBar = (props: IContextlessProps) => {
             return (
                 <rect
                     key={index}
-                    x={x - barWidth / 2}
+                    x={x - barWidth/2}
                     y={y}
                     width={barWidth}
                     height={height}
@@ -226,15 +207,39 @@ export const ContexlessBar = (props: IContextlessProps) => {
                 />
             );
         });
-    };
-
+    }, [visibleData, props.Context.YTransformation, props.Context.XTransformation]);
 
     return (
         <>
-            {enabled ? <g>{generateBars()}</g> : null}
+            {enabled ? <g>{Bars}</g> : null}
         </>
     );
-    
+
+}
+
+//Helper function
+const getBarWidth = (data: [...number[]][], context: IBarContext, minWidth: number | undefined, maxWidth: number | undefined) => {
+       // Calculate intervals between points for bar width
+       const intervals = [];
+       if (data.length === 1 || data.length === 2) {
+           intervals.push(50); // if one bar just use 50 for now..
+       } else {
+           for (let i = 0; i < data.length - 1; i++) {
+               const currentX = context.XTransformation(data[i][0]);
+               const nextX = context.XTransformation(data[i + 1][0]);
+               intervals.push(nextX - currentX);
+           }
+       }
+
+       // Determine the bar width as the smallest interval
+       let calculatedBarWidth = Math.min(...intervals);
+
+       if (minWidth != null && calculatedBarWidth < minWidth)
+           calculatedBarWidth = minWidth
+
+       if (maxWidth != null && calculatedBarWidth > maxWidth)
+           calculatedBarWidth = maxWidth;
+        return calculatedBarWidth;
 }
 
 /**
