@@ -44,7 +44,10 @@ interface IAdjustableHeaderWrapperProps extends IHeaderWrapperProps {
 
 export function AdjustableColumnHeaderWrapper(props: React.PropsWithChildren<IAdjustableHeaderWrapperProps>) {
     const thref = React.useRef(null);
-    const mode = React.useRef<'width' | 'minWidth' | 'maxWidth'>('minWidth');
+    const [mode, setMode] = React.useState<'width' | 'minWidth' | 'maxWidth'>('minWidth');
+    const [width, setWidth] = React.useState<number>();
+    const [minWidth, setMinWidth] = React.useState<number>();
+    const [maxWidth, setMaxWidth] = React.useState<number>();
 
     const [showBorder, setShowBorder] = React.useState(false);
 
@@ -60,15 +63,15 @@ export function AdjustableColumnHeaderWrapper(props: React.PropsWithChildren<IAd
     style.width = style.width ?? props.width;
     style.minWidth = style.minWidth ?? 100;
 
-    if (mode.current === 'minWidth') {
+    if (mode === 'minWidth') {
         style.width = style.minWidth;
     }
 
-    if (mode.current === 'maxWidth') {
+    if (mode === 'maxWidth') {
         style.width = style.maxWidth;
     }
 
-    if (mode.current === 'width' && props.adjustment !== undefined && props.adjustment !== 0 && style.width !== undefined) {
+    if (mode === 'width' && props.adjustment !== undefined && props.adjustment !== 0 && style.width !== undefined) {
         style.width = `calc(${formatwidth(style.width).toString()} ${props.adjustment < 0 ? '-' : '+'} ${Math.abs(props.adjustment).toString()}px)`
     }
 
@@ -77,50 +80,76 @@ export function AdjustableColumnHeaderWrapper(props: React.PropsWithChildren<IAd
     }
 
     React.useLayoutEffect(() => {
-        if (thref.current == null)
-            return;
-        if (props.adjustment !== undefined && props.adjustment !== 0)
-            return;
-        const w = GetNodeSize(thref.current)?.width;
 
+        
+        if (thref.current == null) return;
+        if (mode != 'minWidth') return;
+
+        const w = GetNodeSize(thref.current)?.width;
         if (w === undefined) return;
 
-        if (mode.current == 'width' && w != props.width) {
-            props.setWidth(w);
-            if (props.minWidth === undefined) {
-                mode.current = 'minWidth';
-                return;
-            }
-            if (props.maxWidth === undefined && style.maxWidth !== undefined) {
-                mode.current = 'maxWidth';
-                return;
-            }
+        if (w !== minWidth) {
+            setMinWidth(w);
         }
-        if (mode.current == 'minWidth') {
-            props.setMinWidth(w);
-            if (props.maxWidth === undefined && style.maxWidth !== undefined) {
-                mode.current = 'maxWidth';
-                return;
-            }
-            else {
-                mode.current = 'width';
-                return;
-            }
-                
+
+        if (maxWidth === undefined && style.maxWidth !== undefined) {
+            setMode('maxWidth');
+            
+        } else if (props.width === undefined) {
+            setMode('width');
         }
-        if (mode.current == 'maxWidth') {
-            props.setMaxWidth(w);
-            if (props.minWidth === undefined)
-                mode.current = 'minWidth';
-            else
-                mode.current = 'width';
+        
+    });
+
+    React.useLayoutEffect(() => {
+        if (thref.current == null) return;
+        if (mode != 'maxWidth') return;
+
+        const w = GetNodeSize(thref.current)?.width;
+        if (w === undefined) return;
+
+        if (w !== maxWidth) {
+            setMaxWidth(w);
         }
-    })
+        
+        if (props.width === undefined) {
+            setMode('width');
+        } else if (props.minWidth === undefined && style.minWidth !== undefined) {
+            setMode('minWidth');
+        }
     
+    });
+
+    React.useLayoutEffect(() => {
+        if (thref.current == null) return;
+        if (mode != 'width') return;
+
+        const w = GetNodeSize(thref.current)?.width;
+        if (w === undefined) return;
+
+        if (w !== width) {
+            props.setWidth(w);
+        }
+        if (maxWidth === undefined && style.maxWidth !== undefined) {
+            setMode('maxWidth');
+        } else if (minWidth === undefined && style.minWidth !== undefined) {
+            setMode('minWidth');
+        }
+    });
+
+    React.useEffect(() => { 
+        if (minWidth !== props.minWidth) props.setMinWidth(minWidth as number);
+    }, [minWidth]);
+    React.useEffect(() => { 
+        if (maxWidth !== props.maxWidth) props.setMaxWidth(maxWidth as number);
+    }, [maxWidth]);
+    React.useEffect(() => { 
+        if (width !== props.width) props.setWidth(width as number);
+    }, [width]);
 
     const onClick = React.useCallback((e) => {
         if (props.allowSort ?? true) props.onSort(e);
-    }, [props.onSort, props.allowSort])
+    }, [props.onSort, props.allowSort]);
 
     const onClickBorder = React.useCallback((e) => {
         props.startAdjustment(e);
