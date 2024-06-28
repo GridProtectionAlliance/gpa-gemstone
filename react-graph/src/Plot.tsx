@@ -688,6 +688,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
       let ptFinal: {x: number, y: number};
       if (props.snapMouse ?? false) ptFinal = snapMouseToClosestSeries(ptTransform);
       else ptFinal = ptTransform;
+      if(!_.isEqual(mousePositionSnap, [ptFinal.x, ptFinal.y]))
       setMousePositionSnap([ptFinal.x, ptFinal.y]);
       if (handlers.current.size > 0)
         handlers.current.forEach((v) => (v.onMove !== undefined? v.onMove(xInvTransform(v.allowSnapping ? ptFinal.x : ptTransform.x), yInvTransform(v.allowSnapping ? ptFinal.y : ptTransform.y, v.axis)) : null));
