@@ -45,7 +45,7 @@ interface IProps {
      */
     OnClick?: (xValue: number, yValue: number, xPosition: number, yPosition: number) => void
     /**
-     * make note about how 0 and last index will be useed to determine the height of the line
+     * Data points to be used in the whisker lines. The 0th and last index will determine the height of the whisker line.
     */
     Data: [number, IData[]][],
     /**
@@ -179,7 +179,7 @@ export const WhiskerLine = (props: IProps) => {
             const yVals = dataMap.get(point[0]);
             const yVal = yVals?.filter(y => Math.abs(yTransformation(y.Value) - yTransformation(context.YHover[0])) <= 5)
             if (yVal != null && yVal.length === 1) {
-                props.OnHover(point[0], yVal[0].Value, context.XTransformation(context.XHover), context.YTransformation(context.YHover[0], AxisMap.get(props.Axis)))
+                props.OnHover(point[0], yVal[0].Value, context.XTransformation(context.XHover), yTransformation(context.YHover[0]))
                 return
             }
 
@@ -224,23 +224,18 @@ export const WhiskerLine = (props: IProps) => {
         return () => { context.RemoveData(id) }
     }, []);
 
-    //wrapper for context.YTransformation probably can remove since we dont pass this to any props
-    const yTransformation = (yValue: number) => {
-        return context.YTransformation(yValue, AxisMap.get(props.Axis))
-    }
-
     const Whiskers = React.useMemo(() => {
         if (visibleData.length === 0) return <></>;
 
         return visibleData.map((pt, index) => {
             const x = context.XTransformation(pt[0]);
             const yValues = pt.slice(1).flat();
-            const bottomPoint = context.YTransformation(yValues[0], AxisMap.get(props.Axis));
-            const topPoint = context.YTransformation(yValues[yValues.length - 1], AxisMap.get(props.Axis));
+            const bottomPoint = yTransformation(yValues[0]);
+            const topPoint = yTransformation(yValues[yValues.length - 1]);
             const matchedData = dataMap.get(pt[0]);
 
             const circles = yValues.map((yValue, i) => {
-                const y = context.YTransformation(yValue, AxisMap.get(props.Axis));
+                const y = yTransformation(yValue);
                 const color = matchedData?.find(d => d.Value === yValue)?.Color
                 return (
                     <circle
@@ -269,6 +264,10 @@ export const WhiskerLine = (props: IProps) => {
         });
     }, [visibleData, context.YTransformation, context.XTransformation, props.Axis, props.Color]);
 
+    //wrapper for context.YTransformation
+    const yTransformation = (yValue: number) => {
+        return context.YTransformation(yValue, AxisMap.get(props.Axis))
+    }
 
     return (
         <>
