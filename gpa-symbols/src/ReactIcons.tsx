@@ -228,6 +228,14 @@ export namespace ReactIcons {
             <line x1="12" y1="2" x2="12" y2="15"></line>
         </svg>
 
+    export const ShareArrowDiagonal: React.FC<IProps> = (props) =>
+        <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? 24, height: props.Size ?? 24 }} viewBox="0 0 35 35" fill={props.Color ?? "currentColor"} stroke={props.Color ?? "currentColor"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-share">
+            <path d="M24,22v5a1,1,0,0,1-1,1H5a1,1,0,0,1-1-1V9A1,1,0,0,1,5,8h5a2,2,0,0,0,2-2h0a2,2,0,0,0-2-2H3A3,3,0,0,0,0,7V29a3,3,0,0,0,3,3H25a3,3,0,0,0,3-3V22a2,2,0,0,0-2-2h0A2,2,0,0,0,24,22Z"/>
+            <rect width="16" height="4" rx="2" transform="translate(16 0)" />
+            <rect width="16" height="4" rx="2" transform="translate(32 0) rotate(90)" />
+            <rect width="32.296" height="3.971" transform="translate(7.178 22.014) rotate(-45)" rx="1.986"/>
+        </svg>
+
     export const ShareNetwork: React.FC<IProps> = (props) =>
         <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? 24, height: props.Size ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-share-2">
             <circle cx="18" cy="5" r="3"></circle>
