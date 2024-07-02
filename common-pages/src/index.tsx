@@ -32,12 +32,14 @@ import SelectPopup from './StandardSelectPopup';
 import {DefaultSelects} from './SelectionPopup';
 import ErrorBoundary from './ErrorBoundary';
 import TimeFilter from './TimeFilter';
-import EventTypeFilter from './EventTypeFilter';
+import EventSearchTypeFilter from './EventSearchTypeFilter';
+import EventCharacteristicFilter from './EventCharacteristicFilter';
 
 export {
-  EventTypeFilter,
-  Setting,
   TimeFilter,
+  EventSearchTypeFilter,
+  EventCharacteristicFilter,
+  Setting,
   Note,
   ValueList,
   ByValueList,
