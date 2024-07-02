@@ -31,7 +31,7 @@
   "license": "MIT",
   "bugs": {"url": "https://github.com/GridProtectionAlliance/gpa-gemstone/issues"},
   "homepage": "https://github.com/GridProtectionAlliance/gpa-gemstone#readme",
-  "devDependencies":   {
+  "devDependencies": {
     "@types/jest": "^27.0.0",
     "@types/lodash": "^4.14.171",
     "@types/mocha": "9.0.0",
@@ -42,9 +42,9 @@
     "jest": "^27.0.6",
     "prettier": "^2.3.2",
     "ts-jest": "^27.0.4",
-    "typescript": "4.4.4"
+    "typescript": "5.5.3"
   },
-  "dependencies":   {
+  "dependencies": {
     "@gpa-gemstone/gpa-symbols": "0.0.34",
     "@gpa-gemstone/helper-functions": "0.0.30",
     "html2canvas": "^1.4.1",

@@ -40,7 +40,7 @@
     "eslint": "^8.43.0",
     "jest": "^27.0.6",
     "ts-jest": "^27.0.4",
-    "typescript": "4.4.4"
+    "typescript": "5.5.3"
   },
   "dependencies":   {
     "@babel/preset-typescript": "^7.14.5",
