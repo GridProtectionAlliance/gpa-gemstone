@@ -84,7 +84,7 @@ export default function DoubleInput<T>(props: IProps<T>) {
     return (
         <div className="form-group">
             {/* Label for the input group. Defaults to concatenating the names of the two fields if no label is provided. */}
-            <label>{props.Label == null ? (props.Field1 + ' ' + props.Field2) : props.Label}</label>
+            <label>{props.Label == null ? (props.Field1 as string + ' ' + (props.Field2 as string)) : props.Label}</label>
             <div className="input-group">
                 {/* First input field */}
                 <input
@@ -111,7 +111,7 @@ export default function DoubleInput<T>(props: IProps<T>) {
 
             {/* Feedback message for validation errors. */}
             <div className="invalid-feedback">
-                {props.Feedback == null ? (props.Field1 + ' ' + props.Field2 + ' is a required field.') : props.Feedback}
+                {props.Feedback == null ? (props.Field1 as string + ' ' + (props.Field2 as string) + ' is a required field.') : props.Feedback}
             </div>
         </div>
     );
