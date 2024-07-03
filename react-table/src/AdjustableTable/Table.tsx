@@ -606,9 +606,6 @@ export default function AdjustableTable<T>(props: React.PropsWithChildren<TableP
                         const previousAdjRight = (props.AutoWidth.current.get(currentKeys[1])?.adjustement ?? 0);
                         const widthRight = (maxColWidthRight + previousAdjRight);
 
-                        console.log(`Prev Left: ${currentKeys[0]} ${previousAdjLeft}`)
-                        console.log(`Prev Right: ${currentKeys[1]} ${previousAdjRight}`)
-
                         let leftAdjustment = -d;
                         let rightAdjustment = d;
 
@@ -624,11 +621,8 @@ export default function AdjustableTable<T>(props: React.PropsWithChildren<TableP
 
                         if (Math.abs(leftAdjustment) < Math.abs(rightAdjustment)) rightAdjustment = -leftAdjustment;
                         
-                        console.log(`Left Adj ${currentKeys[0]} ${leftAdjustment}`);
-                        console.log(`Right Adj ${currentKeys[1]} ${rightAdjustment}`);
                         props.SetAdjustment(currentKeys[0], leftAdjustment);
                         props.SetAdjustment(currentKeys[1], rightAdjustment);
-                        console.log(currentKeys.toString());
                     }
 
                     setMouseDown(0);
