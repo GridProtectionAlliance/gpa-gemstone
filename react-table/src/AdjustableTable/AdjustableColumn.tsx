@@ -74,6 +74,7 @@ export function AdjustableColumnHeaderWrapper(props: React.PropsWithChildren<IAd
     if (mode === 'width' && props.adjustment !== undefined && props.adjustment !== 0 && style.width !== undefined) {
         style.width = `calc(${formatwidth(style.width).toString()} ${props.adjustment < 0 ? '-' : '+'} ${Math.abs(props.adjustment).toString()}px)`
     }
+    //console.log(`First Log: ${style.width} ${props.colKey}`)
 
     if (style.cursor === undefined && (props.allowSort ?? true)) {
         style.cursor = 'pointer';
@@ -158,6 +159,7 @@ export function AdjustableColumnHeaderWrapper(props: React.PropsWithChildren<IAd
 
     if (props.width != undefined && !props.enabled)
         return null;
+    //console.log(`Second Log: ${style.width} ${props.colKey}`)
 
     return <th
         ref={thref}
