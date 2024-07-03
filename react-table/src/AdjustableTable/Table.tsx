@@ -288,8 +288,8 @@ export default function AdjustableTable<T>(props: React.PropsWithChildren<TableP
             })
         } else {
             const x = autoWidth.current.get(colKey);
-            if (x != undefined)
-                x.adjustement = 0 + w; 
+            if (x?.adjustement != undefined)
+                x.adjustement += w; 
         }
         //cancel ref
         //Add a Timer - runs within 10 ms from when the Timer started to avoid React thinking this is an indinfinte loop....
@@ -554,7 +554,7 @@ export default function AdjustableTable<T>(props: React.PropsWithChildren<TableP
                     </tbody>
                 );
             }
-            
+
             interface IHeaderProps<T> {
                 Class?: string;
                 Style?: React.CSSProperties;
@@ -573,57 +573,64 @@ export default function AdjustableTable<T>(props: React.PropsWithChildren<TableP
                 SetMaxWidth: (key: string, width: number) => void;
                 SetAdjustment: (key: string, width: number) => void;
             }
-            
+
             function Header<T>(props: React.PropsWithChildren<IHeaderProps<T>>) {
-                const trRef = React.useRef(null);
-                
+                const trRef = React.useRef<HTMLTableRowElement>(null);
+
                 const [mouseDown, setMouseDown] = React.useState<number>(0);
                 const [currentKeys, setCurrentKeys] = React.useState<[string, string] | undefined>(undefined);
                 const [deltaW, setDeltaW] = React.useState<number>(0);
-                
+
                 const calculateAdjustment = (key: string) => {
                     let adj = 0;
                     if (currentKeys !== undefined && currentKeys[0] == key) adj = -deltaW;
                     else if (currentKeys !== undefined && currentKeys[1] == key) adj = deltaW;
-                    
+
                     return (props.AutoWidth.current.get(key)?.adjustement ?? 0) + adj;
                 };
-                
+
                 const finishAdjustment = () => {
                     const d = deltaW;
                     if (currentKeys === undefined) return;
-                    
+
                     if (Math.abs(d) > 5) {
+                        const minWidthLeft   = props.AutoWidth.current.get(currentKeys[0])?.minWidth ?? 100;
+                        const minWidthRight  = props.AutoWidth.current.get(currentKeys[1])?.minWidth ?? 100;
+                        const maxWidthLeft   = props.AutoWidth.current.get(currentKeys[0])?.maxWidth ?? 9e10;
+                        const maxWidthRight  = props.AutoWidth.current.get(currentKeys[1])?.maxWidth ?? 9e10;
+
+                        const maxColWidthLeft = (props.AutoWidth.current.get(currentKeys[0])?.maxColWidth ?? 0);
+                        const previousAdjLeft = (props.AutoWidth.current.get(currentKeys[0])?.adjustement ?? 0);
+                        const widthLeft =  (maxColWidthLeft + previousAdjLeft);
+                        const maxColWidthRight = (props.AutoWidth.current.get(currentKeys[1])?.maxColWidth ?? 0);
+                        const previousAdjRight = (props.AutoWidth.current.get(currentKeys[1])?.adjustement ?? 0);
+                        const widthRight = (maxColWidthRight + previousAdjRight);
+
+                        console.log(`Prev Left: ${currentKeys[0]} ${previousAdjLeft}`)
+                        console.log(`Prev Right: ${currentKeys[1]} ${previousAdjRight}`)
+
                         let leftAdjustment = -d;
                         let rightAdjustment = d;
-                        
-                        const minLeft  = props.AutoWidth.current.get(currentKeys[0])?.minWidth ?? 100;
-                        const minRight = props.AutoWidth.current.get(currentKeys[1])?.minWidth ?? 100;
-                        const maxLeft  = props.AutoWidth.current.get(currentKeys[0])?.maxWidth ?? 9e10;
-                        const maxRight = props.AutoWidth.current.get(currentKeys[1])?.maxWidth ?? 9e10;
-                        
-                        const widthLeft =
-                            props.AutoWidth.current.get(currentKeys[0])?.maxColWidth ??
-                            0 + (props.AutoWidth.current.get(currentKeys[0])?.adjustement ?? 0);
-                        const widthRight =
-                            props.AutoWidth.current.get(currentKeys[1])?.maxColWidth ??
-                            0 + (props.AutoWidth.current.get(currentKeys[1])?.adjustement ?? 0);
-                        
-                        if (minLeft > widthLeft + leftAdjustment) leftAdjustment = minLeft - widthLeft;
-                        
-                        if (minRight > widthRight + rightAdjustment) rightAdjustment = minRight - widthRight;
-                        
-                        if (maxLeft < widthLeft + leftAdjustment) leftAdjustment = maxLeft - widthLeft;
-                        
-                        if (maxRight < widthRight + rightAdjustment) rightAdjustment = maxRight - widthRight;
-                        
+
+                        if (minWidthLeft > widthLeft + leftAdjustment) leftAdjustment = minWidthLeft - widthLeft; // widths become negative
+
+                        if (minWidthRight > widthRight + rightAdjustment) rightAdjustment = minWidthRight - widthRight;
+
+                        if (maxWidthLeft < widthLeft + leftAdjustment) leftAdjustment = maxWidthLeft - widthLeft;
+
+                        if (maxWidthRight < widthRight + rightAdjustment) rightAdjustment = maxWidthRight - widthRight;
+
                         if (Math.abs(leftAdjustment) > Math.abs(rightAdjustment)) leftAdjustment = -rightAdjustment;
-                        
+
                         if (Math.abs(leftAdjustment) < Math.abs(rightAdjustment)) rightAdjustment = -leftAdjustment;
+                        
+                        console.log(`Left Adj ${currentKeys[0]} ${leftAdjustment}`);
+                        console.log(`Right Adj ${currentKeys[1]} ${rightAdjustment}`);
                         props.SetAdjustment(currentKeys[0], leftAdjustment);
                         props.SetAdjustment(currentKeys[1], rightAdjustment);
+                        console.log(currentKeys.toString());
                     }
-                    
+
                     setMouseDown(0);
                     setCurrentKeys(undefined);
                     setDeltaW(0);
@@ -632,11 +639,13 @@ export default function AdjustableTable<T>(props: React.PropsWithChildren<TableP
                 const getLeftKey = React.useCallback (
                     (key: string) => {
                         const keys = React.Children.map(props.children ?? [], (element) => {
-                            if (!React.isValidElement(element)) return null;
+                            if (!React.isValidElement(element)) {
+                                return null;
+                            }
+                            if (!props.ShownKeys.includes((element.props as IColumnProps<T>).Key)) {
+                                return null;
+                            }
                             if ((element as React.ReactElement<any>).type === AdjustableColumn) {
-                                if (!props.ShownKeys.includes((element.props as IColumnProps<T>).Key)) {
-                                    return null;
-                                }
                                 return (element.props as IColumnProps<T>).Key;
                             }
                             return null;
@@ -648,7 +657,7 @@ export default function AdjustableTable<T>(props: React.PropsWithChildren<TableP
                         return keys[index - 1];
                     }, 
                 [props.children],);
-                
+
                 const onMove = React.useCallback (
                     (e: MouseEvent) => {
                         if (currentKeys === undefined) return;
@@ -657,7 +666,7 @@ export default function AdjustableTable<T>(props: React.PropsWithChildren<TableP
                     },
                     [mouseDown, currentKeys],
                 );
-                
+
                 return (
                     <thead
                     className={props.Class}
@@ -751,4 +760,3 @@ export default function AdjustableTable<T>(props: React.PropsWithChildren<TableP
                         </thead>
                     );
                 }
-                
