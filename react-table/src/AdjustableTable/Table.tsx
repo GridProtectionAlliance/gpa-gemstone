@@ -154,7 +154,7 @@ export default function AdjustableTable<T>(props: React.PropsWithChildren<TableP
     const [currentTableWidth, setCurrentTableWidth] = React.useState<number>(0);
 
     const [showKeys, setShowKeys] = React.useState<string[]>([]);
-    
+
     const setTableWidth = React.useCallback(
         _.debounce(() => {
             setCurrentTableWidth(tblref.current?.offsetWidth ?? 0);
@@ -204,12 +204,12 @@ export default function AdjustableTable<T>(props: React.PropsWithChildren<TableP
             colCountRef.current = setTimeout(() => {
                 hideKeys.forEach((k) => (autoWidth.current.get(k)!.enabled = false));
                 showKeys.forEach((k) => (autoWidth.current.get(k)!.enabled = true));
-                props.ReduceWidthCallback!(hideKeys);
+                props.ReduceWidthCallback?.(hideKeys);
                 setAutoWidthVersion((v) => v + 1);
                 setShowKeys(showKeys);
             }, 500);
         } else if (currentTableWidth > 0) {
-            props.ReduceWidthCallback!([]);
+            props.ReduceWidthCallback?.([]);
         }
     }, [autoWidthVersion]);
     
