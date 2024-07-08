@@ -229,7 +229,7 @@ export namespace ReactIcons {
         </svg>
 
     export const ShareArrowDiagonal: React.FC<IProps> = (props) =>
-        <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? 24, height: props.Size ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="feather feather-share">
+        <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? 24, height: props.Size ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-share">
             <path d="M6.5,4 h-5 v18.5 h18.5 v-4"/>
             <polyline points="14,1.5 22.5,1.5 22.5, 10"/>
             <line x1="22" y1="2" x2="8" y2="16"/>
