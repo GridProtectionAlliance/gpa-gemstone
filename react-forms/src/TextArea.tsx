@@ -134,7 +134,7 @@ export default function TextArea<T>(props: IProps<T>) {
 
       {/* Invalid feedback message */}
       <div className="invalid-feedback">
-        {props.Feedback == null ? props.Field + ' is a required field.' : props.Feedback}
+        {props.Feedback == null ? (props.Field as string)+ ' is a required field.' : props.Feedback}
       </div>
     </div>
   );

@@ -28,7 +28,7 @@ import { noop } from 'lodash';
 
 const empty = new Map<string,any>();
 
-export interface DynamicTableProps<T> {
+export interface DynamicTableProps<T extends object> {
   /**
    * List of T objects used to generate rows
    */
@@ -54,7 +54,7 @@ export interface DynamicTableProps<T> {
   keySelector?: (data: T) => string;
 }
 
-export function DynamicTable<T>(props: DynamicTableProps<T>) {
+export function DynamicTable<T extends object>(props: DynamicTableProps<T>) {
     if (props.data.length <= 0) return null;
     
     const cols: Column<T>[] = [];
