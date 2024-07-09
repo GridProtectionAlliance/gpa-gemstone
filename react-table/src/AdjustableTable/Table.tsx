@@ -369,6 +369,7 @@ export default function AdjustableTable<T>(props: React.PropsWithChildren<TableP
         AutoWidthVersion={autoWidthVersion}
         LastColumn={props.LastColumn}
         SetAdjustment={setAdjustment}
+        ExtraWidth={extraSpaceFromRemoval}
         >
         {props.children}
         </Header>
@@ -384,6 +385,7 @@ export default function AdjustableTable<T>(props: React.PropsWithChildren<TableP
         AutoWidth={autoWidth}
         AutoWidthVersion={autoWidthVersion}
         SetWidth={setWidth}
+        ExtraWidth={extraSpaceFromRemoval}
         >
         {props.children}
         </Rows>
@@ -414,6 +416,7 @@ interface IRowProps<T> {
     AutoWidthVersion: number;
     AutoWidth: React.MutableRefObject<Map<string, IAutoWidth>>;
     SetWidth: (key: string, itemKey: string | number, width: number) => void;
+    ExtraWidth: number
 }
     
 function Rows<T>(props: React.PropsWithChildren<IRowProps<T>>) {
@@ -455,63 +458,10 @@ function Rows<T>(props: React.PropsWithChildren<IRowProps<T>>) {
                         if (props.AutoWidth.current.get(element.props.Key)?.enabled ?? true)
                             return (
                         <ColumnDataWrapper
-                        key={element.key}
-                        onClick={
-                            (props.OnClick !== undefined && props.OnClick !== null) ? (e) =>
-                            props.OnClick!(
-                                {
-                                    colKey: element.props.Key,
-                                    colField: element.props.Field,
-                                    row: d,
-                                    data: d[element.props.Field as keyof T],
-                                    index: i,
-                                },
-                                e,
-                            ) : undefined
-                        }
-                        dragStart={
-                            (props.DragStart !== undefined && props.DragStart !== null) ? (e) =>
-                            props.DragStart!(
-                                {
-                                    colKey: element.props.Key,
-                                    colField: element.props.Field,
-                                    row: d,
-                                    data: d[element.props.Field as keyof T],
-                                    index: i,
-                                },
-                                e,
-                            ) : undefined
-                        }
-                        setWidth={(w) => props.SetWidth(element.props.Key, key, Math.floor(w))}
-                        style={element.props.RowStyle}
-                        width={
-                            props.AutoWidth.current.get(element.props.Key)?.width.has(key) ?? false
-                            ? props.AutoWidth.current.get(element.props.Key)?.maxColWidth
-                            : undefined
-                        }
-                        enabled={props.AutoWidth.current.get(element.props.Key)?.enabled ?? true}
-                        >
-                        {element.props.Content !== undefined
-                            ? element.props.Content({
-                                item: d,
-                                key: element.props.Key,
-                                field: element.props.Field,
-                                style: style,
-                                index: i,
-                            })
-                            : element.props.Field !== undefined
-                            ? d[element.props.Field as keyof T]
-                            : null}
-                            </ColumnDataWrapper>
-                        );
-                        if ((element as React.ReactElement<any>).type === AdjustableColumn)
-                            if (props.AutoWidth.current.get(element.props.Key)?.enabled ?? true)
-                                return (
-                            <AdjustableColumnDataWrapper
-                            adjustment={props.AutoWidth.current.get(element.props.Key)?.adjustement}
                             key={element.key}
+                            extraWidth={props.ExtraWidth}
                             onClick={
-                            (props.OnClick !== undefined && props.OnClick !== null) ? (e) =>
+                                (props.OnClick !== undefined && props.OnClick !== null) ? (e) =>
                                 props.OnClick!(
                                     {
                                         colKey: element.props.Key,
@@ -524,7 +474,7 @@ function Rows<T>(props: React.PropsWithChildren<IRowProps<T>>) {
                                 ) : undefined
                             }
                             dragStart={
-                            (props.DragStart !== undefined && props.DragStart !== null) ? (e) =>
+                                (props.DragStart !== undefined && props.DragStart !== null) ? (e) =>
                                 props.DragStart!(
                                     {
                                         colKey: element.props.Key,
@@ -545,7 +495,6 @@ function Rows<T>(props: React.PropsWithChildren<IRowProps<T>>) {
                             }
                             enabled={props.AutoWidth.current.get(element.props.Key)?.enabled ?? true}
                             >
-                            {' '}
                             {element.props.Content !== undefined
                                 ? element.props.Content({
                                     item: d,
@@ -557,7 +506,63 @@ function Rows<T>(props: React.PropsWithChildren<IRowProps<T>>) {
                                 : element.props.Field !== undefined
                                 ? d[element.props.Field as keyof T]
                                 : null}
-                                </AdjustableColumnDataWrapper>
+                        </ColumnDataWrapper>
+                        );
+                        if ((element as React.ReactElement<any>).type === AdjustableColumn)
+                            if (props.AutoWidth.current.get(element.props.Key)?.enabled ?? true)
+                                return (
+                            <AdjustableColumnDataWrapper
+                                adjustment={props.AutoWidth.current.get(element.props.Key)?.adjustement}
+                                key={element.key}
+                                onClick={
+                                (props.OnClick !== undefined && props.OnClick !== null) ? (e) =>
+                                    props.OnClick!(
+                                        {
+                                            colKey: element.props.Key,
+                                            colField: element.props.Field,
+                                            row: d,
+                                            data: d[element.props.Field as keyof T],
+                                            index: i,
+                                        },
+                                        e,
+                                    ) : undefined
+                                }
+                                dragStart={
+                                (props.DragStart !== undefined && props.DragStart !== null) ? (e) =>
+                                    props.DragStart!(
+                                        {
+                                            colKey: element.props.Key,
+                                            colField: element.props.Field,
+                                            row: d,
+                                            data: d[element.props.Field as keyof T],
+                                            index: i,
+                                        },
+                                        e,
+                                    ) : undefined
+                                }
+                                setWidth={(w) => props.SetWidth(element.props.Key, key, Math.floor(w))}
+                                style={element.props.RowStyle}
+                                width={
+                                    props.AutoWidth.current.get(element.props.Key)?.width.has(key) ?? false
+                                    ? props.AutoWidth.current.get(element.props.Key)?.maxColWidth
+                                    : undefined
+                                }
+                                enabled={props.AutoWidth.current.get(element.props.Key)?.enabled ?? true}
+                                extraWidth={props.ExtraWidth}
+                            >
+                                {' '}
+                                {element.props.Content !== undefined
+                                    ? element.props.Content({
+                                        item: d,
+                                        key: element.props.Key,
+                                        field: element.props.Field,
+                                        style: style,
+                                        index: i,
+                                    })
+                                    : element.props.Field !== undefined
+                                    ? d[element.props.Field as keyof T]
+                                : null}
+                            </AdjustableColumnDataWrapper>
                             );
                             return null;
                         })}
@@ -586,6 +591,7 @@ interface IHeaderProps<T> {
     SetMinWidth: (key: string, width: number) => void;
     SetMaxWidth: (key: string, width: number) => void;
     SetAdjustment: (key: string, width: number) => void;
+    ExtraWidth: number
 }
 
 function Header<T>(props: React.PropsWithChildren<IHeaderProps<T>>) {
@@ -677,20 +683,20 @@ function Header<T>(props: React.PropsWithChildren<IHeaderProps<T>>) {
 
     return (
         <thead
-        className={props.Class}
-        style={props.Style}
-        onMouseMove={(e) => {
-            onMove(e.nativeEvent);
-            e.stopPropagation();
-        }}
-        onMouseUp={(e) => {
-            finishAdjustment();
-            e.stopPropagation();
-        }}
-        onMouseLeave={(e) => {
-            finishAdjustment();
-            e.stopPropagation();
-        }}
+            className={props.Class}
+            style={props.Style}
+            onMouseMove={(e) => {
+                onMove(e.nativeEvent);
+                e.stopPropagation();
+            }}
+            onMouseUp={(e) => {
+                finishAdjustment();
+                e.stopPropagation();
+            }}
+            onMouseLeave={(e) => {
+                finishAdjustment();
+                e.stopPropagation();
+            }}
         >
         <tr ref={trRef}>
         {React.Children.map(props.children, (element) => {
@@ -699,66 +705,68 @@ function Header<T>(props: React.PropsWithChildren<IHeaderProps<T>>) {
                 if (props.AutoWidth.current.get(element.props.Key)?.enabled ?? true)
                     return (
                 <ColumnHeaderWrapper
-                enabled={props.AutoWidth.current.get(element.props.Key)?.enabled ?? true}
-                setWidth={(w) => props.SetWidth(element.props.Key, w)}
-                onSort={(e) =>
-                    props.OnSort(
-                        { colKey: element.props.Key, colField: element.props.Field, ascending: props.Ascending },
-                        e,
-                    )
-                }
-                sorted={props.SortKey === element.props.Key && (element.props.AllowSort ?? true)}
-                asc={props.Ascending}
-                colKey={element.props.Key}
-                key={element.props.Key}
-                allowSort={element.props.AllowSort}
-                width={
-                    props.AutoWidth.current.get(element.props.Key)?.width.has(-1) ?? false
-                    ? props.AutoWidth.current.get(element.props.Key)?.maxColWidth
-                    : undefined
-                }
-                style={element.props.HeaderStyle ?? element.props.RowStyle}
-                >
-                {' '}
-                {element.props.children ?? element.props.Key}{' '}
-                </ColumnHeaderWrapper>
-            );
-            if ((element as React.ReactElement<any>).type === AdjustableColumn)
-                if (props.AutoWidth.current.get(element.props.Key)?.enabled ?? true)
-                    return (
-                <AdjustableColumnHeaderWrapper
-                enabled={props.AutoWidth.current.get(element.props.Key)?.enabled ?? true}
-                setWidth={(w) => props.SetWidth(element.props.Key, w)}
-                setMinWidth={(w) => props.SetMinWidth(element.props.Key, Math.round(w))}
-                minWidth={props.AutoWidth.current.get(element.props.Key)?.minWidth}
-                setMaxWidth={(w) => props.SetMaxWidth(element.props.Key, Math.round(w))}
-                maxWidth={props.AutoWidth.current.get(element.props.Key)?.maxWidth}
-                onSort={(e) =>
-                    props.OnSort(
-                        { colKey: element.props.Key, colField: element.props.Field, ascending: props.Ascending },
-                        e,)
+                    enabled={props.AutoWidth.current.get(element.props.Key)?.enabled ?? true}
+                    setWidth={(w) => props.SetWidth(element.props.Key, w)}
+                    onSort={(e) =>
+                        props.OnSort(
+                            { colKey: element.props.Key, colField: element.props.Field, ascending: props.Ascending },
+                            e,
+                        )
                     }
                     sorted={props.SortKey === element.props.Key && (element.props.AllowSort ?? true)}
-                    key={element.props.Key}
-                    colKey={element.props.Key}
                     asc={props.Ascending}
+                    colKey={element.props.Key}
+                    key={element.props.Key}
                     allowSort={element.props.AllowSort}
                     width={
                         props.AutoWidth.current.get(element.props.Key)?.width.has(-1) ?? false
                         ? props.AutoWidth.current.get(element.props.Key)?.maxColWidth
                         : undefined
                     }
-                    startAdjustment={(e) => {
-                        if (getLeftKey(element.props.Key) !== undefined)
-                            setCurrentKeys([getLeftKey(element.props.Key) as string, element.props.Key as string]);
-                        setMouseDown(e.screenX);
-                        setDeltaW(0);
-                    }}
-                    adjustment={calculateAdjustment(element.props.Key)}
                     style={element.props.HeaderStyle ?? element.props.RowStyle}
-                    >
+                    extraWidth={props.ExtraWidth}
+                >
                     {' '}
-                    {element.props.children ?? element.props.Key}
+                    {element.props.children ?? element.props.Key}{' '}
+                </ColumnHeaderWrapper>
+            );
+            if ((element as React.ReactElement<any>).type === AdjustableColumn)
+                if (props.AutoWidth.current.get(element.props.Key)?.enabled ?? true)
+                    return (
+                <AdjustableColumnHeaderWrapper
+                    enabled={props.AutoWidth.current.get(element.props.Key)?.enabled ?? true}
+                    setWidth={(w) => props.SetWidth(element.props.Key, w)}
+                    setMinWidth={(w) => props.SetMinWidth(element.props.Key, Math.round(w))}
+                    minWidth={props.AutoWidth.current.get(element.props.Key)?.minWidth}
+                    setMaxWidth={(w) => props.SetMaxWidth(element.props.Key, Math.round(w))}
+                    maxWidth={props.AutoWidth.current.get(element.props.Key)?.maxWidth}
+                    extraWidth={props.ExtraWidth}
+                    onSort={(e) =>
+                        props.OnSort(
+                            { colKey: element.props.Key, colField: element.props.Field, ascending: props.Ascending },
+                            e,)
+                        }
+                        sorted={props.SortKey === element.props.Key && (element.props.AllowSort ?? true)}
+                        key={element.props.Key}
+                        colKey={element.props.Key}
+                        asc={props.Ascending}
+                        allowSort={element.props.AllowSort}
+                        width={
+                            props.AutoWidth.current.get(element.props.Key)?.width.has(-1) ?? false
+                            ? props.AutoWidth.current.get(element.props.Key)?.maxColWidth
+                            : undefined
+                        }
+                        startAdjustment={(e) => {
+                            if (getLeftKey(element.props.Key) !== undefined)
+                                setCurrentKeys([getLeftKey(element.props.Key) as string, element.props.Key as string]);
+                            setMouseDown(e.screenX);
+                            setDeltaW(0);
+                        }}
+                        adjustment={calculateAdjustment(element.props.Key)}
+                        style={element.props.HeaderStyle ?? element.props.RowStyle}
+                    >
+                        {' '}
+                        {element.props.children ?? element.props.Key}
                     </AdjustableColumnHeaderWrapper>
                 );
                 return null;
