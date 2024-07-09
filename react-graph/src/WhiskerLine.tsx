@@ -26,28 +26,14 @@ import { IDataSeries, GraphContext, IHandlers, AxisIdentifier, AxisMap } from '.
 import { PointNode } from './PointNode';
 import DataLegend from './DataLegend';
 import { CreateGuid } from '@gpa-gemstone/helper-functions';
+import Infobox, { origin } from './Infobox';
+import * as moment from 'moment'
 
 interface IProps {
     /**
-     * Callback function triggered on mouse position, arguments will be NaN until mouse is within 5px of a point
-     * @param xValue - The x value within 5px of mouse
-     * @param yValue - The y value within 5px of mouse
-     * @param xPosition - The x position of the mouse
-     * @param yPosition - The y position of the mouse
-     */
-    OnHover?: (xValue: number, yValue: number, xPosition: number, yPosition: number) => void,
-    /**
-     * Callback function triggered on click events if click is within 5px of a point. Function will be triggered when scales change to indicate xPos and yPos are no longer valid
-     * @param xValue - The x value within 5px of click
-     * @param yValue - The y value within 5px of click
-     * @param xPosition - The x position of the mouse
-     * @param yPosition - The y position of the mouse
-     */
-    OnClick?: (xValue: number, yValue: number, xPosition: number, yPosition: number) => void
-    /**
-     * Data points to be used in the whisker lines. The 0th and last index will determine the height of the whisker line.
+     * Array of data points to be represented by whisker lines, each point as a [x, y[]] tuple.
     */
-    Data: [number, IData[]][],
+    Data: [number, number[]][],
     /**
      * Identifier for the axis the whisker lines are associated with. 
      * @type {AxisIdentifier}
@@ -58,14 +44,29 @@ interface IProps {
     */
     Legend?: string,
     /**
-     * Color of the whisker lines and legend, defaults to black
+     * First color will be used to color the whiskerlines, legend, and the first and last index for yValues. The second color will be used to color all values in between the first and last yValue. 
     */
-    Color?: string,
+    Colors?: [string, string]
+    /**
+     * Flag to determine if infobox is shown when hovering a whisker line.
+    */
+    ShowHoverInfoBox?: boolean,
+    /**
+     * Flag to determine if infobox is shown when a point is clicked.
+    */
+    ShowClickInfoBox?: boolean
+    /**
+     * Array of names used in the infobox. Each y-value index corresponds to the index in this array.
+    */
+    Names?: string[]
 }
 
-interface IData {
+export interface IHoverData {
+    XPosition: number,
+    YPosition: number,
     Value: number,
-    Color: string
+    Name: string,
+    Origin: origin
 }
 
 export const WhiskerLine = (props: IProps) => {
@@ -77,7 +78,9 @@ export const WhiskerLine = (props: IProps) => {
     const [enabled, setEnabled] = React.useState<boolean>(true);
     const [data, setData] = React.useState<PointNode | null>(null);
     const [visibleData, setVisibleData] = React.useState<[...number[]][]>([]);
-    const [dataMap, setDataMap] = React.useState<Map<number, IData[]>>(new Map());
+
+    const [hoverData, setHoverData] = React.useState<IHoverData | null>(null);
+    const [clickData, setClickData] = React.useState<IHoverData | null>(null);
 
     const createLegend = React.useCallback(() => {
         if (props.Legend === undefined)
@@ -86,7 +89,7 @@ export const WhiskerLine = (props: IProps) => {
         return <DataLegend
             size='sm'
             label={props.Legend}
-            color={props.Color ?? 'black'}
+            color={props.Colors?.[0] ?? 'black'}
             legendStyle={'bar'}
             setEnabled={setEnabled}
             enabled={enabled}
@@ -116,91 +119,40 @@ export const WhiskerLine = (props: IProps) => {
 
     // Set up a click handler if provided in props
     React.useEffect(() => {
-        if (guid === "" || props.OnClick === undefined)
+        if (guid === "" || props.ShowClickInfoBox === undefined)
             return;
-
+        context.RegisterSelect({ onClick } as IHandlers)
         context.UpdateSelect(guid, { onClick } as IHandlers)
-    }, [props.OnClick, context.UpdateFlag])
-
-    // trigger onClick if updateFlag gets changed to indicate position is no longer valid
-    React.useEffect(() => {
-        if (guid === "" || props.OnClick === undefined)
-            return;
-
-        onClick(NaN, NaN)
-        context.UpdateSelect(guid, { onClick } as IHandlers)
-    }, [context.UpdateFlag])
+    }, [props.ShowClickInfoBox, context.UpdateFlag])
 
     const onClick = (x: number, y: number) => {
-        if (data == null || props.OnClick == null) return;
-        if (isNaN(x) || isNaN(y)) {
-            props.OnClick(NaN, NaN, NaN, NaN)
+        if ((props.ShowHoverInfoBox ?? false) === false) return;
+        const isDataInValid = data == null || props.Data == null || props.Data.length === 0;
+        if (isNaN(x) || isNaN(y) || isDataInValid || context.CurrentMode === 'select') {
+            setClickData(null)
             return;
         }
 
-        const point = data.GetPoint(x);
-        if (point === null) return;
-
-        const pxClick = context.XTransformation(x);
-        const pxXVal = context.XTransformation(point[0])
-        const t = Math.abs(pxClick - pxXVal);
-        if (t > 5) return;
-
-        const yVals = dataMap.get(point[0]);
-        const yVal = yVals?.filter(d => Math.abs(yTransformation(d.Value) - yTransformation(y)) <= 5)
-        if (yVal != null && yVal.length !== 0)
-            props.OnClick(point[0], yVal[0].Value, context.XTransformation(x), yTransformation(y))
+        setClickData(handleDataInteraction(data, x, y, props.Names))
     }
 
     React.useEffect(() => {
-        if (props.OnHover == null) return;
+        if ((props.ShowHoverInfoBox ?? false) === false) return;
         const isDataInValid = data == null || props.Data == null || props.Data.length === 0;
 
         if (isDataInValid || isNaN(context.XHover)) {
-            props.OnHover(NaN, NaN, NaN, NaN)
+            setHoverData(null);
             return;
         }
 
-        try {
-            const point = data.GetPoint(context.XHover);
-            if (point == null) {
-                props.OnHover(NaN, NaN, NaN, NaN)
-                return;
-            }
-
-            const pxXHover = context.XTransformation(context.XHover);
-            const pxXVal = context.XTransformation(point[0])
-            const t = Math.abs(pxXHover - pxXVal);
-            if (t > 5) {
-                props.OnHover(NaN, NaN, NaN, NaN)
-                return;
-            }
-
-            const yVals = dataMap.get(point[0]);
-            const yVal = yVals?.filter(y => Math.abs(yTransformation(y.Value) - yTransformation(context.YHover[0])) <= 5)
-            if (yVal != null && yVal.length === 1) {
-                props.OnHover(point[0], yVal[0].Value, context.XTransformation(context.XHover), yTransformation(context.YHover[0]))
-                return
-            }
-
-            props.OnHover(NaN, NaN, NaN, NaN)
-            return;
-        } catch {
-            props.OnHover(NaN, NaN, NaN, NaN)
-        }
-
+        setHoverData(handleDataInteraction(data, context.XHover, context.YHoverSnap[0], props.Names))
     }, [context.XHover, context.YHover, data])
 
     React.useEffect(() => {
         if (props.Data == null || props.Data.length === 0)
             setData(null);
-        else {
-            setData(new PointNode(props.Data.map(d => [d[0], ...d[1].flatMap(dd => dd.Value)])));
-            const map = new Map<number, IData[]>();
-            props.Data.map(d => map.set(d[0], d[1]))
-            setDataMap(map);
-        }
-
+        else
+            setData(new PointNode(props.Data.map(d => [d[0], ...d[1]])));
     }, [props.Data]);
 
     React.useEffect(() => {
@@ -215,7 +167,6 @@ export const WhiskerLine = (props: IProps) => {
             return;
         }
         setVisibleData(data.GetData(context.XDomain[0], context.XDomain[1], true));
-        //setVisibleData([data.AggregateData(props.Context.XDomain[0], props.Context.XDomain[1], 100)]);
     }, [data, context.XDomain[0], context.XDomain[1]])
 
     React.useEffect(() => {
@@ -225,25 +176,32 @@ export const WhiskerLine = (props: IProps) => {
     }, []);
 
     const Whiskers = React.useMemo(() => {
-        if (visibleData.length === 0) return <></>;
+        if (visibleData.length === 0 || !enabled) return <></>;
 
         return visibleData.map((pt, index) => {
             const x = context.XTransformation(pt[0]);
             const yValues = pt.slice(1).flat();
-            const bottomPoint = yTransformation(yValues[0]);
-            const topPoint = yTransformation(yValues[yValues.length - 1]);
-            const matchedData = dataMap.get(pt[0]);
+            const bottomPoint = context.YTransformation(yValues[0], AxisMap.get(props.Axis))
+            const topPoint = context.YTransformation(yValues[yValues.length - 1], AxisMap.get(props.Axis))
 
-            const circles = yValues.map((yValue, i) => {
-                const y = yTransformation(yValue);
-                const color = matchedData?.find(d => d.Value === yValue)?.Color
+            const circles = yValues.map((yValue, index) => {
+                const y = context.YTransformation(yValue, AxisMap.get(props.Axis))
+                let color = 'black'
+                const isFirstOrLastIndex = (index === 0 || index === yValues.length - 1)
+
+                if (props.Colors?.[0] != null && isFirstOrLastIndex)
+                    color = props.Colors[0]
+
+                if (props.Colors?.[1] != null && !isFirstOrLastIndex)
+                    color = props.Colors[1];
+
                 return (
                     <circle
-                        key={i}
+                        key={index}
                         cx={x}
                         cy={y}
                         r={3}
-                        fill={color ?? 'black'}
+                        fill={color}
                     />
                 );
             });
@@ -255,26 +213,52 @@ export const WhiskerLine = (props: IProps) => {
                         y1={topPoint}
                         x2={x}
                         y2={bottomPoint}
-                        stroke={'black'}
+                        stroke={props.Colors?.[0] ?? 'black'}
                         strokeWidth={1}
                     />
                     {circles}
                 </g>
             );
         });
-    }, [visibleData, context.YTransformation, context.XTransformation, props.Axis, props.Color]);
-
-    //wrapper for context.YTransformation
-    const yTransformation = (yValue: number) => {
-        return context.YTransformation(yValue, AxisMap.get(props.Axis))
-    }
+    }, [visibleData, context.YTransformation, context.XTransformation, props.Axis, props.Colors, enabled, context.DataGuid]);
 
     return (
         <>
-            {enabled ? <g>{Whiskers}</g> : null}
+            <g>{Whiskers}</g>
+            {hoverData != null ?
+                <Infobox ChildID={guid} X={hoverData?.XPosition} Y={hoverData.YPosition} Origin={hoverData.Origin} Offset={5}>
+                    <p style={{ whiteSpace: 'nowrap' }} id={guid}>{`${hoverData.Name}${hoverData.Value.toFixed(3)}`}</p>
+                </Infobox>
+                : null}
+            {clickData != null && context.CurrentMode === 'select' ?
+                <Infobox ChildID={`${guid}click`} X={clickData?.XPosition} Y={clickData.YPosition} Origin={clickData.Origin} Offset={5}>
+                    <p style={{ whiteSpace: 'nowrap' }} id={`${guid}click`}>{`${clickData.Name}${clickData.Value.toFixed(3)}`}</p>
+                </Infobox>
+                : null}
         </>
     );
+}
 
+const handleDataInteraction = (data: PointNode, xValue: number, yValue: number, names?: string[]): IHoverData | null  => {
+    try {
+        const point = data.GetPoint(xValue);
+        if (point === null) {
+            return null;
+        }
+
+        const yVals = point.slice(1);
+        const yVal = yVals?.find(y => y === yValue);
+
+        if (yVal == null) 
+            return null;
+        
+        const yIndex = yVals.findIndex(val => val === yVal)
+        const name = names != null ? names[yIndex] + ': ' : ""
+        const origin = yIndex === yVals.length - 1 ? 'upper-left' : 'lower-left'
+        return { Value: yVal, Name: name, XPosition: point[0], YPosition: yVal, Origin: origin }
+    } catch {
+        return null 
+    }
 }
 
 export default WhiskerLine;
