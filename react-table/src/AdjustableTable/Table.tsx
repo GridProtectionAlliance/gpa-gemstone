@@ -152,6 +152,7 @@ export default function AdjustableTable<T>(props: React.PropsWithChildren<TableP
     const autoWidth = React.useRef<Map<string, IAutoWidth>>(new Map<string, IAutoWidth>());
     const [autoWidthVersion, setAutoWidthVersion] = React.useState<number>(0);
     const [currentTableWidth, setCurrentTableWidth] = React.useState<number>(0);
+    const [extraSpaceFromRemoval, setExtraSpaceFromRemoval] = React.useState<number>(0);
 
     const [showKeys, setShowKeys] = React.useState<string[]>([]);
 
@@ -170,15 +171,10 @@ export default function AdjustableTable<T>(props: React.PropsWithChildren<TableP
         const resizeObserver = new ResizeObserver((entries) => {
             setTableWidth();
         });
-        const childObserver = new MutationObserver((entries) => { 
-            setTableWidth();
-        });
-        
+
         resizeObserver.observe(element);
-        childObserver.observe(element, {childList: true, subtree: true});
         return () => {
             resizeObserver.disconnect();
-            childObserver.disconnect();
         };
     }, []);
     
@@ -197,11 +193,19 @@ export default function AdjustableTable<T>(props: React.PropsWithChildren<TableP
             const hideKeys: string[] = [];
             const showKeys: string[] = [];
             let t = 0;
+            let colW = 0;
             autoWidth.current.forEach((v, k) => {
                 t = t + v.maxColWidth;
-                if (t < currentTableWidth - 17) showKeys.push(k);
+                if (t < currentTableWidth - 17) {
+                    showKeys.push(k);
+                    colW += v.maxColWidth;
+                }
                 else hideKeys.push(k); 
             });
+
+            const whiteSpace = currentTableWidth - 17 - colW;
+            setExtraSpaceFromRemoval(whiteSpace / showKeys.length);
+
             if (Array.from(autoWidth.current.values()).filter(autoWidth => !autoWidth.enabled).length == hideKeys.length) {
                 return;
             }

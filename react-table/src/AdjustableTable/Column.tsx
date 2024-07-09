@@ -71,7 +71,8 @@ export interface IHeaderWrapperProps {
     allowSort?: boolean,
     colKey: string,
     width?: number,
-    enabled: boolean
+    enabled: boolean,
+    extraWidth: number
 }
 
 export function ColumnHeaderWrapper (props: React.PropsWithChildren<IHeaderWrapperProps>) {
@@ -83,7 +84,10 @@ export function ColumnHeaderWrapper (props: React.PropsWithChildren<IHeaderWrapp
     style.display = style.display ?? 'inline-block'
     style.position = style.position ?? 'relative';
     style.borderTop = style.borderTop ?? 'none';
-    style.width = style.width ?? props.width;
+
+    if (style.width == undefined && props.width !== undefined) {
+        style.width = (props.width) + props.extraWidth;
+    }
 
     if (style.cursor === undefined && (props.allowSort ?? true)) {
         style.cursor = 'pointer';
@@ -93,7 +97,7 @@ export function ColumnHeaderWrapper (props: React.PropsWithChildren<IHeaderWrapp
         if (thref.current == null)
             return;
         const w = GetNodeSize(thref.current)?.width;
-        if (w === undefined || w == props.width) return;
+        if (props.width !== undefined && (w === undefined || w == (props.width + props.extraWidth))) return;
             props.setWidth(w);
     })
 
@@ -128,6 +132,7 @@ export interface IDataWrapperProps {
     dragStart?: (e: React.DragEvent) => void,
     onClick?: (e: React.MouseEvent<HTMLElement, MouseEvent>) => void,
     style: React.CSSProperties,
+    extraWidth: number
 }
 
 
@@ -137,7 +142,10 @@ export function ColumnDataWrapper (props: React.PropsWithChildren<IDataWrapperPr
 
     style.overflowX = style.overflowX ?? 'hidden';
     style.display = style.display ?? 'inline-block'
-    style.width = style.width ?? props.width;
+
+    if (style.width == undefined && props.width !== undefined) {
+        style.width = (props.width) + props.extraWidth;
+    }
 
     if (props.dragStart !== undefined) style.cursor = "grab";
 
@@ -145,7 +153,7 @@ export function ColumnDataWrapper (props: React.PropsWithChildren<IDataWrapperPr
         if (tdref.current == null)
             return;
         const w = GetNodeSize(tdref.current)?.width;
-        if (w === undefined || w == props.width) return;
+        if (props.width !== undefined && (w === undefined || w == (props.width + props.extraWidth))) return;
             props.setWidth(w);
     })
 
