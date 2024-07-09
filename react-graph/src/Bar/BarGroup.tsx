@@ -137,7 +137,7 @@ const BarGroup: React.FC<IProps> = (props) => {
             return;
         }
 
-        let points: IHoverData[] = [];
+        const points: IHoverData[] = [];
 
         barGuids.forEach(guid => {
             const contextData = map.current.get(guid);
