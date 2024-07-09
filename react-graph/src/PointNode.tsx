@@ -53,10 +53,15 @@ export class PointNode {
         this.points = null;
 
         if (data.length <= MaxPoints) {
-            if (data.some((point)=> point.length != this.dim)) throw new TypeError(`Jagged data passed to PointNode. All points should all be ${this.dim} dimensions.`)
+            if (data.some(point => point.length != this.dim)) throw new TypeError(`Jagged data passed to PointNode. All points should all be ${this.dim} dimensions.`)
             this.points = data;
-            for (let index = 1; index < this.dim; index++) this.minV[index-1] = Math.min(...data.filter(pt => !isNaN(pt[index])).map(pt => pt[index]));
-            for (let index = 1; index < this.dim; index++) this.maxV[index-1] = Math.max(...data.filter(pt => !isNaN(pt[index])).map(pt => pt[index]));
+
+            for (let index = 1; index < this.dim; index++) {
+                const values = data.filter(pt => !isNaN(pt[index])).map(pt => pt[index]);
+                this.minV[index - 1] = Math.min(...values);
+                this.maxV[index - 1] = Math.max(...values);
+                this.avgV[index - 1] = values.reduce((sum, val) => sum + val, 0) / values.length;
+            }
             return;
         }
 
@@ -69,8 +74,12 @@ export class PointNode {
             this.children.push(new PointNode(data.slice(index, index + blockSize)));
             index = index + blockSize;
         }
-        for (let index = 0; index < this.dim-1; index++) this.minV[index] = Math.min(...this.children.map(node => node.minV[index]));
-        for (let index = 0; index < this.dim-1; index++) this.maxV[index] = Math.max(...this.children.map(node => node.maxV[index]));
+
+        for (let index = 0; index < this.dim-1; index++){
+            this.minV[index] = Math.min(...this.children.map(node => node.minV[index]));
+            this.maxV[index] = Math.max(...this.children.map(node => node.maxV[index]));
+            this.avgV[index] = Math.max(...this.children.map(node => node.avgV[index]));
+        }
     }
 
     public GetData(Tstart: number, Tend: number, IncludeEdges?: boolean): [...number[]][] {
@@ -217,5 +226,10 @@ export class PointNode {
             return this.children[childIndex].PointBinarySearch(tVal, pointsRetrieved, lowerNeighbor, upperNeighbor);
         }
         else throw new RangeError(`Both children and points are null for PointNode, unabled to find point with time value of ${tVal}`);
+    }
+
+    public AggregateData = (tStart: number, tEnd: number, numPoints: number): [...number[]] => {
+        const center = ( tStart + tEnd ) / 2;
+        return this.GetPoint(center);
     }
 }
