@@ -26,7 +26,7 @@ import * as React from 'react';
 import {IDataSeries, GraphContext, LineStyle, AxisIdentifier, AxisMap, LineMap} from './GraphContext';
 import * as moment from 'moment';
 import {PointNode} from './PointNode';
-import LineLegend from './LineLegend';
+import DataLegend from './DataLegend';
 import { CreateGuid } from '@gpa-gemstone/helper-functions';
 
 
@@ -66,8 +66,8 @@ function Line(props: IProps) {
         if ((props.highlightHover ?? false) && !isNaN(highlight[0]) && !isNaN(highlight[1]))
         txt = txt + ` (${moment.utc(highlight[0]).format('MM/DD/YY hh:mm:ss')}: ${highlight[1].toPrecision(6)})`
     
-        return <LineLegend 
-            size = 'sm' label={txt} color={props.color} lineStyle={props.lineStyle}
+        return <DataLegend 
+            size = 'sm' label={txt} color={props.color} legendStyle={props.lineStyle}
             setEnabled={setEnabled} enabled={enabled} hasNoData={data == null}/>;
     }, [props.color, props.lineStyle, enabled, data]);
 
