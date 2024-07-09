@@ -177,7 +177,7 @@ export default function DateTimePicker<T>(props: IProps<T>) {
             setFeedbackMessage(`Please enter a valid date.`);
             return false;
         }
-        else if (date.startOf('day').isBefore(minStartDate)) {
+        else if (date.clone().startOf('day').isBefore(minStartDate)) {
             setFeedbackMessage(`Date must be on or after ${minStartDate.format("MM-DD-YYYY")}`);
             return false;
         }
