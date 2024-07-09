@@ -36,6 +36,7 @@ import LineWithThreshold from './LineWithThreshold';
 import Line from './Line';
 import Button from './Button';
 import Bar from './Bar/Bar';
+import BarGroup from './Bar/BarGroup';
 import HorizontalMarker from './HorizontalMarker';
 import VerticalMarker from './VerticalMarker';
 import SymbolicMarker from './SymbolicMarker';

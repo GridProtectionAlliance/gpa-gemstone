@@ -11,6 +11,7 @@ import Circle from './Circle';
 import Infobox from './Infobox';
 import { AxisMap } from './GraphContext';
 import Bar from './Bar/Bar'
+import BarGroup from './Bar/BarGroup';
 
 export { 
     Plot,
@@ -26,4 +27,5 @@ export {
     Infobox,
     AxisMap,
     Bar,
+    BarGroup,
  };
