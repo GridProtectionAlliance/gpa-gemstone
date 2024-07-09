@@ -22,20 +22,14 @@
 // ******************************************************************************************************
 
 import * as React from 'react';
-import { IDataSeries, GraphContext, AxisIdentifier, AxisMap } from '../GraphContext';
+import { GraphContext, AxisIdentifier, AxisMap } from '../GraphContext';
 import { PointNode } from '../PointNode';
 import DataLegend from '../DataLegend';
 import { CreateGuid } from '@gpa-gemstone/helper-functions';
-import { IBarContext } from './BarGroup';
+import { IBarContext, IBarDataSeries } from './BarGroup';
+import { IHoverData } from '../WhiskerLine'
 
 interface IProps {
-    /**
-     * Callback function triggered on mouse position.
-     * @param xValue - The x value of the hovered bar
-     * @param xPosition - The x position of the hovered bar
-     * @param yPosition - The y position of the hovered bar
-     */
-    OnHover?: (xValue: number, xPosition: number, yPosition: number) => void,
     /**
      * Array of data points to be represented by bars, each point as a [x, y] tuple.
     */
@@ -72,7 +66,7 @@ interface IProps {
     /**
      * Stroke width of the bars.
     */
-    StrokeWidth?: number
+    StrokeWidth?: number,
 }
 
 interface IContextlessProps {
@@ -87,6 +81,7 @@ export const ContexlessBar = (props: IContextlessProps) => {
     const [enabled, setEnabled] = React.useState<boolean>(true);
     const [data, setData] = React.useState<PointNode | null>(null);
     const [visibleData, setVisibleData] = React.useState<[...number[]][]>([]);
+    const [hoverData, setHoverData] = React.useState<IHoverData | null>(null);
 
     const createLegend = React.useCallback(() => {
         if (props.BarProps.Legend === undefined)
@@ -100,47 +95,33 @@ export const ContexlessBar = (props: IContextlessProps) => {
             setEnabled={setEnabled}
             enabled={enabled}
             hasNoData={data == null} />;
-    }, [props.BarProps.Color, enabled, data]);
+    }, [props.BarProps.Color, enabled, dataGuid]);
 
     const createContextData = React.useCallback(() => {
-        return {
+        const contextData: IBarDataSeries = {
             legend: createLegend(),
             axis: props.BarProps.Axis,
             enabled: enabled,
-            getMax: (t) => (data == null || !enabled ? -Infinity : data.GetLimits(t[0], t[1])[1]),
-            getMin: (t) => (data == null || !enabled ? Infinity : data.GetLimits(t[0], t[1])[0]),
-            getPoints: (t, n?) => (data == null || !enabled ? NaN : data.GetPoints(t, n ?? 1))
-        } as IDataSeries;
-    }, [props.BarProps.Axis, enabled, dataGuid, createLegend]);
+            getMax: (t: [number, number]) => (data == null || !enabled ? -Infinity : data.GetLimits(t[0], t[1])[1]),
+            getMin: (t: [number, number]) => (data == null || !enabled ? Infinity : data.GetLimits(t[0], t[1])[0]),
+            getPoints: (t: number, n?: number | undefined) => (data == null || !enabled ? undefined : data.GetPoints(t, n ?? 1))
+        };
+
+        if (props.Context.YTransformation != null)
+            contextData.getPoint = (t) => (data == null || !enabled ? undefined : data.GetPoint(t));
+
+        return contextData as IBarDataSeries;
+    }, [props.BarProps.Axis, enabled, dataGuid, createLegend, props.Context.YTransformation]);
 
     React.useEffect(() => {
         if (guid === "")
             return;
-        props.Context.UpdateData(guid, createContextData());
+        props.Context.UpdateData(guid, createContextData(), props.BarProps.Legend);
     }, [createContextData]);
 
     React.useEffect(() => {
         setDataGuid(CreateGuid());
     }, [data]);
-
-    React.useEffect(() => {
-        if (props.BarProps.OnHover == null) return;
-        const isDataInValid = data == null || props.BarProps.Data == null || props.BarProps.Data.length === 0;
-
-        if (isDataInValid || isNaN(props.Context.XHover) || props.Context.XHover > data.maxT || props.Context.XHover < data.minT) {
-            props.BarProps.OnHover(NaN, NaN, NaN)
-            return;
-        }
-
-        try {
-            const point = data.GetPoint(props.Context.XHover);
-            if (point != null)
-                props.BarProps.OnHover(point[0], props.Context.XTransformation(props.Context.XHover), props.Context.YTransformation(props.Context.YHover[0], AxisMap.get(props.BarProps.Axis)))
-        } catch {
-            props.BarProps.OnHover(NaN, NaN, NaN)
-        }
-
-    }, [props.Context.XHover, props.Context.YHover, data])
 
     React.useEffect(() => {
         if (props.BarProps.Data == null || props.BarProps.Data.length === 0)
@@ -153,7 +134,6 @@ export const ContexlessBar = (props: IContextlessProps) => {
         if (guid === "")
             return;
         props.Context.SetLegend(guid, createLegend());
-
     }, [enabled]);
 
     React.useEffect(() => {
@@ -162,42 +142,35 @@ export const ContexlessBar = (props: IContextlessProps) => {
             return;
         }
         setVisibleData(data.GetData(props.Context.XDomain[0], props.Context.XDomain[1], true));
-        //setVisibleData([data.AggregateData(props.Context.XDomain[0], props.Context.XDomain[1], 100)]);
-    }, [data, props.Context.XDomain[0], props.Context.XDomain[1]])
+    }, [dataGuid, props.Context.XDomain[0], props.Context.XDomain[1]])
 
     React.useEffect(() => {
-        const id = props.Context.AddData(createContextData());
+        const id = props.Context.AddData(createContextData(), props.BarProps.Legend);
         setGuid(id);
         return () => { props.Context.RemoveData(id) }
     }, []);
 
     const Bars = React.useMemo(() => {
-        if(visibleData.length === 0) return <></>
+        if (visibleData.length === 0 || !enabled) return <></>
 
-        const baseY = props.Context.YTransformation(0, AxisMap.get(props.BarProps.Axis));
+        const baseYPosition = props.Context.YTransformation(0, AxisMap.get(props.BarProps.Axis));
         const barWidth = getBarWidth(visibleData, props.Context, props.BarProps.MinWidth, props.BarProps.MaxWidth)
 
         return visibleData.map((pt, index) => {
-            let height = baseY - props.Context.YTransformation(pt[1], AxisMap.get(props.BarProps.Axis));
+            const [xValue, yValue] = pt;
+            let height = baseYPosition - props.Context.YTransformation(yValue, AxisMap.get(props.BarProps.Axis));
             if (isNaN(height) || height > 9999)
                 height = 0
 
-            const x = props.Context.XTransformation(pt[0]);
-            let y = props.Context.GetYPosition == null ? baseY - height : props.Context.GetYPosition(pt[0], height, baseY, pt[1])
-            if (isNaN(y))
-                y = -999
-
-            //Cover negative values
-            if (pt[1] < 0 && props.Context != null) {
-                height = Math.abs(height)
-                y = baseY
-            }
+            const xPosition = props.Context.XTransformation(xValue);
+            let yPosition = props.Context.GetYPosition != null ? props.Context.GetYPosition(xValue, guid, props.BarProps.Axis) : baseYPosition - height
+            yPosition = sanitizeYPosition(yPosition, height, baseYPosition, yValue);
 
             return (
                 <rect
                     key={index}
-                    x={x - barWidth/2}
-                    y={y}
+                    x={xPosition - barWidth / 2}
+                    y={yPosition}
                     width={barWidth}
                     height={height}
                     fill={props.BarProps.Color}
@@ -207,39 +180,52 @@ export const ContexlessBar = (props: IContextlessProps) => {
                 />
             );
         });
-    }, [visibleData, props.Context.YTransformation, props.Context.XTransformation]);
 
-    return (
-        <>
-            {enabled ? <g>{Bars}</g> : null}
-        </>
-    );
+    }, [visibleData, props.Context.YTransformation, props.Context.XTransformation, createContextData, enabled, props.Context.DataGuid]);
 
+    return <g>{Bars}</g>
 }
 
-//Helper function
+//Helper functions
 const getBarWidth = (data: [...number[]][], context: IBarContext, minWidth: number | undefined, maxWidth: number | undefined) => {
-       // Calculate intervals between points for bar width
-       const intervals = [];
-       if (data.length === 1 || data.length === 2) {
-           intervals.push(50); // if one bar just use 50 for now..
-       } else {
-           for (let i = 0; i < data.length - 1; i++) {
-               const currentX = context.XTransformation(data[i][0]);
-               const nextX = context.XTransformation(data[i + 1][0]);
-               intervals.push(nextX - currentX);
-           }
-       }
+    // Calculate intervals between points for bar width
+    const intervals = [];
+    if (data.length === 1 || data.length === 2) {
+        intervals.push(50); // if one bar just use 50 for now..
+    } else {
+        for (let i = 0; i < data.length - 1; i++) {
+            const currentX = context.XTransformation(data[i][0]);
+            const nextX = context.XTransformation(data[i + 1][0]);
+            intervals.push(nextX - currentX);
+        }
+    }
 
-       // Determine the bar width as the smallest interval
-       let calculatedBarWidth = Math.min(...intervals);
+    // Determine the bar width as the smallest interval
+    let calculatedBarWidth = Math.min(...intervals);
 
-       if (minWidth != null && calculatedBarWidth < minWidth)
-           calculatedBarWidth = minWidth
+    if (minWidth != null && calculatedBarWidth < minWidth)
+        calculatedBarWidth = minWidth
 
-       if (maxWidth != null && calculatedBarWidth > maxWidth)
-           calculatedBarWidth = maxWidth;
-        return calculatedBarWidth;
+    if (maxWidth != null && calculatedBarWidth > maxWidth)
+        calculatedBarWidth = maxWidth;
+    return calculatedBarWidth;
+}
+
+const sanitizeYPosition = (yPosition: number, height: number, baseYPosition: number, yValue: number) => {
+    let sanitizedYPosition = yPosition;
+    if (yPosition === undefined)
+        sanitizedYPosition = baseYPosition - height
+
+    //When negative yVal just use baseY for yPosition for now
+    if (yValue < 0) {
+        height = Math.abs(height)
+        sanitizedYPosition = baseYPosition
+    }
+
+    if (isNaN(yPosition))
+        sanitizedYPosition = -999
+
+    return sanitizedYPosition;
 }
 
 /**
