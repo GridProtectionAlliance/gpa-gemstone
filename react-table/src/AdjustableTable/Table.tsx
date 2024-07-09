@@ -167,13 +167,18 @@ export default function AdjustableTable<T>(props: React.PropsWithChildren<TableP
         
         if (element == null) return;
         
-        const observer = new ResizeObserver((entries) => {
+        const resizeObserver = new ResizeObserver((entries) => {
+            setTableWidth();
+        });
+        const childObserver = new MutationObserver((entries) => { 
             setTableWidth();
         });
         
-        observer.observe(element);
+        resizeObserver.observe(element);
+        childObserver.observe(element, {childList: true, subtree: true});
         return () => {
-            observer.disconnect();
+            resizeObserver.disconnect();
+            childObserver.disconnect();
         };
     }, []);
     
@@ -447,7 +452,8 @@ export default function AdjustableTable<T>(props: React.PropsWithChildren<TableP
                                 return (
                             <ColumnDataWrapper
                             key={element.key}
-                            onClick={(e) =>
+                            onClick={
+                                (props.OnClick !== undefined && props.OnClick !== null) ? (e) =>
                                 props.OnClick!(
                                     {
                                         colKey: element.props.Key,
@@ -457,9 +463,10 @@ export default function AdjustableTable<T>(props: React.PropsWithChildren<TableP
                                         index: i,
                                     },
                                     e,
-                                )
+                                ) : undefined
                             }
-                            dragStart={(e) =>
+                            dragStart={
+                                (props.DragStart !== undefined && props.DragStart !== null) ? (e) =>
                                 props.DragStart!(
                                     {
                                         colKey: element.props.Key,
@@ -469,7 +476,7 @@ export default function AdjustableTable<T>(props: React.PropsWithChildren<TableP
                                         index: i,
                                     },
                                     e,
-                                )
+                                ) : undefined
                             }
                             setWidth={(w) => props.SetWidth(element.props.Key, key, Math.floor(w))}
                             style={element.props.RowStyle}
@@ -499,7 +506,8 @@ export default function AdjustableTable<T>(props: React.PropsWithChildren<TableP
                                 <AdjustableColumnDataWrapper
                                 adjustment={props.AutoWidth.current.get(element.props.Key)?.adjustement}
                                 key={element.key}
-                                onClick={(e) =>
+                                onClick={
+                                (props.OnClick !== undefined && props.OnClick !== null) ? (e) =>
                                     props.OnClick!(
                                         {
                                             colKey: element.props.Key,
@@ -509,9 +517,10 @@ export default function AdjustableTable<T>(props: React.PropsWithChildren<TableP
                                             index: i,
                                         },
                                         e,
-                                    )
+                                    ) : undefined
                                 }
-                                dragStart={(e) =>
+                                dragStart={
+                                (props.DragStart !== undefined && props.DragStart !== null) ? (e) =>
                                     props.DragStart!(
                                         {
                                             colKey: element.props.Key,
@@ -521,7 +530,7 @@ export default function AdjustableTable<T>(props: React.PropsWithChildren<TableP
                                             index: i,
                                         },
                                         e,
-                                    )
+                                    ) : undefined
                                 }
                                 setWidth={(w) => props.SetWidth(element.props.Key, key, Math.floor(w))}
                                 style={element.props.RowStyle}

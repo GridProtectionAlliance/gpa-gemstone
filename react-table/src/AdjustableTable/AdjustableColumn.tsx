@@ -208,10 +208,16 @@ export function AdjustableColumnDataWrapper(props: React.PropsWithChildren<IAdju
         if (tdref.current == null)
             return;
 
+        const w = GetNodeSize(tdref.current)?.width;
+
+        if (style.width === undefined && props.width === undefined) {
+            props.setWidth(w);
+            return;
+        } 
+
         if (props.adjustment !== undefined && props.adjustment !== 0)
             return;
 
-        const w = GetNodeSize(tdref.current)?.width;
         if (w === undefined || w == props.width) return;
         props.setWidth(w);
     })
