@@ -1,4 +1,4 @@
-﻿// ******************************************************************************************************
+// ******************************************************************************************************
 //  Plot.tsx - Gbtc
 //
 //  Copyright © 2020, Grid Protection Alliance.  All Rights Reserved.
@@ -35,6 +35,9 @@ import Legend from './Legend';
 import LineWithThreshold from './LineWithThreshold';
 import Line from './Line';
 import Button from './Button';
+import Bar from './Bar/Bar';
+import BarGroup from './Bar/BarGroup';
+import WhiskerLine from './WhiskerLine';
 import HorizontalMarker from './HorizontalMarker';
 import VerticalMarker from './VerticalMarker';
 import SymbolicMarker from './SymbolicMarker';
@@ -679,11 +682,13 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
         }
         applyToYDomain(zoomYAxis);
       }
-      setMousePosition([ptTransform.x, ptTransform.y]);
+      if(!_.isEqual(mousePosition, [ptTransform.x, ptTransform.y]))
+        setMousePosition([ptTransform.x, ptTransform.y]);
       // Here on mouse is snapped (if neccessary)
       let ptFinal: {x: number, y: number};
       if (props.snapMouse ?? false) ptFinal = snapMouseToClosestSeries(ptTransform);
       else ptFinal = ptTransform;
+      if(!_.isEqual(mousePositionSnap, [ptFinal.x, ptFinal.y]))
       setMousePositionSnap([ptFinal.x, ptFinal.y]);
       if (handlers.current.size > 0)
         handlers.current.forEach((v) => (v.onMove !== undefined? v.onMove(xInvTransform(v.allowSnapping ? ptFinal.x : ptTransform.x), yInvTransform(v.allowSnapping ? ptFinal.y : ptTransform.y, v.axis)) : null));
@@ -715,8 +720,8 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
             xInvTransform(ptFinal.x),
             [...AxisMap.values()].map(axis => yInvTransform(ptFinal.y, axis)),
             {
-            setTDomain: updateXDomain as React.SetStateAction<[number,number]>, 
-            setYDomain: updateYDomain as React.SetStateAction<[number,number][]>
+              setTDomain: updateXDomain as React.SetStateAction<[number,number]>, 
+              setYDomain: updateYDomain as React.SetStateAction<[number,number][]>
             });
         if (handlers.current.size > 0 && selectedMode === 'select')
           handlers.current.forEach((v) => (v.onClick !== undefined? v.onClick(xInvTransform(v.allowSnapping ? ptFinal.x : ptTransform.x), yInvTransform(v.allowSnapping ? ptFinal.y : ptTransform.y, v.axis)) : null));
@@ -850,13 +855,13 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
                       </defs>
 
                       <g clipPath={'url(#cp-' + guid + ')' }>
-                         {React.Children.map(props.children, (element) => {
+                            {React.Children.map(props.children, (element) => {
                                    if (!React.isValidElement(element))
                                        return null;
                                    if ((element as React.ReactElement<any>).type === Line || (element as React.ReactElement<any>).type === LineWithThreshold || (element as React.ReactElement<any>).type === Infobox ||
                                    (element as React.ReactElement<any>).type === HorizontalMarker || (element as React.ReactElement<any>).type === VerticalMarker || (element as React.ReactElement<any>).type === SymbolicMarker
                                    || (element as React.ReactElement<any>).type === Circle || (element as React.ReactElement<any>).type === AggregatingCircles || (element as React.ReactElement<any>).type === HeatMapChart
-                                    )
+                                    || (element as React.ReactElement<any>).type === Bar || (element as React.ReactElement<any>).type === BarGroup || (element as React.ReactElement<any>).type === WhiskerLine)
                                        return element;
                                    return null;
                                })}
