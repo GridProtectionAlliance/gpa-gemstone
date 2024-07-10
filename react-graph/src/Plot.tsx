@@ -503,21 +503,32 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
 
     function snapMouseToClosestSeries(pixelPt: {x:number, y:number}): {x:number, y:number} {
       const xVal = xInvTransform(pixelPt.x);
+
       const findClosestPoint = (result: { pt: {x:number, y:number}, distSq: number|undefined }, series: IDataSeries) => {
-        const pointArray = series.getPoints(xVal, 7);
-        if (pointArray === undefined) return result;
+        const points = series.getPoints(xVal, 7);
+        if (points === undefined) return result;
+
+        const pointArray: [number, number][] = points.flatMap(point => {
+          const [xValue, ...yValues] = point;
+          return yValues.map(yValue => [xValue, yValue]);
+        }) as [number, number][];
+
         const ptArrayResult = pointArray.reduce((result: { pt: {x:number, y:number}, distSq: number|undefined}, pt) => {
           const point = [xTransform(pt[0]), yTransform(pt[1], AxisMap.get(series.axis))];
           const newDistSq = (point[0] - pixelPt.x)**2 + (point[1] - pixelPt.y)**2;
-          if (result.distSq === undefined || newDistSq < result.distSq) return {pt: { x: point[0], y: point[1]}, distSq: newDistSq};
-          return result;
+          if (result.distSq === undefined || newDistSq < result.distSq)
+             return {pt: { x: point[0], y: point[1]}, distSq: newDistSq};
 
+          return result;
         }, { pt: {x:0, y:0}, distSq: undefined });
-        if (ptArrayResult.distSq !== undefined && (result.distSq === undefined || ptArrayResult.distSq < result.distSq)) return ptArrayResult;
+
+        if (ptArrayResult.distSq !== undefined && (result.distSq === undefined || ptArrayResult.distSq < result.distSq)) 
+          return ptArrayResult;
+
         return result;
       }
       
-      return [...data.current.values()].reduce((result: { pt: {x:number, y:number}, distSq: number|undefined}, series) => findClosestPoint(result, series), { pt: {x:0, y:0}, distSq: undefined }).pt;
+      return [...data.current.values()].reduce((result: { pt: {x:number, y:number}, distSq: number|undefined}, series) => findClosestPoint(result, series), { pt: {x:0, y:0}, distSq: undefined }).pt
     }
 
     const registerSelect = React.useCallback((handler: IHandlers) => {
