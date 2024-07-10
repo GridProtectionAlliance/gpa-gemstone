@@ -33,10 +33,9 @@ interface IProps<T> {
     Direction?: 'left' | 'right',
     Width?: string|number,
     Label?: string,
-    children: React.ReactNode,
     GetEnum?: EnumSetter<T>,
     ShowLoading?: boolean,
-      ResultNote?: string,
+    ResultNote?: string,
     StorageID?: string
   }
 
@@ -50,7 +49,7 @@ export namespace Search {
   export interface IFilter<T> { FieldName: string, SearchText: string, Operator: Search.OperatorType, Type: Search.FieldType, IsPivotColumn: boolean }
 }
 
-export default function SearchBar<T> (props: IProps<T>)  {
+export default function SearchBar<T>(props: React.PropsWithChildren<IProps<T>>)  {
   const [hover, setHover] = React.useState<boolean>(false);
   const [show, setShow] = React.useState<boolean>(false);
 
