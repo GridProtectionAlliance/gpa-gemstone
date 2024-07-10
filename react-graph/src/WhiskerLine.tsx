@@ -27,7 +27,6 @@ import { PointNode } from './PointNode';
 import DataLegend from './DataLegend';
 import { CreateGuid } from '@gpa-gemstone/helper-functions';
 import Infobox, { origin } from './Infobox';
-import * as moment from 'moment'
 
 interface IProps {
     /**
@@ -61,11 +60,10 @@ interface IProps {
     Names?: string[]
 }
 
-export interface IHoverData {
+export interface IInteractionData {
     XPosition: number,
     YPosition: number,
-    Value: number,
-    Name: string,
+    Content: { Value: number, Name: string }[],
     Origin: origin
 }
 
@@ -79,8 +77,8 @@ export const WhiskerLine = (props: IProps) => {
     const [data, setData] = React.useState<PointNode | null>(null);
     const [visibleData, setVisibleData] = React.useState<[...number[]][]>([]);
 
-    const [hoverData, setHoverData] = React.useState<IHoverData | null>(null);
-    const [clickData, setClickData] = React.useState<IHoverData | null>(null);
+    const [hoverData, setHoverData] = React.useState<IInteractionData | null>(null);
+    const [clickData, setClickData] = React.useState<IInteractionData | null>(null);
 
     const createLegend = React.useCallback(() => {
         if (props.Legend === undefined)
@@ -133,7 +131,7 @@ export const WhiskerLine = (props: IProps) => {
             return;
         }
 
-        setClickData(handleDataInteraction(data, x, y, props.Names))
+        setClickData(handleDataInteraction(data, x, context.XDomain, context.YDomain[0], props.Names))
     }
 
     React.useEffect(() => {
@@ -145,8 +143,8 @@ export const WhiskerLine = (props: IProps) => {
             return;
         }
 
-        setHoverData(handleDataInteraction(data, context.XHover, context.YHoverSnap[0], props.Names))
-    }, [context.XHover, context.YHover, data])
+        setHoverData(handleDataInteraction(data, context.XHover, context.XDomain, context.YDomain[0], props.Names))
+    }, [context.XHover, context.YHoverSnap, data])
 
     React.useEffect(() => {
         if (props.Data == null || props.Data.length === 0)
@@ -226,39 +224,55 @@ export const WhiskerLine = (props: IProps) => {
         <>
             <g>{Whiskers}</g>
             {hoverData != null ?
-                <Infobox ChildID={guid} X={hoverData?.XPosition} Y={hoverData.YPosition} Origin={hoverData.Origin} Offset={5}>
-                    <p style={{ whiteSpace: 'nowrap' }} id={guid}>{`${hoverData.Name}${hoverData.Value.toFixed(3)}`}</p>
+                <Infobox ChildID={guid} X={hoverData?.XPosition} Y={hoverData.YPosition} Origin={hoverData.Origin}>
+                    <p style={{ whiteSpace: 'nowrap' }} id={guid}>
+                        {hoverData.Content.map((d, index) => (
+                            <>
+                                {d.Name}{d.Value.toFixed(3)}
+                                {index < hoverData.Content.length - 1 ? <br /> : null}
+                            </>
+                        ))}
+                    </p>
                 </Infobox>
                 : null}
             {clickData != null && context.CurrentMode === 'select' ?
-                <Infobox ChildID={`${guid}click`} X={clickData?.XPosition} Y={clickData.YPosition} Origin={clickData.Origin} Offset={5}>
-                    <p style={{ whiteSpace: 'nowrap' }} id={`${guid}click`}>{`${clickData.Name}${clickData.Value.toFixed(3)}`}</p>
+                <Infobox ChildID={`${guid}click`} X={clickData?.XPosition} Y={clickData.YPosition} Origin={clickData.Origin}>
+                    <p style={{ whiteSpace: 'nowrap' }} id={`${guid}click`}>
+                        {clickData.Content.map((d, index) => (
+                            <>
+                                {d.Name}{d.Value.toFixed(3)}
+                                {index < clickData.Content.length - 1 ? <br /> : null}
+                            </>
+                        ))}
+                    </p>
                 </Infobox>
                 : null}
         </>
     );
 }
 
-const handleDataInteraction = (data: PointNode, xValue: number, yValue: number, names?: string[]): IHoverData | null  => {
-    try {
-        const point = data.GetPoint(xValue);
-        if (point === null) {
-            return null;
-        }
+const handleDataInteraction = (data: PointNode, xValue: number, xDomain: [number, number], yDomain: [number, number], names?: string[]): IInteractionData | null => {
+    const point = data.GetPoint(xValue);
+    if (point === null)
+        return null;
 
-        const yVals = point.slice(1);
-        const yVal = yVals?.find(y => y === yValue);
+    const yVals = point.slice(1);
 
-        if (yVal == null) 
-            return null;
-        
-        const yIndex = yVals.findIndex(val => val === yVal)
-        const name = names != null ? names[yIndex] + ': ' : ""
-        const origin = yIndex === yVals.length - 1 ? 'upper-left' : 'lower-left'
-        return { Value: yVal, Name: name, XPosition: point[0], YPosition: yVal, Origin: origin }
-    } catch {
-        return null 
-    }
+    if (yVals == null)
+        return null;
+
+    const content = yVals.map((yVal, index) => ({
+        Name: names != null ? names[index] + ': ' : "",
+        Value: yVal
+    }))
+
+    const middleYOfPlot = (yDomain[0] + yDomain[1]) / 2
+    const middleOfXDomain = (xDomain[0] + xDomain[1]) / 2
+    let origin = 'upper-left'
+    if (xValue > middleOfXDomain)
+        origin = 'upper-right'
+
+    return { Content: content, XPosition: point[0], YPosition: middleYOfPlot, Origin: origin as origin }
 }
 
 export default WhiskerLine;

@@ -27,7 +27,7 @@ import { PointNode } from '../PointNode';
 import DataLegend from '../DataLegend';
 import { CreateGuid } from '@gpa-gemstone/helper-functions';
 import { IBarContext, IBarDataSeries } from './BarGroup';
-import { IHoverData } from '../WhiskerLine'
+import { IInteractionData } from '../WhiskerLine'
 
 interface IProps {
     /**
@@ -81,7 +81,6 @@ export const ContexlessBar = (props: IContextlessProps) => {
     const [enabled, setEnabled] = React.useState<boolean>(true);
     const [data, setData] = React.useState<PointNode | null>(null);
     const [visibleData, setVisibleData] = React.useState<[...number[]][]>([]);
-    const [hoverData, setHoverData] = React.useState<IHoverData | null>(null);
 
     const createLegend = React.useCallback(() => {
         if (props.BarProps.Legend === undefined)
