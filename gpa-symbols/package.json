@@ -1,6 +1,6 @@
 {
   "name": "@gpa-gemstone/gpa-symbols",
-  "version": "0.0.34",
+  "version": "0.0.35",
   "description": "UI Symbols for GPA products",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",

@@ -1,6 +1,6 @@
 {
   "name": "@gpa-gemstone/react-graph",
-  "version": "1.0.51",
+  "version": "1.0.52",
   "description": "Interactive UI Components for GPA products",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -31,7 +31,7 @@
   "license": "MIT",
   "bugs": {"url": "https://github.com/GridProtectionAlliance/gpa-gemstone/issues"},
   "homepage": "https://github.com/GridProtectionAlliance/gpa-gemstone#readme",
-  "devDependencies": {
+  "devDependencies":   {
     "@types/jest": "^27.0.0",
     "@types/lodash": "^4.14.171",
     "@types/mocha": "9.0.0",
@@ -44,9 +44,9 @@
     "ts-jest": "^27.0.4",
     "typescript": "5.5.3"
   },
-  "dependencies": {
-    "@gpa-gemstone/gpa-symbols": "0.0.34",
-    "@gpa-gemstone/helper-functions": "0.0.30",
+  "dependencies":   {
+    "@gpa-gemstone/gpa-symbols": "0.0.35",
+    "@gpa-gemstone/helper-functions": "0.0.31",
     "html2canvas": "^1.4.1",
     "lodash": "^4.17.21",
     "moment": "^2.29.4",
