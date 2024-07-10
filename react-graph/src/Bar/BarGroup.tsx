@@ -79,13 +79,7 @@ const BarGroup: React.FC<IProps> = (props) => {
 
         const dataSeries = map.current.get(barGuid);
         if (dataSeries == null || dataSeries.getPoint == null) return;
-        let data: number[] | undefined;
-
-        try {
-            data = dataSeries.getPoint(xVal);
-        } catch {
-            return;
-        }
+        let data = dataSeries.getPoint(xVal)
 
         if (data == null) return;
 
@@ -105,15 +99,8 @@ const BarGroup: React.FC<IProps> = (props) => {
 
             const dataSeries = map.current.get(guid);
             if (dataSeries == null || !dataSeries.enabled || dataSeries?.getPoint == null) continue;
-            let data: number[] | undefined;
 
-            try {
-                data = dataSeries.getPoint(xVal);
-            }
-            catch {
-                continue;
-            }
-
+            let data = dataSeries.getPoint(xVal);
             if (data == null) continue;
 
             const yVal = context.YTransformation(data[1], AxisMap.get(axis));
@@ -136,27 +123,19 @@ const BarGroup: React.FC<IProps> = (props) => {
             setHoverData(null);
             return;
         }
-
         const points: IHoverData[] = [];
 
         barGuids.forEach(guid => {
             const contextData = map.current.get(guid);
             if (contextData == null || contextData?.getPoint == null) return;
-            let point: number[] | undefined;
-            try {
-                point = contextData.getPoint(context.XHover);
-            }
-            catch {
-                setHoverData(null);
-            }
-
+            let point = contextData.getPoint(context.XHover);
             if (point == null) return;
             points.push({ Name: contextData.legendName, Value: point[1] })
         })
 
         if (points.length === 0) {
             setHoverData(null);
-            return
+            return;
         }
 
         setHoverData(points)
