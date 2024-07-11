@@ -37,7 +37,6 @@ interface IProps<T extends U> {
     GetEnum: (setOptions: (options: IOptions[]) => void, field: Search.IField<T>) => () => void,
     /** Function that Grabs any additional Filters that shoudl be available (such as Addl Fields) */
     GetAddlFields: (setAddlFields: (cols: Search.IField<T>[]) => void) => () => void,
-    children: React.ReactNode,
     AddlFilters?: Search.IFilter<T>[],
     StorageID?: string
 }
@@ -48,7 +47,7 @@ interface IOptions {Value: string, Label: string}
 export namespace DefaultSearch {
 
     /** This Implements a standard Meter Search */
-    export function Meter(props: IProps<SystemCenter.Types.DetailedMeter>) {
+    export const Meter: React.FC<IProps<SystemCenter.Types.DetailedMeter>> = (props) => {
 
       const defaultSearchcols: Search.IField<SystemCenter.Types.DetailedMeter>[] = [
         { label: 'Key', key: 'AssetKey', type: 'string', isPivotField: false },
@@ -91,7 +90,7 @@ export namespace DefaultSearch {
     }
 
     /** This Implements a standard Substation Search */
-    export function Location (props: IProps<SystemCenter.Types.DetailedLocation>) {
+    export const Location: React.FC<IProps<SystemCenter.Types.DetailedLocation>> = (props) => {
 
         const standardSearch: Search.IField<SystemCenter.Types.DetailedLocation> = { label: 'Name', key: 'Name', type: 'string', isPivotField: false };
         const [addlFieldCols, setAddlFieldCols] = React.useState<Search.IField<SystemCenter.Types.DetailedLocation>[]>([]);
@@ -133,7 +132,7 @@ export namespace DefaultSearch {
     }
 
     /** This Implements a standard Transmission Asset Search */
-    export function Asset (props: IProps<SystemCenter.Types.DetailedAsset>) {
+    export const Asset: React.FC<IProps<SystemCenter.Types.DetailedAsset>> = (props) => {
 
         const standardSearch: Search.IField<SystemCenter.Types.DetailedAsset> = { label: 'Name', key: 'AssetName', type: 'string', isPivotField: false };
         const [addlFieldCols, setAddlFieldCols] = React.useState<Search.IField<SystemCenter.Types.DetailedAsset>[]>([]);
@@ -177,7 +176,7 @@ export namespace DefaultSearch {
     }
 
     /** This Implements a standard AssetGroup Search */
-    export function AssetGroup (props: IProps<OpenXDA.Types.AssetGroup>) {
+    export const AssetGroup: React.FC<IProps<OpenXDA.Types.AssetGroup>> = (props) => {
 
         const standardSearch: Search.IField<OpenXDA.Types.AssetGroup> = { label: 'Name', key: 'Name', type: 'string', isPivotField: false };
         const [addlFieldCols, setAddlFieldCols] = React.useState<Search.IField<OpenXDA.Types.AssetGroup>[]>([]);
@@ -218,7 +217,7 @@ export namespace DefaultSearch {
     }
 
     /** This Implements a standard User Search */
-    export function User (props: IProps<Application.Types.iUserAccount>) {
+    export const User: React.FC<IProps<Application.Types.iUserAccount>> = (props) => {
 
         const standardSearch: Search.IField<Application.Types.iUserAccount> = { label: 'Username', key: 'Name', type: 'string', isPivotField: false };
         const [addlFieldCols, setAddlFieldCols] = React.useState<Search.IField<Application.Types.iUserAccount>[]>([]);
@@ -257,7 +256,7 @@ export namespace DefaultSearch {
 
 
     /** This Implements a standard Customer Search */
-    export function Customer (props: IProps<OpenXDA.Types.Customer>) {
+    export const Customer: React.FC<IProps<OpenXDA.Types.Customer>> = (props) => {
 
         const defaultSearchcols: Search.IField<OpenXDA.Types.Customer>[] = [
             { label: 'Name', key: 'Name', type: 'string', isPivotField: false },
