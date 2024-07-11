@@ -40,6 +40,7 @@ interface IAdjustableHeaderWrapperProps extends IHeaderWrapperProps {
     minWidth?: number,
     setMaxWidth: (w: number) => void,
     maxWidth?: number,
+    extraWidth: number
 }
 
 export function AdjustableColumnHeaderWrapper(props: React.PropsWithChildren<IAdjustableHeaderWrapperProps>) {
@@ -55,13 +56,21 @@ export function AdjustableColumnHeaderWrapper(props: React.PropsWithChildren<IAd
     const onLeave = React.useCallback(() => { setShowBorder(false); }, [])
 
     const style = (props.style !== undefined) ? { ...props.style } : {};
+    let isAuto = false;
 
     style.overflowX = style.overflowX ?? 'hidden';
     style.display = style.display ?? 'inline-block'
     style.position = style.position ?? 'relative';
     style.borderTop = style.borderTop ?? 'none';
-    style.width = style.width ?? props.width;
     style.minWidth = style.minWidth ?? 100;
+
+    if (style.width == 'auto') {
+        isAuto = true;
+    }
+
+    if ((style.width == undefined || style.width == 'auto') && props.width !== undefined && mode === 'width') {
+        style.width = (props.width) + props.extraWidth;
+    }
 
     if (mode === 'minWidth') {
         style.width = style.minWidth;
@@ -127,9 +136,10 @@ export function AdjustableColumnHeaderWrapper(props: React.PropsWithChildren<IAd
         const w = GetNodeSize(thref.current)?.width;
         if (w === undefined) return;
 
-        if (w !== width) {
-            props.setWidth(w);
+        if (props.width === undefined || (w !== (props.width + props.extraWidth))) {
+            props.setWidth(w, isAuto);
         }
+
         if (maxWidth === undefined && style.maxWidth !== undefined) {
             setMode('maxWidth');
         } else if (minWidth === undefined && style.minWidth !== undefined) {
@@ -144,7 +154,7 @@ export function AdjustableColumnHeaderWrapper(props: React.PropsWithChildren<IAd
         if (maxWidth !== props.maxWidth) props.setMaxWidth(maxWidth as number);
     }, [maxWidth]);
     React.useEffect(() => { 
-        if (width !== props.width) props.setWidth(width as number);
+        if (width !== props.width) props.setWidth(width as number, isAuto);
     }, [width]);
 
     const onClick = React.useCallback((e) => {
@@ -197,12 +207,17 @@ interface IAdjustableDataWrapperProps extends IDataWrapperProps {
 export function AdjustableColumnDataWrapper(props: React.PropsWithChildren<IAdjustableDataWrapperProps>) {
     const tdref = React.useRef(null);
     const style = (props.style !== undefined) ? { ...props.style } : {};
+    let isAuto = false;
 
     style.overflowX = style.overflowX ?? 'hidden';
     style.display = style.display ?? 'inline-block'
-    style.width = style.width ?? props.width;
+
+    if ((style.width == undefined || style.width == 'auto') && props.width !== undefined) {
+        style.width = (props.width) + props.extraWidth;
+    }
 
     if (props.dragStart !== undefined) style.cursor = "grab";
+    if (style.width == 'auto') isAuto = true;
 
     React.useLayoutEffect(() => {
         if (tdref.current == null)
@@ -211,17 +226,17 @@ export function AdjustableColumnDataWrapper(props: React.PropsWithChildren<IAdju
         const w = GetNodeSize(tdref.current)?.width;
 
         if (style.width === undefined && props.width === undefined) {
-            props.setWidth(w);
+            props.setWidth(w, isAuto);
             return;
         } 
 
         if (props.adjustment !== undefined && props.adjustment !== 0)
             return;
 
-        if (w === undefined || w == props.width) return;
-        props.setWidth(w);
+        if (w === undefined || (props.width !== undefined && w == (props.width + props.extraWidth))) return;
+        props.setWidth(w, isAuto);
     })
-
+    
     if (props.adjustment !== undefined && props.adjustment !== 0 && style.width !== undefined)
         style.width = `calc(${formatwidth(style.width)} ${props.adjustment < 0 ? '-' : '+'} ${Math.abs(props.adjustment).toString()}px)`
 
