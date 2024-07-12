@@ -207,7 +207,7 @@ export class PointNode {
             // if the subsection is null, and the tVal is less than the minimum value of the subsection, ??Start over again looking for the point in the first subsection??
             if (tVal < this.minT) childIndex = 0;
             else if (tVal > this.maxT) childIndex = this.children.length - 1;
-            else childIndex = this.children.findIndex(n => n.maxT > tVal);
+            else childIndex = this.children.findIndex(n => n.maxT >= tVal);
 
             if (childIndex === -1) throw new RangeError(`Could not find child bucket with point that has a time value of ${tVal}`);
 
