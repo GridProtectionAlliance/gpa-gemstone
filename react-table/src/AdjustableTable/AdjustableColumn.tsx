@@ -46,7 +46,7 @@ interface IAdjustableHeaderWrapperProps extends IHeaderWrapperProps {
 export function AdjustableColumnHeaderWrapper(props: React.PropsWithChildren<IAdjustableHeaderWrapperProps>) {
     const thref = React.useRef(null);
     const [mode, setMode] = React.useState<'width' | 'minWidth' | 'maxWidth'>('minWidth');
-    const [width, setWidth] = React.useState<number>();
+    //const [width, setWidth] = React.useState<number>();
     const [minWidth, setMinWidth] = React.useState<number>();
     const [maxWidth, setMaxWidth] = React.useState<number>();
 
@@ -56,7 +56,6 @@ export function AdjustableColumnHeaderWrapper(props: React.PropsWithChildren<IAd
     const onLeave = React.useCallback(() => { setShowBorder(false); }, [])
 
     const style = (props.style !== undefined) ? { ...props.style } : {};
-    let isAuto = false;
 
     style.overflowX = style.overflowX ?? 'hidden';
     style.display = style.display ?? 'inline-block'
@@ -64,9 +63,8 @@ export function AdjustableColumnHeaderWrapper(props: React.PropsWithChildren<IAd
     style.borderTop = style.borderTop ?? 'none';
     style.minWidth = style.minWidth ?? 100;
 
-    if (style.width == 'auto') {
-        isAuto = true;
-    }
+    const isAuto = style.width == 'auto';
+    const isUndefined = style.width === undefined;
 
     if ((style.width == undefined || style.width == 'auto') && props.width !== undefined && mode === 'width') {
         style.width = (props.width) + props.extraWidth;
@@ -137,7 +135,7 @@ export function AdjustableColumnHeaderWrapper(props: React.PropsWithChildren<IAd
         if (w === undefined) return;
 
         if (props.width === undefined || (w !== (props.width + props.extraWidth))) {
-            props.setWidth(w, isAuto);
+            props.setWidth(w, isAuto, isUndefined);
         }
 
         if (maxWidth === undefined && style.maxWidth !== undefined) {
@@ -153,9 +151,9 @@ export function AdjustableColumnHeaderWrapper(props: React.PropsWithChildren<IAd
     React.useEffect(() => { 
         if (maxWidth !== props.maxWidth) props.setMaxWidth(maxWidth as number);
     }, [maxWidth]);
-    React.useEffect(() => { 
-        if (width !== props.width) props.setWidth(width as number, isAuto);
-    }, [width]);
+    //React.useEffect(() => { 
+    //    if (width !== props.width) props.setWidth(width as number, isAuto, isUndefined);
+    //}, [width]);
 
     const onClick = React.useCallback((e) => {
         if (props.allowSort ?? true) props.onSort(e);
@@ -207,17 +205,18 @@ interface IAdjustableDataWrapperProps extends IDataWrapperProps {
 export function AdjustableColumnDataWrapper(props: React.PropsWithChildren<IAdjustableDataWrapperProps>) {
     const tdref = React.useRef(null);
     const style = (props.style !== undefined) ? { ...props.style } : {};
-    let isAuto = false;
 
     style.overflowX = style.overflowX ?? 'hidden';
     style.display = style.display ?? 'inline-block'
+
+    const isAuto = style.width == 'auto';
+    const isUndefined = style.width === undefined;
 
     if ((style.width == undefined || style.width == 'auto') && props.width !== undefined) {
         style.width = (props.width) + props.extraWidth;
     }
 
     if (props.dragStart !== undefined) style.cursor = "grab";
-    if (style.width == 'auto') isAuto = true;
 
     React.useLayoutEffect(() => {
         if (tdref.current == null)
@@ -226,7 +225,7 @@ export function AdjustableColumnDataWrapper(props: React.PropsWithChildren<IAdju
         const w = GetNodeSize(tdref.current)?.width;
 
         if (style.width === undefined && props.width === undefined) {
-            props.setWidth(w, isAuto);
+            props.setWidth(w, isAuto, isUndefined);
             return;
         } 
 
@@ -234,7 +233,7 @@ export function AdjustableColumnDataWrapper(props: React.PropsWithChildren<IAdju
             return;
 
         if (w === undefined || (props.width !== undefined && w == (props.width + props.extraWidth))) return;
-        props.setWidth(w, isAuto);
+        props.setWidth(w, isAuto, isUndefined);
     })
     
     if (props.adjustment !== undefined && props.adjustment !== 0 && style.width !== undefined)
