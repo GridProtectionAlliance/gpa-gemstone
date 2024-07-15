@@ -1,5 +1,5 @@
 ﻿//******************************************************************************************************
-//  EventSearchTypeFilter.tsx - Gbtc
+//  EventTypeFilter.tsx - Gbtc
 //
 //  Copyright © 2023, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -19,7 +19,7 @@
 //  02/02/2023 - C. Lackner
 //       Generated original version of source code.
 //  06/18/2024 - A. Karrar
-//       Configured Filter to be usable in GemStone
+//       Moved EventTypeFilter to GemStone
 //
 //******************************************************************************************************
 import React from 'react';
@@ -29,20 +29,19 @@ import { OpenXDA } from '@gpa-gemstone/application-typings';
 
 
 interface IProps {
-    setFilter: (types: number[]) => void;
+    SetSelectedTypeIDs: (typeIDs: number[]) => void;
     Height?: number;
-    eventTypes: OpenXDA.Types.EventType[];
-    evtTypeStatus: 'loading' | 'idle' | 'error' | 'changed' | 'unintiated';
-    eventTypeFilter: number[];
+    EventTypes: OpenXDA.Types.EventType[];
+    SelectedTypeID: number[];
 }
 interface ICategory { label: string, height: number }
 
 
-const EventSearchTypeFilter = (props: IProps) => {
+const EventTypeFilter: React.FC<IProps> = (props: IProps) => {
     const [evtTypeCategories, setEvtTypeCategories] = React.useState<ICategory[]>([]);
     const [nCol, setnCol] = React.useState<number>(1);
 
-    React.useEffect(() => setEvtTypeCategories(_.uniq(props.eventTypes.map(e => e.Category)).map(c => ({ label: c ?? '', height: 0 }))), [props.eventTypes]);
+    React.useEffect(() => setEvtTypeCategories(_.uniq(props.EventTypes.map(e => e.Category)).map(c => ({ label: c ?? '', height: 0 }))), [props.EventTypes]);
     React.useEffect(() => {
         if (props.Height == undefined){
             setnCol(1);
@@ -105,17 +104,17 @@ const EventSearchTypeFilter = (props: IProps) => {
 
         return <li className="nav-item"
             style={{ width: (20 / nCol).toFixed(0) + '%', paddingRight: 10, height: evtTypeCategories.some(c => c.height == 0) ? 5 : '100%', overflow: 'hidden' }}>
-            {flts.map(c => (<EventSearchTypeCategory key={c.label} Label={c.label} SelectedID={props.eventTypeFilter}
+            {flts.map(c => (<EventSearchTypeCategory key={c.label} Label={c.label} SelectedID={props.SelectedTypeID}
                 SelectAll={(selected) => {
-                    props.setFilter(
-                        selected ? props.eventTypeFilter.filter(id => props.eventTypes.find(t => id == t.ID && (t.Category ?? '') == c.label) == null) 
-                        : _.uniq([...props.eventTypeFilter, ...props.eventTypes.filter(t => (t.Category ?? '') == c.label).map(i => i.ID)])
+                    props.SetSelectedTypeIDs(
+                        selected ? props.SelectedTypeID.filter(id => props.EventTypes.find(t => id == t.ID && (t.Category ?? '') == c.label) == null) 
+                        : _.uniq([...props.SelectedTypeID, ...props.EventTypes.filter(t => (t.Category ?? '') == c.label).map(i => i.ID)])
                     );
                 }}
-                Data={props.eventTypes.filter(et => (et.Category ?? '') == c.label)}
+                Data={props.EventTypes.filter(et => (et.Category ?? '') == c.label)}
                 OnChange={(record, selected) => {
-                    props.setFilter(
-                        selected ? [...props.eventTypeFilter, record.ID] : props.eventTypeFilter.filter(t => t != record.ID)
+                    props.SetSelectedTypeIDs(
+                        selected ? [...props.SelectedTypeID, record.ID] : props.SelectedTypeID.filter(t => t != record.ID)
                     );
                 }}
                 SetHeight={(h) => setHeight(c.label, h)} />))}
@@ -179,4 +178,4 @@ const EventSearchTypeCategory = (props: ICategoryProps) => {
     </fieldset>
 }
 
-export default EventSearchTypeFilter; 
+export default EventTypeFilter; 
