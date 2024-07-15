@@ -63,7 +63,7 @@ export default function Column<T>(props: React.PropsWithChildren<IColumnProps<T>
 }
 
 export interface IHeaderWrapperProps {
-    setWidth: (w: number, a: boolean) => void,
+    setWidth: (w: number, a: boolean, u: boolean) => void,
     onSort: React.MouseEventHandler<HTMLTableCellElement>,
     sorted: boolean,
     asc: boolean,
@@ -77,8 +77,7 @@ export interface IHeaderWrapperProps {
 
 export function ColumnHeaderWrapper (props: React.PropsWithChildren<IHeaderWrapperProps>) {
     const thref = React.useRef(null);
-    let isAuto = false;
-    
+
     const style = (props.style !== undefined) ? { ...props.style } : {};
 
     style.overflowX = style.overflowX ?? 'hidden';
@@ -86,9 +85,8 @@ export function ColumnHeaderWrapper (props: React.PropsWithChildren<IHeaderWrapp
     style.position = style.position ?? 'relative';
     style.borderTop = style.borderTop ?? 'none';
 
-    if (style.width == 'auto') {
-        isAuto = true;
-    }
+    const isAuto = style.width == 'auto';
+    const isUndefined = style.width === undefined;
 
     if ((style.width == undefined || style.width == 'auto') && props.width !== undefined) {
         style.width = (props.width) + props.extraWidth;
@@ -103,7 +101,7 @@ export function ColumnHeaderWrapper (props: React.PropsWithChildren<IHeaderWrapp
             return;
         const w = GetNodeSize(thref.current)?.width;
         if (props.width !== undefined && (w === undefined || w == (props.width + props.extraWidth))) return;
-            props.setWidth(w, isAuto);
+            props.setWidth(w, isAuto, isUndefined);
     })
 
     const onClick = React.useCallback((e) => {
@@ -131,7 +129,7 @@ export function ColumnHeaderWrapper (props: React.PropsWithChildren<IHeaderWrapp
 }
 
 export interface IDataWrapperProps {
-    setWidth: (w: number, a: boolean) => void,
+    setWidth: (w: number, a: boolean, u: boolean) => void,
     width?: number,
     enabled: boolean
     dragStart?: (e: React.DragEvent) => void,
@@ -144,7 +142,6 @@ export interface IDataWrapperProps {
 export function ColumnDataWrapper (props: React.PropsWithChildren<IDataWrapperProps>) {
     const tdref = React.useRef(null);
     const style = (props.style !== undefined) ? { ...props.style } : {};
-    let isAuto = false;
 
     style.overflowX = style.overflowX ?? 'hidden';
     style.display = style.display ?? 'inline-block'
@@ -153,9 +150,8 @@ export function ColumnDataWrapper (props: React.PropsWithChildren<IDataWrapperPr
         style.width = (props.width) + props.extraWidth;
     }
 
-    if (style.width == 'auto') {
-        isAuto = true;
-    }
+    const isAuto = style.width == 'auto';
+    const isUndefined = style.width === undefined;
 
     if (props.dragStart !== undefined) style.cursor = "grab";
 
@@ -164,7 +160,7 @@ export function ColumnDataWrapper (props: React.PropsWithChildren<IDataWrapperPr
             return;
         const w = GetNodeSize(tdref.current)?.width;
         if (props.width !== undefined && (w === undefined || w == (props.width + props.extraWidth))) return;
-            props.setWidth(w, isAuto);
+            props.setWidth(w, isAuto, isUndefined);
     })
 
     if (props.width != undefined && !props.enabled)

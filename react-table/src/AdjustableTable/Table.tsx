@@ -132,6 +132,7 @@ interface IAutoWidth {
     enabled: boolean;
     adjustement: number | undefined;
     isAuto: boolean;
+    isUndefined: boolean;
 }
 
 const defaultTableStyle: React.CSSProperties = {
@@ -155,7 +156,6 @@ export default function AdjustableTable<T>(props: React.PropsWithChildren<TableP
     const [currentTableWidth, setCurrentTableWidth] = React.useState<number>(0);
 
     const [extraWidthPerRow, setExtraWidthPerRow] = React.useState<number>(0);
-    const [colsContainAutoCSS, setColsContainAutoCSS] = React.useState<boolean>(false);
 
     const setTableWidth = React.useCallback(
         _.debounce(() => {
@@ -186,10 +186,9 @@ export default function AdjustableTable<T>(props: React.PropsWithChildren<TableP
     
     React.useEffect(() => {
         let t = 0;
-        autoWidth.current.forEach((v) => {
+        autoWidth.current.forEach((v, k) => {
             t = t + v.maxColWidth;
         });
-        
         if (t > currentTableWidth - 17 && currentTableWidth > 0) {
             const hideKeys: string[] = [];
             const showKeys: string[] = [];
@@ -204,11 +203,9 @@ export default function AdjustableTable<T>(props: React.PropsWithChildren<TableP
                 }
                 else hideKeys.push(k);
             });
-
-            const numEnabledColumns = Array.from(autoWidth.current.values()).filter(autoWidth => autoWidth.enabled).length;
-            const numOfColsWithAutoCSS = Array.from(autoWidth.current.values()).filter(autoWidth => autoWidth.isAuto && autoWidth.enabled).length;
-            const colsToDivideBy = (numOfColsWithAutoCSS > 0) ? numOfColsWithAutoCSS : numEnabledColumns;
-            const extraSpace = (currentTableWidth - 17 - colW - numEnabledColumns) / colsToDivideBy;
+            
+            
+            const numEnabledColumns = showKeys.length;
 
             if (Array.from(autoWidth.current.values()).filter(autoWidth => !autoWidth.enabled).length == hideKeys.length) {
                 return;
@@ -219,19 +216,28 @@ export default function AdjustableTable<T>(props: React.PropsWithChildren<TableP
                 hideKeys.forEach((k) => (autoWidth.current.get(k)!.enabled = false));
                 showKeys.forEach((k) => (autoWidth.current.get(k)!.enabled = true));
 
-                setColsContainAutoCSS(numOfColsWithAutoCSS > 0);
-                setExtraWidthPerRow(extraSpace);
+                const numOfColsWithAutoCSS = Array.from(autoWidth.current.values()).filter(autoWidth => autoWidth.isAuto && autoWidth.enabled).length;
+                const numOfColsWithUndefinedCSS = Array.from(autoWidth.current.values()).filter(autoWidth => autoWidth.isUndefined && autoWidth.enabled).length;
 
+                let colsToDivideBy = numEnabledColumns; // Split the extra across all cols
+
+                if (numOfColsWithAutoCSS > 0) {         // Split only on the css auto-cols and no css undefined cols
+                    colsToDivideBy = numOfColsWithAutoCSS;
+                }
+                if (numOfColsWithUndefinedCSS > 0 && numOfColsWithAutoCSS == 0) { // Split only on the css undefined if there are no auto-cols
+                    colsToDivideBy = numOfColsWithUndefinedCSS;
+                }
+                const extraSpace = (currentTableWidth - 17 - colW - numEnabledColumns) / colsToDivideBy;
+                setExtraWidthPerRow(extraSpace);
                 props.ReduceWidthCallback?.(hideKeys);
                 setAutoWidthVersion((v) => v + 1);
             }, 500);
         } else if (currentTableWidth > 0) {
             const numEnabledColumns = Array.from(autoWidth.current.values()).filter(autoWidth => autoWidth.enabled).length;
             const numOfColsWithAutoCSS = Array.from(autoWidth.current.values()).filter(autoWidth => autoWidth.isAuto && autoWidth.enabled).length;
-            const colsToDivideBy = (numOfColsWithAutoCSS > 0) ? numOfColsWithAutoCSS : numEnabledColumns;
-            const extraSpace = (currentTableWidth - 17 - t - numEnabledColumns) / colsToDivideBy;
+            const colsToDivideBy = (numOfColsWithAutoCSS > 0) ? numOfColsWithAutoCSS : numEnabledColumns; 
 
-            setColsContainAutoCSS(numOfColsWithAutoCSS > 0);
+            const extraSpace = (currentTableWidth - 17 - t - numEnabledColumns) / colsToDivideBy;
             setExtraWidthPerRow(extraSpace);
 
             props.ReduceWidthCallback?.([]);
@@ -271,14 +277,15 @@ export default function AdjustableTable<T>(props: React.PropsWithChildren<TableP
         [props.OnSort],
     );
     
-    const setWidth = React.useCallback((colKey: string, key: string | number, width: number, isAuto: boolean) => {
+    const setWidth = React.useCallback((colKey: string, key: string | number, width: number, isAuto: boolean, isUndefined: boolean) => {
         if (!autoWidth.current.has(colKey)) {                                     // does the column exist
             autoWidth.current.set(colKey, {                                       // if not, add it.
                 maxColWidth: width,
                 width: new Map<string | number, number>([[key, width]]),
                 enabled: true,
                 adjustement: 0,
-                isAuto: isAuto
+                isAuto: isAuto,
+                isUndefined: isUndefined
             })
         } else if (!(autoWidth.current.get(colKey)?.width.has(key) ?? false)) {   // it exists but the key does not
             autoWidth.current.get(colKey)?.width.set(key, width);                 // add the width for this key
@@ -312,7 +319,8 @@ export default function AdjustableTable<T>(props: React.PropsWithChildren<TableP
                 width: new Map<string | number, number>(),
                 enabled: true,
                 adjustement: w,
-                isAuto: false
+                isAuto: false,
+                isUndefined: false
             })
         } else {
             const x = autoWidth.current.get(colKey);
@@ -336,7 +344,8 @@ export default function AdjustableTable<T>(props: React.PropsWithChildren<TableP
             enabled: true,
             adjustement: 0,
             minWidth: w,
-            isAuto: false
+            isAuto: false,
+            isUndefined: false
         });
         else if (autoWidth.current.get(colKey)?.minWidth == w) return;
         autoWidth.current.get(colKey)!.minWidth = w;
@@ -356,7 +365,8 @@ export default function AdjustableTable<T>(props: React.PropsWithChildren<TableP
             enabled: true,
             adjustement: 0,
             maxWidth: w,
-            isAuto: false
+            isAuto: false,
+            isUndefined: false
         });
         else if (autoWidth.current.get(colKey)?.maxWidth == w) return;
         
@@ -382,7 +392,7 @@ export default function AdjustableTable<T>(props: React.PropsWithChildren<TableP
         SortKey={props.SortKey}
         Ascending={props.Ascending}
         OnSort={handleSort}
-        SetWidth={(k, w, a) => setWidth(k, -1, w, a)}
+        SetWidth={(k, w, a, u) => setWidth(k, -1, w, a, u)}
         SetMaxWidth={setMaxWidth}
         SetMinWidth={setMinWidth}
         AutoWidth={autoWidth}
@@ -435,7 +445,7 @@ interface IRowProps<T> {
     KeySelector: (data: T, index?: number) => string | number;
     AutoWidthVersion: number;
     AutoWidth: React.MutableRefObject<Map<string, IAutoWidth>>;
-    SetWidth: (key: string, itemKey: string | number, width: number, isAuto: boolean) => void;
+    SetWidth: (key: string, itemKey: string | number, width: number, isAuto: boolean, isUndefined: boolean) => void;
     ExtraWidth: number
 }
     
@@ -479,7 +489,7 @@ function Rows<T>(props: React.PropsWithChildren<IRowProps<T>>) {
                             return (
                         <ColumnDataWrapper
                             key={element.key}
-                            extraWidth={props.ExtraWidth} // ew = there is an auto, but not this one ? 0
+                            extraWidth={props.ExtraWidth} // extraW = there is an auto, but not this one ? 0
                             onClick={
                                 (props.OnClick !== undefined && props.OnClick !== null) ? (e) =>
                                 props.OnClick!(
@@ -506,7 +516,7 @@ function Rows<T>(props: React.PropsWithChildren<IRowProps<T>>) {
                                     e,
                                 ) : undefined
                             }
-                            setWidth={(w: number, a: boolean) => props.SetWidth(element.props.Key, key, Math.floor(w), a)}
+                            setWidth={(w: number, a: boolean, u: boolean) => props.SetWidth(element.props.Key, key, Math.floor(w), a, u)}
                             style={element.props.RowStyle}
                             width={
                                 props.AutoWidth.current.get(element.props.Key)?.width.has(key) ?? false
@@ -531,59 +541,59 @@ function Rows<T>(props: React.PropsWithChildren<IRowProps<T>>) {
                         if ((element as React.ReactElement<any>).type === AdjustableColumn)
                             if (props.AutoWidth.current.get(element.props.Key)?.enabled ?? true)
                                 return (
-                            <AdjustableColumnDataWrapper
-                                adjustment={props.AutoWidth.current.get(element.props.Key)?.adjustement}
-                                key={element.key}
-                                onClick={
-                                (props.OnClick !== undefined && props.OnClick !== null) ? (e) =>
-                                    props.OnClick!(
-                                        {
-                                            colKey: element.props.Key,
-                                            colField: element.props.Field,
-                                            row: d,
-                                            data: d[element.props.Field as keyof T],
-                                            index: i,
-                                        },
-                                        e,
-                                    ) : undefined
-                                }
-                                dragStart={
-                                (props.DragStart !== undefined && props.DragStart !== null) ? (e) =>
-                                    props.DragStart!(
-                                        {
-                                            colKey: element.props.Key,
-                                            colField: element.props.Field,
-                                            row: d,
-                                            data: d[element.props.Field as keyof T],
-                                            index: i,
-                                        },
-                                        e,
-                                    ) : undefined
-                                }
-                                setWidth={(w: number, a: boolean) => props.SetWidth(element.props.Key, key, Math.floor(w), a)}
-                                style={element.props.RowStyle}
-                                width={
-                                    props.AutoWidth.current.get(element.props.Key)?.width.has(key) ?? false
-                                    ? props.AutoWidth.current.get(element.props.Key)?.maxColWidth
-                                    : undefined
-                                }
-                                enabled={props.AutoWidth.current.get(element.props.Key)?.enabled ?? true}
-                                extraWidth={props.ExtraWidth} //!
-                            >
-                                {' '}
-                                {element.props.Content !== undefined
-                                    ? element.props.Content({
-                                        item: d,
-                                        key: element.props.Key,
-                                        field: element.props.Field,
-                                        style: style,
-                                        index: i,
-                                    })
-                                    : element.props.Field !== undefined
-                                    ? d[element.props.Field as keyof T]
-                                : null}
-                            </AdjustableColumnDataWrapper>
-                            );
+                                    <AdjustableColumnDataWrapper
+                                        adjustment={props.AutoWidth.current.get(element.props.Key)?.adjustement}
+                                        key={element.key}
+                                        onClick={
+                                        (props.OnClick !== undefined && props.OnClick !== null) ? (e) =>
+                                            props.OnClick!(
+                                                {
+                                                    colKey: element.props.Key,
+                                                    colField: element.props.Field,
+                                                    row: d,
+                                                    data: d[element.props.Field as keyof T],
+                                                    index: i,
+                                                },
+                                                e,
+                                            ) : undefined
+                                        }
+                                        dragStart={
+                                        (props.DragStart !== undefined && props.DragStart !== null) ? (e) =>
+                                            props.DragStart!(
+                                                {
+                                                    colKey: element.props.Key,
+                                                    colField: element.props.Field,
+                                                    row: d,
+                                                    data: d[element.props.Field as keyof T],
+                                                    index: i,
+                                                },
+                                                e,
+                                            ) : undefined
+                                        }
+                                        setWidth={(w: number, a: boolean, u: boolean) => props.SetWidth(element.props.Key, key, Math.floor(w), a, u)}
+                                        style={element.props.RowStyle}
+                                        width={
+                                            props.AutoWidth.current.get(element.props.Key)?.width.has(key) ?? false
+                                            ? props.AutoWidth.current.get(element.props.Key)?.maxColWidth
+                                            : undefined
+                                        }
+                                        enabled={props.AutoWidth.current.get(element.props.Key)?.enabled ?? true}
+                                        extraWidth={props.ExtraWidth}
+                                    >
+                                        {' '}
+                                        {element.props.Content !== undefined
+                                            ? element.props.Content({
+                                                item: d,
+                                                key: element.props.Key,
+                                                field: element.props.Field,
+                                                style: style,
+                                                index: i,
+                                            })
+                                            : element.props.Field !== undefined
+                                            ? d[element.props.Field as keyof T]
+                                        : null}
+                                    </AdjustableColumnDataWrapper>
+                                );
                             return null;
                         })}
                     </tr>
@@ -606,11 +616,11 @@ interface IHeaderProps<T> {
     LastColumn?: string | React.ReactNode;
     AutoWidthVersion: number;
     AutoWidth: React.MutableRefObject<Map<string, IAutoWidth>>;
-    SetWidth: (key: string, width: number, isAuto: boolean) => void;
+    SetWidth: (key: string, width: number, isAuto: boolean, isUndefined: boolean) => void;
     SetMinWidth: (key: string, width: number) => void;
     SetMaxWidth: (key: string, width: number) => void;
     SetAdjustment: (key: string, width: number) => void;
-    ExtraWidth: number //!
+    ExtraWidth: number
 }
 
 function Header<T>(props: React.PropsWithChildren<IHeaderProps<T>>) {
@@ -725,7 +735,7 @@ function Header<T>(props: React.PropsWithChildren<IHeaderProps<T>>) {
                     return (
                 <ColumnHeaderWrapper
                     enabled={props.AutoWidth.current.get(element.props.Key)?.enabled ?? true}
-                    setWidth={(w: number, a: boolean) => props.SetWidth(element.props.Key, Math.floor(w), a)}
+                    setWidth={(w: number, a: boolean, u: boolean) => props.SetWidth(element.props.Key, Math.floor(w), a, u)}
                     onSort={(e) =>
                         props.OnSort(
                             { colKey: element.props.Key, colField: element.props.Field, ascending: props.Ascending },
@@ -754,7 +764,7 @@ function Header<T>(props: React.PropsWithChildren<IHeaderProps<T>>) {
                     return (
                 <AdjustableColumnHeaderWrapper
                     enabled={props.AutoWidth.current.get(element.props.Key)?.enabled ?? true}
-                    setWidth={(w: number, a: boolean) => props.SetWidth(element.props.Key, w, a)}
+                    setWidth={(w: number, a: boolean, u: boolean) => props.SetWidth(element.props.Key, w, a, u)}
                     setMinWidth={(w) => props.SetMinWidth(element.props.Key, Math.round(w))}
                     minWidth={props.AutoWidth.current.get(element.props.Key)?.minWidth}
                     setMaxWidth={(w) => props.SetMaxWidth(element.props.Key, Math.round(w))}
