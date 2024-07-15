@@ -510,7 +510,7 @@ export default class GenericSlice<T extends U> {
                     state.ActiveFetchID = state.ActiveFetchID.filter(id => id !== action.meta.requestId);
                     state.Status = 'idle';
                     state.Error = null;
-                    state.Data = JSON.parse(action.payload.toString()) as Draft<T[]>;
+                    state.Data = action.payload as Draft<T[]>;
 
                     if (state.SortField === action.meta.arg.SortField)
                         state.Ascending = !state.Ascending;
