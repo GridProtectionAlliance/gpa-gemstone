@@ -186,7 +186,7 @@ export default function AdjustableTable<T>(props: React.PropsWithChildren<TableP
     
     React.useEffect(() => {
         let t = 0;
-        autoWidth.current.forEach((v, k) => {
+        autoWidth.current.forEach((v) => {
             t = t + v.maxColWidth;
         });
         if (t > currentTableWidth - 17 && currentTableWidth > 0) {
