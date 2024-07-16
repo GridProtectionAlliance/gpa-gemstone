@@ -146,12 +146,12 @@ export function ColumnDataWrapper (props: React.PropsWithChildren<IDataWrapperPr
     style.overflowX = style.overflowX ?? 'hidden';
     style.display = style.display ?? 'inline-block'
 
+    const isAuto = style.width == 'auto';
+    const isUndefined = style.width === undefined;
+
     if ((style.width == undefined || style.width == 'auto') && props.width !== undefined) {
         style.width = (props.width) + props.extraWidth;
     }
-
-    const isAuto = style.width == 'auto';
-    const isUndefined = style.width === undefined;
 
     if (props.dragStart !== undefined) style.cursor = "grab";
 
