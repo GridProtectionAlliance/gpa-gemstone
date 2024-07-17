@@ -21,7 +21,7 @@
 //
 //******************************************************************************************************
 
-import React from 'react'
+import * as React from 'react'
 
 interface IProps {
     rowsPerPage: number
@@ -63,9 +63,9 @@ const LayoutGrid: React.FC<React.PropsWithChildren<IProps>> = (props) => {
             rowsOnGrid.push(row);
         }
         for(let i = 0; i < numOfRows - rowsNeedingExtraItems && numOfItemsRemaining >= 0; ++i) {
-            const itemsInRow = lowestSquare === props.colMax ? lowestSquare : lowestSquare;
-            const row = { start: totalNumOfItems - numOfItemsRemaining, numOfCols: Math.min(numOfItemsRemaining, itemsInRow) };
-            numOfItemsRemaining -= itemsInRow;
+            const itemsInRow = lowestSquare === props.colMax ? lowestSquare : props.colMax;
+            const row = { start: totalNumOfItems - numOfItemsRemaining, numOfCols: Math.min(numOfItemsRemaining, itemsInRow!) };
+            numOfItemsRemaining -= itemsInRow!;
             rowsOnGrid.push(row);
         }
         setRows(rowsOnGrid);
