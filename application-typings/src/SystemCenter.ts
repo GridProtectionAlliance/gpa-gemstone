@@ -35,7 +35,7 @@ namespace SystemCenter {
         // Tables
         export interface Setting {ID: number, Name: string, Value: string, DefaultValue: string }
 		export interface AdditionalField { ID: number, ParentTable: string, FieldName: string, Type: AdditionalFieldType, ExternalDBTableID?: number, IsSecure: boolean, IsInfo: boolean, IsKey: boolean, Searchable: boolean}
-		export interface AdditionalFieldView extends AdditionalField { ExternalDB: string }
+		export interface AdditionalFieldView extends AdditionalField { ExternalDB?: string, ExternalTable?: string }
 		export interface AdditionalFieldValue { ID: number, ParentTableID: number, AdditionalFieldID: number, Value: string }
 		export interface ExternalOpenXDAField { ID: number, ParentTable: string, FieldName: string, ExternalDBTableID: number }
 		export interface ValueListGroup { ID: number, Name: string, Description: string, Items?: ValueListItem[]}
@@ -45,10 +45,10 @@ namespace SystemCenter {
 		
 		export interface LocationDrawing { ID: number, LocationID: number, Name: string, Link: string, Description: string, Number: string, Category: string }
 
-		export interface ExternalDB { name: string, lastupdate: Date }
-		export interface ExternalDatabases { ID: number, Name: string, Schedule: string, ConnectionString: string, DataProviderString: string, Encrypt: boolean }
-		export interface ExternalDBField { DisplayName: string, FieldValueID: number, OpenXDAParentTableID: number, AdditionalFieldID: number, Value: string, FieldName: string, PreviousValue: string, Error: boolean, Message: string, isXDAField: boolean, Changed: boolean }
+		export interface ExternalDatabases { ID: number, Name: string, Schedule: string, ConnectionString: string, DataProviderString: string, Encrypt: boolean}
+		export interface DetailedExternalDatabases extends ExternalDatabases { LastDataUpdate?: string, MappedTables?: number, MappedFields?: number }
 		export interface extDBTables { ID: number, TableName: string, ExtDBID: number, Query: string }
+		export interface DetailedExtDBTables extends extDBTables { ExternalDB?: string, MappedFields?: number }
 		export interface DetailedAsset { ID: number, AssetKey: string, AssetName: string, VoltageKV: number, AssetType: string, Meters: number, Locations: number }
         export interface DetailedMeter { ID: number, AssetKey: string, Name: string, Location: string, MappedAssets: number, Make: string, Model: string }
         export interface DetailedLocation { ID: number, LocationKey: string, Name: string, Description: string, Alias: string, ShortName: string, Longitude: number, Latitude: number, Meters: number, Assets: number }

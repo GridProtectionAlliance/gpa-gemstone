@@ -22,20 +22,49 @@
 import * as React from 'react';
 import { Search } from '../SearchBar'
 
+/**
+* Represents an option with a value and label.
+*/
 interface IOptions { Value: string | number, Label: string }
 
+/**
+* Represents the properties expected by the EnumFilter component.
+*/
 interface IProps<T> { 
+    /**
+    * Function to set the filter based on Search.IFilter<T> array.
+    * @param evt - Event handler that updates the filter.
+    */
     SetFilter: (evt: Search.IFilter<T>[]) => void,
+    /**
+    * Array of filters of type Search.IFilter<T>.
+    */
     Filter: Search.IFilter<T>[],
+    /**
+     * Name of filtering field.
+     */
     FieldName: string,
+    /**
+     * The array of IOptions[] for filtering.
+     */
     Options: IOptions[]
     }
 
+    /**
+     * Extended interface from IOptions to include Selected boolean property.
+     */
 interface IOptionsExtended extends IOptions { Selected: boolean }
 
+/**
+ * Component to handle enum filtering based on provided filter props.
+ * @param {IProps<T>} props - Props passed to EnumFilter.
+ * @returns JSX element representing EnumFilter component.
+ */
 export function EnumFilter<T>(props: IProps<T>) {
+    // State for options with selection.
     const [options, setOptions] = React.useState<IOptionsExtended[]>([]);
 
+    // Update options based on props.Options changes.
     React.useEffect(() => {
         if (props.Options.length !== options.length)
             setOptions(props.Options.map(item => ({ ...item, Selected: true })));
@@ -43,6 +72,7 @@ export function EnumFilter<T>(props: IProps<T>) {
             setOptions(props.Options.map(item => ({ ...item, Selected: true })));
     }, [props.Options])
 
+    // Updates filter based on selected option changes.
     React.useEffect(() => {
         if (props.Filter.length !== 0 && (options.filter((x) => x.Selected).length === options.length)) {
             props.SetFilter([]);
@@ -51,7 +81,7 @@ export function EnumFilter<T>(props: IProps<T>) {
         if (options.some(item => !item.Selected))
             props.SetFilter([{
                 FieldName: props.FieldName,
-                isPivotColumn: false,
+                IsPivotColumn: false,
                 Operator: 'IN',
                 Type: 'enum',
                 SearchText: `(${options.filter(o => o.Selected).map(x => x.Value).join(',')})`
@@ -59,6 +89,7 @@ export function EnumFilter<T>(props: IProps<T>) {
 
     }, [options])
 
+    // Updates options based on filter changes.
     React.useEffect(() => {
         if (props.Filter.length === 0)
             setOptions((opt) => opt.map(item => ({ ...item, Selected: true })))
@@ -78,6 +109,7 @@ export function EnumFilter<T>(props: IProps<T>) {
         }
     }, [props.Filter])
 
+    // Renders option checkboxes.
     return <>
         <tr onClick={(evt) => {
             evt.preventDefault();

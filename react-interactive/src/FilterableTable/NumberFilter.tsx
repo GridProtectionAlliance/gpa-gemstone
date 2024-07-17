@@ -35,8 +35,14 @@ export interface IUnit {
     GetFilter: (filter: number) => number
 }
 
+// Defines filter types
 type FilterType = 'less than' | 'greater than' | 'between' | 'equal to'
 
+/**
+ * 
+ * @param props
+ * @returns
+ */
 export function NumberFilter<T>(props: IProps<T>) {
         const [value, setValue] = React.useState<string>('');
         const [secondValue, setSecondValue] = React.useState<string>('')
@@ -83,14 +89,14 @@ export function NumberFilter<T>(props: IProps<T>) {
                 handle = setTimeout(() => props.SetFilter([
                     {
                         FieldName: props.FieldName,
-                        isPivotColumn: false,
+                        IsPivotColumn: false,
                         Operator: '>=',
                         Type: 'number',
                         SearchText: value
                     },
                     {
                         FieldName: props.FieldName,
-                        isPivotColumn: false,
+                        IsPivotColumn: false,
                         Operator: '<=',
                         Type: 'number',
                         SearchText: secondValue
@@ -100,7 +106,7 @@ export function NumberFilter<T>(props: IProps<T>) {
             else 
                 handle = setTimeout(() => props.SetFilter([{
                     FieldName: props.FieldName,
-                    isPivotColumn: false,
+                    IsPivotColumn: false,
                     Operator: transformSymbol(operator),
                     Type: 'number',
                     SearchText: value

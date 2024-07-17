@@ -24,11 +24,12 @@
 
 import * as React from 'react';
 
-import {IDataSeries, GraphContext, AxisIdentifier, AxisMap} from './GraphContext';
+import {IDataSeries, GraphContext, AxisIdentifier, AxisMap, LineMap} from './GraphContext';
 import * as moment from 'moment';
 import {PointNode} from './PointNode';
 import {GetTextWidth} from '@gpa-gemstone/helper-functions';
 import {IProps as ILineProps} from './Line';
+import LineLegend from './LineLegend';
 
 export interface IProps extends ILineProps {
     threshHolds: IThreshold[],
@@ -109,24 +110,18 @@ function LineWithThreshold(props: IProps) {
      setThresholdLimits([Math.min(...props.threshHolds.map(t => t.Value)),Math.max(...props.threshHolds.map(t => t.Value)) ])
    }, [props.threshHolds]);
 
-   function createLegend():  HTMLElement| React.ReactElement| JSX.Element| undefined {
+   function createLegend(): React.ReactElement | undefined {
      if (props.legend === undefined)
        return undefined;
 
      let txt = props.legend;
 
-     if (props.highlightHover && !isNaN(highlight[0]) && !isNaN(highlight[1]))
+     if ((props.highlightHover ?? false) && !isNaN(highlight[0]) && !isNaN(highlight[1]))
       txt = txt + ` (${moment.utc(highlight[0]).format('MM/DD/YY hh:mm:ss')}: ${highlight[1].toPrecision(6)})`
 
-       return (
-           <div onClick={() => setEnabled((e) => !e)} style={{ width: wLegend, display: 'flex', alignItems: 'center', marginRight: '20px' }}>
-              {(props.lineStyle === '-' ?
-                <div style={{ width: ' 10px', height: 0, borderTop: '2px solid', borderRight: '10px solid', borderBottom: '2px solid', borderLeft: '10px solid', borderColor: props.color, overflow: 'hidden', marginRight: '5px', opacity: (enabled? 1 : 0.5) }}></div> :
-                <div style={{ width: ' 10px', height: '4px', borderTop: '0px solid', borderRight: '3px solid', borderBottom: '0px solid', borderLeft: '3px solid', borderColor: props.color, overflow: 'hidden', marginRight: '5px', opacity: (enabled? 1 : 0.5) }}></div>
-              )}
-              <label style={{ marginTop: '0.5rem' }}> {txt}</label>
-           </div>
-       );
+      return <LineLegend 
+        size = 'sm' label={txt} color={props.color} lineStyle={props.lineStyle}
+        setEnabled={setEnabled} enabled={enabled} hasNoData={data == null}/>;
    }
 
    function generateData() {
@@ -147,9 +142,9 @@ function LineWithThreshold(props: IProps) {
    return (
        enabled?
        <g>
-           <path d={generateData()} style={{ fill: 'none', strokeWidth: 3, stroke: props.color, transition: 'd 0.5s' }} strokeDasharray={props.lineStyle === ':'? '10,5' : 'none'} />
+           <path d={generateData()} style={{ fill: 'none', strokeWidth: 3, stroke: props.color, transition: 'd 0.5s' }} strokeDasharray={LineMap.get(props.lineStyle)} />
            {data != null? data.GetFullData().map((pt, i) => <circle key={i} r={3} cx={context.XTransformation(pt[0])} cy={context.YTransformation(pt[1], AxisMap.get(props.axis))} fill={props.color} stroke={'black'} style={{ opacity: 0.8, transition: 'cx 0.5s,cy 0.5s' }} />) : null}
-           {props.highlightHover && !isNaN(highlight[0]) && !isNaN(highlight[1])?
+           {(props.highlightHover ?? false) && !isNaN(highlight[0]) && !isNaN(highlight[1])?
           <circle r={5} cx={context.XTransformation(highlight[0])} cy={context.YTransformation(highlight[1], AxisMap.get(props.axis))} fill={props.color} stroke={'black'} style={{ opacity: 0.8, transition: 'cx 0.5s,cy 0.5s' }} /> : null}
           {props.threshHolds.map((t,i) => <path key={i}
              d={`M ${context.XTransformation(context.XDomain[0])},${context.YTransformation(t.Value, AxisMap.get(props.axis))} H ${context.XTransformation(context.XDomain[1])}`}

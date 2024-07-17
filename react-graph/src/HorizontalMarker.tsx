@@ -23,7 +23,7 @@
 
 
 import * as React from 'react';
-import {AxisIdentifier, AxisMap, GraphContext, IHandlers, LineStyle} from './GraphContext';
+import {AxisIdentifier, AxisMap, GraphContext, IHandlers, LineMap, LineStyle} from './GraphContext';
 
 export interface IProps {
     start?: number,
@@ -59,11 +59,12 @@ function HorizontalMarker(props: IProps) {
     const yT = context.YTransformation(y, axis);
     if (yT <= yP + (props.width/2) && yT >= yP - (props.width/2))
       setSelected(true);
-  }, [props.width, props.Value, props.axis]);
+  }, [props.width, props.Value, props.axis, context.YTransformation]);
 
   React.useEffect(() => {
         const id = context.RegisterSelect({
             axis: props.axis,
+            allowSnapping: false,
             onClick,
             onRelease: (_) => setSelected(false),
             onPlotLeave: (_) => setSelected(false)
@@ -78,6 +79,7 @@ function HorizontalMarker(props: IProps) {
 
         context.UpdateSelect(guid, {
             axis: props.axis,
+            allowSnapping: false,
             onClick,
             onRelease: (_) => setSelected(false),
             onPlotLeave: (_) => setSelected(false)
@@ -102,20 +104,20 @@ function HorizontalMarker(props: IProps) {
 
    React.useEffect(() => {
        if (isSelected)
-        setValue(context.YHover[AxisMap.get(props.axis)]);
-   }, [context.YHover, props.axis]);
+        setValue(context.YHoverSnap[AxisMap.get(props.axis)]);
+   }, [context.YHoverSnap, props.axis]);
 
    return (
        
        <g>
           <path d={generateData(props.Value)} 
            style={{ fill: 'none', strokeWidth: props.width, stroke: props.color }}
-           strokeDasharray={props.lineStyle === ':'? '10,5' : 'none'} 
+           strokeDasharray={LineMap.get(props.lineStyle)} 
            />
-           {props.setValue !== undefined && props.Value !== value?
+           {props.setValue !== undefined && props.Value !== value && isSelected?
            <path d={generateData(value)} 
            style={{ fill: 'none', strokeWidth: props.width, stroke: props.color, opacity: 0.5}}
-           strokeDasharray={props.lineStyle === ':'? '10,5' : 'none'} 
+           strokeDasharray={LineMap.get(props.lineStyle)} 
            />
            : null}
         </g>

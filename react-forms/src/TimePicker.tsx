@@ -22,21 +22,74 @@
 // ******************************************************************************************************
 
 import * as React from 'react';
+import HelperMessage from './HelperMessage';
+import { CreateGuid } from '@gpa-gemstone/helper-functions';
 
-export default function DatePicker<T>(props: {
+interface IProps<T>{
+  /**
+    * Record to be used in form
+    * @type {T}
+  */
   Record: T;
+  /**
+    * Field of the record to be edited
+    * @type {keyof T}
+  */
   Field: keyof T;
+  /**
+    * Setter function to update the Record
+    * @param record - Updated Record
+  */
   Setter: (record: T) => void;
+  /**
+    * Function to determine the validity of a field
+    * @param field - Field of the record to check
+    * @returns {boolean}
+  */
   Valid: (field: keyof T) => boolean;
+  /**
+    * Label to display for the form, defaults to the Field prop
+    * @type {string}
+    * @optional
+  */
   Label?: string;
+  /**
+    * Flag to disable the input field
+    * @type {boolean}
+    * @optional
+  */
   Disabled?: boolean;
+  /**
+    * Feedback message to show when input is invalid
+    * @type {string}
+    * @optional
+  */
   Feedback?: string;
+  /**
+    * Defines the number of intervals for time value
+    * @type {number}
+    * @optional
+  */
   Step?: number;
-}) {
+  Help?: string|JSX.Element;
+}
+
+export default function DatePicker<T>(props: IProps<T>) {
+  const guid = React.useRef<string>(CreateGuid());
+  const [showHelp, setShowHelp] = React.useState<boolean>(false);
+
   return (
     <div className="form-group">
-      {(props.Label !== "") ?
-      <label>{props.Label == null ? props.Field : props.Label}</label> : null}
+      {(props.Help != null || props.Label !== "") ?
+      <label>{props.Label ?? props.Field}
+        {props.Help != null ? 
+          <div style={{ width: 20, height: 20, borderRadius: '50%', display: 'inline-block', background: '#0D6EFD', marginLeft: 10, textAlign: 'center', fontWeight: 'bold' }} 
+          onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)}> ? </div> : <></>}
+      </label> 
+      : <></>}
+      <HelperMessage Show={showHelp} Target={guid.current}>
+        {props.Help}
+      </HelperMessage>
       <input
         className={'form-control' + (props.Valid(props.Field) ? '' : ' is-invalid')}
         type="time"
@@ -53,9 +106,11 @@ export default function DatePicker<T>(props: {
         }
         disabled={props.Disabled == null ? false : props.Disabled}
       />
+
+      {/* Feedback message for validation errors */}
       <div className="invalid-feedback">
-      {props.Feedback == null ? props.Field.toString() + ' is a required field.' : props.Feedback}
-    </div>
+        {props.Feedback == null ? props.Field.toString() + ' is a required field.' : props.Feedback}
+      </div>
     </div>
   );
 }

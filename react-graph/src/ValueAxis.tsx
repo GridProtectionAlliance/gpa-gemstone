@@ -56,6 +56,11 @@ function ValueAxis(props: IProps) {
   React.useEffect(() => {
     const axis = AxisMap.get(props.axis);
     const dY = context.YDomain[axis][1] - context.YDomain[axis][0];
+    if (!isFinite(dY) || isNaN(dY)) {
+      setTick([]);
+      return;
+    }
+
     let newTicks;
     if (dY === 0) {
       newTicks = [context.YDomain[axis][0]]
@@ -163,6 +168,11 @@ function ValueAxis(props: IProps) {
 
     },[hAxis, hLabel, props.hAxis]);
 
+    // use effect resets us in case this becomes unmounted
+    React.useEffect(() => {
+      return () => props.setWidthAxis(0);
+    },[]);
+
     React.useEffect(() => {
       if (props.label === undefined)
         return;
@@ -195,7 +205,7 @@ function ValueAxis(props: IProps) {
     return (<g>
       <path stroke='black' style={{ strokeWidth: 1, transition: 'd 0.5s' }} d={`M ${leftPosition} ${props.height - props.offsetBottom + 8} V ${props.offsetTop}`} />
       <path stroke='black' style={{ strokeWidth: 1, transition: 'd 0.5s' }} d={`M ${leftPosition} ${props.offsetTop} h ${tickDirection * 8}`} />
-      {tick.map((l, i) => <path key={i} stroke={((props.axis === undefined || props.axis === 'left') ? 'lightgrey' : 'darkgrey')} strokeOpacity={props.showGrid ? '0.8':'0.0'} style={{ strokeWidth: 1, transition: 'd 0.5s' }} d={`M ${props.offsetLeft} ${context.YTransformation(l, AxisMap.get(props.axis))} h ${props.width - props.offsetLeft - props.offsetRight}`} />)}
+      {tick.map((l, i) => <path key={i} stroke={((props.axis === undefined || props.axis === 'left') ? 'lightgrey' : 'darkgrey')} strokeOpacity={(props.showGrid ?? false) ? '0.8':'0.0'} style={{ strokeWidth: 1, transition: 'd 0.5s' }} d={`M ${props.offsetLeft} ${context.YTransformation(l, AxisMap.get(props.axis))} h ${props.width - props.offsetLeft - props.offsetRight}`} />)}
       {tick.map((l, i) => <path key={i} stroke='black' style={{ strokeWidth: 1, transition: 'd 1s' }} d={`M ${leftPosition} ${context.YTransformation(l, AxisMap.get(props.axis))} h ${tickDirection * 6}`} />)}
       {tick.map((l, i) => <text fill={'black'} key={i} style={{ fontSize: '1em', textAnchor: (props.axis === undefined || props.axis === 'left') ? 'end' : 'start', transition: 'x 0.5s, y 0.5s' }} dominantBaseline={'middle'} x={leftPosition + tickDirection * 8} y={context.YTransformation(l, AxisMap.get(props.axis))}>{(l * factor).toFixed(nDigits)}</text>)}
 

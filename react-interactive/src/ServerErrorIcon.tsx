@@ -22,13 +22,18 @@
 
 import * as React from 'react';
 
-interface Iprops {
+interface IProps {
     Show: boolean,
     Label?: string,
     Size?: number,
 }
 
-function ServerErrorIcon(props: Iprops) {
+/**
+ * Component for rendering the icon that appears during server error.
+ * @param props renders and manages the details of the server error icon.
+ * @returns a center aligned dark red server error icon.
+ */
+function ServerErrorIcon(props: IProps) {
 	const h = (props.Size === undefined? 25 : props.Size);
 	return <div>
           <div style={{ width: (props.Label === undefined? h : undefined), margin: 'auto', display: 'flex', alignItems: 'center' }} hidden={!props.Show}>

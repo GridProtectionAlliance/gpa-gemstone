@@ -1,7 +1,7 @@
 // ******************************************************************************************************
-//  index.ts - Gbtc
+//  GraphContext.tsx - Gbtc
 //
-//  Copyright © 2021, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2020, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -16,16 +16,31 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  09/30/2020 - Billy Ernest
+//  02/01/2024 - G. Santos
 //       Generated original version of source code.
 //
 // ******************************************************************************************************
-import PqDiff from './PqDiff'
-import OpenHistorian from './OpenHistorian';
-import SOETools from './SOETools';
-import SystemCenter from './SystemCenter';
-import Application from './Application';
-import OpenXDA from './OpenXDA';
-import PQI from './PQI';
+import * as React from 'react';
 
-export { PqDiff, SOETools, OpenHistorian, SystemCenter, Application, OpenXDA, PQI}
+export interface ILegendContext {
+    SmWidth: number,
+    LgWidth: number,
+    SmHeight: number,
+    LgHeight: number,
+    RequestLegendWidth: (width: number, requesterID: string) => void,
+    RequestLegendHeight: (height: number) => void
+}
+
+export interface ILegendRequiredProps {
+    size: 'lg' | 'sm',
+    enabled: boolean
+}
+
+export const LegendContext = React.createContext({
+    SmWidth: 0,
+    LgWidth: 0,
+    SmHeight: 0,
+    LgHeight: 0,
+    RequestLegendWidth: () => undefined,
+    RequestLegendHeight: () => undefined
+} as ILegendContext);

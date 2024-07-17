@@ -23,7 +23,7 @@
 
 
 import * as React from 'react';
-import {AxisIdentifier, AxisMap, GraphContext, IHandlers, LineStyle} from './GraphContext';
+import {AxisIdentifier, AxisMap, GraphContext, IHandlers, LineMap, LineStyle} from './GraphContext';
 
 export interface IProps {
     start?: number,
@@ -58,15 +58,16 @@ function VerticalMarker(props: IProps) {
       const xP = context.XTransformation(props.Value);
       const xT = context.XTransformation(x);
        if (xT <= xP + (props.width/2) && xT >= xP - (props.width/2))
-         setSelected(true);
-  }, [props.width, props.Value]);
+        setSelected(true);
+  }, [props.width, props.Value, context.XTransformation]);
 
   React.useEffect(() => {
         const id = context.RegisterSelect({
             onClick,
             onRelease: (_) => setSelected(false),
             onPlotLeave: (_) => setSelected(false),
-            axis: props.axis
+            axis: props.axis,
+            allowSnapping: false
         } as IHandlers)
         setGuid(id)
         return () => { context.RemoveSelect(id) }
@@ -80,7 +81,8 @@ function VerticalMarker(props: IProps) {
             onClick,
             onRelease: (_) => setSelected(false),
             onPlotLeave: (_) => setSelected(false),
-            axis: props.axis
+            axis: props.axis,
+            allowSnapping: false
         } as IHandlers)
     }, [onClick])
 
@@ -105,20 +107,19 @@ function VerticalMarker(props: IProps) {
 
    React.useEffect(() => {
        if (isSelected)
-        setValue(context.XHover);
-   }, [context.XHover]);
+        setValue(context.XHoverSnap);
+   }, [context.XHoverSnap]);
 
    return (
-       
        <g>
           <path d={generateData(props.Value)} 
            style={{ fill: 'none', strokeWidth: props.width, stroke: props.color }}
-           strokeDasharray={props.lineStyle === ':'? '10,5' : 'none'} 
+           strokeDasharray={LineMap.get(props.lineStyle)} 
            />
-           {props.setValue !== undefined && props.Value !== value?
+           {props.setValue !== undefined && props.Value !== value && isSelected?
            <path d={generateData(value)} 
            style={{ fill: 'none', strokeWidth: props.width, stroke: props.color, opacity: 0.5}}
-           strokeDasharray={props.lineStyle === ':'? '10,5' : 'none'} 
+           strokeDasharray={LineMap.get(props.lineStyle)} 
            />
            : null}
         </g>

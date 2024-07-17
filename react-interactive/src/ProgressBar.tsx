@@ -1,7 +1,7 @@
 // ******************************************************************************************************
 //  Step.tsx - Gbtc
 //
-//  Copyright � 2020, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2023, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -20,10 +20,9 @@
 //       Generated original version of source code.
 //
 // ******************************************************************************************************
-
 import * as React from 'react'
 
-/// Styles for all Circles
+// Styles for all circles
 const circleStyle: React.CSSProperties = {
     height: '25px',
     width: '25px',
@@ -43,9 +42,15 @@ interface IProps {
     steps: IStep[],
     activeStep: string | number,
     height?: string | number,
-    width?: string | number
+    width?: string | number,
+    onClick?: (currentStep: string|number, clickedStep: string|number) => void
 }
 
+/**
+* Functional component representing a progress bar with steps.
+* @param props - Props for configuring the progress bar.
+* @returns JSX elements for the progress bar.
+*/
 function ProgressBar(props: IProps) {
     const [activeStep, setActiveStep] = React.useState<number>(0);
 
@@ -63,6 +68,11 @@ function ProgressBar(props: IProps) {
             setActiveStep(index);
 
     }, [props.activeStep, props.steps])
+
+    const clickhandle = React.useCallback((step: number|string) => {
+        if (props.onClick !== undefined)
+            props.onClick(props.activeStep,step);
+    },[props.activeStep, props.onClick]);
 
     /// Styles for overall div
     const stepsStyle: React.CSSProperties = {
@@ -109,19 +119,26 @@ function ProgressBar(props: IProps) {
                 justifyContent: 'space-between'
             }}>
                 {props.steps.map((x,i) => <div
+                    
                     style={{
                         height: '60px',
                         width: 'calc(' + (100/props.steps.length).toString() + '%)',
                         marginTop: -17
                     }} key={x.id}>
-                    <span style={{
+                    <span onClick={() => clickhandle(x.id)}
+                    style={{
                         ...circleStyle,
                         borderColor: i <= activeStep ? '#5DC177' : '#D3D3D3',
+                        cursor: (i === activeStep || props.onClick === undefined) ? undefined : 'pointer',
                         marginLeft: (i === (props.steps.length-1) ? 'calc(100% - 25px)' : (i===0? undefined : 'calc(50% - 12px)')),
-                        marginRight: (i === 0 ? 'calc(100% - 25px)' : (i === (props.steps.length - 1) ? undefined :'calc(50% - 12px)'))
+                        marginRight: (i === 0 ? 'calc(100% - 25px)' : (i === (props.steps.length - 1) ? undefined :'calc(50% - 12px)')),
+                        
                     }} />
-                    <span style={{
+                    <span 
+                        onClick={() => clickhandle(x.id)}
+                    style={{
                         ...descriptionStyles,
+                        cursor: (i === activeStep || props.onClick === undefined) ? undefined : 'pointer',
                         textAlign: (i === 0? 'left' : (i === (props.steps.length - 1) ? 'right' : 'center'))
                     }}>
                         {x.id === props.activeStep ? x.long : x.short}

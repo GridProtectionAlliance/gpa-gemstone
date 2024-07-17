@@ -27,7 +27,7 @@ import PqDiff from "./PqDiff";
 namespace OpenXDA {
     export namespace Lists {
         // Lists
-        export const AssetTypes: Types.AssetTypeName[] = ['Line', 'LineSegment', 'Breaker', 'Bus', 'CapacitorBank', 'Transformer', 'CapacitorBankRelay' , 'DER']
+        export const AssetTypes: Types.AssetTypeName[] = ['Line', 'LineSegment', 'Breaker', 'Bus', 'CapacitorBank', 'Transformer', 'CapacitorBankRelay' , 'DER', 'Generation', 'StationAux', 'StationBattery']
         export const MeasurementTypes: Types.MeasurementTypeName[] = (PqDiff.Lists.MeasurementTypes as Types.MeasurementTypeName[]).concat(['Digital']);
         export const MeasurementCharacteristics: Types.MeasurementCharacteristicName[] = (PqDiff.Lists.MeasurementCharacteristics as Types.MeasurementCharacteristicName[]).concat(['BreakerStatus', 'TCE']);
         export const Phases: Types.PhaseName[] = PqDiff.Lists.Phases;
@@ -39,7 +39,7 @@ namespace OpenXDA {
 
     export namespace Types {
         // Types
-        export type AssetTypeName = 'Line' | 'LineSegment' | 'Breaker' | 'Bus' | 'CapacitorBank' | 'Transformer' | 'CapacitorBankRelay' | 'DER'
+        export type AssetTypeName = 'Line' | 'LineSegment' | 'Breaker' | 'Bus' | 'CapacitorBank' | 'Transformer' | 'CapacitorBankRelay' | 'DER' | 'Generation' | 'StationAux' | 'StationBattery'
         export type MeasurementTypeName = PqDiff.Types.MeasurementType | 'Digital';
         export type MeasurementCharacteristicName = PqDiff.Types.MeasurementCharacteristic | 'BreakerStatus' | 'TCE';
         export type PhaseName = PqDiff.Types.Phase;
@@ -48,7 +48,7 @@ namespace OpenXDA {
         export type NoteApplicationName = 'OpenMIC' | 'OpenXDA' | 'MiMD' | 'SystemCenter' | 'OpenHistorian' | 'All' | 'SEbrowser'
 
         export type NoteTagName = 'General' | 'Configuration' | 'Diagnostic' | 'Compliance'
-        export type DetailedAsset = (Breaker | Bus | CapBank | Line | Transformer | CapBankRelay | DER)
+        export type DetailedAsset = (Breaker | Bus | CapBank | Line | Transformer | CapBankRelay | DER | Generation | StationAux | StationBattery)
 
         // Tables
         export interface EventType { ID: number, Name: EventTypeName, Description: string, Selected?: boolean, ShowInFilter: boolean, Category?: string  }
@@ -68,10 +68,11 @@ namespace OpenXDA {
         export interface MATLABAnalytic { ID: number, AssemblyName: string, MethodName: string, SettingSQL: string, LoadOrder: number }
         export interface MATLABAnalyticEventType { ID: number, MATLABAnalyticID: number, EventTypeID: number }
         export interface MATLABAnalyticAssetType { ID: number, MATLABAnalyticID: number, AssetTypeID: number }
+        export interface MagDurCurve { ID: number, Name: string, Area: string, Color: string }
 
         // Assets
         export interface Asset { ID: number, VoltageKV: number, AssetKey: string, Description: string, AssetName: string, AssetType: AssetTypeName, Spare:boolean, Channels: Array<Channel> }
-        export interface MeterAsset extends Asset { FaultDetectionLogic: string }
+        export interface MeterAsset extends Asset { FaultDetectionLogic: string, Designation: string }
         export interface Breaker extends Asset { ThermalRating: number, Speed: number, TripTime: number, PickupTime: number, TripCoilCondition: number, EDNAPoint?: string, SpareBreakerID?: number, AirGapResistor: boolean }
         export interface Bus extends Asset { }
         export interface CapBank extends Asset {
@@ -88,6 +89,9 @@ namespace OpenXDA {
         export interface Transformer extends Asset { R0: number, X0: number, R1: number, X1: number, ThermalRating: number, PrimaryVoltageKV: number, SecondaryVoltageKV: number, Tap: number, TertiaryVoltageKV: number, SecondaryWinding: number, PrimaryWinding: number, TertiaryWinding: number }
         export interface LineDetail { R0: number, X0: number, R1: number, X1: number, ThermalRating: number, Length: number }
         export interface DER extends Asset { FullRatedOutputCurrent: number; VoltageLevel: 'Low' | 'Medium' }
+        export interface Generation extends Asset { }
+        export interface StationAux extends Asset { }
+        export interface StationBattery extends Asset { }
         export interface AssetLocation { ID: number, AssetID: number, LocationID: number }
         export interface EventTypeAssetType { ID: number, EventTypeID: number, AssetTypeID: number }
 
@@ -102,7 +106,20 @@ namespace OpenXDA {
         export interface NoteType { ID: number, Name: NoteTypeName, ReferenceTableName: string, Label?: string }
 
         export interface MeterConfiguration { ID: number, MeterID: number, DiffID: number, ConfigKey: string, ConfigText: string, RevisionMajor: number, RevisionMinor: number }
-        export interface DataFile { ID: number, FileGroupID: number, FilePath: string, FilePathHash: number, FileSize: number, CreationTime: string, LastWriteTime: string, LastAccessTime: string, MeterID: number, DataStartTime: string, ProcessingEndTime: string }
+        export interface DataFile {
+            ID: number,
+            FileGroupID: number,
+            FilePath: string,
+            FilePathHash: number,
+            FileSize: number,
+            CreationTime: string,
+            LastWriteTime: string,
+            LastAccessTime: string,
+            MeterID: number,
+            DataStartTime: string,
+            ProcessingEndTime: string,
+            ProcessingState: number
+        }
 
         export interface CompanyType { ID: number, Name: string, Description: string }
         export interface CustomerAccess { ID: number, CustomerID: number, PQViewSiteID: number }

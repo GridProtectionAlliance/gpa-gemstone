@@ -1,9 +1,7 @@
 {
     "root": true,
     "parser": "@typescript-eslint/parser",
-    "plugins": [
-      "@typescript-eslint"
-    ],
+    "plugins": ["@typescript-eslint"],
     "extends": [
       "eslint:recommended",
       "plugin:@typescript-eslint/eslint-recommended",
@@ -11,6 +9,21 @@
     ],
     "rules": {
       "@typescript-eslint/no-namespace": "off",
-      "@typescript-eslint/ban-types": "warn"
+      "@typescript-eslint/ban-types": "warn",
+      "@typescript-eslint/strict-boolean-expressions": ["error", {
+        "allowString": false,
+        "allowNumber": false,
+        "allowNullableObject": false,
+        "allowNullableBoolean": false,
+        "allowNullableString": false,
+        "allowNullableNumber": false,
+        "allowNullableEnum" : false,
+        "allowAny": false,
+        "allowRuleToRunWithoutStrictNullChecksIKnowWhatIAmDoing": false
+      }]
+    },
+    "ignorePatterns": ["package/**/*", "__tests__", "lib"],
+    "parserOptions" : {
+      "project": ["./tsconfig.json"]
     }
   }

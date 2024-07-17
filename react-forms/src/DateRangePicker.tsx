@@ -24,20 +24,73 @@
 import * as React from 'react';
 import * as moment from 'moment';
 
-type Duration =   ('Custom' | '1 Day' | '7 Days' | '30 Days' | '90 Days' | '180 Days' | '365 Days')
-
-export default function DateRangePicker<T>(props: {
+interface IProps<T> {
+  /**
+    * Record to be used in form
+    * @type {T}
+  */
   Record: T;
+  /**
+    * Field representing the start date in the record
+    * @type {keyof T}
+  */
   FromField: keyof T;
+  /**
+    * Field representing the end date in the record
+    * @type {keyof T}
+  */
   ToField: keyof T;
+  /**
+    * Setter function to update the Record
+    * @param record - Updated Record
+  */
   Setter: (record: T) => void;
+  /**
+    * Label to display for the form, defaults to the Field prop
+    * @type {string}
+    * @optional
+  */
   Label: string;
+  /**
+    * Function to determine the validity of a field
+    * @param field - Field of the record to check
+    * @returns {boolean}
+  */
   Valid: (fieldFrom: keyof T, fieldTo: keyof T) => boolean;
+  /**
+    * Flag to disable the input field
+    * @type {boolean}
+    * @optional
+  */
   Disabled?: boolean;
+  /**
+    * Feedback message to show when input is invalid
+    * @type {string}
+    * @optional
+  */
   Feedback?: string;
+  /**
+    * Date format to use for the input fields
+    * @type {string}
+    * @optional
+  */
   Format?: string;
+  /**
+    * Value for the type attribute in input element, either 'datetime-local' or the default 'date'
+    * @type {'datetime-local' | 'date'}
+    * @optional
+  */
   Type?: ('datetime-local' | 'date');
-}) {
+}
+
+// Duration options 
+type Duration = ('Custom' | '1 Day' | '7 Days' | '30 Days' | '90 Days' | '180 Days' | '365 Days')
+
+/**
+ * DateRangePicker Component.
+ * Allows users to select a date range either by choosing predefined durations or by specifying custom dates.
+ */
+export default function DateRangePicker<T>(props: IProps<T>) {
   // Range box vars, need a secondary var to avoid looping react hooks
   const [formRange, setFormRange] = React.useState<Duration>('Custom');
   const [range, setRange] = React.useState<Duration>('Custom');
@@ -46,33 +99,37 @@ export default function DateRangePicker<T>(props: {
   const [internal, setInternal] = React.useState<boolean>(false);
   // Adds a buffer between the outside props and what the box is reading to prevent box overwriting every render with a keystroke
   const [boxRecord, setBoxRecord] = React.useState<T>(ParseRecord());
-  
+
   // Formats that will be used for dateBoxes
   const boxFormat = "YYYY-MM-DD" + (props.Type === undefined || props.Type === 'date' ? "" : "[T]hh:mm:ss");
   const recordFormat = props.Format !== undefined ? props.Format : "YYYY-MM-DD" + (props.Type === undefined || props.Type === 'date' ? "" : "[T]hh:mm:ss.SSS[Z]");
 
+  // Effect for handling changes to the props.Record.
   React.useEffect(() => {
-    setRange(ToRange(moment(props.Record[props.ToField], recordFormat).diff(moment(props.Record[props.FromField], recordFormat), 'days')));
+    setRange(ToRange(moment(props.Record[props.ToField]as string, recordFormat).diff(moment(props.Record[props.FromField]as string, recordFormat), 'days')));
     if (!internal)
       setBoxRecord(ParseRecord());
     setInternal(false);
-  },[props.Record]);
+  }, [props.Record]);
 
+  // Effect for handling changes to the formRange state.
   React.useEffect(() => {
     setRange(formRange);
-    const toTime: moment.Moment =  moment(props.Record[props.FromField], recordFormat).add(GetDays(formRange), 'days');
-    props.Setter({...props.Record, [props.ToField]: toTime.format(recordFormat) as any});
-    setBoxRecord({...boxRecord, [props.ToField]: toTime.format(boxFormat) as any});
+    const toTime: moment.Moment = moment(props.Record[props.FromField] as string, recordFormat).add(GetDays(formRange), 'days');
+    props.Setter({ ...props.Record, [props.ToField]: toTime.format(recordFormat) as any });
+    setBoxRecord({ ...boxRecord, [props.ToField]: toTime.format(boxFormat) as any });
   }, [formRange]);
 
-  function ParseRecord(): T{
+  // Parses the record for display in the date boxes.
+  function ParseRecord(): T {
     const record: T = { ...props.Record };
-    const ParseExternalField: (field: keyof T) => any = (field: keyof T) => {return props.Record[field] === null ? '' : moment(props.Record[field] as any, recordFormat).format(boxFormat)};
+    const ParseExternalField: (field: keyof T) => any = (field: keyof T) => { return props.Record[field] === null ? '' : moment(props.Record[field] as any, recordFormat).format(boxFormat) };
     record[props.ToField] = ParseExternalField(props.ToField);
     record[props.FromField] = ParseExternalField(props.FromField);
     return record;
   }
 
+  // Converts the selected duration to a number of days.
   function GetDays(val: Duration) {
     if (val === '1 Day')
       return 1;
@@ -89,16 +146,18 @@ export default function DateRangePicker<T>(props: {
     return 0;
   }
 
+  // Maps a number of days to a Duration value.
   function ToRange(days: number) {
     if (days === 1) return ('1 Day');
-    else if (days === 7) return('7 Days');
-    else if (days === 30) return('30 Days');
-    else if (days === 90) return('90 Days');
-    else if (days === 180) return('180 Days');
-    else if (days === 365) return('365 Days');
-    else return('Custom');
+    else if (days === 7) return ('7 Days');
+    else if (days === 30) return ('30 Days');
+    else if (days === 90) return ('90 Days');
+    else if (days === 180) return ('180 Days');
+    else if (days === 365) return ('365 Days');
+    else return ('Custom');
   }
 
+  // Renders a date input box.
   function dateBox(field: keyof T): any {
     return <div className="col">
       <input
@@ -112,20 +171,20 @@ export default function DateRangePicker<T>(props: {
             record[field] = null as any;
           // These two updates should be batched together
           props.Setter(record);
-          setBoxRecord({...boxRecord, [field]: evt.target.value});
+          setBoxRecord({ ...boxRecord, [field]: evt.target.value });
           setInternal(true);
         }}
         value={boxRecord[field] as any}
         disabled={props.Disabled === undefined ? false : props.Disabled}
       />
       {field !== props.FromField ? null :
-      <div className="invalid-feedback">
-        {props.Feedback === undefined ? 'From and to dates required, and from must be before to.' : props.Feedback}
-      </div>}
+        <div className="invalid-feedback">
+          {props.Feedback === undefined ? 'From and to dates required, and from must be before to.' : props.Feedback}
+        </div>}
     </div>
   }
 
-
+  // Main render method for the component.
   return (
     <div className="form-group">
       {props.Label === "" ? null : <label>{props.Label}</label>}

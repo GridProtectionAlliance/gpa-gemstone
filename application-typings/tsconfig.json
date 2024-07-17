@@ -3,12 +3,11 @@
     "target": "es5",
     "module": "CommonJS",
     "declaration": true,
-    "outDir": "dist",
+    "outDir": "./lib",
     "strict": true,
     "inlineSourceMap": false,
     "skipLibCheck": true
-
   },
-  "include": ["lib"],
+  "include": ["src"],
   "exclude": ["node_modules"]
 }

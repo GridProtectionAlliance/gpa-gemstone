@@ -27,63 +27,115 @@ import { CreateGuid } from '@gpa-gemstone/helper-functions'
 import HelperMessage from './HelperMessage';
 
 interface IProps<T> {
+  /**
+    * Number of rows for the textarea
+    * @type {number}
+  */
   Rows: number;
+  /**
+    * Record to be used in the form
+    * @type {T}
+  */
   Record: T;
+  /**
+    * Field of the record to be edited
+    * @type {keyof T}
+  */
   Field: keyof T;
+  /**
+    * Setter function to update the Record
+    * @param record - Updated Record
+  */
   Setter: (record: T) => void;
+  /**
+    * Function to determine the validity of a field
+    * @param field - Field of the record to check
+    * @returns {boolean}
+  */
   Valid: (field: keyof T) => boolean;
+  /**
+    * Label to display for the form, defaults to the Field prop
+    * @type {string}
+    * @optional
+  */
   Label?: string;
+  /**
+    * Feedback message to show when input is invalid
+    * @type {string}
+    * @optional
+  */
   Feedback?: string;
+  /**
+    * Flag to disable the input field
+    * @type {boolean}
+    * @optional
+  */
   Disabled?: boolean;
+  /**
+    * Help message or element to display
+    * @type {string | JSX.Element}
+    * @optional
+  */
   Help?: string | JSX.Element;
 }
 
 export default function TextArea<T>(props: IProps<T>) {
+  // Internal ref and state hooks for managing the component state.
   const internal = React.useRef<boolean>(false)
   const guid = React.useRef<string>(CreateGuid())
-  
+
   const [showHelp, setShowHelp] = React.useState<boolean>(false);
   const [heldVal, setHeldVal] = React.useState<string>('');
   
+  // Effect to handle changes to the record's field value.
   React.useEffect(() => {
     if (!internal.current) {
       setHeldVal(props.Record[props.Field] == null ? '' : (props.Record[props.Field] as any).toString());
     }
     internal.current = false;
 
-   }, [props.Record[props.Field]]);
+  }, [props.Record[props.Field]]);
 
+  // Handle value change of the textarea.
   function valueChange(value: string) {
     internal.current = true;
     props.Setter({ ...props.Record, [props.Field]: value !== '' ? value : null });
     setHeldVal(value);
-   }
+  }
 
+  // Variables to control the rendering of label and help icon.
   const showLabel = props.Label !== "";
   const showHelpIcon = props.Help !== undefined;
   const label = props.Label === undefined ? props.Field : props.Label;
-
+  
   return (
-    <div className="form-group" data-help={guid}>
-    {showHelpIcon || showLabel ?
+    <div className="form-group" data-help={guid.current}>
+      {/* Rendering label and help icon */}
+      {showHelpIcon || showLabel ?
         <label>{showLabel ? label : ''}
-            {showHelpIcon ? <div style={{ width: 20, height: 20, borderRadius: '50%', display: 'inline-block', background: '#0D6EFD', marginLeft: 10, textAlign: 'center', fontWeight: 'bold' }} onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)}> ? </div> : null}
+          {showHelpIcon ? <div style={{ width: 20, height: 20, borderRadius: '50%', display: 'inline-block', background: '#0D6EFD', marginLeft: 10, textAlign: 'center', fontWeight: 'bold' }} onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)}> ? </div> : null}
         </label> : null}
-    {showHelpIcon ?
+
+      {/* Help message component */}
+      {showHelpIcon ?
         <HelperMessage Show={showHelp} Target={guid.current}>
-            {props.Help}
+          {props.Help}
         </HelperMessage>
         : null}
-    <textarea
+
+      {/* Textarea element */}
+      <textarea
         rows={props.Rows}
         className={props.Valid(props.Field) ? 'form-control' : 'form-control is-invalid'}
         onChange={(evt) => valueChange(evt.target.value)}
         value={heldVal == null ? '' : heldVal}
         disabled={props.Disabled == null ? false : props.Disabled}
-    />
-    <div className="invalid-feedback">
-        {props.Feedback == null ? props.Field + ' is a required field.' : props.Feedback}
+      />
+
+      {/* Invalid feedback message */}
+      <div className="invalid-feedback">
+        {props.Feedback == null ? (props.Field as string)+ ' is a required field.' : props.Feedback}
+      </div>
     </div>
-</div>
-);
+  );
 }

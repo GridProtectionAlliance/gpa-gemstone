@@ -26,17 +26,22 @@ import * as React from 'react';
 import {HsvToHex} from '@gpa-gemstone/helper-functions';
 import {IDataSeries, GraphContext, FillStyle, AxisIdentifier, AxisMap} from './GraphContext';
 import {PointNode} from './PointNode';
+import HeatLegend from './HeatLegend';
 
 
 export interface IProps {
     data: [number, number, number][],
     // Hue/Value are part of color, HSV. Both values are assumed [0-1] and saturation is determined by z-value.
     hue: number,
-    value: number,
+    saturation: number,
     fillStyle?: FillStyle,
     axis?: AxisIdentifier,
+    legendUnit?: string,
     // Aligns bars with timestamp associated (i.e. left aligns the timestamp to the left bar edge)
-    barAlign?: 'left'|'center'|'right'
+    barAlign?: 'left'|'center'|'right',
+    // Makes bars this size, so that multiple can be dispalyed on the same time value
+    binSize?: number,
+    sampleMs?: number
 }
 
 function HeatMapChart(props: IProps) {
@@ -69,41 +74,58 @@ function HeatMapChart(props: IProps) {
 
     React.useEffect(() => {
         if (data == null) return;
+        if (props.sampleMs !== undefined) {
+            setBarWidth(context.XTransformation(data.minT + props.sampleMs) - context.XTransformation(data.minT));
+            return;
+        }
         setBarWidth((context.XTransformation(data.maxT) - context.XTransformation(data.minT)) / data.GetFullData().length);
-    }, [data, context.XTransformation]);
+    }, [data, context.XTransformation, props.sampleMs]);
+
+   const createLegend = React.useCallback(() => {
+        return <HeatLegend size='lg'
+            unitLabel={props.legendUnit}
+            enabled={true}
+            minColor={HsvToHex(props.hue, props.saturation, 1)} maxColor={HsvToHex(props.hue, props.saturation, 0)}
+            minValue={zLimits[0]} maxValue={zLimits[1]}/>;
+    }, [props.legendUnit, zLimits, props.hue, props.saturation]);
+
+    React.useEffect(() => {
+        setData(new PointNode(props.data));
+    },[props.data]);
 
    React.useEffect(() => {
         if (guid === "")
             return;
         context.UpdateData(guid, {
             axis: props.axis,
+            legend: createLegend(),
+            enabled: true,
             getMax: (t) => (data == null ? -Infinity : data.GetLimits(t[0],t[1],0)[1]),
             getMin: (t) => (data == null ?  Infinity : data.GetLimits(t[0],t[1],0)[0]),
         } as IDataSeries);
-    }, [props, data]);
-
-    React.useEffect(() => {
-        setData(new PointNode(props.data));
-    },[props.data]);
+    }, [props, data, createLegend]);
 
     React.useEffect(() => {
         const id = context.AddData({
             axis: props.axis,
+            legend: createLegend(),
+            enabled: false,
             getMax: (t) => (data == null ? -Infinity : data.GetLimits(t[0],t[1],0)[1]),
             getMin: (t) => (data == null ?  Infinity : data.GetLimits(t[0],t[1],0)[0]),
         } as IDataSeries);
         setGuid(id);
-        return () => { context.RemoveData(id) }
+        return () => { context.RemoveData(id); }
     }, []);
 
     return (
         <g>
             {data == null ? null : 
                 data.GetFullData().map((pt, i) => {
-                    const barTop =  context.YTransformation(pt[1], AxisMap.get(props.axis));
-                    const saturation = (pt[2] - zLimits[0]) / (zLimits[1] - zLimits[0]);
-                    const color = HsvToHex(props.hue, saturation, props.value);
-                    return <rect key={i} x={context.XTransformation(pt[0]) - allBarOffset} y={barTop} width={barWidth} height={Math.abs(barTop-allBarBottoms)} fill={color} stroke='black'/>
+                    const barTop =  context.YTransformation(pt[1] + (props.binSize ?? 0), AxisMap.get(props.axis));
+                    const value = 1 - (pt[2] - zLimits[0]) / (zLimits[1] - zLimits[0]);
+                    const color = HsvToHex(props.hue, props.saturation, value);
+                    return <rect key={i} x={context.XTransformation(pt[0]) - allBarOffset} y={barTop} width={barWidth} 
+                    height={Math.abs(barTop-(props.binSize !== undefined ? context.YTransformation(pt[1], AxisMap.get(props.axis)) : allBarBottoms))} fill={color} stroke={color}/>
                 })
             }
         </g>

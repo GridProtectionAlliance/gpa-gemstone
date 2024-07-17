@@ -22,20 +22,48 @@
 // ******************************************************************************************************
 
 import * as React from 'react';
+import {CreateGuid} from '@gpa-gemstone/helper-functions';
 
-export default function ArrayCheckBoxes<T>(props: {
+interface IProps<T> {
+  /**
+    * Record to be used in form
+    * @type {T}
+  */
   Record: T;
+  /**
+    * Field of the record to be edited
+    * @type {keyof T}
+  */
   Field: keyof T;
+  /**
+    * Setter function to update the Record
+    * @param record - Updated Record
+  */
   Setter: (record: T) => void;
+  /**
+    * Array of checkboxes with their IDs and labels
+    * @type {{ ID: string; Label: string }[]}
+  */
   Checkboxes: { ID: string; Label: string }[];
+    /**
+    * Label to display for the form, defaults to the Field prop
+    * @type {string}
+    * @optional
+  */
   Label?: string;
-}) {
+}
+
+export default function ArrayCheckBoxes<T>(props: IProps<T>) {
+
+  // Remove an ID from the array
   const Remove = (cb: { ID: string; Label: string }) => {
     const a = [...((props.Record[props.Field] as any) as string[])];
     const i = a.indexOf(cb.ID);
     a.splice(i, 1);
     return a;
-  };
+    };
+
+  // Add an ID to the array making sure there are no duplicates and array is sorted
   const Add = (cb: { ID: string; Label: string }) => {
     const a = [...((props.Record[props.Field] as any) as string[])];
     const i = a.indexOf(cb.ID);
@@ -43,12 +71,14 @@ export default function ArrayCheckBoxes<T>(props: {
     a.sort();
     return a;
   };
+  const id = React.useRef("array-checkbox-" + CreateGuid());
   return (
     <div className="form-group">
       <label>{props.Label == null ? props.Field : props.Label}</label>
       <br />
       <div className="form-check form-check-inline">
           <input
+            id={`${id.current}-all`}
             className="form-check-input"
             type="checkbox"
             checked={JSON.stringify(props.Record[props.Field]) === JSON.stringify(props.Checkboxes.map(x => x.ID))}
@@ -56,11 +86,12 @@ export default function ArrayCheckBoxes<T>(props: {
               props.Setter({ ...props.Record, [props.Field]: evt.target.checked ? props.Checkboxes.map(x => x.ID): [] })
             }
           />
-          <label className="form-check-label">All</label>
+          <label htmlFor={`${id.current}-all`} className="form-check-label">All</label>
         </div>
       {props.Checkboxes.map((cb, i) => (
         <div key={i} className="form-check form-check-inline">
           <input
+            id={`${id.current}-${i}`}
             className="form-check-input"
             type="checkbox"
             checked={(props.Record[props.Field] as any).find((x: string) => cb.ID === x) !== undefined}
@@ -68,7 +99,7 @@ export default function ArrayCheckBoxes<T>(props: {
               props.Setter({ ...props.Record, [props.Field]: evt.target.checked ? Add(cb) : Remove(cb) })
             }
           />
-          <label className="form-check-label">{cb.Label}</label>
+          <label htmlFor={`${id.current}-${i}`} className="form-check-label">{cb.Label}</label>
         </div>
       ))}
     </div>

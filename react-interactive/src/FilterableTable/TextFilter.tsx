@@ -29,39 +29,51 @@ interface IProps<T> {
     ApproxMatches?: boolean,
 }
 
+/**
+ * Component for rendering a text input filter.
+ * @param props - Props for configuring and managing the text filter.
+ * @returns JSX for rendering a text input filter with wildcard options.
+ */
 export function TextFilter<T>(props: IProps<T>) {
     const [txt, setTxt] = React.useState<string>('');
 
+    // Handles changes in the Filter prop.
     React.useEffect(() => {
+        // Resets text input if there is no filter.
         if (props.Filter.length === 0) {
             setTxt('');
             return;
         }
 
-        if (props.ApproxMatches || props.ApproxMatches === undefined)
+        if ((props.ApproxMatches ?? true))
             setTxt(props.Filter[0].SearchText.substring(1, props.Filter[0].SearchText.length -1 ));
         else
             setTxt(props.Filter[0].SearchText);
     }, [props.Filter]);
 
+    // Handles text input chanages.
     React.useEffect(() => {
         let handle: NodeJS.Timeout|null = null;
 
+        // Clears filter if txt is empty AND filter is not empty.
         if ((txt == null || txt.trim().length === 0) && props.Filter.length !== 0) 
             handle = setTimeout(() =>  props.SetFilter([]), 500);
 
+        // Applies filter based on specifications.
         if (txt != null && txt.trim().length > 0 && (props.Filter.length === 0 || props.Filter[0].SearchText !== txt.trim()))
             handle = setTimeout(() => props.SetFilter([{
                   FieldName: props.FieldName,
-                  isPivotColumn: false, 
+                  IsPivotColumn: false, 
                   SearchText: (props.ApproxMatches === undefined || props.ApproxMatches? '%' + txt.trim() + '%' : txt.trim()),
                   Operator: 'LIKE', 
                   Type: 'string'
                 }]), 500);
 
+        // Cleans function to clear timeout.
         return () => { if (handle !== null) clearTimeout(handle); };    
     }, [txt])
 
+    // renders text input filter and addl information
     return <>
         <tr onClick={(evt) => { evt.preventDefault();}}>
             <td>

@@ -25,7 +25,7 @@ import * as React from 'react';
 import * as moment from 'moment';
 
 interface IProps {
-  DateTime: moment.Moment
+  DateTime: moment.Moment|undefined
   Setter: (record: moment.Moment) => void;
 }
 
@@ -41,20 +41,20 @@ interface IWeek {
 export default function Calender(props: IProps) {
 
   const [weeks,setWeeks] = React.useState<IWeek[]>([]);
-  const [month, setMonth] = React.useState<number>(props.DateTime.month());
-  const [year, setYear] = React.useState<number>(props.DateTime.year());
+  const [month, setMonth] = React.useState<number>(props.DateTime?.month() ?? 0);
+  const [year, setYear] = React.useState<number>(props.DateTime?.year() ?? moment.utc().year());
   const [mode, setMode] = React.useState<('month'|'year'|'dozenYear')>('month')
   const [hover, setHover] = React.useState<('None'|'Center'|'Next'|'Previous')>('None')
 
   React.useEffect(() => {
-    setMonth(isNaN(props.DateTime.month())? 0 : props.DateTime.month());
-    setYear(isNaN(props.DateTime.year())? moment.utc().year() : props.DateTime.year());
+    setMonth(isNaN(props.DateTime?.month() ?? NaN)? 0 : (props.DateTime?.month() ?? 0));
+    setYear(isNaN(props.DateTime?.year() ?? NaN)? moment.utc().year() : (props.DateTime?.year() ?? moment.utc().year()));
   }, [props.DateTime])
 
   React.useEffect(() => {
     let d1 = moment([year, month, 1]).startOf('week');
     const w: IWeek[] = [];
-    while (d1.month() <= month && d1.year() === year) {
+    while ((d1.month() <= month && d1.year() === year) || (d1.year() < year)) {
       w.push({
         sunday: moment(d1),
         monday:  moment(d1).add(1,'day'),
@@ -154,13 +154,13 @@ export default function Calender(props: IProps) {
         <tbody>
           
           {mode === 'month'? weeks.map((w) => <tr key={w.sunday.isoWeek()} style={{height: 20, lineHeight: '20px'}}>
-            <DayCell date={w.sunday} month={month} day={props.DateTime.date()} onClick={(evt) => {evt.stopPropagation(); setDate(w.sunday);}}/>
-            <DayCell date={w.monday} month={month} day={props.DateTime.date()} onClick={(evt) => {evt.stopPropagation(); setDate(w.monday);}}/>
-            <DayCell date={w.tuesday} month={month} day={props.DateTime.date()} onClick={(evt) => {evt.stopPropagation(); setDate(w.tuesday);}}/>
-            <DayCell date={w.wednesday} month={month} day={props.DateTime.date()} onClick={(evt) => {evt.stopPropagation(); setDate(w.wednesday);}}/>
-            <DayCell date={w.thursday} month={month} day={props.DateTime.date()} onClick={(evt) => {evt.stopPropagation(); setDate(w.thursday);}}/>
-            <DayCell date={w.friday} month={month} day={props.DateTime.date()} onClick={(evt) => {evt.stopPropagation(); setDate(w.friday);}}/>
-            <DayCell date={w.saturday} month={month} day={props.DateTime.date()} onClick={(evt) => {evt.stopPropagation(); setDate(w.saturday);}}/>
+            <DayCell date={w.sunday} month={month} day={props.DateTime?.date() ?? -1} onClick={(evt) => {evt.stopPropagation(); setDate(w.sunday);}}/>
+            <DayCell date={w.monday} month={month} day={props.DateTime?.date() ?? -1} onClick={(evt) => {evt.stopPropagation(); setDate(w.monday);}}/>
+            <DayCell date={w.tuesday} month={month} day={props.DateTime?.date() ?? -1} onClick={(evt) => {evt.stopPropagation(); setDate(w.tuesday);}}/>
+            <DayCell date={w.wednesday} month={month} day={props.DateTime?.date() ?? -1} onClick={(evt) => {evt.stopPropagation(); setDate(w.wednesday);}}/>
+            <DayCell date={w.thursday} month={month} day={props.DateTime?.date() ?? -1} onClick={(evt) => {evt.stopPropagation(); setDate(w.thursday);}}/>
+            <DayCell date={w.friday} month={month} day={props.DateTime?.date() ?? -1} onClick={(evt) => {evt.stopPropagation(); setDate(w.friday);}}/>
+            <DayCell date={w.saturday} month={month} day={props.DateTime?.date() ?? -1} onClick={(evt) => {evt.stopPropagation(); setDate(w.saturday);}}/>
             </tr>): null}
           {mode === 'year'? <>
           <tr style={{height: 54, lineHeight: '54px'}}>

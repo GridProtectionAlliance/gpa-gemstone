@@ -24,30 +24,69 @@
 import * as React from 'react';
 import HelperMessage from './HelperMessage';
 import { CreateGuid } from '@gpa-gemstone/helper-functions';
+import { isEqual } from 'lodash';
 
-interface IOption {
+export interface IOption {
   Value: any;
   Element: React.ReactElement<any>
 }
 
 interface IProps<T> {
+  /**
+    * Record to be used in form
+    * @type {T}
+  */
   Record: T;
+  /**
+    * Field of the record to be edited
+    * @type {keyof T}
+  */
   Field: keyof T;
+  /**
+    * Setter function to update the Record
+    * @param record - Updated Record
+  */
   Setter: (record: T) => void;
+    /**
+    * Options for the select dropdown
+    * @type {{  Value: any, Element: React.ReactElement<any> }[]}
+  */
   Options: IOption[];
+  /**
+    * Label to display for the form, defaults to the Field prop
+    * @type {string}
+    * @optional
+  */
   Label?: string;
+  /**
+    * Flag to disable the input field
+    * @type {boolean}
+    * @optional
+  */
   Disabled?: boolean;
+  /**
+    * Help message or element to display
+    * @type {string | JSX.Element}
+    * @optional
+  */
   Help?: string|JSX.Element;
+  /**
+    * CSS styles to apply to the selected value
+    * @type {React.CSSProperties}
+    * @optional
+  */
   Style?: React.CSSProperties;
 }
 
 export default function StylableSelect<T>(props: IProps<T>){
+  // State hooks and ref for managing component state and interactions.
   const [show, setShow] = React.useState<boolean>(false);
   const [selected, setSelected] = React.useState<React.ReactElement<any>>(props.Options[0].Element);
 	const [guid, setGuid] = React.useState<string>("");
 	const [showHelp, setShowHelp] = React.useState<boolean>(false);
   const stylableSelect = React.useRef<HTMLDivElement>(null);
 
+  // Handle showing and hiding of the dropdown.
   function HandleShow(evt: React.MouseEvent<HTMLButtonElement, MouseEvent> | MouseEvent) {
     // Ignore if disabled or not a mousedown event
     if ((props.Disabled === undefined ? false : props.Disabled) || evt.type !== 'mousedown') return;
@@ -56,6 +95,7 @@ export default function StylableSelect<T>(props: IProps<T>){
     else setShow(!show);
   }
 
+  // Update the parent component's state with the selected option.
   function SetRecord(selectedOption: IOption){
     setSelected(selectedOption.Element);
     const record: T = { ...props.Record };
@@ -65,6 +105,7 @@ export default function StylableSelect<T>(props: IProps<T>){
     props.Setter(record);
   }
 
+  // Effect for initial setup and event listeners.
   React.useEffect(() => {
 		setGuid(CreateGuid());
     document.addEventListener('mousedown', HandleShow, false);
@@ -73,22 +114,27 @@ export default function StylableSelect<T>(props: IProps<T>){
     };
   }, []);
 
+  // Effect to handle changes to the record's field value.
   React.useEffect(() => {
-    const element: IOption | undefined = props.Options.find(e => e.Value === props.Record[props.Field] as any);
+    const element: IOption | undefined = props.Options.find(e => isEqual(e.Value, props.Record[props.Field] as any));
     setSelected(element !== undefined ? element.Element : <div/>);
-  }, [props.Record]);
+  }, [props.Record, props.Options]);
 
   return (
-    <div ref={stylableSelect} style={{ position: 'relative', display: 'inline-block', width: 'inherit' }}>
+    <div ref={stylableSelect} style={{ position: 'absolute', display: 'inline-block', width: 'inherit' }}>
+      {/* Label and help icon rendering */}
       {(props.Label !== "") ?
-      <label>{props.Label === undefined ? props.Field : props.Label} 
-      {props.Help !== undefined? <div style={{ width: 20, height: 20, borderRadius: '50%', display: 'inline-block', background: '#0D6EFD', marginLeft: 10, textAlign: 'center', fontWeight: 'bold' }} onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)}> ? </div> : null}
-      </label> : null }
+        <label>{props.Label === undefined ? props.Field : props.Label} 
+        {props.Help !== undefined? <div style={{ width: 20, height: 20, borderRadius: '50%', display: 'inline-block', background: '#0D6EFD', marginLeft: 10, textAlign: 'center', fontWeight: 'bold' }} onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)}> ? </div> : null}
+        </label> : null }
+
       {props.Help !== undefined? 
         <HelperMessage Show={showHelp} Target={guid}>
           {props.Help}
         </HelperMessage>
       : null}
+
+      {/* Dropdown toggle button */}
       <button
         type="button"
         style={{ border: '1px solid #ced4da', padding: '.375rem .75rem', fontSize: '1rem', borderRadius: '.25rem' }}
@@ -101,6 +147,8 @@ export default function StylableSelect<T>(props: IProps<T>){
           {selected}
         </div>
       </button>
+
+      {/* Dropdown menu with options */}
       <div
         style={{
           maxHeight: window.innerHeight * 0.75,
@@ -116,7 +164,7 @@ export default function StylableSelect<T>(props: IProps<T>){
       >
         <table className="table" style={{ margin: 0 }}>
           <tbody>
-            {props.Options.map((f, i) => (
+            {props.Options.map((f, i) => ( f.Value == props.Record[props.Field] ? null :
               <tr key={i} onClick={(evt) => {evt.preventDefault(); SetRecord(f); setShow(false);}}>
                 <td>
                   {f.Element}

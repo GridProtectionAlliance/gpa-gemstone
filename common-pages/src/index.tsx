@@ -30,9 +30,12 @@ import User from './user/User';
 import { DefaultSearch } from './SearchBar';
 import SelectPopup from './StandardSelectPopup';
 import {DefaultSelects} from './SelectionPopup';
+import ErrorBoundary from './ErrorBoundary';
+import TimeFilter from './TimeFilter';
 
 export {
   Setting,
+  TimeFilter,
   Note,
   ValueList,
   ByValueList,
@@ -40,6 +43,6 @@ export {
   ByUser,
   DefaultSearch,
   SelectPopup,
-  DefaultSelects
-
+  DefaultSelects,
+  ErrorBoundary
 };

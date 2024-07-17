@@ -71,21 +71,23 @@ export class PointNode {
         }
         for (let index = 0; index < this.dim-1; index++) this.minV[index] = Math.min(...this.children.map(node => node.minV[index]));
         for (let index = 0; index < this.dim-1; index++) this.maxV[index] = Math.max(...this.children.map(node => node.maxV[index]));
-            }
+    }
 
     public GetData(Tstart: number, Tend: number, IncludeEdges?: boolean): [...number[]][] {
         if (this.points != null && Tstart <= this.minT && Tend >= this.maxT)
             return this.points;
         if (this.points != null && IncludeEdges !== undefined && IncludeEdges)
             return this.points.filter((pt,i) => (pt[0] >= Tstart && pt[0] <= Tend) || 
-                i < ((this.points?.length ?? 0) -1) && (this.points?[i+1][0] : 0) >= Tstart || 
-                i > 0  && (this.points?[i-1][0] : 0)<= Tend);
+                i < ((this.points?.length ?? 0) -1) && (this.points != null ? this.points[i+1][0] : 0) >= Tstart || 
+                i > 0  && (this.points != null ? this.points[i-1][0] : 0)<= Tend);
         if (this.points != null)
             return this.points.filter(pt => pt[0] >= Tstart && pt[0] <= Tend );
-        
-
         const result: [...number[]][] = [];
-        return result.concat(...this.children!.filter(node => Tstart <= node.minT && Tend >= node.maxT).map(node => node.GetData(Tstart, Tend, IncludeEdges)));
+        return result.concat(...this.children!.filter(node => 
+            (node.minT <= Tstart && node.maxT > Tstart) || 
+            (node.maxT >= Tend && node.minT < Tend) || 
+            (node.minT >= Tstart && node.maxT <= Tend)
+            ).map(node => node.GetData(Tstart, Tend, IncludeEdges)));
     }
 
     public GetFullData(): [...number[]][] {
@@ -123,57 +125,97 @@ export class PointNode {
 
     /**
      * Retrieves a point from the PointNode tree
-     * @param {number} point - The point to retrieve from the tree
+     * @param {number} tVal - The time value of the point to retrieve from the tree.
      */
-    public GetPoint(point: number): [...number[]] {
-        // round point back to whole integer 
-        point = Math.round(point);
+    public GetPoint(tVal: number): [...number[]] {
+        return this.PointBinarySearch(tVal, 1)[0];
+    }
 
-        // if the point is less than the minimum value of the subsection, return the first point
-        if (point < this.minT && this.points !== null)
-            return this.points[0];
+    /**
+     * Retrieves a specified number of points from the PointNode tree, centered around a point
+     * @param {number} tVal - The time value of the center point of the point retrieval.
+     * @param {number} pointsRetrieved - The number of points to retrieve
+     */
+    public GetPoints(tVal: number, pointsRetrieved = 1): [...number[]][] {
+        return this.PointBinarySearch(tVal, pointsRetrieved);
+    }
 
-        // if the point is greater than the largest value of the subsection, return the last point
-        if (point > this.maxT && this.points !== null)
-          return this.points[this.points.length - 1];
+    private PointBinarySearch(tVal: number, pointsRetrieved = 1, bucketLowerNeighbor?: PointNode, bucketUpperNeighbor?: PointNode): [...number[]][] {
+        if (pointsRetrieved <= 0) throw new RangeError(`Requested number of points must be positive value.`);
+        // round tVal back to whole integer 
 
-        // if the subsection is null, and the point is less than the minimum value of the subsection, ??Start over again lookign for the point in the first subsection??
-        if (point < this.minT && this.points === null)
-          return this.children![0].GetPoint(point);
-        else if (point > this.maxT && this.points === null)
-            return this.children![this.children!.length - 1].GetPoint(point);
+        if (this.points !== null) {
+            // if the tVal is less than the minimum value of the subsection, return the first point
+            if (tVal < this.minT) {
+                const spillOver = pointsRetrieved - this.points.length;
+                const spillOverPoints = (spillOver > 0 && bucketUpperNeighbor !== undefined) ? bucketUpperNeighbor.PointBinarySearch(tVal, spillOver, this, undefined) : [];
+                return this.points.slice(0,pointsRetrieved).concat(spillOverPoints);
+            }
 
+            // if the tVal is greater than the largest value of the subsection, return the last point
+            if (tVal > this.maxT) {
+                const spillOver = pointsRetrieved - this.points.length;
+                const spillOverPoints = (spillOver > 0 && bucketLowerNeighbor !== undefined) ? bucketLowerNeighbor.PointBinarySearch(tVal, spillOver, undefined, this) : [];
+                return spillOverPoints.concat(this.points.slice(-pointsRetrieved));
+            }
 
-        if (this.points != null) {
+            // Otherwise, perform binary search
             let upper = this.points.length - 1;
             let lower = 0;
 
             let Tlower = this.minT;
             let Tupper = this.maxT;
 
-            while (Tupper !== point && Tlower !== point && upper !== lower && Tupper !== Tlower) {
+            while (Tupper !== tVal && Tlower !== tVal && upper !== lower && Tupper !== Tlower) {
                 const center = Math.round((upper + lower) / 2);
                 const Tcenter = this.points[center][0];
 
                 if (center === upper || center === lower)
                     break;
-                if (Tcenter <= point)
+                if (Tcenter <= tVal)
                     lower = center;
-                if (Tcenter > point)
+                if (Tcenter > tVal)
                     upper = center;
                 Tupper = this.points[upper][0];
                 Tlower = this.points[lower][0];
             }
-            if (Math.abs(point - Tlower) < Math.abs(point - Tupper))
-                return this.points[lower];
 
-            return this.points[upper];
+            let upperPoints = Math.floor(pointsRetrieved / 2);
+            let lowerPoints = upperPoints;
+            // Adjustment for even number of points
+            const sidingAdjust = pointsRetrieved % 2 === 0 ? 1 : 0;
+            let centerIndex: number;
+            if (Math.abs(tVal - Tlower) < Math.abs(tVal - Tupper)) {
+                centerIndex = lower;
+                lowerPoints -= sidingAdjust;
+            } else {
+                centerIndex = upper;
+                upperPoints -= sidingAdjust;
+            }
+
+            // Note: If we have spillover and no neighbor on the spillover side, then we discard the idea of spillover, and just return as many as we can on that side
+            const upperSpillOver = centerIndex + upperPoints + 1 - this.points.length;
+            const upperNeighborPoints = (upperSpillOver > 0 && bucketUpperNeighbor !== undefined) ? bucketUpperNeighbor.PointBinarySearch(tVal, upperSpillOver, this, undefined) : [];
+            const lowerSpillOver = lowerPoints - centerIndex;
+            const lowerNeighborPoints = (lowerSpillOver > 0 && bucketLowerNeighbor !== undefined) ? bucketLowerNeighbor.PointBinarySearch(tVal, lowerSpillOver, undefined, this) : [];
+
+            return lowerNeighborPoints.concat(this.points.slice(Math.max(centerIndex - lowerPoints, 0), Math.min(centerIndex + upperPoints +1, this.points.length))).concat(upperNeighborPoints);
 
         }
-        else {
-            const child = this.children!.find(n => /*n.minT <= point &&*/ n.maxT > point);
-            return child!.GetPoint(point);
-        }
+        else if (this.children !== null) {
+            let childIndex = -1;
+            // if the subsection is null, and the tVal is less than the minimum value of the subsection, ??Start over again looking for the point in the first subsection??
+            if (tVal < this.minT) childIndex = 0;
+            else if (tVal > this.maxT) childIndex = this.children.length - 1;
+            else childIndex = this.children.findIndex(n => n.maxT >= tVal);
 
+            if (childIndex === -1) throw new RangeError(`Could not find child bucket with point that has a time value of ${tVal}`);
+
+            // Find neighbors
+            const upperNeighbor = childIndex !== this.children.length - 1 ? this.children[childIndex + 1] : undefined;
+            const lowerNeighbor = childIndex !== 0 ? this.children[childIndex - 1] : undefined;
+            return this.children[childIndex].PointBinarySearch(tVal, pointsRetrieved, lowerNeighbor, upperNeighbor);
+        }
+        else throw new RangeError(`Both children and points are null for PointNode, unabled to find point with time value of ${tVal}`);
     }
 }

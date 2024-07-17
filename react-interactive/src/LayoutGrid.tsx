@@ -40,7 +40,7 @@ const LayoutGrid: React.FC<React.PropsWithChildren<IProps>> = (props) => {
         const rowsOnGrid: IRow[] = [];
         const lowestSquare = Math.floor(Math.sqrt(totalNumOfItems));
         let numOfRows = lowestSquare; // Default values assumes a perfect square grid
-        let rowsNeedingExtraItems = totalNumOfItems - lowestSquare**2; // Will add these overflow items to beginning rows 1:1
+        let rowsNeedingExtraItems = totalNumOfItems - lowestSquare**2; // Adds these overflow items to beginning rows 1:1
         
         if(props.colMax !== undefined && props.colMax <= lowestSquare) {
             rowsNeedingExtraItems = 0;
@@ -71,14 +71,13 @@ const LayoutGrid: React.FC<React.PropsWithChildren<IProps>> = (props) => {
     }, [totalNumOfItems]);
 
     function generateColumns(currentRow: IRow) {
-        const ItemDivs = [];
+const ItemDivs: JSX.Element[] = [];
         for(let i = 0; i < currentRow.numOfCols; ++i) {
             const padding = i === 0 ? 'pl-3 pr-3' : 'pr-3 pl-0';
-            const ItemDiv =
+            ItemDivs.push(
                 <div className={'col ' + padding} style={{ height:'100%', width: `${100 / currentRow.numOfCols}%` }}>
                     { React.Children.toArray(props.children)[currentRow.start + i] }
-                </div>
-            ItemDivs.push(ItemDiv);
+                </div>)
         }
         return ItemDivs;
     }

@@ -46,8 +46,30 @@ interface IProps {
     UseLegacyNavigation?: boolean
 }
 
+interface IApplicationRefs {
+    mainDiv: HTMLDivElement | null;
+    navBarDiv: HTMLDivElement | null;
+}
+
 interface INavProps { collapsed: boolean }
-interface IMainDivProps {w: number}
+interface IMainDivProps { left: number, top: number }
+
+interface IHeaderProps {
+    SetCollapsed: (c: boolean) => void,
+    HomePath: string,
+    Logo?: string,
+    OnSignOut?: () => void,
+    ShowOpen: boolean,
+    ShowClose: boolean,
+    NavBarContent?: React.ReactNode,
+}
+
+interface ISideBarProps {
+    Collapsed: boolean,
+    Version?: string,
+    HideSide: boolean,
+}
+
 const SidebarNav = styled.nav <INavProps>`
   & {
     position: fixed;
@@ -57,7 +79,7 @@ const SidebarNav = styled.nav <INavProps>`
     z-index: 100;
     padding: 48px 0 0;
     box-shadow: inset -1px 0 0 rgba(0,0,0,.1);
-    width: ${props => props.collapsed? 50 : 200}px;
+    width: ${props => props.collapsed ? 50 : 200}px;
   }`;
 
 const SidebarDiv = styled.div`
@@ -69,33 +91,45 @@ const SidebarDiv = styled.div`
 
 const MainDiv = styled.div<IMainDivProps>`
 & {
-    top: 40px;
+    top: ${props => props.top}px;
     position: absolute;
-    width: calc(100% - ${props => props.w}px);
-    height: calc(100% - 48px);
+    width: calc(100% - ${props => props.left}px);
+    height: calc(100% - ${props => props.top}px);
     overflow: hidden;
-    left: ${props => props.w}px;
+    left: ${props => props.left}px;
 }
 & svg {
     user-select: none;
  }`;
 
-const Applications: React.FunctionComponent<IProps> = (props) => {
-
+const Applications: React.ForwardRefRenderFunction<IApplicationRefs, React.PropsWithChildren<IProps>> = (props, ref) => {
     const [collapsed, setCollapsed] = React.useState<boolean>(false)
+    const navBarRef = React.useRef<HTMLDivElement>(null);
+    const mainDivRef = React.useRef<HTMLDivElement>(null);
 
     const showOpen = props.AllowCollapsed !== undefined && props.AllowCollapsed && collapsed;
     const showClose = props.AllowCollapsed !== undefined && props.AllowCollapsed && !collapsed;
 
     const [ignored, forceUpdate] = React.useReducer((x: number) => x + 1, 0); // integer state for resize renders
 
+    const [navBarHeight, setNavBarHeight] = React.useState<number>(40);
+
+    React.useLayoutEffect(() => {
+        setNavBarHeight(navBarRef.current?.offsetHeight ?? 40)
+    });
+
     React.useEffect(() => {
         const listener = (evt: any) => forceUpdate();
         window.addEventListener('resize', listener);
 
         return () => window.removeEventListener('resize', listener);
-    
+
     }, []);
+
+    React.useImperativeHandle(ref, () => ({
+        mainDiv: mainDivRef.current,
+        navBarDiv: navBarRef.current,
+    }));
 
     function GetContext(): IContext {
         return {
@@ -107,15 +141,15 @@ const Applications: React.FunctionComponent<IProps> = (props) => {
 
     function CreateRoute(element: React.ReactElement): JSX.Element[] {
         const routes: JSX.Element[] = [];
-    
+
         // Generate a route for the Name prop
         if (element.props.RequiredRoles !== undefined && element.props.RequiredRoles.filter((r: Application.Types.SecurityRoleName) => GetContext().userRoles.findIndex(i => i === r) > -1).length === 0)
             routes.push(<Route path={`${props.HomePath}${element.props.Name}`} element={<ServerErrorIcon Show={true} Label={'You are not authorized to view this page.'} />} />);
         else
             routes.push(<Route path={`${props.HomePath}${element.props.Name}`} element={<Content>{element.props.children}</Content>} />);
-    
+
         // Generate additional routes for Paths prop if it exists
-        if (element.props.Paths) {
+        if ((element.props.Paths != null)) {
             for (const path of element.props.Paths) {
                 const fullPath = `${props.HomePath}${element.props.Name}${path}`;
                 if (element.props.RequiredRoles !== undefined && element.props.RequiredRoles.filter((r: Application.Types.SecurityRoleName) => GetContext().userRoles.findIndex(i => i === r) > -1).length === 0)
@@ -124,115 +158,91 @@ const Applications: React.FunctionComponent<IProps> = (props) => {
                     routes.push(<Route path={fullPath} element={<Content>{element.props.children}</Content>} />);
             }
         }
-    
+
         return routes;
     }
-    
 
-    const hideSide = props.HideSideBar === undefined? false : props.HideSideBar;
 
-    return <React.Suspense fallback={<LoadingScreen Show={true} />}>
+    const hideSide = props.HideSideBar === undefined ? false : props.HideSideBar;
+
+    return <>
         <Context.Provider value={GetContext()}>
-        {props.UseLegacyNavigation === undefined || !props.UseLegacyNavigation? <Router>
-            <div style={{ width: window.innerWidth, height: window.innerHeight, position: "absolute" }}>
-                    <HeaderContent 
-                        Collapsed={collapsed}
-                        SetCollapsed = {setCollapsed}
+            {props.UseLegacyNavigation === undefined || !props.UseLegacyNavigation ? <Router>
+                <div ref={mainDivRef} style={{ width: window.innerWidth, height: window.innerHeight, position: "absolute" }}>
+                    <HeaderContent
+                        SetCollapsed={setCollapsed}
                         HomePath={props.HomePath}
                         Logo={props.Logo}
                         OnSignOut={props.OnSignOut}
-                        Version={props.Version}
                         ShowOpen={showOpen}
                         ShowClose={showClose}
-                        HideSide={hideSide}
-                        NavBarContent={props.NavBarContent}        
-                    >
-                        {props.children}
-                    </HeaderContent>
-                    <MainDiv w={hideSide? 0 : (collapsed ? 50 : 200)}>
-                        <Routes>
-                            <Route path={`${props.HomePath}`}>
-                                <Route index element={<Navigate to={`${props.HomePath}${props.DefaultPath}`} />} />
-                                {React.Children.map(props.children, (element) => {
-                                    if (!React.isValidElement(element))
-                                        return null;
-                                    if ((element as React.ReactElement<any>).type === Page && React.Children.count(element.props.children) > 0)
-                                        return CreateRoute(element)
-                                    if ((element as React.ReactElement<any>).type === Section)
-                                        return React.Children.map(element.props.children, (e) => {
-                                            if (!React.isValidElement(e))
-                                                return null;
-                                            if ((e as React.ReactElement<any>).type === Page && React.Children.count((e.props as any).children) > 0)
-                                                return CreateRoute(e)
+                        NavBarContent={props.NavBarContent}
+                        ref={navBarRef}
+                    />
+                    <React.Suspense fallback={<LoadingScreen Show={true} />}>
+                        <SideBarContent Collapsed={collapsed} HideSide={hideSide} Version={props.Version}>{props.children}</SideBarContent>
+                        <MainDiv left={hideSide ? 0 : (collapsed ? 50 : 200)} top={navBarHeight}>
+                            <Routes>
+                                <Route path={`${props.HomePath}`}>
+                                    <Route index element={<Navigate to={`${props.HomePath}${props.DefaultPath}`} />} />
+                                    {React.Children.map(props.children, (element) => {
+                                        if (!React.isValidElement(element))
                                             return null;
-                                        })
+                                        if ((element as React.ReactElement<any>).type === Page && React.Children.count(element.props.children) > 0)
+                                            return CreateRoute(element)
+                                        if ((element as React.ReactElement<any>).type === Section)
+                                            return React.Children.map(element.props.children, (e) => {
+                                                if (!React.isValidElement(e))
+                                                    return null;
+                                                if ((e as React.ReactElement<any>).type === Page && React.Children.count((e.props as any).children) > 0)
+                                                    return CreateRoute(e)
+                                                return null;
+                                            })
+                                        return null;
+                                    })}
+                                </Route>
+                            </Routes >
+                        </MainDiv>
+                    </React.Suspense>
+                </div>
+            </Router> :
+                <div ref={mainDivRef} style={{ width: window.innerWidth, height: window.innerHeight, position: "absolute" }}>
+                    <HeaderContent
+                        SetCollapsed={setCollapsed}
+                        HomePath={props.HomePath}
+                        Logo={props.Logo}
+                        OnSignOut={props.OnSignOut}
+                        ShowOpen={showOpen}
+                        ShowClose={showClose}
+                        NavBarContent={props.NavBarContent}
+                        ref={navBarRef}
+                    />
+                    <React.Suspense fallback={<LoadingScreen Show={true} />}>
+                        <SideBarContent Collapsed={collapsed} HideSide={hideSide} Version={props.Version}>{props.children}</SideBarContent>
+                        <MainDiv left={hideSide ? 0 : (collapsed ? 50 : 200)} top={navBarHeight}>
+                            {React.Children.map(props.children, (element) => {
+                                if (!React.isValidElement(element))
                                     return null;
-                                })}
-                            </Route>
-                        </Routes >
-                   
-                    </MainDiv>
-            </div>
-        </Router> : 
-        <div style={{ width: window.innerWidth, height: window.innerHeight, position: "absolute" }}>
-        <HeaderContent 
-            Collapsed={collapsed}
-            SetCollapsed = {setCollapsed}
-            HomePath={props.HomePath}
-            Logo={props.Logo}
-            OnSignOut={props.OnSignOut}
-            Version={props.Version}
-            ShowOpen={showOpen}
-            ShowClose={showClose}
-            HideSide={hideSide}
-            NavBarContent={props.NavBarContent}
-        >
-            {props.children}
-        </HeaderContent>
-        <MainDiv w={hideSide? 0 : (collapsed ? 50 : 200)}>
-            {props.children}
-        </MainDiv>
-</div>}
+                                if ((element as React.ReactElement<any>).type === Page && React.Children.count(element.props.children) > 0)
+                                    return element.props.children;
+                                if ((element as React.ReactElement<any>).type === Section)
+                                    return null;
+                                return element;
+                            })}
+                        </MainDiv>
+                    </React.Suspense>
+                </div>}
         </Context.Provider>
-    </React.Suspense>;
-}
+    </>
+        ;
+};
 
-export default Applications;
+export default React.forwardRef<IApplicationRefs, React.PropsWithChildren<IProps>>(Applications);
 
-interface IHeaderProps {
-    Collapsed: boolean,
-    SetCollapsed: (c: boolean) => void,
-    HomePath: string,
-    Logo?: string,
-    OnSignOut?: () => void,
-    Version?: string,
-    ShowOpen: boolean,
-    ShowClose: boolean,
-    HideSide: boolean,
-    NavBarContent?: React.ReactNode
-}
-
-const HeaderContent: React.FunctionComponent<IHeaderProps> = (props) => {
-
+const SideBarContent: React.FC<ISideBarProps> = (props) => {
     return <>
-    <nav className="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
-                {props.ShowOpen ? <a style={{ color: '#f8f9fa', marginLeft: 15 }} onClick={() => props.SetCollapsed(false)} >
-                    {SVGIcons.ArrowForward}
-                </a> : null}
-                {props.ShowClose ? <a style={{ color: '#f8f9fa', marginLeft: 15 }} onClick={() => props.SetCollapsed(true)}>
-                    {SVGIcons.ArrowBackward}
-                </a> : null}
-            {props.Logo !== undefined ?
-                < a className="navbar-brand col-sm-3 col-md-2 mr-0 mr-auto" href={props.HomePath} ><img style={{ maxHeight: 35, margin: -5 }} src={props.Logo} /></a> : null}
-            <ul className="navbar-nav px-3 ml-auto">
-                <li className="nav-item text-nowrap">
-                    {props.OnSignOut !== undefined ? <a className="nav-link" onClick={props.OnSignOut} >Sign out</a> : null}
-                </li>
-            </ul>
-            {props.NavBarContent}
-        </nav>
-            {props.HideSide? null : <SidebarNav className={"bg-light"} collapsed={props.Collapsed}>
-                <SidebarDiv>
+        {props.HideSide ? null : <SidebarNav className={"bg-light"} collapsed={props.Collapsed}>
+            <SidebarDiv>
                 <ul className="navbar-nav px-3">
                     {React.Children.map(props.children, (e) => {
                         if (!React.isValidElement(e))
@@ -249,14 +259,34 @@ const HeaderContent: React.FunctionComponent<IHeaderProps> = (props) => {
                         return e;
                     return null
                 })}
-                </SidebarDiv>
-                {props.Version !== undefined && !props.Collapsed ?
-                    <div style={{ width: '100%', textAlign: 'center', height: 35 }}>
-                        <span>Version {props.Version}</span>
-                        <br />
-                        <span></span>
-                    </div> : null}
-            </SidebarNav>}
-</>
-
+            </SidebarDiv>
+            {props.Version !== undefined && !props.Collapsed ?
+                <div style={{ width: '100%', textAlign: 'center', height: 35 }}>
+                    <span>Version {props.Version}</span>
+                    <br />
+                    <span></span>
+                </div> : null}
+        </SidebarNav>}
+    </>
 }
+
+const HeaderContent = React.forwardRef<HTMLDivElement, IHeaderProps>((props, ref) => {
+    return <>
+        <nav className="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow" ref={ref}>
+            {props.ShowOpen ? <a style={{ color: '#f8f9fa', marginLeft: 15 }} onClick={() => props.SetCollapsed(false)} >
+                {SVGIcons.ArrowForward}
+            </a> : null}
+            {props.ShowClose ? <a style={{ color: '#f8f9fa', marginLeft: 15 }} onClick={() => props.SetCollapsed(true)}>
+                {SVGIcons.ArrowBackward}
+            </a> : null}
+            {props.Logo !== undefined ?
+                < a className="navbar-brand col-sm-2 col-md-1 mr-0 mr-auto" href={props.HomePath} ><img style={{ maxHeight: 35, margin: -5 }} src={props.Logo} /></a> : null}
+            <ul className="navbar-nav px-3 ml-auto">
+                <li className="nav-item text-nowrap">
+                    {props.OnSignOut !== undefined ? <a className="nav-link" onClick={props.OnSignOut} >Sign out</a> : null}
+                </li>
+            </ul>
+            {props.NavBarContent}
+        </nav>
+    </>
+});

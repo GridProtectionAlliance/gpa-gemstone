@@ -22,12 +22,30 @@
 import * as React from 'react';
 import {Search} from '../SearchBar'
 
+/**
+ * Interface defining the properties expected by the BooleanFilter component.
+ */
 interface IFilterProps<T> {
+    /**
+    * Function to set the filter based on Search.IFilter<T> array.
+    * @param evt - Event handler that updates the filter.
+    */
     SetFilter: (evt: Search.IFilter<T>[]) => void;
+    /**
+    * Array of filters of type Search.IFilter<T>.
+    */
     Filter: Search.IFilter<T>[],
+    /**
+    * Name of the field for filtering.
+    */
     FieldName: string
 }
 
+/**
+ * Component to handle boolean filtering based on provided filter props.
+ * @param {IFilterProps<T>} props - Props passed to the BooleanFilter component.
+ * @returns JSX element representing the BooleanFilter component.
+ */
 export function BooleanFilter<T>(props: IFilterProps<T>) {
     const [selected, setSelected] = React.useState<boolean>(false);
     const [notSelected, setNotSelected] = React.useState<boolean>(false);
@@ -53,10 +71,10 @@ export function BooleanFilter<T>(props: IFilterProps<T>) {
 
     React.useEffect(() => {
         if (selected && !notSelected && (props.Filter.length === 0 || props.Filter[0].SearchText !== '1')) {
-            props.SetFilter([{ FieldName: props.FieldName, isPivotColumn: false, SearchText: '1', Operator: '=', Type: 'boolean' }]);
+            props.SetFilter([{ FieldName: props.FieldName, IsPivotColumn: false, SearchText: '1', Operator: '=', Type: 'boolean' }]);
         }
         if (!selected && notSelected && (props.Filter.length === 0 || props.Filter[0].SearchText !== '0')) {
-            props.SetFilter([{ FieldName: props.FieldName, isPivotColumn: false, SearchText: '0', Operator: '=', Type: 'boolean' }]);
+            props.SetFilter([{ FieldName: props.FieldName, IsPivotColumn: false, SearchText: '0', Operator: '=', Type: 'boolean' }]);
         }
         if (selected && notSelected && props.Filter.length > 0)
             props.SetFilter([]);

@@ -26,33 +26,41 @@ import * as React from 'react';
 export interface IGraphContext extends IHandlerRegistration, IDataRegistration {
   XDomain: [number, number],
   XHover: number,
+  XHoverSnap: number,
 
   YHover: number[],
+  YHoverSnap: number[],
   YDomain: [number, number][],
 
-  CurrentMode: 'zoom'|'pan'|'select',
-  Data: Map<string, IDataSeries>,
+  CurrentMode: SelectType,
+  Data: React.MutableRefObject<Map<string, IDataSeries>>,
+  DataGuid: string,
+  XApplyPixelOffset: (x: number) => number,
+  YApplyPixelOffset: (y: number) => number,
   XTransformation: (x: number) => number,
   YTransformation: (y: number, axis: AxisIdentifier|number) => number,
-  
   UpdateFlag: number,
   XInverseTransformation: (p: number) => number,
   YInverseTransformation: (p: number, axis: AxisIdentifier|number) => number,
-
   SetXDomain: React.SetStateAction<[number,number]> | ((t: [number,number]) => void),
-  SetYDomain:  React.SetStateAction<[number,number]> | ((t: [number,number][]) => void),
+  SetYDomain:  React.SetStateAction<[number,number]> | ((t: [number,number][]) => void)
 }
 
 export const GraphContext = React.createContext({
   XDomain: [0, 0],
   XHover: NaN,
+  XHoverSnap: NaN,
 
   YHover: [NaN, NaN],
+  YHoverSnap: [NaN, NaN],
   YDomain: [[0, 0]],
   CurrentMode: 'select',
 
 
-  Data: new Map<string, IDataSeries>(),
+  Data: React.createRef(),
+  DataGuid: "",
+  XApplyPixelOffset: (_: number) => _,
+  YApplyPixelOffset: (_: number) => _,
   XTransformation: (_: number) => 0,
   YTransformation: (_: number, __: AxisIdentifier|number) => 0,
   XInverseTransformation: (_: number) => 0,
@@ -72,14 +80,26 @@ export const GraphContext = React.createContext({
 export interface IDataSeries {
   getMin: (tDomain: [number, number]) => number| undefined,
   getMax: (tDomain: [number, number]) => number|undefined,
-  getPoint: (xValue: number) => [...number[]]|undefined,
+  getPoints: (xValue: number, pointsAround?: number) => [...number[]][]|undefined,
+  enabled: boolean,
   axis: AxisIdentifier|undefined,
-  legend?: HTMLElement| React.ReactElement| JSX.Element
+  legend?: React.ReactElement
 }
 
-export type LineStyle = '-'|':';
+export type LineStyle = '-'|':'|'solid'|'dash'|'short-dash'|'long-dash';
+
+export const LineMap = new Map<LineStyle, string>([
+  ['-', 'none'],
+  ['solid', 'none'],
+  [':', '10,5'],
+  ['short-dash', '10,5'],
+  ['dash', '20,5'],
+  ['long-dash', '30,5']
+]);
+
 export type FillStyle = 'fill';
 export type AxisIdentifier = 'left'|'right'; 
+export type SelectType = 'zoom-rectangular' | 'zoom-vertical' | 'zoom-horizontal' | 'pan' | 'select';
 
 class AxisMapClass<T, U> {
   private mapBase: Map<T, U>;
@@ -107,14 +127,15 @@ export interface IHandlers {
   onRelease?: (x: number, y: number) => void,
   onPlotLeave?: (x: number, y:number) => void,
   onMove?: (x: number, y: number) => void,
-  axis: number|AxisIdentifier
+  axis: number|AxisIdentifier,
+  allowSnapping: boolean
 }
 
 export interface IDataRegistration {
   AddData: ((d: IDataSeries) => string),
   RemoveData: (key: string) => void,
   UpdateData: (key: string, d: IDataSeries) => void,
-  SetLegend: (key: string, legend?: HTMLElement| React.ReactElement| JSX.Element) => void,
+  SetLegend: (key: string, legend?: React.ReactElement) => void,
 }
 
 export interface IHandlerRegistration {
@@ -131,17 +152,21 @@ export interface IActionFunctions {
 interface IContextWrapperProps extends IHandlerRegistration, IDataRegistration {
   XDomain: [number, number],
   MousePosition: [number,number],
+  MousePositionSnap: [number,number],
   YDomain: [number,number][],
-  CurrentMode:  'zoom'|'pan'|'select',
+  CurrentMode: SelectType,
   MouseIn: boolean,
   UpdateFlag: number,
-  Data: Map<string, IDataSeries>,
+  Data: React.MutableRefObject<Map<string, IDataSeries>>,
+  DataGuid: string,
+  XApplyPixelOffset: (_: number) => number,
+  YApplyPixelOffset: (_: number) => number, 
   XTransform: (x: number) => number,
   YTransform: (y: number, axis: AxisIdentifier|number) => number,
   XInvTransform: (p: number) => number,
   YInvTransform: (p: number, axis: AxisIdentifier|number) => number,
   SetXDomain: (x: [number,number]) => void,
-  SetYDomain: (y: [number, number][]) => void,
+  SetYDomain: (y: [number, number][]) => void
 }
 
 export const ContextWrapper: React.FC<IContextWrapperProps> = (props) => {
@@ -149,11 +174,14 @@ export const ContextWrapper: React.FC<IContextWrapperProps> = (props) => {
   const context = React.useMemo(GetContext, [
     props.XDomain,
     props.MousePosition,
+    props.MousePositionSnap,
     props.YDomain,
     props.CurrentMode,
     props.MouseIn,
     props.UpdateFlag,
-    props.Data,
+    props.DataGuid,
+    props.XApplyPixelOffset,
+    props.YApplyPixelOffset,
     props.XTransform,
     props.XInvTransform,
     props.YInvTransform,
@@ -166,17 +194,22 @@ export const ContextWrapper: React.FC<IContextWrapperProps> = (props) => {
     props.SetLegend,
     props.RegisterSelect,
     props.RemoveSelect,
-    props.UpdateSelect,
+    props.UpdateSelect
   ]);
 
   function GetContext(): IGraphContext {
     return {
         XDomain: props.XDomain,
-        XHover: props.MouseIn? props.XInvTransform(props.MousePosition[0]) : NaN,
+        XHover: props.MouseIn ? props.XInvTransform(props.MousePosition[0]) : NaN,
         YHover: props.MouseIn ? [...AxisMap.values()].map(axis => props.YInvTransform(props.MousePosition[1], axis)) : Array<number>(AxisMap.size).fill(NaN),
+        XHoverSnap: props.MouseIn ? props.XInvTransform(props.MousePositionSnap[0]) : NaN,
+        YHoverSnap: props.MouseIn ? [...AxisMap.values()].map(axis => props.YInvTransform(props.MousePositionSnap[1], axis)) : Array<number>(AxisMap.size).fill(NaN),
         YDomain: props.YDomain,
         CurrentMode: props.CurrentMode,
         Data: props.Data,
+        DataGuid: props.DataGuid,
+        XApplyPixelOffset: props.XApplyPixelOffset,
+        YApplyPixelOffset: props.YApplyPixelOffset,
         XTransformation: props.XTransform,
         YTransformation: props.YTransform,
         XInverseTransformation: props.XInvTransform,

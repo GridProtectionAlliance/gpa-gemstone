@@ -25,26 +25,54 @@ import * as React from 'react';
 import { CreateGuid } from '@gpa-gemstone/helper-functions'
 import HelperMessage from './HelperMessage';
 
+// Interface defining the props for other components. 
 interface IProps<T>{
-Record: T,
-Field: keyof T,
-Setter: (record: T) => void;
-Label?: string,
-Disabled?: boolean,
-Help?: string|JSX.Element;
+  /**
+    * Record to be used in form
+    * @type {T}
+  */
+  Record: T;
+  /**
+    * Field of the record to be edited
+    * @type {keyof T}
+  */
+  Field: keyof T;
+  /**
+    * Setter function to update the Record
+    * @param record - Updated Record
+  */
+  Setter: (record: T) => void;
+  /**
+    * Label to display for the form, defaults to the Field prop
+    * @type {string}
+    * @optional
+  */
+  Label?: string,
+  /**
+    * Flag to disable the input field
+    * @type {boolean}
+    * @optional
+  */
+  Disabled?: boolean,
+  /**
+    * Help message or element to display
+    * @type {string | JSX.Element}
+    * @optional
+  */
+  Help?: string|JSX.Element;
 }
 
 export default function CheckBox<T>(props: IProps<T>) {
   const [guid, setGuid] = React.useState<string>("");
   const [showHelp, setShowHelp] = React.useState<boolean>(false);
 
+  // Determines whether to show help icon and label.
   const showHelpIcon = props.Help !== undefined;
-  const showLabel = props.Label !== "";
-  const label = props.Label === undefined ? props.Field : props.Label;
   
+  // Runs once, setting a unique GUID for each checkbox instance.
   React.useEffect(() => {
     setGuid(CreateGuid());
-    }, []);
+  }, []);
     
     return (
       <div className="form-check" data-help={guid}>
@@ -57,8 +85,8 @@ export default function CheckBox<T>(props: IProps<T>) {
             record[props.Field] = evt.target.checked as any;
             props.Setter(record);
           }}
-          value={props.Record[props.Field] ? 'on' : 'off'}
-          checked={props.Record[props.Field] ? true : false}
+          value={(props.Record[props.Field] as unknown as boolean) ? 'on' : 'off'}
+          checked={(props.Record[props.Field] as unknown as boolean)}
           disabled={props.Disabled == null ? false : props.Disabled}
         />
         <label className="form-check-label">{props.Label == null ? props.Field : props.Label}</label>
