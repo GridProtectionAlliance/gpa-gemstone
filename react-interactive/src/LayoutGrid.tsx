@@ -86,7 +86,7 @@ const LayoutGrid: React.FC<React.PropsWithChildren<IProps>> = (props) => {
     function generateColumns(currentRow: IRow) {
         const ItemDivs: JSX.Element[] = [];
         for(let i = 0; i < currentRow.NumOfCols; ++i) {
-            const padding = i === 0 ? 'pl-3 pr-3' : 'pr-3 pl-0';
+            const padding = i === 0 ? 'pl-1 pr-1' : 'pr-1 pl-0';
             ItemDivs.push(
                 <div className={'col ' + padding} style={{ height:'100%', width: `${100 / currentRow.NumOfCols}%` }}>
                     { React.Children.toArray(props.children)[currentRow.StartIndex + i] }
@@ -97,8 +97,8 @@ const LayoutGrid: React.FC<React.PropsWithChildren<IProps>> = (props) => {
 
     return ( 
             <div className='container-fluid p-0 h-100' style={{ overflowY: 'auto' }}>
-                {rows.map((row) => (
-                    <div className='row pb-3 m-0' style={{ height: `${100 / Math.min(rows.length, props.RowsPerPage)}%` }}>
+                {rows.map((row, i) => (
+                    <div key={i} className='row pb-1 m-0' style={{ height: `${100 / Math.min(rows.length, props.RowsPerPage)}%` }}>
                         { generateColumns(row) }
                     </div>
                 ))}
