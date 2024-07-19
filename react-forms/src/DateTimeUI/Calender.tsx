@@ -39,7 +39,7 @@ interface IWeek {
   saturday: moment.Moment
 }
 export default function Calender(props: IProps) {
-
+ 
   const [weeks,setWeeks] = React.useState<IWeek[]>([]);
   const [month, setMonth] = React.useState<number>(props.DateTime?.month() ?? 0);
   const [year, setYear] = React.useState<number>(props.DateTime?.year() ?? moment.utc().year());
@@ -154,32 +154,32 @@ export default function Calender(props: IProps) {
         <tbody>
           
           {mode === 'month'? weeks.map((w) => <tr key={w.sunday.isoWeek()} style={{height: 20, lineHeight: '20px'}}>
-            <DayCell date={w.sunday} month={month} day={props.DateTime?.date() ?? -1} onClick={(evt) => {evt.stopPropagation(); setDate(w.sunday);}}/>
-            <DayCell date={w.monday} month={month} day={props.DateTime?.date() ?? -1} onClick={(evt) => {evt.stopPropagation(); setDate(w.monday);}}/>
-            <DayCell date={w.tuesday} month={month} day={props.DateTime?.date() ?? -1} onClick={(evt) => {evt.stopPropagation(); setDate(w.tuesday);}}/>
-            <DayCell date={w.wednesday} month={month} day={props.DateTime?.date() ?? -1} onClick={(evt) => {evt.stopPropagation(); setDate(w.wednesday);}}/>
-            <DayCell date={w.thursday} month={month} day={props.DateTime?.date() ?? -1} onClick={(evt) => {evt.stopPropagation(); setDate(w.thursday);}}/>
-            <DayCell date={w.friday} month={month} day={props.DateTime?.date() ?? -1} onClick={(evt) => {evt.stopPropagation(); setDate(w.friday);}}/>
-            <DayCell date={w.saturday} month={month} day={props.DateTime?.date() ?? -1} onClick={(evt) => {evt.stopPropagation(); setDate(w.saturday);}}/>
+            <DayCell date={w.sunday} month={month} dateTime={props.DateTime} onClick={(evt) => {evt.stopPropagation(); setDate(w.sunday);}}/>
+            <DayCell date={w.monday} month={month} dateTime={props.DateTime} onClick={(evt) => {evt.stopPropagation(); setDate(w.monday);}}/>
+            <DayCell date={w.tuesday} month={month} dateTime={props.DateTime} onClick={(evt) => {evt.stopPropagation(); setDate(w.tuesday);}}/>
+            <DayCell date={w.wednesday} month={month} dateTime={props.DateTime} onClick={(evt) => {evt.stopPropagation(); setDate(w.wednesday);}}/>
+            <DayCell date={w.thursday} month={month} dateTime={props.DateTime} onClick={(evt) => {evt.stopPropagation(); setDate(w.thursday);}}/>
+            <DayCell date={w.friday} month={month} dateTime={props.DateTime} onClick={(evt) => {evt.stopPropagation(); setDate(w.friday);}}/>
+            <DayCell date={w.saturday} month={month} dateTime={props.DateTime} onClick={(evt) => {evt.stopPropagation(); setDate(w.saturday);}}/>
             </tr>): null}
           {mode === 'year'? <>
           <tr style={{height: 54, lineHeight: '54px'}}>
-            <MonthCell date={moment([year,0,1])} month={month} onClick={(evt) => {evt.stopPropagation(); setMode('month'); setMonth(0)}}/>
-            <MonthCell date={moment([year,1,1])} month={month} onClick={(evt) => {evt.stopPropagation(); setMode('month'); setMonth(1)}}/>
-            <MonthCell date={moment([year,2,1])} month={month} onClick={(evt) => {evt.stopPropagation(); setMode('month'); setMonth(2)}}/>
-            <MonthCell date={moment([year,3,1])} month={month} onClick={(evt) => {evt.stopPropagation(); setMode('month'); setMonth(3)}}/>
+            <MonthCell date={moment([year,0,1])} dateTime={props.DateTime} onClick={(evt) => {evt.stopPropagation(); setMode('month'); setMonth(0)}}/>
+            <MonthCell date={moment([year,1,1])} dateTime={props.DateTime} onClick={(evt) => {evt.stopPropagation(); setMode('month'); setMonth(1)}}/>
+            <MonthCell date={moment([year,2,1])} dateTime={props.DateTime} onClick={(evt) => {evt.stopPropagation(); setMode('month'); setMonth(2)}}/>
+            <MonthCell date={moment([year,3,1])} dateTime={props.DateTime} onClick={(evt) => {evt.stopPropagation(); setMode('month'); setMonth(3)}}/>
           </tr>
           <tr style={{height: 54, lineHeight: '54px'}}>
-            <MonthCell date={moment([year,4,1])} month={month} onClick={(evt) => {evt.stopPropagation(); setMode('month'); setMonth(4)}}/>
-            <MonthCell date={moment([year,5,1])} month={month} onClick={(evt) => {evt.stopPropagation(); setMode('month'); setMonth(5)}}/>
-            <MonthCell date={moment([year,6,1])} month={month} onClick={(evt) => {evt.stopPropagation(); setMode('month'); setMonth(6)}}/>
-            <MonthCell date={moment([year,7,1])} month={month} onClick={(evt) => {evt.stopPropagation(); setMode('month'); setMonth(7)}}/>
+            <MonthCell date={moment([year,4,1])} dateTime={props.DateTime} onClick={(evt) => {evt.stopPropagation(); setMode('month'); setMonth(4)}}/>
+            <MonthCell date={moment([year,5,1])} dateTime={props.DateTime} onClick={(evt) => {evt.stopPropagation(); setMode('month'); setMonth(5)}}/>
+            <MonthCell date={moment([year,6,1])} dateTime={props.DateTime} onClick={(evt) => {evt.stopPropagation(); setMode('month'); setMonth(6)}}/>
+            <MonthCell date={moment([year,7,1])} dateTime={props.DateTime} onClick={(evt) => {evt.stopPropagation(); setMode('month'); setMonth(7)}}/>
           </tr>
           <tr style={{height: 54, lineHeight: '54px'}}>
-            <MonthCell date={moment([year,8,1])} month={month} onClick={(evt) => {evt.stopPropagation(); setMode('month'); setMonth(8)}}/>
-            <MonthCell date={moment([year,9,1])} month={month} onClick={(evt) => {evt.stopPropagation(); setMode('month'); setMonth(9)}}/>
-            <MonthCell date={moment([year,10,1])} month={month} onClick={(evt) => {evt.stopPropagation(); setMode('month'); setMonth(10)}}/>
-            <MonthCell date={moment([year,11,1])} month={month} onClick={(evt) => {evt.stopPropagation(); setMode('month'); setMonth(11)}}/>
+            <MonthCell date={moment([year,8,1])} dateTime={props.DateTime} onClick={(evt) => {evt.stopPropagation(); setMode('month'); setMonth(8)}}/>
+            <MonthCell date={moment([year,9,1])} dateTime={props.DateTime} onClick={(evt) => {evt.stopPropagation(); setMode('month'); setMonth(9)}}/>
+            <MonthCell date={moment([year,10,1])} dateTime={props.DateTime} onClick={(evt) => {evt.stopPropagation(); setMode('month'); setMonth(10)}}/>
+            <MonthCell date={moment([year,11,1])} dateTime={props.DateTime} onClick={(evt) => {evt.stopPropagation(); setMode('month'); setMonth(11)}}/>
           </tr>
           </> : null}
         </tbody>
@@ -189,15 +189,15 @@ export default function Calender(props: IProps) {
   );
 }
 
-const DayCell = (props: {date: moment.Moment, onClick: (evt: any) => void, month: number, day: number}) => {
+const DayCell = (props: {date: moment.Moment, onClick: (evt: any) => void, month: number, dateTime: moment.Moment | undefined}) => {
    const [active, setActive] = React.useState<boolean>(false);
    const [hover, setHover] = React.useState<boolean>(false);
    const [disabled, setDisabled] = React.useState<boolean>(false);
 
   React.useEffect(() => {
-    setActive(props.date.date() === props.day && props.month === props.date.month())
+    setActive(props.date.date() === props.dateTime?.date() && props.dateTime.month() === props.date.month() && props.date.year() === props.dateTime.year())
     setDisabled(props.date.month() !== props.month);
-  }, [props.month, props.date, props.day])
+  }, [props.month, props.date, props.dateTime])
 
 
   const color = (disabled? '#777' : (active? '#fff' : undefined));
@@ -217,13 +217,13 @@ const DayCell = (props: {date: moment.Moment, onClick: (evt: any) => void, month
     </td>
 }
 
-const MonthCell = (props: {date: moment.Moment, onClick: (evt: any) => void, month: number}) => {
+const MonthCell = (props: {date: moment.Moment, onClick: (evt: any) => void, dateTime: moment.Moment | undefined}) => {
   const [active, setActive] = React.useState<boolean>(false);
   const [hover, setHover] = React.useState<boolean>(false);
   React.useEffect(() => {
-    setActive(props.date.month() === props.month)
+    setActive(props.date.month() === props.dateTime?.month() && props.date.year() === props.dateTime?.year())
     
-  }, [props.month, props.date])
+  }, [props.date, props.dateTime])
 
   const color = (active? '#fff' : undefined);
   const bg = (active? '#337ab7' : hover? '#d3d3d3' : undefined)

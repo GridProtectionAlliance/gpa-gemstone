@@ -105,7 +105,7 @@ export default function DateTimePicker<T>(props: IProps<T>) {
         window.addEventListener('click', onWindowClick);
         return () => { window.removeEventListener('click', onWindowClick); }
 
-    }, [props.Record, props.Field, boxFormat]);
+    }, [pickerRecord, props.Field, boxFormat]);
 
     function setPickerAndRecord(arg: moment.Moment | undefined) {
         setPickerRecord(arg);
@@ -123,9 +123,9 @@ export default function DateTimePicker<T>(props: IProps<T>) {
     function onWindowClick(evt: any) {
         if (evt.target.closest(`.gpa-gemstone-datetime`) == null) {
             setShowOverlay(false);
-            if (props.Record[props.Field] as any !== null) {
-                setPickerAndRecord(parse(props.Record));
-                setBoxRecord(parse(props.Record).format(boxFormat));
+            if (pickerRecord !== undefined) {
+                setPickerAndRecord(pickerRecord);
+                setBoxRecord(pickerRecord.format(boxFormat));
             }
             else {
                 setPickerAndRecord(undefined);
