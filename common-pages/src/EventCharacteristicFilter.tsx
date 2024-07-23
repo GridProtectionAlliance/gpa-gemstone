@@ -25,20 +25,16 @@
 //
 //******************************************************************************************************
 import React from 'react';
-import _ from 'lodash';
 import { Input, Select, MultiCheckBoxSelect } from '@gpa-gemstone/react-forms';
 import { OpenXDA } from '@gpa-gemstone/application-typings';
 
 
 interface IProps {
-    setFilter?: (types: number[]) => void,
-    setHeight: (h: number) => void,
+    setEventFilters: (characteristics?: IEventCharacteristicFilters, types?: number[]) => void,
     eventTypes: OpenXDA.Types.EventType[]
     eventCharacteristicFilter: IEventCharacteristicFilters,
     magDurCurves: OpenXDA.Types.MagDurCurve[],
-    eventTypeFilter: number[],
-    validMinMax: (field: keyof IEventCharacteristicFilters) => boolean
-    
+    eventTypeFilter: number[]    
 }
 
 interface IPhaseFilters { AN: boolean, BN: boolean, CN: boolean, AB: boolean, BC: boolean, CA: boolean, ABG: boolean, BCG: boolean, ABC: boolean, ABCG: boolean }
@@ -53,36 +49,92 @@ interface IEventCharacteristicFilters {
 }
 
 const EventCharacteristicFilter = (props: IProps) => {
-    const navRef = React.useRef<HTMLDivElement>(null);
-
     const [newEventCharacteristicFilter, setNewEventCharacteristicFilter] = React.useState<IEventCharacteristicFilters>(props.eventCharacteristicFilter);
-    
-    const [height, setHeight] = React.useState<number>(0);
 
     const [newTypeFilter, setNewTypeFilter] = React.useState<number[]>([]);
 
     const [newPhases, setNewPhases] = React.useState<{ Value: number, Text: string, Selected: boolean }[]>([]);
 
 
-    React.useLayoutEffect(() => setHeight(navRef?.current?.offsetHeight ?? 0))
-    React.useEffect(() => props.setHeight(height), [height])
-
     React.useEffect(() => { setNewTypeFilter(props.eventTypeFilter) }, [props.eventTypeFilter])
     React.useEffect(() => { setNewEventCharacteristicFilter(props.eventCharacteristicFilter) }, [props.eventCharacteristicFilter])
 
 
-
     React.useEffect(() => {
-        setNewEventCharacteristicFilter(props.eventCharacteristicFilter);
-        setNewTypeFilter(props.eventTypeFilter);
         const setupPhases: { Value: number, Text: string, Selected: boolean }[] = [];
         Object.keys(props.eventCharacteristicFilter.phases).forEach((key, index) => setupPhases.push({ Value: index, Text: key, Selected: props.eventCharacteristicFilter.phases[key as keyof IPhaseFilters] }));
         setNewPhases(setupPhases);
     }, []);
 
+
+    React.useEffect(() => {
+        const characteristics = validEventCharacteristicsFilter() ? newEventCharacteristicFilter : undefined;
+        props.setEventFilters(characteristics, newTypeFilter);
+    }, [newEventCharacteristicFilter, newTypeFilter]);
+
+
+    function validEventCharacteristicsFilter() {
+        let valid = newEventCharacteristicFilter != null;
+    
+        if (!valid)
+            return valid;
+    
+        valid = valid && validMinMax('durationMin');
+        valid = valid && validMinMax('durationMax');
+    
+        valid = valid && validMinMax('sagMin');
+        valid = valid && validMinMax('sagMax');
+    
+        valid = valid && validMinMax('swellMin');
+        valid = valid && validMinMax('swellMax');
+    
+        valid = valid && validMinMax('transientMin');
+        valid = valid && validMinMax('transientMax');
+    
+        return valid;
+    }
+
+    function NullOrNaN(val: number | null | undefined) {
+        return val == null || val == undefined || isNaN(val);
+    }
+    
+    function validMinMax(field: keyof IEventCharacteristicFilters) {
+        const filter = newEventCharacteristicFilter;
+
+        if (field == 'durationMin')
+            return NullOrNaN(filter.durationMin) || (filter.durationMin >= 0 && filter.durationMin < 100 &&
+                (NullOrNaN(filter.durationMax) || filter.durationMax >= filter.durationMin))
+        if (field == 'durationMax')
+            return NullOrNaN(filter.durationMax) || (filter.durationMax >= 0 && filter.durationMax < 100 &&
+                (NullOrNaN(filter.durationMin) || filter.durationMax >= filter.durationMin))
+        if (field == 'sagMin')
+            return NullOrNaN(filter.sagMin) || (filter.sagMin! >= 0 && filter.sagMin! < 1 &&
+                (NullOrNaN(filter.sagMax) || filter.sagMax! >= filter.sagMin!))
+        if (field == 'sagMax')
+            return NullOrNaN(filter.sagMax) || (filter.sagMax! >= 0 && filter.sagMax! < 1 &&
+                (NullOrNaN(filter.sagMax) || filter.sagMax! >= filter.sagMax!))
+        if (field == 'swellMin')
+            return NullOrNaN(filter.swellMin) || (filter.swellMin! >= 1 && filter.swellMin! < 9999 &&
+                (NullOrNaN(filter.swellMax) || filter.swellMax! >= filter.swellMin!))
+        if (field == 'swellMax')
+            return NullOrNaN(filter.swellMax) || (filter.swellMax! >= 1 && filter.swellMax! < 9999 &&
+                (NullOrNaN(filter.swellMin) || filter.swellMax! >= filter.swellMin!))
+        if (field == 'transientMin')
+            return NullOrNaN(filter.transientMin) || (filter.transientMin! >= 0 && filter.transientMin! < 9999 &&
+                (NullOrNaN(filter.transientMax) || filter.transientMax! >= filter.transientMin!))
+        if (field == 'transientMax')
+            return NullOrNaN(filter.transientMax) || (filter.transientMax! >= 0 && filter.transientMax! < 9999 &&
+                (NullOrNaN(filter.transientMin) || filter.transientMax! >= filter.transientMin!))
+    
+    
+        return true;
+    }
+
     const sagsSelected = newTypeFilter.find(i => i == props.eventTypes.find(item => item.Name == 'Sag')?.ID ?? -1) != null;
     const swellsSelected = newTypeFilter.find(i => i == props.eventTypes.find(item => item.Name == 'Swell')?.ID ?? -1) != null;
     const transientsSelected = newTypeFilter.find(i => i == props.eventTypes.find(item => item.Name == 'Transient')?.ID ?? -1) != null;
+
+    if (newEventCharacteristicFilter === null || newTypeFilter === null) return null;
 
     return (
                     <fieldset className="border" style={{ padding: '10px', height: '100%' }}>
@@ -127,7 +179,7 @@ const EventCharacteristicFilter = (props: IProps) => {
                                                         Record={newEventCharacteristicFilter}
                                                         Label='' Field='durationMin'
                                                         Setter={setNewEventCharacteristicFilter}
-                                                        Valid={props.validMinMax}
+                                                        Valid={validMinMax}
                                                         Feedback={'Invalid Min'}
                                                         Type='number'
                                                         Size={'small'}
@@ -142,7 +194,7 @@ const EventCharacteristicFilter = (props: IProps) => {
                                                         Record={newEventCharacteristicFilter}
                                                         Label='' Field='durationMax'
                                                         Setter={setNewEventCharacteristicFilter}
-                                                        Valid={props.validMinMax}
+                                                        Valid={validMinMax}
                                                         Feedback={'Invalid Max'}
                                                         Type='number'
                                                         Size={'small'}
@@ -165,7 +217,7 @@ const EventCharacteristicFilter = (props: IProps) => {
                                                         Label='' Disabled={!sagsSelected}
                                                         Field='sagMin'
                                                         Setter={setNewEventCharacteristicFilter}
-                                                        Valid={props.validMinMax}
+                                                        Valid={validMinMax}
                                                         Feedback={'Invalid Min'}
                                                         Type='number'
                                                         Size={'small'}
@@ -182,7 +234,7 @@ const EventCharacteristicFilter = (props: IProps) => {
                                                         Disabled={!sagsSelected}
                                                         Field='sagMax'
                                                         Setter={setNewEventCharacteristicFilter}
-                                                        Valid={props.validMinMax}
+                                                        Valid={validMinMax}
                                                         Feedback={'Invalid Max'}
                                                         Type='number'
                                                         Size={'small'}
@@ -246,7 +298,7 @@ const EventCharacteristicFilter = (props: IProps) => {
                                                         Record={newEventCharacteristicFilter} Label=''
                                                         Disabled={!transientsSelected} Field='transientMin'
                                                         Setter={setNewEventCharacteristicFilter}
-                                                        Valid={props.validMinMax}
+                                                        Valid={validMinMax}
                                                         Feedback={'Invalid Min'}
                                                         Type='number'
                                                         Size={'small'}
@@ -263,7 +315,7 @@ const EventCharacteristicFilter = (props: IProps) => {
                                                         Disabled={!transientsSelected}
                                                         Field='transientMax'
                                                         Setter={setNewEventCharacteristicFilter}
-                                                        Valid={props.validMinMax}
+                                                        Valid={validMinMax}
                                                         Feedback={'Invalid Max'}
                                                         Size={'small'}
                                                         AllowNull={true}
@@ -307,7 +359,7 @@ const EventCharacteristicFilter = (props: IProps) => {
                                                         Label='' Disabled={!swellsSelected}
                                                         Field='swellMin'
                                                         Setter={setNewEventCharacteristicFilter}
-                                                        Valid={props.validMinMax}
+                                                        Valid={validMinMax}
                                                         Feedback={'Invalid Min'}
                                                         Type='number'
                                                         Size={'small'}
@@ -323,7 +375,7 @@ const EventCharacteristicFilter = (props: IProps) => {
                                                         Label='' Disabled={!swellsSelected}
                                                         Field='swellMax'
                                                         Setter={setNewEventCharacteristicFilter}
-                                                        Valid={props.validMinMax}
+                                                        Valid={validMinMax}
                                                         Feedback={'Invalid Max'}
                                                         Type='number'
                                                         Size={'small'}
