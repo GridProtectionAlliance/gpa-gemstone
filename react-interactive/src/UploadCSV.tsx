@@ -1,0 +1,412 @@
+// ******************************************************************************************************
+//  UploadCSV.tsx - Gbtc
+//
+//  Copyright © 2024, Grid Protection Alliance.  All Rights Reserved.
+//
+//  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
+//  the NOTICE file distributed with this work for additional information regarding copyright ownership.
+//  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may not use this
+//  file except in compliance with the License. You may obtain a copy of the License at:
+//
+//      http://opensource.org/licenses/MIT
+//
+//  Unless agreed to in writing, the subject software distributed under the License is distributed on an
+//  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
+//  License for the specific language governing permissions and limitations.
+//
+//  Code Modification History:
+//  ----------------------------------------------------------------------------------------------------
+//  07/24/2024 - Preston Crawford
+//       Generated original version of source code.
+//
+// ******************************************************************************************************
+
+import * as React from 'react';
+import { CheckBox, Select } from '@gpa-gemstone/react-forms';
+import { ReactTable } from '@gpa-gemstone/react-table';
+import { ConfigTable } from './index';
+import ToolTip from './ToolTip';
+import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
+import { Paging } from '@gpa-gemstone/react-table'
+
+interface IProps<T> {
+    /**
+     * Array of field definitions used to process and validate CSV data.
+     * @type {IField<T>[]}
+     */
+    Fields: IField<T>[];
+
+    /**
+     * Flag indicating whether the CSV upload and processing is complete.
+     * @type {boolean}
+     */
+    IsComplete: boolean;
+
+    /**
+     * Callback function invoked when the CSV processing is complete.
+     * @param {T[]} records - The processed records.
+     */
+    OnComplete: (records: T[]) => void;
+
+    /**
+     * Callback function to set errors encountered during CSV processing.
+     * @param {string[]} errors - Array of error messages.
+     */
+    SetErrors: (errors: string[]) => void;
+}
+
+interface IField<T> {
+    /**
+     * The field in the record this definition applies to.
+     * @type {keyof T}
+     */
+    Field: keyof T;
+
+    /**
+     * The label for the field, used for select element.
+     * @type {string}
+     */
+    Label: string;
+
+    /**
+     * Function to validate the field value.
+     * @param {string} value - The value to validate.
+     * @returns {boolean}
+     */
+    Validate: (value: string) => boolean;
+
+    /**
+     * Component for editing the field value.
+     */
+    EditComponent: React.FC<{ Value: string, SetValue: (val: string) => void, Valid: boolean }>;
+
+    /**
+     * Optional help text for the select element.
+     * @type {string}
+     * @optional
+     */
+    Help?: string;
+
+    /**
+     * Function to process the field value and update the record.
+     * @param {string} val - The value to process.
+     * @param {T} record - The record to update.
+     * @returns {T}
+     */
+    Process: (val: string, record: T) => T;
+
+    /**
+     * Flag indicating if the field is required.
+     * @type {boolean}
+     */
+    Required: boolean;
+
+    /**
+     * Flag indicating if the field can be empty.
+     * @type {boolean}
+     */
+    AllowEmpty: boolean;
+
+    /**
+     * Flag indicating if the field values must be unique.
+     * @type {boolean}
+     */
+    Unique: boolean;
+}
+export default function UploadCSV<T>(props: IProps<T>) {
+    const [headers, setHeaders] = React.useState<string[]>([]);
+    const [data, setData] = React.useState<string[][]>([]);
+    const [pagedData, setPagedData] = React.useState<string[][]>([]);
+
+    const [dataHasHeaders, setDataHasHeaders] = React.useState<boolean>(false);
+    const [headerMap, setHeaderMap] = React.useState<Map<string, string | undefined>>(new Map<string, string | undefined>());
+
+    const [fileName, setFileName] = React.useState<string | null>(null);
+    const [rawCSVContent, setRawCSVContent] = React.useState<string | null>(null);
+
+    const [shouldParse, setShouldParse] = React.useState<boolean>(false);
+    const [isFileCSV, setIsFileCSV] = React.useState<boolean>(true);
+    const [isFileParseable, setIsFileParseable] = React.useState<boolean>(true);
+    const [isNextHovered, setIsNextHovered] = React.useState<boolean>(false);
+
+    const [page, setPage] = React.useState<number>(0);
+    const [totalPages, setTotalPages] = React.useState<number>(1);
+
+    const fileErrors = React.useMemo(() => {
+        const errors = []
+        if (!isFileCSV)
+            errors.push('File is not a CSV')
+
+        if (!isFileParseable)
+            errors.push('File could not be parsed')
+
+        return errors
+    }, [isFileCSV,])
+
+    React.useEffect(() => {
+        if (data.length > 0) {
+            const pages = Math.ceil(data.length / 10);
+            setTotalPages(pages);
+            setPagedData(data.slice(page * 10, (page + 1) * 10));
+        }
+    }, [data, page]);
+
+
+    React.useEffect(() => {
+        const errors: string[] = [];
+
+        props.Fields.forEach(field => {
+            const matchedHeader = Array.from(headerMap.entries()).find(([, value]) => value === field.Field)?.[0];
+            if (matchedHeader == null) return //return early if the field was never mapped to a header
+
+            const fieldIndex = headers.indexOf(matchedHeader);
+
+            if (field.Required) {
+                data.forEach(row => {
+                    const value = row[fieldIndex + 1]; //+1 for row index value
+                    if (field.Validate(value) === false || value == null)
+                        errors.push(`${field.Label} is required and can not be empty.`);
+                });
+            }
+
+            if (field.Unique) {
+                const uniqueValues = new Set<string>();
+                data.forEach(row => {
+                    const value = row[fieldIndex + 1];
+                    if (uniqueValues.has(value))
+                        errors.push(`All ${field.Label} values must be unique.`);
+                    else
+                        uniqueValues.add(value);
+                });
+            }
+
+            if (!field.AllowEmpty) {
+                data.forEach(row => {
+                    const value = row[fieldIndex + 1];
+                    if (value == null || value.trim() === "") {
+                        errors.push(`All ${field.Label} can not be empty.`);
+                    }
+                });
+            }
+        });
+
+        props.SetErrors(errors);
+    }, [data, headers, headerMap, props.Fields, props.SetErrors]);
+
+    React.useEffect(() => {
+        if (shouldParse && rawCSVContent !== null) {
+            let parsedData: { Headers: string[], Data: string[][] }
+            try {
+                parsedData = parseCSV(rawCSVContent, dataHasHeaders);
+            }
+            catch {
+                setIsFileParseable(false)
+                return
+            }
+            setIsFileParseable(true);
+            setData(parsedData.Data);
+            setHeaders(parsedData.Headers);
+            setShouldParse(false);
+            setHeaderMap(autoMapHeaders(parsedData.Headers, props.Fields.map(field => field.Field as string), headerMap))
+        }
+    }, [shouldParse, rawCSVContent, dataHasHeaders]);
+
+    React.useEffect(() => {
+        if (!props.IsComplete) return;
+        const mappedData: T[] = [];
+
+        data.forEach((row) => {
+            let record: T = {} as T;
+
+            headers.forEach((header, index) => {
+                const mappedField = headerMap.get(header);
+                if (mappedField == null) return;
+
+                const field = props.Fields.find(f => f.Field === mappedField);
+                if (field == null) return;
+
+                const value = row[index + 1];
+                record = field.Process(value, record);
+            });
+
+            mappedData.push(record);
+        });
+
+        props.OnComplete(mappedData);
+
+    }, [props.IsComplete, data, headers, headerMap, props.Fields, props.OnComplete]);
+
+    const getFieldSelect = React.useCallback((header: string) => {
+        if (props.Fields.length === 0) return
+
+        const field = headerMap.get(header);
+
+        const updateMap = (head: string, val: string | undefined) => setHeaderMap(new Map(headerMap).set(head, val));
+        let matchedField: IField<T> | undefined;
+
+        if (field != null)
+            matchedField = props.Fields.find(f => f.Field === field);
+
+        return <Select<{ Header: string, Value: string | undefined }> Record={{ Header: header, Value: field }} EmptyOption={true} Options={props.Fields.map(field => ({ Value: field.Field as string, Label: field.Label }))} Field="Value"
+            Setter={(record) => updateMap(record.Header, record.Value)} Label={matchedField?.Label ?? ''} Help={matchedField?.Help ?? undefined} />
+
+    }, [props.Fields, headerMap])
+
+    const handleValueChange = (rowIndex: number, colIndex: number, value: string) => {
+        setData(prevData => {
+            const newData = [...prevData];
+            newData[rowIndex][colIndex] = value;
+            return newData;
+        });
+    };
+
+    const handleFileUpload = (evt: React.ChangeEvent<HTMLInputElement>) => {
+        if (evt.target == null || evt.target.files == null || evt.target.files.length === 0) return;
+
+        const file = evt.target.files[0];
+
+        if (file.type !== 'text/csv') {
+            setIsFileCSV(false);
+            return;
+        }
+
+        setIsFileCSV(true);
+        setFileName(file.name);
+
+        const fileReader = new FileReader();
+        fileReader.onload = (e) => {
+            if (e.target == null) return;
+            setRawCSVContent(e.target.result as string);
+        };
+
+        fileReader.readAsText(file);
+    }
+
+    const handleRowDelete = (rowIndex: number) => setData(prevData => prevData.filter((_, index) => index !== rowIndex));
+
+    const getHeader = (header: string) => {
+        const mappedField = headerMap.get(header);
+
+        if (mappedField == null) return header
+
+        const matchedField = props.Fields.find(field => field.Field === mappedField)
+        if (matchedField == null) return header
+        return null //return null since the select element will have a label attached to it 
+    }
+
+    return (
+        <>
+            <div className='row'>
+                <div className='col-6'>
+                    <div className="custom-file">
+                        <input type="file" className="custom-file-input" id="inputGroupFile02" onChange={handleFileUpload} accept='.csv, text/csv' style={{ cursor: 'pointer' }} />
+                        <label className="custom-file-label" htmlFor="inputGroupFile02" aria-describedby="inputGroupFileAddon02">{fileName == null ? 'Upload CSV' : fileName}</label>
+                    </div>
+                </div>
+                <div className='col-6'>
+                    <CheckBox Record={{ HasHeaders: dataHasHeaders }} Field="HasHeaders" Setter={(record) => setDataHasHeaders(record.HasHeaders)} Label='My Data Has Headers' />
+                </div>
+            </div>
+            <div className='row mt-1'>
+                <div className='col-12'>
+                    <div onMouseEnter={() => setIsNextHovered(true)} onMouseLeave={() => setIsNextHovered(false)}>
+                        <button className='btn btn-primary' data-tooltip="uploadcsv-btn" onClick={() => setShouldParse(true)} disabled={!isFileCSV}>Next</button>
+                    </div>
+                    <ToolTip Show={(!isFileCSV || !isFileParseable) && isNextHovered} Target={'uploadcsv-btn'} Zindex={9999}>
+                        {fileErrors.map((err, i) => <p key={i}><ReactIcons.CrossMark Size={10} Color='red' /> {err} </p>)}
+                    </ToolTip>
+                </div>
+            </div>
+            {pagedData.length === 0 ? null :
+                <>
+                    <ConfigTable.Table<string[]>
+                        Data={pagedData}
+                        SortKey=''
+                        Ascending={false}
+                        OnSort={() => {/*no sort*/ }}
+                        KeySelector={data => data[0]}
+                        TheadStyle={{ width: 'auto' }}
+                        TbodyStyle={{ width: 'auto' }}
+                        TableClass='table'
+                    >
+                        {headers.map((header, i) =>
+                            <ConfigTable.Configurable Key={header} Label={header} Default={true}>
+                                <ReactTable.Column<string[]>
+                                    Key={header}
+                                    Field={i + 1}
+                                    AllowSort={false}
+                                    Content={({ item, field }) => {
+                                        const mappedField = headerMap.get(header);
+                                        const matchedField = props.Fields.find(f => f.Field === mappedField);
+                                        if (matchedField == null) return item[field as number];
+
+                                        const value = item[field as number];
+                                        const isValid = matchedField.Validate(value);
+                                        return (
+                                            <matchedField.EditComponent
+                                                Value={value}
+                                                SetValue={(val: string) => handleValueChange(parseInt(item[0]), field as number, val)}
+                                                Valid={isValid}
+                                            />
+                                        );
+                                    }}
+                                >
+                                    {getHeader(header)}
+                                    {getFieldSelect(header)}
+                                </ReactTable.Column>
+                            </ConfigTable.Configurable>
+                        )}
+                        <ReactTable.Column<string[]>
+                            Key={'delete'}
+                            Field={0}
+                            AllowSort={false}
+                            Content={({ item }) => {
+                                return (
+                                    <button className='btn' onClick={() => handleRowDelete(parseInt(item[0]))}>
+                                        <ReactIcons.TrashCan Color="red" />
+                                    </button>
+                                )
+                            }}
+                        >
+                            {''}
+                        </ReactTable.Column>
+                    </ConfigTable.Table>
+                    <Paging Current={page + 1} Total={totalPages} SetPage={(p) => setPage(p - 1)} />
+                </>
+            }
+        </>
+    );
+}
+
+
+const autoMapHeaders = (headers: string[], fields: string[], headerMap: Map<string, string | undefined>) => {
+    if (headers.length === 0 || fields.length === 0) return headerMap
+    const map = new Map<string, string | undefined>(headerMap)
+
+    headers.forEach(header => {
+        const match = fields.find(field => field === header);
+        if (match != null)
+            map.set(match, match)
+    })
+    return map
+}
+
+const parseCSV = (csvContent: string, hasHeaders: boolean) => {
+    const rows = csvContent.split('\n').map(row => row.trim()).filter(row => row.length > 0);
+    let headers: string[] = [];
+    let data: string[][] = [];
+
+    if (hasHeaders) {
+        headers = rows[0].split(',').map(header => header.trim());
+        data = rows.slice(1).map((r, i) => (`${i},${r}`.split(',')));
+    } else {
+        const colCount = rows[0].split(',').length;
+
+        for (let i = 0; i < colCount; i++) {
+            headers.push(String.fromCharCode(65 + i)); // A, B, C, etc.
+        }
+        data = rows.map((r, i) => (`${i},${r}`.split(',')));
+    }
+
+    return { Headers: headers, Data: data };
+};

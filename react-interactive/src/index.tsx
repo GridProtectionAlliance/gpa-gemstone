@@ -46,6 +46,7 @@ import BtnDropdown from './DropdownButton';
 import ConfigurableColumn from './ConfigurableTable/ConfigurableColumn';
 import GenericController from './GenericController';
 import LayoutGrid from './LayoutGrid';
+import UploadCSV from './UploadCSV';
 
 const ConfigTable = {
   Table: ConfigurableTable,
@@ -76,5 +77,6 @@ export {
   ProgressBar,
   BtnDropdown,
   GenericController,
-  LayoutGrid
+  LayoutGrid,
+  UploadCSV
 };
