@@ -154,45 +154,39 @@ export default function UploadCSV<T>(props: IProps<T>) {
 
     React.useEffect(() => {
         const errors: string[] = [];
-
+    
         props.Fields.forEach(field => {
             const matchedHeader = Array.from(headerMap.entries()).find(([, value]) => value === field.Field)?.[0];
-            if (matchedHeader == null) return //return early if the field was never mapped to a header
-
+            if (matchedHeader == null) return; //return early if the field was never mapped to a header
+    
             const fieldIndex = headers.indexOf(matchedHeader);
-
-            if (field.Required) {
-                data.forEach(row => {
-                    const value = row[fieldIndex + 1]; //+1 for row index value
-                    if (field.Validate(value) === false || value == null)
-                        errors.push(`${field.Label} is required and can not be empty.`);
-                });
-            }
-
-            if (field.Unique) {
-                const uniqueValues = new Set<string>();
-                data.forEach(row => {
-                    const value = row[fieldIndex + 1];
-                    if (uniqueValues.has(value))
+            const uniqueValues = new Set<string>();
+    
+            data.forEach(row => {
+                const value = row[fieldIndex + 1]; //+1 for row index value
+    
+                // Check required
+                if (field.Required && (field.Validate(value) === false || value == null)) 
+                    errors.push(`${field.Label} is required and cannot be empty.`);
+                
+                // Check uniqueness
+                if (field.Unique) {
+                    if (uniqueValues.has(value)) 
                         errors.push(`All ${field.Label} values must be unique.`);
-                    else
+                     else 
                         uniqueValues.add(value);
-                });
-            }
-
-            if (!field.AllowEmpty) {
-                data.forEach(row => {
-                    const value = row[fieldIndex + 1];
-                    if (value == null || value.trim() === "") {
-                        errors.push(`All ${field.Label} can not be empty.`);
-                    }
-                });
-            }
+                }
+    
+                // Check allowed emptiness
+                if (!field.AllowEmpty && (value == null || value.trim() === "")) 
+                    errors.push(`All ${field.Label} cannot be empty.`);
+                
+            });
         });
-
+    
         props.SetErrors(errors);
     }, [data, headers, headerMap, props.Fields, props.SetErrors]);
-
+    
     React.useEffect(() => {
         if (shouldParse && rawCSVContent !== null) {
             let parsedData: { Headers: string[], Data: string[][] }
