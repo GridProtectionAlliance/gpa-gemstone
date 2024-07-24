@@ -38,7 +38,7 @@ interface IButton {
     ToolTipContent?: JSX.Element,
     ShowToolTip?: boolean,
     ToolTipLocation?: ('top' | 'bottom' | 'left' | 'right'),
-    }
+}
 
 /**
 * Represents the properties for a component that renders buttons.
@@ -63,7 +63,6 @@ const BtnDropdown = (props: IProps) => {
     const disabled = props.Disabled ?? false;
     
     const [hover, setHover] = React.useState<boolean>(false);
-    const [dropDownHover, setDropDownHover] = React.useState<boolean>(false);
     const [showDropdown, setShowDropdown] = React.useState<boolean>(false);
 
     return (
@@ -89,23 +88,7 @@ const BtnDropdown = (props: IProps) => {
                         {i > 0 && props.Options[i].Group !== props.Options[i - 1].Group ?
                             <div key={option.Label + '-divider'} className="dropdown-divider"></div> 
                             : null}
-                        <a className={"dropdown-item" + ((option?.Disabled ?? false) ? " disabled" : "")} 
-                           key={option.Label}
-                           style={{cursor: ((option?.Disabled ?? false) ? undefined :  'pointer')}}
-                           onClick={() => {
-                                setShowDropdown(false);
-                                if (!(option?.Disabled ?? false))
-                                    option.Callback();
-                            }}
-                            onMouseEnter={() => setDropDownHover(true)}
-                            onMouseLeave={() => setDropDownHover(false)}
-                            >
-                            {option.Label}
-                        </a>
-                        <ToolTip Show={dropDownHover && (option.ShowToolTip ?? false)}
-                            Position={option.ToolTipLocation ?? 'top'} Theme={'dark'} Target={guid.current}>
-                            {option.ToolTipContent}
-                        </ToolTip>
+                        <DropDownOption {...option} setShowDropDown={setShowDropdown}/>
                     </React.Fragment>)}
             </div>
             <ToolTip Show={hover && (props.ShowToolTip ?? false)} 
@@ -115,4 +98,34 @@ const BtnDropdown = (props: IProps) => {
     </div>)
 }
 
+interface DropDownProps extends IButton {
+    setShowDropDown: (show: boolean) => void,
+}
+
+const DropDownOption = (props: DropDownProps) => {
+    const [dropDownHover, setDropDownHover] = React.useState<boolean>(false);
+
+    const guid = React.useRef<string>(CreateGuid());
+
+    return (<>
+        <a className={"dropdown-item" + ((props?.Disabled ?? false) ? " disabled" : "")} 
+            key={props.Label}
+            style={{cursor: ((props?.Disabled ?? false) ? undefined :  'pointer')}}
+            onClick={() => {
+                props.setShowDropDown(false);
+                if (!(props?.Disabled ?? false))
+                    props.Callback();
+            }}
+            onMouseEnter={() => setDropDownHover(true)}
+            onMouseLeave={() => setDropDownHover(false)}
+            data-tooltip={guid.current}
+                >
+                {props.Label}
+        </a>
+        <ToolTip Show={dropDownHover && (props.ShowToolTip ?? false)}
+            Position={props.ToolTipLocation ?? 'top'} Theme={'dark'} Target={guid.current}>
+            {props.ToolTipContent}
+        </ToolTip>
+    </>)
+}
 export default BtnDropdown
