@@ -28,11 +28,16 @@ import ToolTip from './ToolTip';
  * Represents the structure of a button used within the application.
  */
 interface IButton { 
-    /** text label that appears on the button*/
+    /** 
+     * text label that appears on the button
+     */
     Label: string,
     Callback: () => void,
     Group?: number,
     Disabled?: boolean
+    ToolTipContent?: JSX.Element,
+    ShowToolTip?: boolean,
+    ToolTipLocation?: ('top' | 'bottom' | 'left' | 'right'),
     }
 
 /**
@@ -58,6 +63,7 @@ const BtnDropdown = (props: IProps) => {
     const disabled = props.Disabled ?? false;
     
     const [hover, setHover] = React.useState<boolean>(false);
+    const [dropDownHover, setDropDownHover] = React.useState<boolean>(false);
     const [showDropdown, setShowDropdown] = React.useState<boolean>(false);
 
     return (
@@ -78,18 +84,29 @@ const BtnDropdown = (props: IProps) => {
                 <span className="sr-only">Toggle Dropdown</span>
             </button>
             <div className={"dropdown-menu" + (showDropdown ? " show" : "")}>
-                {props.Options.map((option, i) => <React.Fragment key={option.Label + '-divider'}>
-                    {i > 0 && props.Options[i].Group !== props.Options[i - 1].Group ?
-                        <div key={option.Label + '-divider'} className="dropdown-divider"></div> : null}
-                    <a className={"dropdown-item" + ((option?.Disabled ?? false) ? " disabled" : "")} key={option.Label} style={{cursor: ((option?.Disabled ?? false) ? undefined :  'pointer')}}
-                        onClick={() => {
-                            setShowDropdown(false);
-                            if (!(option?.Disabled ?? false))
-                                option.Callback();
-                        }}>
-                        {option.Label}
-                    </a>
-                </React.Fragment>)}
+                {props.Options.map((option, i) => 
+                    <React.Fragment key={option.Label + '-divider'}>
+                        {i > 0 && props.Options[i].Group !== props.Options[i - 1].Group ?
+                            <div key={option.Label + '-divider'} className="dropdown-divider"></div> 
+                            : null}
+                        <a className={"dropdown-item" + ((option?.Disabled ?? false) ? " disabled" : "")} 
+                           key={option.Label}
+                           style={{cursor: ((option?.Disabled ?? false) ? undefined :  'pointer')}}
+                           onClick={() => {
+                                setShowDropdown(false);
+                                if (!(option?.Disabled ?? false))
+                                    option.Callback();
+                            }}
+                            onMouseEnter={() => setDropDownHover(true)}
+                            onMouseLeave={() => setDropDownHover(false)}
+                            >
+                            {option.Label}
+                        </a>
+                        <ToolTip Show={dropDownHover && (option.ShowToolTip ?? false)}
+                            Position={option.ToolTipLocation ?? 'top'} Theme={'dark'} Target={guid.current}>
+                            {option.ToolTipContent}
+                        </ToolTip>
+                    </React.Fragment>)}
             </div>
             <ToolTip Show={hover && (props.ShowToolTip ?? false)} 
                 Position={props.TooltipLocation ?? 'top'} Theme={'dark'} Target={guid.current}>
