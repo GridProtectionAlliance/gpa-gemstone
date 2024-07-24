@@ -25,7 +25,6 @@ import styled from "styled-components";
 import { GetNodeSize } from '@gpa-gemstone/helper-functions'
 import { Portal } from 'react-portal';
 import { isEqual } from 'lodash';
-import { Gemstone } from '@gpa-gemstone/application-typings';
 
 interface IProps {
   Show: boolean,
@@ -45,6 +44,13 @@ interface IWrapperProps {
   Zindex: number,
   TargetLeft: number,
   TargetWidth: number
+}
+
+type IElementPosition = {
+  Top: number,
+  Left: number,
+  Width: number,
+  Height: number
 }
 
 // The styled tooltip wrapper component.
@@ -128,7 +134,7 @@ const ToolTip: React.FunctionComponent<IProps> = (props) => {
   const [top, setTop] = React.useState<number>(0);
   const [left, setLeft] = React.useState<number>(0);
 
-  const [targetPosition, setTargetPosition] = React.useState<Gemstone.TSX.Interfaces.IElementPosition>({ Top: -999, Left: -999, Width: 0, Height: 0 })
+  const [targetPosition, setTargetPosition] = React.useState<IElementPosition>({ Top: -999, Left: -999, Width: 0, Height: 0 })
 
   React.useEffect(() => {
     const target = document.querySelectorAll(`[data-tooltip${props.Target === undefined ? '' : `="${props.Target}"`}]`)
@@ -162,7 +168,7 @@ const ToolTip: React.FunctionComponent<IProps> = (props) => {
 }
 
 //Helper function
-const getPosition = (toolTip: React.MutableRefObject<HTMLDivElement | null>, targetPosition: Gemstone.TSX.Interfaces.IElementPosition, position: ('top' | 'bottom' | 'left' | 'right')) => {
+const getPosition = (toolTip: React.MutableRefObject<HTMLDivElement | null>, targetPosition: IElementPosition, position: ('top' | 'bottom' | 'left' | 'right')) => {
   if (toolTip.current === null)
     return [-999, -999];
 
