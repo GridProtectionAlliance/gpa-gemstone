@@ -38,7 +38,7 @@ interface IButton {
     ToolTipContent?: JSX.Element,
     ShowToolTip?: boolean,
     ToolTipLocation?: ('top' | 'bottom' | 'left' | 'right'),
-    }
+}
 
 /**
 * Represents the properties for a component that renders buttons.
@@ -63,7 +63,6 @@ const BtnDropdown = (props: IProps) => {
     const disabled = props.Disabled ?? false;
     
     const [hover, setHover] = React.useState<boolean>(false);
-    const [dropDownHover, setDropDownHover] = React.useState<boolean>(false);
     const [showDropdown, setShowDropdown] = React.useState<boolean>(false);
 
     return (
