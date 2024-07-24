@@ -141,7 +141,7 @@ export default function UploadCSV<T>(props: IProps<T>) {
             errors.push('File could not be parsed')
 
         return errors
-    }, [isFileCSV,])
+    }, [isFileCSV, isFileParseable])
 
     React.useEffect(() => {
         if (data.length > 0) {
