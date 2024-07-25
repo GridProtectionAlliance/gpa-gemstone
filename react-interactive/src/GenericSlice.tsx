@@ -326,7 +326,7 @@ export default class GenericSlice<T extends U> {
             let sortfield = args.sortField;
             let asc = args.ascending;
             const page = args.page ?? 0;
-            let parentID = args.parentID ?? undefined;
+            const parentID = args.parentID ?? undefined;
 
             sortfield = sortfield === undefined ? state.PagedSortField : sortfield;
             asc = asc === undefined ? state.PagedAscending : asc;
