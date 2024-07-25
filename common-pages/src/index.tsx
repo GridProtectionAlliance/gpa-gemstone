@@ -32,8 +32,10 @@ import SelectPopup from './StandardSelectPopup';
 import {DefaultSelects} from './SelectionPopup';
 import ErrorBoundary from './ErrorBoundary';
 import TimeFilter from './TimeFilter';
+import EventTypeFilter from './EventTypeFilter';
 
 export {
+  EventTypeFilter,
   Setting,
   TimeFilter,
   Note,
