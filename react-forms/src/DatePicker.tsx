@@ -102,10 +102,11 @@ export default function DateTimePicker<T>(props: IProps<T>) {
     })
 
     React.useEffect(() => {
-        window.addEventListener('click', onWindowClick);
-        return () => { window.removeEventListener('click', onWindowClick); }
-
-    }, [pickerRecord, props.Field, boxFormat]);
+        if (showOverlay){
+            window.addEventListener('click', onWindowClick);
+            return () => { window.removeEventListener('click', onWindowClick); }
+        }
+    }, [props.Record, props.Field, boxFormat, showOverlay]);
 
     function setPickerAndRecord(arg: moment.Moment | undefined) {
         setPickerRecord(arg);
@@ -123,9 +124,9 @@ export default function DateTimePicker<T>(props: IProps<T>) {
     function onWindowClick(evt: any) {
         if (evt.target.closest(`.gpa-gemstone-datetime`) == null) {
             setShowOverlay(false);
-            if (pickerRecord !== undefined) {
-                setPickerAndRecord(pickerRecord);
-                setBoxRecord(pickerRecord.format(boxFormat));
+            if (props.Record[props.Field] as any !== null) {
+                setPickerAndRecord(parse(props.Record));
+                setBoxRecord(parse(props.Record).format(boxFormat));
             }
             else {
                 setPickerAndRecord(undefined);
