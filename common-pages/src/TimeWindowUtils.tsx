@@ -48,10 +48,6 @@ export interface ICenterDuration {
 export type TimeUnit = 'y'|'M'|'w'|'d'|'h'|'m'|'s'|'ms'
 export const units = ['ms','s','m','h','d','w','M','y'] as TimeUnit[]
 
-export const momentDateFormat = "MM/DD/YYYY";
-export const momentTimeFormat = "HH:mm:ss.SSS"; // Also is the gemstone format
-
-
 // Takes ITimeFilter as input and returns type
 export const isStartEnd = (filter: ITimeFilter): filter is IStartEnd => 'start' in filter && 'end' in filter;
 export const isStartDuration = (filter: ITimeFilter): filter is IStartDuration => 'start' in filter && 'duration' in filter;
@@ -111,9 +107,9 @@ export function getStartEndTime(center: moment.Moment, duration: number, unit: T
 /*
 * Returns a formatted version of date and time provided
 */
-export function getMoment(date: string, time?: string) {
+export function getMoment(date: string, format?: string, time?: string) {
     if (time === undefined)
-        return moment(date, 'MM/DD/YYYY HH:mm:ss.SSS');
+        return moment(date, format ?? 'MM/DD/YYYY HH:mm:ss.SSS');
     return moment(date + ' ' + time, 'MM/DD/YYYY HH:mm:ss.SSS');
 }
 
