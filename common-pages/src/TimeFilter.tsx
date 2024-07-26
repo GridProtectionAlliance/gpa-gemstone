@@ -44,8 +44,7 @@ export type ITimeFilter = IStartEnd | IStartDuration | IEndDuration | ICenterDur
 
 
 // Converts ITimeFilter to an ITimeWindow filter           
-export function getTimeWindow (flt: ITimeFilter, dateFormat?: string){
-    const format = (dateFormat == 'date') ? 'YYYY-MM-DD' : 'MM/DD/YYYY HH:mm:ss.SSS'
+export function getTimeWindow (flt: ITimeFilter, format?: string){
     let center, start, end, unit, duration, halfDuration;
 
     if (isCenterDuration(flt)){
@@ -114,8 +113,9 @@ function Row(props: React.PropsWithChildren<{addRow: boolean, class?: string}>){
 }
 
 const TimeFilter = (props: IProps) => {
+    const format = (props.format == 'date') ? 'YYYY-MM-DD' : 'MM/DD/YYYY HH:mm:ss.SSS'
     const [activeQP, setActiveQP] = React.useState<number>(-1);
-    const [filter, setFilter] = React.useState<ITimeWindow>(getTimeWindow(props.filter, props.format));
+    const [filter, setFilter] = React.useState<ITimeWindow>(getTimeWindow(props.filter, format));
 
     React.useEffect(() => {
         if (!isEqual(filter, props.filter))
@@ -124,7 +124,7 @@ const TimeFilter = (props: IProps) => {
 
     //Checks typing of ITimeFilter and then compares to ITimeWindow
     function isEqual(flt1: ITimeWindow, flt2: ITimeFilter) {
-        const flt = getTimeWindow(flt2, props.format);
+        const flt = getTimeWindow(flt2, format);
         return flt1.center == flt.center &&
             flt1.unit == flt.unit &&
             flt1.duration == flt.duration
@@ -132,7 +132,7 @@ const TimeFilter = (props: IProps) => {
 
     React.useEffect(() => {
         if (!isEqual(filter, props.filter)){
-            const flt = getTimeWindow(props.filter, props.format);
+            const flt = getTimeWindow(props.filter, format);
             setFilter(flt);
         }
     }, [props.filter]);
@@ -157,7 +157,7 @@ const TimeFilter = (props: IProps) => {
                             }}
                             Label='Time Window Center:'
                             Type={props.format ?? 'datetime-local'}
-                            Valid={() => true} Format={(props.format == 'date') ? 'YYYY-MM-DD' : 'MM/DD/YYYY HH:mm:ss.SSS'} 
+                            Valid={() => true} Format={format} 
                             />
                     </div>
                 </Row>
@@ -172,18 +172,17 @@ const TimeFilter = (props: IProps) => {
                             Setter={(r) => {
                                 let halfDur = filter.halfDuration;
                                 let unit = filter.unit;
-                                const format  = (props.format == 'date') ? 'YYYY-MM-DD' : 'MM/DD/YYYY HH:mm:ss.SSS'
                                 if (props.dateTimeSetting === 'startEnd') {
                                     [unit, halfDur] = findAppropriateUnit(getMoment(r.start, format), getMoment(filter.end, format), undefined, true);
                                 }
 
-                                const flt = getTimeWindow({start: r.start, duration: halfDur*2, unit: unit}, props.format);
+                                const flt = getTimeWindow({start: r.start, duration: halfDur*2, unit: unit}, format);
                                 setFilter(flt);
                                 setActiveQP(-1);
                             }}
                             Label='Start of Time Window:'
                             Type={props.format ?? 'datetime-local'}
-                            Valid={() => true} Format={(props.format == 'date') ? 'YYYY-MM-DD' : 'MM/DD/YYYY HH:mm:ss.SSS'}
+                            Valid={() => true} Format={format}
                         />
                     </div>
                 </Row>
@@ -196,18 +195,17 @@ const TimeFilter = (props: IProps) => {
                             Setter={(r) => {
                                 let halfDur = filter.halfDuration;
                                 let unit = filter.unit;
-                                const format  = (props.format == 'date') ? 'YYYY-MM-DD' : 'MM/DD/YYYY HH:mm:ss.SSS'
                                 if (props.dateTimeSetting === 'startEnd') {
                                     [unit, halfDur] = findAppropriateUnit(getMoment(filter.start, format), getMoment(r.end, format), undefined, true);
                                 }
 
-                                const flt = getTimeWindow({end: r.end, duration: halfDur*2, unit: unit}, props.format);
+                                const flt = getTimeWindow({end: r.end, duration: halfDur*2, unit: unit}, format);
                                 setFilter(flt);
                                 setActiveQP(-1);
                             }}
                             Label='End of Time Window :'
                             Type={props.format ?? 'datetime-local'}
-                            Valid={() => true} Format={(props.format == 'date') ? 'YYYY-MM-DD' : 'MM/DD/YYYY HH:mm:ss.SSS'}
+                            Valid={() => true} Format={format}
                         />
                     </div>
                 </Row>
@@ -219,7 +217,7 @@ const TimeFilter = (props: IProps) => {
                     <Row addRow={!props.isHorizontal}>
                         <div className={props.isHorizontal ? (props.showQuickSelect? 'col-1': 'col-3'): 'col-6'}>
                             <Input<ITimeWindow> Record={filter} Field='halfDuration' Setter={(r) => {
-                                const flt = getTimeWindow({center: filter.center, halfDuration: r.halfDuration, unit: filter.unit}, props.format);
+                                const flt = getTimeWindow({center: filter.center, halfDuration: r.halfDuration, unit: filter.unit}, format);
                                 setFilter(prevFilter => ({
                                     ...prevFilter,
                                     duration: r.duration,
@@ -236,7 +234,7 @@ const TimeFilter = (props: IProps) => {
                             <Select<ITimeWindow> Record={filter} Label=''
                                 Field='unit'
                                 Setter={(r) => {
-                                    const flt = getTimeWindow({center: filter.center, halfDuration: filter.halfDuration, unit: r.unit}, props.format);
+                                    const flt = getTimeWindow({center: filter.center, halfDuration: filter.halfDuration, unit: r.unit}, format);
                                     setFilter(prevFilter => ({
                                         ...prevFilter,
                                         unit: r.unit,
@@ -263,7 +261,7 @@ const TimeFilter = (props: IProps) => {
                     <Row addRow={!props.isHorizontal}>
                         <div className={props.isHorizontal ? (props.showQuickSelect? 'col-1': 'col-3'): 'col-6'}>
                             <Input<ITimeWindow> Record={filter} Field='duration' Setter={(r) => {
-                                const flt = getTimeWindow({start: filter.start, duration: r.duration, unit: filter.unit}, props.format);
+                                const flt = getTimeWindow({start: filter.start, duration: r.duration, unit: filter.unit}, format);
                                 setFilter(prevFilter => ({
                                     ...prevFilter,
                                     duration: r.duration,
@@ -280,7 +278,7 @@ const TimeFilter = (props: IProps) => {
                             <Select<ITimeWindow> Record={filter} Label=''
                                 Field='unit'
                                 Setter={(r) => {
-                                    const flt = getTimeWindow({start: filter.start, duration: filter.duration, unit: r.unit}, props.format);
+                                    const flt = getTimeWindow({start: filter.start, duration: filter.duration, unit: r.unit}, format);
                                     setFilter(prevFilter => ({
                                         ...prevFilter,
                                         unit: r.unit,
@@ -307,7 +305,7 @@ const TimeFilter = (props: IProps) => {
                     <Row addRow={!props.isHorizontal}>
                         <div className={props.isHorizontal ? (props.showQuickSelect? 'col-1': 'col-3'): 'col-6'}>
                             <Input<ITimeWindow> Record={filter} Field='duration' Setter={(r) => {
-                                const flt = getTimeWindow({end: filter.end, duration: r.duration, unit: filter.unit}, props.format);
+                                const flt = getTimeWindow({end: filter.end, duration: r.duration, unit: filter.unit}, format);
                                 setFilter(prevFilter => ({
                                     ...prevFilter,
                                     duration: r.duration,
@@ -324,7 +322,7 @@ const TimeFilter = (props: IProps) => {
                             <Select<ITimeWindow> Record={filter} Label=''
                                 Field='unit'
                                 Setter={(r) => {
-                                    const flt = getTimeWindow({end: filter.end, duration: filter.duration, unit: r.unit}, props.format);
+                                    const flt = getTimeWindow({end: filter.end, duration: filter.duration, unit: r.unit}, format);
                                     setFilter(prevFilter => ({
                                         ...prevFilter,
                                         unit: r.unit,
@@ -351,13 +349,12 @@ const TimeFilter = (props: IProps) => {
                         {AvailableQuickSelects.map((qs, i) => {
                             if (i % 3 !== 0 || (i == 0 && props.format == 'date'))   // remove first column of QuickSelects as date formate doesn't include time
                                 return null;
-                            const format = props.format == 'date' ? "YYYY-MM-DD" : "MM/DD/YYYY HH:mm:ss.SSS";
                             return (
                                 <div key={i} className={props.isHorizontal ? 'col-2': "col-4"} style={{ paddingLeft: (props.isHorizontal ? 0 : (i % 9 == 0 ? 15 : 0)), paddingRight: (props.isHorizontal ? 2 : ((i % 18 == 6 || i % 18 == 15) ? 15 : 2)), marginTop: 10 }}>
                                     <ul className="list-group" key={i}>
                                         <li key={i} style={{ cursor: 'pointer' }}
                                             onClick={() => {
-                                                const flt = getTimeWindow(AvailableQuickSelects[i].createFilter(props.timeZone, format), props.format);
+                                                const flt = getTimeWindow(AvailableQuickSelects[i].createFilter(props.timeZone, format), format);
                                                 props.setFilter(flt.center, flt.start, flt.end, flt.unit, flt.duration);
                                                 setActiveQP(i);
                                             }}
@@ -367,7 +364,7 @@ const TimeFilter = (props: IProps) => {
                                             <li key={i + 1} style={{ marginTop: 3, cursor: 'pointer' }}
                                                 className={"item badge badge-" + (i + 1 == activeQP ? "primary" : "secondary")}
                                                 onClick={() => {
-                                                    const flt = getTimeWindow(AvailableQuickSelects[i + 1].createFilter(props.timeZone, format), props.format);
+                                                    const flt = getTimeWindow(AvailableQuickSelects[i + 1].createFilter(props.timeZone, format), format);
                                                     props.setFilter(flt.center, flt.start, flt.end, flt.unit, flt.duration);
                                                     setActiveQP(i + 1)
                                                 }}>
@@ -378,7 +375,7 @@ const TimeFilter = (props: IProps) => {
                                                 style={{ marginTop: 3, cursor: 'pointer' }}
                                                 className={"item badge badge-" + (i + 2 == activeQP ? "primary" : "secondary")}
                                                 onClick={() => {
-                                                    const flt = getTimeWindow(AvailableQuickSelects[i + 2].createFilter(props.timeZone, format), props.format);
+                                                    const flt = getTimeWindow(AvailableQuickSelects[i + 2].createFilter(props.timeZone, format), format);
                                                     props.setFilter(flt.center, flt.start, flt.end, flt.unit, flt.duration);
                                                     setActiveQP(i + 2);
                                                 }}>
