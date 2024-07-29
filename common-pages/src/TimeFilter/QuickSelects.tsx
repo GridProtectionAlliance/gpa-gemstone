@@ -1,5 +1,5 @@
 //******************************************************************************************************
-//  TimeFilter.tsx - Gbtc
+//  QuickSelects.tsx - Gbtc
 //
 //  Copyright © 2020, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -26,21 +26,34 @@ import { ITimeFilter } from '../TimeFilter';
 import moment from 'moment';
 import momentTZ from 'moment-timezone';
 
+export type DateUnit = ('datetime-local' | 'date' | 'time');
 
-interface IQuickSelect { label: string, createFilter: (timeZone: string, format: string) => ITimeFilter }
+interface IQuickSelect { label: string, hideQuickPick: (format?: DateUnit) => boolean, createFilter: (timeZone: string, format?: DateUnit) => ITimeFilter}
 
+export function getFormat (format?: DateUnit) {
+    if (format == 'date')  
+        return'YYYY-MM-DD' 
+    else if (format == "time")
+        return 'HH:mm:ss.SSS'
+    else
+        return 'MM/DD/YYYY HH:mm:ss.SSS' // default format
+}
 
 //update all quick selects to use new timefilters
 export const AvailableQuickSelects: IQuickSelect[] = [
     {
         label: 'This Hour', createFilter: (tz, format) => {
+            
             const offset = momentTZ.tz(moment.utc().startOf('hour').format('YYYY-MM-DDTHH:mm:ss.SSSSS'), tz).utcOffset();
             const t = moment.utc().add(offset, 'minutes').startOf('hour');
             return {         
-                start: t.format(format),
+                start: t.format(getFormat(format)),
                 unit: 'm',
                 duration: 60,
             }
+        },
+        hideQuickPick: (f) => {
+            return f == 'date'
         }
     },
     {
@@ -48,10 +61,13 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             const offset = momentTZ.tz(moment.utc().startOf('hour').subtract(1, 'hour').format('YYYY-MM-DDTHH:mm:ss.SSSSS'), tz).utcOffset();
             const t = moment.utc().add(offset, 'minutes').startOf('hour');
             return {         
-                end: t.format(format),
+                end: t.format(getFormat(format)),
                 unit: 'm',
                 duration: 60,
             }
+        },
+        hideQuickPick: (f) => {
+            return f == 'date'
         }
     },
     {
@@ -60,10 +76,13 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             const t = moment.utc().add(offset, 'minutes').startOf('minute');
 
             return {         
-                end: t.format(format),
+                end: t.format(getFormat(format)),
                 unit: 'm',
                 duration: 60,
             }
+        },
+        hideQuickPick: (f) => {
+            return f == 'date'
         }
     },
     {
@@ -71,10 +90,13 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             const offset = momentTZ.tz(moment.utc().startOf('day').format('YYYY-MM-DDTHH:mm:ss.SSSSS'), tz).utcOffset();
             const t = moment.utc().add(offset, 'minutes').startOf('day');
             return {         
-                start: t.format(format),
+                start: t.format(getFormat(format)),
                 unit: 'h',
                 duration: 24,
             }
+        },
+        hideQuickPick: (f) => {
+            return f == 'time'
         }
     },
     {
@@ -82,10 +104,13 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             const offset = momentTZ.tz(moment.utc().startOf('day').subtract(1, 'days').format('YYYY-MM-DDTHH:mm:ss.SSSSS'), tz).utcOffset();
             const t = moment.utc().add(offset, 'minutes').startOf('day');
             return {         
-                end: t.format(format),
+                end: t.format(getFormat(format)),
                 unit: 'h',
                 duration: 24,
             }
+        },
+        hideQuickPick: (f) => {
+            return f == 'time'
         }
     },
     {
@@ -93,10 +118,13 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             const offset = momentTZ.tz(moment.utc().startOf('hour').subtract(24, 'hours').format('YYYY-MM-DDTHH:mm:ss.SSSSS'), tz).utcOffset();
             const t = moment.utc().add(offset, 'minutes');
             return {         
-                end: t.format(format),
+                end: t.format(getFormat(format)),
                 unit: 'h',
                 duration: 24,
             }
+        },
+        hideQuickPick: (f) => {
+            return f == 'date' || f == 'time'
         }
     },
     {
@@ -104,10 +132,13 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             const offset = momentTZ.tz(moment.utc().startOf('week').format('YYYY-MM-DDTHH:mm:ss.SSSSS'), tz).utcOffset();
             const t = moment.utc().add(offset, 'minutes').startOf('week');
             return {         
-                start: t.format(format),
+                start: t.format(getFormat(format)),
                 unit: 'h',
                 duration: 7 * 24,
             }
+        },
+        hideQuickPick: (f) => {
+            return f == 'time'
         }
     },
     {
@@ -115,10 +146,13 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             const offset = momentTZ.tz(moment.utc().startOf('week').format('YYYY-MM-DDTHH:mm:ss.SSSSS'), tz).utcOffset();
             const t = moment.utc().add(offset, 'minutes').startOf('week');
             return {         
-                end: t.format(format),
+                end: t.format(getFormat(format)),
                 unit: 'h',
                 duration: 7 * 24,
             }
+        },
+        hideQuickPick: (f) => {
+            return f == 'time'
         }
     },
     {
@@ -126,10 +160,13 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             const offset = momentTZ.tz(moment.utc().startOf('day').format('YYYY-MM-DDTHH:mm:ss.SSSSS'), tz).utcOffset();
             const t = moment.utc().add(offset, 'minutes').startOf('day');
             return {         
-                end: t.format(format),
+                end: t.format(getFormat(format)),
                 unit: 'h',
                 duration: 7 * 24,
             }
+        },
+        hideQuickPick: (f) => {
+            return f == 'time'
         }
     },
     {
@@ -138,10 +175,13 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             const t = moment.utc().add(offset, 'minutes').startOf('month');
             const window = (t.daysInMonth() * 24);
             return {         
-                start: t.format(format),
+                start: t.format(getFormat(format)),
                 unit: 'h',
                 duration: window,
             }
+        },
+        hideQuickPick: (f) => {
+            return f == 'time'
         }
     },
     {
@@ -150,10 +190,13 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             const t = moment.utc().add(offset, 'minutes').startOf('month').subtract(1, 'month');
             const window = (t.daysInMonth() * 24);
             return {         
-                start: t.format(format),
+                start: t.format(getFormat(format)),
                 unit: 'h',
                 duration: window,
             }
+        },
+        hideQuickPick: (f) => {
+            return f == 'time'
         }
     },
     {
@@ -161,10 +204,13 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             const offset = momentTZ.tz(moment.utc().startOf('day').format('YYYY-MM-DDTHH:mm:ss.SSSSS'), tz).utcOffset();
             const t = moment.utc().add(offset, 'minutes').startOf('day');
             return {         
-                end: t.format(format),
+                end: t.format(getFormat(format)),
                 unit: 'd',
                 duration: 30,
             }
+        },
+        hideQuickPick: (f) => {
+            return f == 'time'
         }
     },
     {
@@ -177,10 +223,13 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             const h = moment.duration(tend.diff(t)).asDays();
 
             return {         
-                start: t.format(format),
+                start: t.format(getFormat(format)),
                 unit: 'd',
                 duration: h,
             }
+        },
+        hideQuickPick: (f) => {
+            return f == 'time'
         }
     },
     {
@@ -193,10 +242,13 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             const h = moment.duration(tend.diff(t)).asDays();
 
             return {         
-                start: t.format(format),
+                start: t.format(getFormat(format)),
                 unit: 'd',
                 duration: h,
             }
+        },
+        hideQuickPick: (f) => {
+            return f == 'time'
         }
     },
     {
@@ -204,10 +256,13 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             const offset = momentTZ.tz(moment.utc().startOf('day').subtract(45, 'days').format('YYYY-MM-DDTHH:mm:ss.SSSSS'), tz).utcOffset();
             const t = moment.utc().add(offset, 'minutes').startOf('day');
             return {         
-                end: t.format(format),
+                end: t.format(getFormat(format)),
                 unit: 'd',
                 duration: 90,
             }
+        },
+        hideQuickPick: (f) => {
+            return f == 'time'
         }
     },
     {
@@ -215,9 +270,12 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             const offset = momentTZ.tz(moment.utc().startOf('year').format('YYYY-MM-DDTHH:mm:ss.SSSSS'), tz).utcOffset();
             const t = moment.utc().add(offset, 'minutes').startOf('year');
             return {         
-                start: t.format(format),
-                end: t.endOf('year').format(format)
+                start: t.format(getFormat(format)),
+                end: t.endOf('year').format(getFormat(format))
             }
+        },
+        hideQuickPick: (f) => {
+            return f == 'time'
         }
     },
     {
@@ -225,9 +283,12 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             const offset = momentTZ.tz(moment.utc().startOf('year').subtract(1, 'year').format('YYYY-MM-DDTHH:mm:ss.SSSSS'), tz).utcOffset();
             const t = moment.utc().add(offset, 'minute').startOf('year').subtract(1, 'year');
             return {         
-                start: t.format(format),
-                end: t.endOf('year').format(format),
+                start: t.format(getFormat(format)),
+                end: t.endOf('year').format(getFormat(format)),
             }
+        },
+        hideQuickPick: (f) => {
+            return f == 'time'
         }
     },
     {
@@ -235,10 +296,13 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             const offset = momentTZ.tz(moment.utc().startOf('day').subtract(182.5, 'days').format('YYYY-MM-DDTHH:mm:ss.SSSSS'), tz).utcOffset();
             const t = moment.utc().add(offset, 'minute').startOf('day');
             return {         
-                end: t.format(format),
+                end: t.format(getFormat(format)),
                 unit: 'd',
                 duration: 365,
             }
+        },
+        hideQuickPick: (f) => {
+            return f == 'time'
         }
     }
 ]

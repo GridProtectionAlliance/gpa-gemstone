@@ -28,7 +28,7 @@ import { DatePicker, Select, Input } from '@gpa-gemstone/react-forms'
 import { findAppropriateUnit, getMoment, getStartEndTime, units, IStartEnd, IStartDuration, IEndDuration, 
     ICenterDuration, readableUnit, isStartEnd, isStartDuration, 
     isEndDuration, isCenterDuration, TimeUnit } from './TimeWindowUtils';
-import { AvailableQuickSelects } from './TimeFilter/QuickSelects'
+import { AvailableQuickSelects, getFormat, DateUnit } from './TimeFilter/QuickSelects'
 
 
 interface ITimeWindow {
@@ -100,7 +100,7 @@ interface IProps {
     dateTimeSetting: 'center' | 'startWindow' | 'endWindow' | 'startEnd';
     timeZone: string;
     isHorizontal: boolean;
-    format?: ('datetime-local' | 'date' | 'time');
+    format?: DateUnit;
 }
 
 
@@ -113,7 +113,8 @@ function Row(props: React.PropsWithChildren<{addRow: boolean, class?: string}>){
 }
 
 const TimeFilter = (props: IProps) => {
-    const format = (props.format == 'date') ? 'YYYY-MM-DD' : 'MM/DD/YYYY HH:mm:ss.SSS'
+    const format = getFormat(props.format);
+    const QuickSelects = AvailableQuickSelects.filter(qs => !qs.hideQuickPick(props.format));
     const [activeQP, setActiveQP] = React.useState<number>(-1);
     const [filter, setFilter] = React.useState<ITimeWindow>(getTimeWindow(props.filter, format));
 
@@ -346,40 +347,40 @@ const TimeFilter = (props: IProps) => {
             {props.showQuickSelect ?
                 <div className={props.isHorizontal ? 'col-8': 'row'}>
                     <Row addRow={props.isHorizontal} class="justify-content-center">
-                        {AvailableQuickSelects.map((qs, i) => {
-                            if (i % 3 !== 0 || (i == 0 && props.format == 'date'))   // remove first column of QuickSelects as date formate doesn't include time
+                        {QuickSelects.map((qs, i) => {
+                            if (i % 3 !== 0)
                                 return null;
                             return (
                                 <div key={i} className={props.isHorizontal ? 'col-2': "col-4"} style={{ paddingLeft: (props.isHorizontal ? 0 : (i % 9 == 0 ? 15 : 0)), paddingRight: (props.isHorizontal ? 2 : ((i % 18 == 6 || i % 18 == 15) ? 15 : 2)), marginTop: 10 }}>
                                     <ul className="list-group" key={i}>
                                         <li key={i} style={{ cursor: 'pointer' }}
                                             onClick={() => {
-                                                const flt = getTimeWindow(AvailableQuickSelects[i].createFilter(props.timeZone, format), format);
+                                                const flt = getTimeWindow(QuickSelects[i].createFilter(props.timeZone, props.format), format);
                                                 props.setFilter(flt.center, flt.start, flt.end, flt.unit, flt.duration);
                                                 setActiveQP(i);
                                             }}
-                                            className={"item badge badge-" + (i == activeQP ? "primary" : "secondary")}>{AvailableQuickSelects[i].label}
+                                            className={"item badge badge-" + (i == activeQP ? "primary" : "secondary")}>{QuickSelects[i].label}
                                         </li>
-                                        {i + 1 < AvailableQuickSelects.length ?
+                                        {i + 1 < QuickSelects.length ?
                                             <li key={i + 1} style={{ marginTop: 3, cursor: 'pointer' }}
                                                 className={"item badge badge-" + (i + 1 == activeQP ? "primary" : "secondary")}
                                                 onClick={() => {
-                                                    const flt = getTimeWindow(AvailableQuickSelects[i + 1].createFilter(props.timeZone, format), format);
+                                                    const flt = getTimeWindow(QuickSelects[i + 1].createFilter(props.timeZone, props.format), format);
                                                     props.setFilter(flt.center, flt.start, flt.end, flt.unit, flt.duration);
                                                     setActiveQP(i + 1)
                                                 }}>
-                                                {AvailableQuickSelects[i + 1].label}
+                                                {QuickSelects[i + 1].label}
                                             </li> : null}
-                                        {i + 2 < AvailableQuickSelects.length ?
+                                        {i + 2 < QuickSelects.length ?
                                             <li key={i + 2}
                                                 style={{ marginTop: 3, cursor: 'pointer' }}
                                                 className={"item badge badge-" + (i + 2 == activeQP ? "primary" : "secondary")}
                                                 onClick={() => {
-                                                    const flt = getTimeWindow(AvailableQuickSelects[i + 2].createFilter(props.timeZone, format), format);
+                                                    const flt = getTimeWindow(QuickSelects[i + 2].createFilter(props.timeZone, props.format), format);
                                                     props.setFilter(flt.center, flt.start, flt.end, flt.unit, flt.duration);
                                                     setActiveQP(i + 2);
                                                 }}>
-                                                {AvailableQuickSelects[i + 2].label}
+                                                {QuickSelects[i + 2].label}
                                             </li> : null}
                                     </ul>
                                 </div>
