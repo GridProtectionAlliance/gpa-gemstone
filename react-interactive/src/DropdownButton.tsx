@@ -84,9 +84,9 @@ const BtnDropdown = (props: IProps) => {
             </button>
             <div className={"dropdown-menu" + (showDropdown ? " show" : "")}>
                 {props.Options.map((option, i) => 
-                    <React.Fragment key={option.Label + '-divider'}>
+                    <React.Fragment key={option.Label}>
                         {i > 0 && props.Options[i].Group !== props.Options[i - 1].Group ?
-                            <div key={option.Label + '-divider'} className="dropdown-divider"></div> 
+                            <div className="dropdown-divider" /> 
                             : null}
                         <DropDownOption {...option} setShowDropDown={setShowDropdown}/>
                     </React.Fragment>)}
