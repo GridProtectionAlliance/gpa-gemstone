@@ -109,7 +109,6 @@ const DropDownOption = (props: DropDownProps) => {
 
     return (<>
         <a className={"dropdown-item" + ((props?.Disabled ?? false) ? " disabled" : "")} 
-            key={props.Label}
             style={{cursor: ((props?.Disabled ?? false) ? undefined :  'pointer')}}
             onClick={() => {
                 props.setShowDropDown(false);
