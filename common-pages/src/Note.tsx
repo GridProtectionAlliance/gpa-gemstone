@@ -201,7 +201,7 @@ function Note(props: IProps)  {
     
 
     return (
-                <div className={showCard? "card" : ""} style={{ marginBottom: 10, maxHeight: props.MaxHeight, width: '100%'}}>
+                <div className={showCard? "card" : ""} style={{ maxHeight: props.MaxHeight, width: '100%'}}>
                 <LoadingScreen Show={dataStatus === 'loading'}/>
                     <div className={props.ShowCard === undefined || props.ShowCard? "card-header" : ""}>
                 <div className="row">
