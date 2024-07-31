@@ -26,12 +26,47 @@ import { CreateGuid } from '@gpa-gemstone/helper-functions'
 import HelperMessage from './HelperMessage';
 
 interface IProps<T> {
-    Record: T,
-    Field: keyof T,
+    /**
+        * Record to be used in form
+        * @type {T}
+    */
+    Record: T;
+    /**
+        * Field of the record to be edited
+        * @type {keyof T}
+    */
+    Field: keyof T;
+    /**
+      * Setter function to update the Record
+      * @param record - Updated Record
+    */
     Setter: (record: T) => void;
+    /**
+        * Help message or element to display
+        * @type {string | JSX.Element}
+        * @optional
+    */
     Help?: string | JSX.Element;
+    /**
+        * Position to display radion buttons in
+        * @type {'vertical' | 'horizontal'}
+        * @optional
+    */
     Position?: ('vertical' | 'horizontal'),
-    Options: { Value: string|number; Label: string, Disabled?: boolean }[];
+    /**
+        * Options for the radion buttons
+        * @type {{ Value: string | number; Label: string, Disabled?: boolean }[]}
+    */
+    Options: {
+        Value: string | number,
+        Label: string,
+        Disabled?: boolean
+    }[];
+    /**
+        * Label to display for the form, defaults to the Field prop
+        * @type {string}
+        * @optional
+    */
     Label?: string
 }
 
