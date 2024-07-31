@@ -16,15 +16,15 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  06/12/2024 - Collins Self
+//  06/10/2024 - Collins Self
 //       Generated original version of source code.
 //
 //******************************************************************************************************
 
-import * as React from 'react'
+import React from 'react'
 
 interface IProps {
-    /**
+     /**
      * Maximum rows to display without scrolling
      */
     RowsPerPage: number
@@ -35,7 +35,7 @@ interface IProps {
 }
 
 interface IRow {
-    /**
+   /**
     * Number used to track the index of data to start at when displaying this row
     */
     StartIndex: number,
@@ -53,17 +53,17 @@ const LayoutGrid: React.FC<React.PropsWithChildren<IProps>> = (props) => {
         const rowsOnGrid: IRow[] = [];
         const lowestSquare = Math.floor(Math.sqrt(totalNumOfItems));
         let numOfRows = lowestSquare; // Default values assumes a perfect square grid
-        let rowsNeedingExtraItems = totalNumOfItems - lowestSquare**2; // Adds these overflow items to beginning rows 1:1
-        
+        let rowsNeedingExtraItems = totalNumOfItems - lowestSquare**2; // Will add these overflow items to beginning rows 1:1
+
         if(props.ColMax !== undefined && props.ColMax <= lowestSquare) {
             rowsNeedingExtraItems = 0;
             const itemsInRow = props.ColMax;
             numOfRows = Math.ceil(totalNumOfItems / itemsInRow);
         }
-        // Checks if items would overfill the perfect square grid plus another row, then adds that row if needed
+    // Checks if items would overfill the perfect square grid plus another row, then adds that row if needed
         if(totalNumOfItems >= lowestSquare**2 + lowestSquare) {
             rowsNeedingExtraItems -= lowestSquare; // "extra" items taken from final cols
-            numOfRows = lowestSquare + 1;          // moving "extras" to another row
+            numOfRows = lowestSquare + 1; // moving "extras" to another row
         }
 
         // Create rows, balanced with extra items
@@ -72,13 +72,13 @@ const LayoutGrid: React.FC<React.PropsWithChildren<IProps>> = (props) => {
             const itemsInRow = lowestSquare + 1; // adding "extras" to another col
             const row = { StartIndex: totalNumOfItems - numOfItemsRemaining, NumOfCols: itemsInRow };
             numOfItemsRemaining -= itemsInRow;
-            rowsOnGrid.push(row);
+            rowsOnGrid.push(row); // push a row onto array with appropriate number of items
         }
         for(let i = 0; i < numOfRows - rowsNeedingExtraItems && numOfItemsRemaining >= 0; ++i) {
-            const itemsInRow = lowestSquare === props.ColMax ? lowestSquare : props.ColMax;
-            const row = { StartIndex: totalNumOfItems - numOfItemsRemaining, NumOfCols: Math.min(numOfItemsRemaining, itemsInRow!) };
-            numOfItemsRemaining -= itemsInRow!;
-            rowsOnGrid.push(row);
+            const itemsInRow = lowestSquare === props.ColMax ? props.ColMax : lowestSquare;
+            const row = { StartIndex: totalNumOfItems - numOfItemsRemaining, NumOfCols: Math.min(numOfItemsRemaining, itemsInRow) };
+            numOfItemsRemaining -= itemsInRow;
+            rowsOnGrid.push(row); // push a row onto array with appropriate number of items
         }
         setRows(rowsOnGrid);
     }, [totalNumOfItems]);
@@ -87,23 +87,24 @@ const LayoutGrid: React.FC<React.PropsWithChildren<IProps>> = (props) => {
         const ItemDivs: JSX.Element[] = [];
         for(let i = 0; i < currentRow.NumOfCols; ++i) {
             const padding = i === 0 ? 'pl-1 pr-1' : 'pr-1 pl-0';
-            ItemDivs.push(
+            const ItemDiv =
                 <div className={'col ' + padding} style={{ height:'100%', width: `${100 / currentRow.NumOfCols}%` }}>
                     { React.Children.toArray(props.children)[currentRow.StartIndex + i] }
-                </div>)
+                </div>
+            ItemDivs.push(ItemDiv);
         }
         return ItemDivs;
     }
 
-    return ( 
-            <div className='container-fluid p-0 h-100' style={{ overflowY: 'auto' }}>
-                {rows.map((row, i) => (
-                    <div key={i} className='row pb-1 m-0' style={{ height: `${100 / Math.min(rows.length, props.RowsPerPage)}%` }}>
-                        { generateColumns(row) }
-                    </div>
-                ))}
-            </div>
-        );
+    return (
+        <div className='container-fluid p-0 h-100' style={{ overflowY: 'auto' }}>
+            {rows.map((row, i) => (
+                <div key={i} className='row pb-1 m-0' style={{ height: `${100 / Math.min(rows.length, props.RowsPerPage)}%` }}>
+                    { generateColumns(row) }
+                </div>
+            ))}
+        </div>
+    );
 }
 
 export default LayoutGrid;
