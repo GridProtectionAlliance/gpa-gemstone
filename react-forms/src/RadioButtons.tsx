@@ -31,7 +31,7 @@ interface IProps<T> {
     Setter: (record: T) => void;
     Help?: string | JSX.Element;
     Position?: ('vertical' | 'horizontal'),
-    Options: { Value: string; Label: string, Disabled?: boolean }[];
+    Options: { Value: string|number; Label: string, Disabled?: boolean }[];
     Label?: string
 }
 
@@ -52,11 +52,11 @@ export default function RadioButtons<T>(props: IProps<T>) {
                         style={{ zIndex: 1 }}
                         onChange={() => {
                             const record: T = { ...props.Record };
-                            record[props.Field] = option.Value as any;
+                            record[props.Field] = option.Value as (string|number);
                             props.Setter(record);
                         }}
                         value={option.Value}
-                        checked={props.Record[props.Field] === option.Value as any}
+                        checked={props.Record[props.Field] === option.Value as (string|number)}
                         disabled={option.Disabled ?? false}
                         id={`${option.Label}-${index}`}
                     />
