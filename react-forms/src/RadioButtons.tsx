@@ -26,12 +26,47 @@ import { CreateGuid } from '@gpa-gemstone/helper-functions'
 import HelperMessage from './HelperMessage';
 
 interface IProps<T> {
-    Record: T,
-    Field: keyof T,
+    /**
+        * Record to be used in form
+        * @type {T}
+    */
+    Record: T;
+    /**
+        * Field of the record to be edited
+        * @type {keyof T}
+    */
+    Field: keyof T;
+    /**
+      * Setter function to update the Record
+      * @param record - Updated Record
+    */
     Setter: (record: T) => void;
+    /**
+        * Help message or element to display
+        * @type {string | JSX.Element}
+        * @optional
+    */
     Help?: string | JSX.Element;
+    /**
+        * Position to display radion buttons in
+        * @type {'vertical' | 'horizontal'}
+        * @optional
+    */
     Position?: ('vertical' | 'horizontal'),
-    Options: { Value: string; Label: string, Disabled?: boolean }[];
+    /**
+        * Options for the radion buttons
+        * @type {{ Value: string | number; Label: string, Disabled?: boolean }[]}
+    */
+    Options: {
+        Value: string | number,
+        Label: string,
+        Disabled?: boolean
+    }[];
+    /**
+        * Label to display for the form, defaults to the Field prop
+        * @type {string}
+        * @optional
+    */
     Label?: string
 }
 
@@ -52,11 +87,11 @@ export default function RadioButtons<T>(props: IProps<T>) {
                         style={{ zIndex: 1 }}
                         onChange={() => {
                             const record: T = { ...props.Record };
-                            record[props.Field] = option.Value as any;
+                            record[props.Field] = option.Value as unknown as T[keyof T];
                             props.Setter(record);
                         }}
                         value={option.Value}
-                        checked={props.Record[props.Field] === option.Value as any}
+                        checked={props.Record[props.Field] === option.Value as unknown as T[keyof T]}
                         disabled={option.Disabled ?? false}
                         id={`${option.Label}-${index}`}
                     />

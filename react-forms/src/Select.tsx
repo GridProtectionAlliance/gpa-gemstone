@@ -42,7 +42,7 @@ interface IProps<T> {
     * Options for the select dropdown
     * @type {{ Value: string; Label: string }[]}
   */
-  Options: { Value: string; Label: string }[];
+  Options: { Value: string | number, Label: string }[];
   /**
     * Setter function to update the Record
     * @param record - Updated Record
@@ -92,7 +92,7 @@ export default function Select<T>(props: IProps<T>) {
 
     // Effect to validate the current value against the available options.
   React.useEffect(() => {
-    const currentValue: string = GetRecordValue();
+    const currentValue = GetRecordValue();
     if (!(props.EmptyOption ?? false) && props.Options.length > 0 && props.Options.findIndex((option) => option.Value === currentValue) === -1) {
       SetRecord(props.Options[0].Value);
       // tslint:disable-next-line
@@ -102,16 +102,16 @@ export default function Select<T>(props: IProps<T>) {
   }, [props.Options]);
     
   // Update the parent component's state with the new value.
-  function SetRecord(value: string): void {
+  function SetRecord(value: string | number): void {
     const record: T = { ...props.Record };
-    if (value !== '') record[props.Field] = value as any;
-    else record[props.Field] = null as any;
+    if (value !== '') record[props.Field] = value as unknown as T[keyof T];
+    else record[props.Field] = null as unknown as T[keyof T];
     props.Setter(record);
   }
 
   // Rretrieve the current value of the select field from the record.
-  function GetRecordValue(): string {
-    return props.Record[props.Field] == null ? '' : (props.Record[props.Field] as any).toString();
+  function GetRecordValue() {
+    return props.Record[props.Field] == null ? '' : props.Record[props.Field];
   }
 
   return (
@@ -134,7 +134,7 @@ export default function Select<T>(props: IProps<T>) {
         data-help={guid}
         className="form-control"
         onChange={(evt) => SetRecord(evt.target.value)}
-        value={GetRecordValue()}
+        value={GetRecordValue() as string | number}
         disabled={props.Disabled == null ? false : props.Disabled}
       >
         {/* Optional empty option */}
