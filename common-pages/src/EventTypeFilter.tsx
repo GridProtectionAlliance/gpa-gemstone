@@ -103,7 +103,7 @@ const EventTypeFilter: React.FC<IProps> = (props: IProps) => {
         }
 
         return <li className="nav-item"
-            style={{ width: (20 / nCol).toFixed(0) + '%', paddingRight: 10, height: evtTypeCategories.some(c => c.height == 0) ? 5 : '100%', overflow: 'hidden' }}>
+            style={{ width: (100 / nCol).toFixed(0) + '%', height: evtTypeCategories.some(c => c.height == 0) ? 5 : '100%', overflow: 'hidden' }}>
             {flts.map(c => (<EventSearchTypeCategory key={c.label} Label={c.label} SelectedID={props.SelectedTypeID}
                 SelectAll={(selected) => {
                     props.SetSelectedTypeIDs(
@@ -131,9 +131,9 @@ const EventTypeFilter: React.FC<IProps> = (props: IProps) => {
             })
     }
     return (
-        <>
+        <ul className="navbar-nav mr-auto" style={{width: "100%"}}>
             {Array.from({ length: nCol }, (_, i) => i).map(c => generateCollumn(c))}
-        </>);
+        </ul>);
     
 }
 

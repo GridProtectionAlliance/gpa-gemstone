@@ -26,8 +26,7 @@ import * as React from 'react';
 import moment from 'moment';
 import { DatePicker, Select, Input } from '@gpa-gemstone/react-forms'
 import { findAppropriateUnit, getMoment, getStartEndTime, units, IStartEnd, IStartDuration, IEndDuration, 
-    ICenterDuration, readableUnit, isStartEnd, isStartDuration, 
-    isEndDuration, isCenterDuration, TimeUnit } from './TimeWindowUtils';
+    ICenterDuration, readableUnit, TimeUnit } from './TimeWindowUtils';
 import { AvailableQuickSelects, getFormat, DateUnit } from './TimeFilter/QuickSelects'
 
 
@@ -47,14 +46,14 @@ export type ITimeFilter = IStartEnd | IStartDuration | IEndDuration | ICenterDur
 export function getTimeWindow (flt: ITimeFilter, format?: string){
     let center, start, end, unit, duration, halfDuration;
 
-    if (isCenterDuration(flt)){
+    if ('center' in flt && 'halfDuration' in flt){     // type is ICenterDuration
         center = getMoment(flt.center, format);
         [start, end] = getStartEndTime(center, flt.halfDuration, flt.unit);        
         unit = flt.unit;
         halfDuration = flt.halfDuration;
         duration = halfDuration * 2;
     }
-    else if (isStartDuration(flt)){
+    else if ('start' in flt && 'duration' in flt){     // type is IStartDuration
         start = getMoment(flt.start, format);
         const d = moment.duration(flt.duration / 2.0, flt.unit);
         center = start.clone().add(d);
@@ -63,7 +62,7 @@ export function getTimeWindow (flt: ITimeFilter, format?: string){
         duration = flt.duration,
         halfDuration = duration / 2.0;
     }
-    else if (isEndDuration(flt)){
+    else if ('end' in flt && 'duration' in flt){     // type is IEndDuration
         end = getMoment(flt.end, format);
         const d = moment.duration(flt.duration / 2.0, flt.unit);
         center = end.clone().subtract(d);
@@ -72,7 +71,7 @@ export function getTimeWindow (flt: ITimeFilter, format?: string){
         duration = flt.duration,
         halfDuration = duration / 2.0;
     }
-    else if (isStartEnd(flt)){
+    else if ('start' in flt && 'end' in flt){     // type is IStartEnd
         start = getMoment(flt.start, format);
         end = getMoment(flt.end, format);
         [unit, halfDuration] = findAppropriateUnit(start, end, undefined, true);
@@ -107,14 +106,14 @@ interface IProps {
 // Returns a row div element with props as children of row 
 function Row(props: React.PropsWithChildren<{addRow: boolean, class?: string}>){
     if (props.addRow){
-        return <div className={`row ${props.class}`}>{props.children}</div>
+        return <div className={`row ${props.class ?? ''}`}>{props.children}</div>
     }
     return <>{props.children}</>
 }
 
 const TimeFilter = (props: IProps) => {
     const format = getFormat(props.format);
-    const QuickSelects = AvailableQuickSelects.filter(qs => !qs.hideQuickPick(props.format));
+    const QuickSelects = React.useMemo(() => AvailableQuickSelects.filter(qs => !qs.hideQuickPick(props.format)), [props.format]);
     const [activeQP, setActiveQP] = React.useState<number>(-1);
     const [filter, setFilter] = React.useState<ITimeWindow>(getTimeWindow(props.filter, format));
 

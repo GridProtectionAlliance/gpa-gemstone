@@ -22,7 +22,6 @@
 //       Moved TimeWindowUtil from SEBrowser to gemstone
 //******************************************************************************************************
 import moment from 'moment';
-import { ITimeFilter } from './TimeFilter'
 
 export interface IStartEnd {
     start: string;
@@ -44,16 +43,8 @@ export interface ICenterDuration {
     unit: TimeUnit;
 }
 
-
 export type TimeUnit = 'y'|'M'|'w'|'d'|'h'|'m'|'s'|'ms'
 export const units = ['ms','s','m','h','d','w','M','y'] as TimeUnit[]
-
-// Takes ITimeFilter as input and returns type
-export const isStartEnd = (filter: ITimeFilter): filter is IStartEnd => 'start' in filter && 'end' in filter;
-export const isStartDuration = (filter: ITimeFilter): filter is IStartDuration => 'start' in filter && 'duration' in filter;
-export const isEndDuration = (filter: ITimeFilter): filter is IEndDuration => 'end' in filter && 'duration' in filter;
-export const isCenterDuration = (filter: ITimeFilter): filter is ICenterDuration => 'center' in filter && 'halfDuration' in filter;
-
 
 /*
 * A Function to determine the most appropriate unit for a window of time specified by start and end time
