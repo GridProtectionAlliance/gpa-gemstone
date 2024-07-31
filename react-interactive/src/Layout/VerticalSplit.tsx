@@ -20,8 +20,8 @@
 //       Generated original version of source code.
 // ******************************************************************************************************
 
-import { SVGIcons } from '@gpa-gemstone/gpa-symbols';
-import { CreateGuid, GetTextWidth } from '@gpa-gemstone/helper-functions';
+import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
+import { CreateGuid } from '@gpa-gemstone/helper-functions';
 import _ = require('lodash');
 import * as React from 'react';
 import ToolTip from '../ToolTip';
@@ -393,9 +393,9 @@ const DrawerHeader: React.FunctionComponent<IDrawerHeaderProps> = (props) => {
             onMouseDown={() => {props.onClick();}}
             onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
             <div style={{height: 24, width: 35, paddingLeft: 5}}>
-                {props.symbol === 'Open' ? SVGIcons.ArrowForward : null}
-                {props.symbol === 'Close' ? SVGIcons.ArrowBackward : null}
-                {props.symbol === 'X' ? SVGIcons.CrossMark : null}
+                {props.symbol === 'Open' ? <ReactIcons.ArrowForward /> : null}
+                {props.symbol === 'Close' ? <ReactIcons.ArrowBackward /> : null}
+                {props.symbol === 'X' ? <ReactIcons.CrossMark /> : null}
             </div>
             <span style={{ margin: 'auto', writingMode: 'vertical-rl', textOrientation: 'sideways', fontSize: 25, paddingTop: '5px'}}>
                 {props.title}
