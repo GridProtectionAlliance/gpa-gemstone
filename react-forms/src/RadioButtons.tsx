@@ -91,7 +91,7 @@ export default function RadioButtons<T>(props: IProps<T>) {
                             props.Setter(record);
                         }}
                         value={option.Value}
-                        checked={props.Record[props.Field] === option.Value as (string | number)}
+                        checked={props.Record[props.Field] === option.Value as unknown as T[keyof T]}
                         disabled={option.Disabled ?? false}
                         id={`${option.Label}-${index}`}
                     />
