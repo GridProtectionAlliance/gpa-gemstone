@@ -87,7 +87,7 @@ export default function RadioButtons<T>(props: IProps<T>) {
                         style={{ zIndex: 1 }}
                         onChange={() => {
                             const record: T = { ...props.Record };
-                            record[props.Field] = option.Value as unknown as T[keyof T];;
+                            record[props.Field] = option.Value as unknown as T[keyof T];
                             props.Setter(record);
                         }}
                         value={option.Value}
