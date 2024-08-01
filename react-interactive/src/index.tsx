@@ -47,6 +47,7 @@ import ConfigurableColumn from './ConfigurableTable/ConfigurableColumn';
 import GenericController from './GenericController';
 import LayoutGrid from './LayoutGrid';
 import UploadCSV from './UploadCSV';
+import { ICSVField } from './UploadCSV';
 
 const ConfigTable = {
   Table: ConfigurableTable,
@@ -78,5 +79,6 @@ export {
   BtnDropdown,
   GenericController,
   LayoutGrid,
-  UploadCSV
+  UploadCSV,
+  ICSVField
 };
