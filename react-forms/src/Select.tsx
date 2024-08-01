@@ -93,7 +93,7 @@ export default function Select<T>(props: IProps<T>) {
     // Effect to validate the current value against the available options.
   React.useEffect(() => {
     const currentValue = GetRecordValue();
-    if (!(props.EmptyOption ?? false) && props.Options.length > 0 && props.Options.findIndex((option) => option.Value === currentValue) === -1) {
+    if (!(props.EmptyOption ?? false) && props.Options.length > 0 && props.Options.findIndex((option) => option.Value == currentValue) === -1) {
       SetRecord(props.Options[0].Value);
       // tslint:disable-next-line
       console.warn("The current value is not available as an option. Specify EmptyOption=true if the value should be allowed.")
@@ -106,7 +106,7 @@ export default function Select<T>(props: IProps<T>) {
     const record: T = { ...props.Record };
     if (value !== '') record[props.Field] = value as unknown as T[keyof T];
     else record[props.Field] = null as unknown as T[keyof T];
-    props.Setter(record);
+    if (record[props.Field] != props.Record[props.Field]) props.Setter(record);
   }
 
   // Rretrieve the current value of the select field from the record.
