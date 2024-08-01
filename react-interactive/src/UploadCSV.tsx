@@ -166,10 +166,6 @@ export default function UploadCSV<T>(props: IProps<T>) {
                 data.forEach(row => {
                     const value = row[fieldIndex + 1]; //+1 for row index value
 
-                    // Check required 
-                    if (field.Required && (field.Validate(value) === false || value == null))
-                        errors.push(`${field.Label} is required and cannot be empty.`);
-
                     // Check uniqueness
                     if (field.Unique) {
                         if (uniqueValues.has(value))
@@ -239,7 +235,7 @@ export default function UploadCSV<T>(props: IProps<T>) {
         let matchedField: ICSVField<T> | undefined = props.Fields.find(f => f.Field === field);
 
         return <Select<{ Header: string, Value: string | undefined }> Record={{ Header: header, Value: field }} EmptyOption={true} Options={props.Fields.map(field => ({ Value: field.Field as string, Label: field.Label }))} Field="Value"
-            Setter={(record) => updateMap(record.Header, record.Value)} Label={''} Help={matchedField?.Help} />
+            Setter={(record) => updateMap(record.Header, record.Value)} Label={' '} Help={matchedField?.Help} />
 
     }, [props.Fields, headerMap])
 
@@ -267,6 +263,9 @@ export default function UploadCSV<T>(props: IProps<T>) {
         const fileReader = new FileReader();
         fileReader.onload = (e) => {
             if (e.target == null) return;
+            if(rawCSVContent != null) //reset map if they change csv files
+                setHeaderMap(new Map<string, string | undefined>());
+            
             setRawCSVContent(e.target.result as string);
         };
 
