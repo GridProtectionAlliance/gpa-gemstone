@@ -77,20 +77,20 @@ interface IProps<T> {
     * @type {string | JSX.Element}
     * @optional
   */
-  Help?: string|JSX.Element;
+  Help?: string | JSX.Element;
 }
 
 
 export default function Select<T>(props: IProps<T>) {
   const [guid, setGuid] = React.useState<string>("");
   const [showHelp, setShowHelp] = React.useState<boolean>(false);
-  
+
   // Effect to generate a unique ID for the component.
   React.useEffect(() => {
     setGuid(CreateGuid());
   }, []);
 
-    // Effect to validate the current value against the available options.
+  // Effect to validate the current value against the available options.
   React.useEffect(() => {
     const currentValue = GetRecordValue();
     if (!(props.EmptyOption ?? false) && props.Options.length > 0 && props.Options.findIndex((option) => option.Value == currentValue) === -1) {
@@ -98,9 +98,9 @@ export default function Select<T>(props: IProps<T>) {
       // tslint:disable-next-line
       console.warn("The current value is not available as an option. Specify EmptyOption=true if the value should be allowed.")
     }
-      
+
   }, [props.Options]);
-    
+
   // Update the parent component's state with the new value.
   function SetRecord(value: string | number): void {
     const record: T = { ...props.Record };
@@ -114,20 +114,25 @@ export default function Select<T>(props: IProps<T>) {
     return props.Record[props.Field] == null ? '' : props.Record[props.Field];
   }
 
+  // Variables to control the rendering of label and help icon.
+  const showLabel = props.Label !== "";
+  const showHelpIcon = props.Help !== undefined;
+  const label = props.Label === undefined ? props.Field : props.Label;
+
+
   return (
     <div className="form-group">
       {/* Rendering label and optional help icon */}
-      {(props.Label !== "") ?
-        <label>{props.Label === undefined ? props.Field : props.Label} 
-        {props.Help !== undefined? <div style={{ width: 20, height: 20, borderRadius: '50%', display: 'inline-block', background: '#0D6EFD', marginLeft: 10, textAlign: 'center', fontWeight: 'bold' }} onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)}> ? </div> : null}
-        </label> : null 
-      }
-      
-      {props.Help !== undefined? 
+      {showHelpIcon || showLabel ?
+        <label>{showLabel ? label : ''}
+          {showHelpIcon ? <div style={{ width: 20, height: 20, borderRadius: '50%', display: 'inline-block', background: '#0D6EFD', marginLeft: 10, textAlign: 'center', fontWeight: 'bold' }} onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)}> ? </div> : null}
+        </label> : null}
+
+      {showHelpIcon ?
         <HelperMessage Show={showHelp} Target={guid}>
           {props.Help}
         </HelperMessage>
-      : null}
+        : null}
 
       {/* Rendering the select input */}
       <select
@@ -138,8 +143,8 @@ export default function Select<T>(props: IProps<T>) {
         disabled={props.Disabled == null ? false : props.Disabled}
       >
         {/* Optional empty option */}
-        {(props.EmptyOption ?? false) ? <option value="">{props.EmptyLabel !== undefined? props.EmptyLabel : ''}</option> : null}
-        
+        {(props.EmptyOption ?? false) ? <option value="">{props.EmptyLabel !== undefined ? props.EmptyLabel : ''}</option> : null}
+
         {/* Rendering options */}
         {props.Options.map((a, i) => (
           <option key={i} value={a.Value}>
