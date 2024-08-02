@@ -27,7 +27,6 @@ import * as React from 'react';
 import { NavLink, useLocation, matchPath } from 'react-router-dom';
 import { Context } from './Context';
 
-
 export interface IProps {
     /** Needed to specify whether a user can access a NavLink via Administrator role. */
     RequiredRoles?: Application.Types.SecurityRoleName[];
@@ -38,32 +37,37 @@ export interface IProps {
     /** Icon that will show next to your NavLink */
     Icon?: React.ReactNode,
     /** Name of the path or paths thats used for Dynamic Routing with Name being the root of the path*/
-    Paths?: string[]
+    Paths?: string[],
+    /** Pages where this link should remain acitive */
+    OtherActivePages?: string[]
 }
 
-
 const Page: React.FunctionComponent<IProps> = (props) => {
-
     const [hover, setHover] = React.useState<boolean>(false);
     const context = React.useContext(Context)
     const location = useLocation();
 
-    
     const isPathActive = () => {
         // Use Name as the base check and see if the current path starts with this base.
-        return location.pathname.startsWith(`${context.homePath}${props.Name}`);
+        return location.pathname.startsWith(`${context.homePath}${props.Name}`)
+            || isOtherPathActive();
     }
-    
-    
+
+    const isOtherPathActive = () => {
+        if (props.OtherActivePages == undefined) return false;
+        for (const path of props.OtherActivePages!) {
+            if (location.pathname.includes(path)) return true;
+        }
+    }
+
     if (props.RequiredRoles !== undefined && props.RequiredRoles.filter(r => context.userRoles.findIndex(i => i === r) > -1).length === 0)
         return null;
 
     const linkStyle = {
         color: isPathActive() ? '#007bff' : '#78828d'
-    };    
-    
+    }
 
-    if (props.Label !== undefined || props.Icon !== undefined)
+    if (props.Label !== undefined || props.Icon !== undefined) {
         return (
             <>
                 <li className="nav-item" style={{ position: 'relative' }}>
@@ -78,9 +82,10 @@ const Page: React.FunctionComponent<IProps> = (props) => {
                         {!context.collapsed ? <span>{props.Label}</span> : null}
                     </NavLink>
                 </li>
-                {context.collapsed ? <ToolTip Target={props.Name} Show={hover} Position={'right'}> {props.Label}</ToolTip> : null
-}
-            </>);
+                {context.collapsed ? <ToolTip Target={props.Name} Show={hover} Position={'right'}> {props.Label}</ToolTip> : null}
+            </>
+        )
+    }
     return null;
 }
 
