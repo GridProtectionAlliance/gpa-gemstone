@@ -36,8 +36,8 @@ interface IProps<T> {
      */
     Fields: ICSVField<T>[];
     /** 
-    * ADD ANNOTATED COMMENT TO THIS
-    *
+    * Step to represent current stage of component
+    * @type {'Upload' | 'Process' | 'Complete'}
     * */
     Step: 'Upload' | 'Process' | 'Complete'
     /**
@@ -75,7 +75,7 @@ export interface ICSVField<T> {
     /**
      * Component for editing the field value.
      */
-    EditComponent: React.FC<{ Value: string, SetValue: (val: string) => void, Valid: boolean }>;
+    EditComponent: React.FC<{ Value: string, SetValue: (val: string) => void, Valid: boolean, Feedback?: string }>;
 
     /**
      * Optional help text for the select element.
@@ -83,6 +83,13 @@ export interface ICSVField<T> {
      * @optional
      */
     Help?: string;
+
+    /**
+     * Optional feedback for the EditComponent
+     * @type {string}
+     * @optional
+     */
+    Feedback?: string;
 
     /**
      * Function to process the field value and update the record.
@@ -232,7 +239,7 @@ export default function UploadCSV<T>(props: IProps<T>) {
         const field = headerMap.get(header);
 
         const updateMap = (head: string, val: string | undefined) => setHeaderMap(new Map(headerMap).set(head, val));
-        let matchedField: ICSVField<T> | undefined = props.Fields.find(f => f.Field === field);
+        const matchedField: ICSVField<T> | undefined = props.Fields.find(f => f.Field === field);
 
         return <Select<{ Header: string, Value: string | undefined }> Record={{ Header: header, Value: field }} EmptyOption={true} Options={props.Fields.map(field => ({ Value: field.Field as string, Label: field.Label }))} Field="Value"
             Setter={(record) => updateMap(record.Header, record.Value)} Label={' '} Help={matchedField?.Help} />
@@ -263,9 +270,9 @@ export default function UploadCSV<T>(props: IProps<T>) {
         const fileReader = new FileReader();
         fileReader.onload = (e) => {
             if (e.target == null) return;
-            if(rawCSVContent != null) //reset map if they change csv files
+            if (rawCSVContent != null) //reset map if they change csv files
                 setHeaderMap(new Map<string, string | undefined>());
-            
+
             setRawCSVContent(e.target.result as string);
         };
 
@@ -300,99 +307,103 @@ export default function UploadCSV<T>(props: IProps<T>) {
 
     return (
         <>
-            <div className='row h-100'>
-                <div className='col-12 d-flex flex-column h-100'>
-                    <div className='row'>
-                        <div className='col-12'>
-                            <ProgressBar steps={steps} activeStep={props.Step} />
+            <div className="container-fluid d-flex flex-column p-0 h-100">
+                <div className='row h-100'>
+                    <div className='col-12 d-flex flex-column h-100'>
+                        <div className='row'>
+                            <div className='col-12'>
+                                <ProgressBar steps={steps} activeStep={props.Step} />
+                            </div>
                         </div>
-                    </div>
-                    {props.Step === 'Upload' ?
-                        <>
-                            <div className='row justify-content-center'>
-                                <div className='col-6'>
-                                    <div className="custom-file">
-                                        <input type="file" className="custom-file-input" id="inputGroupFile02" onChange={handleFileUpload} accept='.csv, text/csv' style={{ cursor: 'pointer' }} />
-                                        <label className="custom-file-label" htmlFor="inputGroupFile02" aria-describedby="inputGroupFileAddon02">{fileName == null ? 'Upload CSV' : fileName}</label>
+                        {props.Step === 'Upload' ?
+                            <>
+                                <div className='row justify-content-center'>
+                                    <div className='col-6'>
+                                        <div className="custom-file">
+                                            <input type="file" className="custom-file-input" id="inputGroupFile02" onChange={handleFileUpload} accept='.csv, text/csv' style={{ cursor: 'pointer' }} />
+                                            <label className="custom-file-label" htmlFor="inputGroupFile02" aria-describedby="inputGroupFileAddon02">{fileName == null ? 'Upload CSV' : fileName}</label>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div className='row justify-content-center'>
-                                <div className='col-6'>
-                                    <CheckBox Record={{ HasHeaders: dataHasHeaders }} Field="HasHeaders" Setter={(record) => setDataHasHeaders(record.HasHeaders)} Label='My Data Has Headers' />
+                                <div className='row justify-content-center'>
+                                    <div className='col-6'>
+                                        <CheckBox Record={{ HasHeaders: dataHasHeaders }} Field="HasHeaders" Setter={(record) => setDataHasHeaders(record.HasHeaders)} Label='My Data Has Headers' />
+                                    </div>
                                 </div>
-                            </div>
-                        </>
-                        : null}
-                    {pagedData.length !== 0 && props.Step === 'Process' ?
-                        <>
-                            <div className='row flex-grow-1'>
-                                <div className='col-12 h-100 '>
-                                    <ConfigTable.Table<string[]>
-                                        Data={pagedData}
-                                        SortKey=''
-                                        Ascending={false}
-                                        OnSort={() => {/*no sort*/ }}
-                                        KeySelector={data => data[0]}
-                                        TheadStyle={{ width: 'auto', fontSize: 'auto', tableLayout: 'fixed', display: 'table', }}
-                                        TbodyStyle={{ width: 'auto', display: 'block', flex: 1 }}
-                                        TableClass='table'
-                                        TableStyle={{ padding: 0, width: 'calc(100%)', height: '100%', tableLayout: 'fixed', display: 'flex', flexDirection: 'column', marginBottom: 0 }}
-                                        RowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
+                            </>
+                            : null}
+                        {pagedData.length !== 0 && props.Step === 'Process' ?
+                            <>
+                                <div className='row flex-grow-1'>
+                                    <div className='col-12 h-100 '>
+                                        <ConfigTable.Table<string[]>
+                                            Data={pagedData}
+                                            SortKey=''
+                                            Ascending={false}
+                                            OnSort={() => {/*no sort*/ }}
+                                            KeySelector={data => data[0]}
+                                            TheadStyle={{ width: 'auto', fontSize: 'auto', tableLayout: 'fixed', display: 'table', }}
+                                            TbodyStyle={{ width: 'auto', display: 'block', flex: 1 }}
+                                            TableClass='table'
+                                            TableStyle={{ padding: 0, width: 'calc(100%)', height: '100%', tableLayout: 'fixed', display: 'flex', flexDirection: 'column', marginBottom: 0 }}
+                                            RowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
 
-                                    >
-                                        {headers.map((header, i) =>
-                                            <ConfigTable.Configurable Key={header} Label={header} Default={true}>
-                                                <ReactTable.Column<string[]>
-                                                    Key={header}
-                                                    Field={i + 1}
-                                                    AllowSort={false}
-                                                    Content={({ item, field }) => {
-                                                        const mappedField = headerMap.get(header);
-                                                        const matchedField = props.Fields.find(f => f.Field === mappedField);
-                                                        if (matchedField == null) return item[field as number];
-
-                                                        const value = item[field as number];
-                                                        const isValid = matchedField.Validate(value);
-                                                        return (
-                                                            <matchedField.EditComponent
-                                                                Value={value}
-                                                                SetValue={(val: string) => handleValueChange(parseInt(item[0]), field as number, val)}
-                                                                Valid={isValid}
-                                                            />
-                                                        );
-                                                    }}
-                                                >
-                                                    {getHeader(header)}
-                                                    {getFieldSelect(header)}
-                                                </ReactTable.Column>
-                                            </ConfigTable.Configurable>
-                                        )}
-                                        <ReactTable.Column<string[]>
-                                            Key={'delete'}
-                                            Field={0}
-                                            AllowSort={false}
-                                            RowStyle={{ textAlign: 'right' }}
-                                            Content={({ item }) => {
-                                                return (
-                                                    <button className='btn' onClick={() => handleRowDelete(parseInt(item[0]))}>
-                                                        <ReactIcons.TrashCan Color="red" />
-                                                    </button>
-                                                )
-                                            }}
                                         >
-                                            {''}
-                                        </ReactTable.Column>
-                                    </ConfigTable.Table>
+                                            {headers.map((header, i) =>
+                                                <ConfigTable.Configurable Key={header} Label={header} Default={true}>
+                                                    <ReactTable.Column<string[]>
+                                                        Key={header}
+                                                        Field={i + 1}
+                                                        AllowSort={false}
+                                                        Content={({ item, field }) => {
+                                                            const mappedField = headerMap.get(header);
+                                                            const matchedField = props.Fields.find(f => f.Field === mappedField);
+                                                            if (matchedField == null) return item[field as number];
+
+                                                            const value = item[field as number];
+                                                            const isValid = matchedField.Validate(value);
+                                                            const feedback = matchedField.Feedback
+                                                            return (
+                                                                <matchedField.EditComponent
+                                                                    Value={value}
+                                                                    SetValue={(val: string) => handleValueChange(parseInt(item[0]), field as number, val)}
+                                                                    Valid={isValid}
+                                                                    Feedback={feedback}
+                                                                />
+                                                            );
+                                                        }}
+                                                    >
+                                                        {getHeader(header)}
+                                                        {getFieldSelect(header)}
+                                                    </ReactTable.Column>
+                                                </ConfigTable.Configurable>
+                                            )}
+                                            <ReactTable.Column<string[]>
+                                                Key={'delete'}
+                                                Field={0}
+                                                AllowSort={false}
+                                                RowStyle={{ textAlign: 'right' }}
+                                                Content={({ item }) => {
+                                                    return (
+                                                        <button className='btn' onClick={() => handleRowDelete(parseInt(item[0]))}>
+                                                            <ReactIcons.TrashCan Color="red" />
+                                                        </button>
+                                                    )
+                                                }}
+                                            >
+                                                {''}
+                                            </ReactTable.Column>
+                                        </ConfigTable.Table>
+                                    </div>
                                 </div>
-                            </div>
-                            <div className='row'>
-                                <div className='col-12'>
-                                    <Paging Current={page + 1} Total={totalPages} SetPage={(p) => setPage(p - 1)} />
+                                <div className='row'>
+                                    <div className='col-12'>
+                                        <Paging Current={page + 1} Total={totalPages} SetPage={(p) => setPage(p - 1)} />
+                                    </div>
                                 </div>
-                            </div>
-                        </>
-                        : null}
+                            </>
+                            : null}
+                    </div>
                 </div>
             </div>
         </>
