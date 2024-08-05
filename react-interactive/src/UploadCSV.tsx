@@ -28,14 +28,14 @@ import { ConfigTable } from './index';
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import { Paging } from '@gpa-gemstone/react-table'
 import ProgressBar from './ProgressBar';
-import { ICSVField } from '@gpa-gemstone/application-typings';
+import { Gemstone } from '@gpa-gemstone/application-typings';
 
 interface IProps<T> {
     /**
      * Array of field definitions used to process and validate CSV data.
      * @type {ICSVField<T>[]}
      */
-    Fields: ICSVField<T>[];
+    Fields: Gemstone.TSX.Interfaces.ICSVField<T>[];
     /** 
     * Step to represent current stage of component
     * @type {'Upload' | 'Process' | 'Complete'}
@@ -178,7 +178,7 @@ export default function UploadCSV<T>(props: IProps<T>) {
         const field = headerMap.get(header);
 
         const updateMap = (head: string, val: string | undefined) => setHeaderMap(new Map(headerMap).set(head, val));
-        const matchedField: ICSVField<T> | undefined = props.Fields.find(f => f.Field === field);
+        const matchedField: Gemstone.TSX.Interfaces.ICSVField<T> | undefined = props.Fields.find(f => f.Field === field);
 
         return <Select<{ Header: string, Value: string | undefined }> Record={{ Header: header, Value: field }} EmptyOption={true} Options={props.Fields.map(field => ({ Value: field.Field as string, Label: field.Label }))} Field="Value"
             Setter={(record) => updateMap(record.Header, record.Value)} Label={' '} Help={matchedField?.Help} />
