@@ -185,6 +185,10 @@ export default function UploadCSV<T>(props: IProps<T>) {
                     if (!field.AllowEmpty && (value == null || value.trim() === ""))
                         errors.push(`All ${field.Label} cannot be empty.`);
 
+                    //Check validity
+                    if(!field.Validate(value))
+                        errors.push(`All ${field.Label} must contain valid values.`)
+
                 });
             });
 
