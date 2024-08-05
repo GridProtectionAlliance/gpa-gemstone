@@ -64,7 +64,7 @@ const Page: React.FunctionComponent<IProps> = (props) => {
         return null;
 
     const linkStyle = {
-        color: isPathActive() ? '#007bff' : '#78828d'
+        color: isPathActive() == true ? '#007bff' : '#78828d'
     }
 
     if (props.Label !== undefined || props.Icon !== undefined) {
