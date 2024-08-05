@@ -28,6 +28,7 @@ import { ConfigTable } from './index';
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import { Paging } from '@gpa-gemstone/react-table'
 import ProgressBar from './ProgressBar';
+import { ICSVField } from '@gpa-gemstone/application-typings';
 
 interface IProps<T> {
     /**
@@ -50,72 +51,6 @@ interface IProps<T> {
      * @param {string[]} errors - Array of error messages.
      */
     SetErrors: (errors: string[]) => void;
-}
-
-export interface ICSVField<T> {
-    /**
-     * The field in the record this definition applies to.
-     * @type {keyof T}
-     */
-    Field: keyof T;
-
-    /**
-     * The label for the field, used for select element.
-     * @type {string}
-     */
-    Label: string;
-
-    /**
-     * Function to validate the field value.
-     * @param {string} value - The value to validate.
-     * @returns {boolean}
-     */
-    Validate: (value: string) => boolean;
-
-    /**
-     * Component for editing the field value.
-     */
-    EditComponent: React.FC<{ Value: string, SetValue: (val: string) => void, Valid: boolean, Feedback?: string }>;
-
-    /**
-     * Optional help text for the select element.
-     * @type {string}
-     * @optional
-     */
-    Help?: string;
-
-    /**
-     * Optional feedback for the EditComponent
-     * @type {string}
-     * @optional
-     */
-    Feedback?: string;
-
-    /**
-     * Function to process the field value and update the record.
-     * @param {string} val - The value to process.
-     * @param {T} record - The record to update.
-     * @returns {T}
-     */
-    Process: (val: string, record: T) => T;
-
-    /**
-     * Flag indicating if the field is required.
-     * @type {boolean}
-     */
-    Required: boolean;
-
-    /**
-     * Flag indicating if the field can be empty.
-     * @type {boolean}
-     */
-    AllowEmpty: boolean;
-
-    /**
-     * Flag indicating if the field values must be unique.
-     * @type {boolean}
-     */
-    Unique: boolean;
 }
 
 const steps = [{ short: 'Upload', long: 'Upload', id: 'Upload' }, { short: 'Process', long: 'Process', id: 'Process' }, { short: 'Complete', long: 'Complete', id: 'Complete' }]
