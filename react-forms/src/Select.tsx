@@ -104,9 +104,15 @@ export default function Select<T>(props: IProps<T>) {
   // Update the parent component's state with the new value.
   function SetRecord(value: string | number): void {
     const record: T = { ...props.Record };
-    if (value !== '') record[props.Field] = value as unknown as T[keyof T];
-    else record[props.Field] = null as unknown as T[keyof T];
-    if (record[props.Field] != props.Record[props.Field]) props.Setter(record);
+    if (value !== ''){
+      const val =  props.Options.find(op => op.Value == value)?.Value ?? value
+      record[props.Field] = val as unknown as T[keyof T];
+    }
+    else
+      record[props.Field] = null as unknown as T[keyof T];
+
+    if (record[props.Field] != props.Record[props.Field])
+      props.Setter(record);
   }
 
   // Rretrieve the current value of the select field from the record.

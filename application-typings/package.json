@@ -38,7 +38,9 @@
     "typescript": "5.5.3"
   },
   "dependencies": {
-    "@types/webpack": "^5.28.0"
+    "@types/webpack": "^5.28.0",
+    "react": "^18.2.0",
+    "@types/react": "^17.0.14"
   },
   "publishConfig": {
     "access": "public"
