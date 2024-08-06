@@ -60,8 +60,6 @@ export function findAppropriateUnit(startTime: moment.Moment, endTime: moment.Mo
         diff = diff / 2;
 
     for (let i = unitIndex; i >= 1; i--) {
-        if (i == 6) // Remove month as appropriate due to innacuracy in definition (31/30/28/29 days)
-            continue;
         if (Number.isInteger(diff)) {
             return [units[i], diff];
         }
