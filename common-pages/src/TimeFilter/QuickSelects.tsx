@@ -271,7 +271,8 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             const t = moment.utc().add(offset, 'minutes').startOf('year');
             return {         
                 start: t.format(getFormat(format)),
-                end: t.endOf('year').format(getFormat(format))
+                unit: 'M',
+                duration: 12
             }
         },
         hideQuickPick: (f) => {
@@ -280,11 +281,12 @@ export const AvailableQuickSelects: IQuickSelect[] = [
     },
     {
         label: 'Last Year', createFilter: (tz, format) => {
-            const offset = momentTZ.tz(moment.utc().startOf('year').subtract(1, 'year').format('YYYY-MM-DDTHH:mm:ss.SSSSS'), tz).utcOffset();
-            const t = moment.utc().add(offset, 'minute').startOf('year').subtract(1, 'year');
+            const offset = momentTZ.tz(moment.utc().startOf('year').format('YYYY-MM-DDTHH:mm:ss.SSSSS'), tz).utcOffset();
+            const t = moment.utc().add(offset, 'minutes').startOf('year');
             return {         
-                start: t.format(getFormat(format)),
-                end: t.endOf('year').format(getFormat(format)),
+                end: t.format(getFormat(format)),
+                unit: 'M',
+                duration: 12
             }
         },
         hideQuickPick: (f) => {
@@ -295,10 +297,10 @@ export const AvailableQuickSelects: IQuickSelect[] = [
         label: 'Last 365 Days', createFilter: (tz, format) => {
             const offset = momentTZ.tz(moment.utc().startOf('day').subtract(182.5, 'days').format('YYYY-MM-DDTHH:mm:ss.SSSSS'), tz).utcOffset();
             const t = moment.utc().add(offset, 'minute').startOf('day');
-            return {         
+            return {        
                 end: t.format(getFormat(format)),
                 unit: 'd',
-                duration: 365,
+                duration: 365
             }
         },
         hideQuickPick: (f) => {

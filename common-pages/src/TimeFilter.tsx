@@ -55,28 +55,28 @@ export function getTimeWindow (flt: ITimeFilter, format?: string){
     }
     else if ('start' in flt && 'duration' in flt){     // type is IStartDuration
         start = getMoment(flt.start, format);
-        const d = moment.duration(flt.duration / 2.0, flt.unit);
-        center = start.clone().add(d);
-        end= center.clone().add(d);
-        unit = flt.unit;
-        duration = flt.duration,
-        halfDuration = duration / 2.0;
+        end = start.clone().add(flt.duration, flt.unit);
+
+        [unit, halfDuration] = findAppropriateUnit(start, end, undefined, true);
+        center = start.clone().add(halfDuration, unit);
+        end = center.clone().add(halfDuration, unit);
+        duration = halfDuration * 2
     }
     else if ('end' in flt && 'duration' in flt){     // type is IEndDuration
         end = getMoment(flt.end, format);
-        const d = moment.duration(flt.duration / 2.0, flt.unit);
-        center = end.clone().subtract(d);
-        start = center.clone().subtract(d);
-        unit = flt.unit;
-        duration = flt.duration,
-        halfDuration = duration / 2.0;
+        start = end.clone().subtract(flt.duration, flt.unit);
+
+        [unit, halfDuration] = findAppropriateUnit(start, end, undefined, true);
+        center = end.clone().subtract(halfDuration, unit);
+        start = center.clone().subtract(halfDuration, unit);
+        duration = halfDuration * 2
     }
     else if ('start' in flt && 'end' in flt){     // type is IStartEnd
         start = getMoment(flt.start, format);
         end = getMoment(flt.end, format);
         [unit, halfDuration] = findAppropriateUnit(start, end, undefined, true);
         const d = moment.duration(halfDuration, unit);
-        center = start.clone().add(d);
+        center = start.clone().add(d.asHours(), 'h');
         duration = halfDuration * 2;
     }
     return {center: center?.format(format) ?? '',
