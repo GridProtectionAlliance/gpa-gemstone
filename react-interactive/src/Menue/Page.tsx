@@ -58,13 +58,14 @@ const Page: React.FunctionComponent<IProps> = (props) => {
         for (const path of props.OtherActivePages!) {
             if (location.pathname.includes(path)) return true;
         }
+        return false;
     }
 
     if (props.RequiredRoles !== undefined && props.RequiredRoles.filter(r => context.userRoles.findIndex(i => i === r) > -1).length === 0)
         return null;
 
     const linkStyle = {
-        color: isPathActive() == true ? '#007bff' : '#78828d'
+        color: isPathActive() ? '#007bff' : '#78828d'
     }
 
     if (props.Label !== undefined || props.Icon !== undefined) {
