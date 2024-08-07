@@ -64,9 +64,7 @@ export function findAppropriateUnit(startTime: moment.Moment, endTime: moment.Mo
             return [units[i], diff];
         }
         let nextI = i - 1;
-        if (nextI == 6)
-            nextI = 5;
-          
+
         diff = endTime.diff(startTime, units[nextI], true);
         if (useHalfWindow !== undefined && useHalfWindow)
             diff = diff / 2;

@@ -297,10 +297,10 @@ export const AvailableQuickSelects: IQuickSelect[] = [
         label: 'Last 365 Days', createFilter: (tz, format) => {
             const offset = momentTZ.tz(moment.utc().startOf('day').subtract(182.5, 'days').format('YYYY-MM-DDTHH:mm:ss.SSSSS'), tz).utcOffset();
             const t = moment.utc().add(offset, 'minute').startOf('day');
-            return {        
+            return {         
                 end: t.format(getFormat(format)),
                 unit: 'd',
-                duration: 365
+                duration: 365,
             }
         },
         hideQuickPick: (f) => {
