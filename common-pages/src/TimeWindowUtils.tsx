@@ -85,11 +85,43 @@ export function findAppropriateUnit(startTime: moment.Moment, endTime: moment.Mo
 * Determines a start time and end time for a window given by center time and duration
 */
 export function getStartEndTime(center: moment.Moment, duration: number, unit: TimeUnit): [moment.Moment, moment.Moment] {
-    const d = moment.duration(duration, unit);
-    const start = center.clone().subtract(d);
-    const end = center.clone().add(d);
+    const start = addDuration(center, -duration, unit);
+    const end = addDuration(center, duration, unit);
     return [start, end]
 }
+
+
+/*
+* Adds duration as hours if duration is not an integer and adds offset from Daylight Savings Time
+*/
+export function addDuration(start: moment.Moment, duration: number, unit: TimeUnit): moment.Moment {
+    let end = start.clone();
+
+    if ((unit == 'M' || unit == 'd' || unit == 'w' || unit == 'y') && Number.isInteger(duration)) {
+        return end.add(duration, unit);        // Don't do any math, duration is already an integer
+    }
+    else if (unit == 'M') {
+        end.add(start.daysInMonth() * duration * 24, 'h');
+    }
+    else if (unit == 'w') {
+        end.add(7 * duration * 24, 'h');
+    }
+    else if (unit == 'd') {
+        end.add(duration * 24, 'h');
+    }
+    else{
+        end.add(duration, unit);
+    }
+
+    return end.add(getDSTAdjustedHours(start, end), 'h');   // Add offset from Daylight savings time
+}
+
+function getDSTAdjustedHours(start: moment.Moment, end: moment.Moment): number {
+    if (!start.isDST() && end.isDST())  return -1;  //subtract an hour
+    else if (start.isDST() && !end.isDST())  return 1;  //Add an hour
+    else return 0;
+}
+
 
 /*
 * Returns a formatted version of date and time provided

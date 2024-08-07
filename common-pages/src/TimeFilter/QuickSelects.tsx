@@ -133,8 +133,8 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             const t = moment.utc().add(offset, 'minutes').startOf('week');
             return {         
                 start: t.format(getFormat(format)),
-                unit: 'h',
-                duration: 7 * 24,
+                unit: 'd',
+                duration: 7
             }
         },
         hideQuickPick: (f) => {
@@ -147,8 +147,8 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             const t = moment.utc().add(offset, 'minutes').startOf('week');
             return {         
                 end: t.format(getFormat(format)),
-                unit: 'h',
-                duration: 7 * 24,
+                unit: 'd',
+                duration: 7
             }
         },
         hideQuickPick: (f) => {
@@ -161,8 +161,8 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             const t = moment.utc().add(offset, 'minutes').startOf('day');
             return {         
                 end: t.format(getFormat(format)),
-                unit: 'h',
-                duration: 7 * 24,
+                unit: 'd',
+                duration: 7
             }
         },
         hideQuickPick: (f) => {
@@ -173,11 +173,10 @@ export const AvailableQuickSelects: IQuickSelect[] = [
         label: 'This Month', createFilter: (tz, format) => {
             const offset = momentTZ.tz(moment.utc().startOf('month').format('YYYY-MM-DDTHH:mm:ss.SSSSS'), tz).utcOffset();
             const t = moment.utc().add(offset, 'minutes').startOf('month');
-            const window = (t.daysInMonth() * 24);
             return {         
                 start: t.format(getFormat(format)),
-                unit: 'h',
-                duration: window,
+                unit: 'd',
+                duration: t.daysInMonth()
             }
         },
         hideQuickPick: (f) => {
@@ -188,11 +187,10 @@ export const AvailableQuickSelects: IQuickSelect[] = [
         label: 'Last Month', createFilter: (tz, format) => {
             const offset = momentTZ.tz(moment.utc().startOf('month').subtract(1, 'month').format('YYYY-MM-DDTHH:mm:ss.SSSSS'), tz).utcOffset();
             const t = moment.utc().add(offset, 'minutes').startOf('month').subtract(1, 'month');
-            const window = (t.daysInMonth() * 24);
             return {         
                 start: t.format(getFormat(format)),
-                unit: 'h',
-                duration: window,
+                unit: 'd',
+                duration: t.daysInMonth()
             }
         },
         hideQuickPick: (f) => {
