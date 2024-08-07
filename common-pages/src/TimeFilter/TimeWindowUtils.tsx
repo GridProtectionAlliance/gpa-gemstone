@@ -62,7 +62,7 @@ export function findAppropriateUnit(startTime: moment.Moment, endTime: moment.Mo
         if (Number.isInteger(diff)) {
             return units[i];
         }
-        const nextI = i - 1;
+        let nextI = i - 1;
 
         diff = endTime.diff(startTime, units[nextI], true);
 
