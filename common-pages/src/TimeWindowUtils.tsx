@@ -60,15 +60,11 @@ export function findAppropriateUnit(startTime: moment.Moment, endTime: moment.Mo
         diff = diff / 2;
 
     for (let i = unitIndex; i >= 1; i--) {
-        if (i == 6) // Remove month as appropriate due to innacuracy in definition (31/30/28/29 days)
-            continue;
         if (Number.isInteger(diff)) {
             return [units[i], diff];
         }
         let nextI = i - 1;
-        if (nextI == 6)
-            nextI = 5;
-          
+
         diff = endTime.diff(startTime, units[nextI], true);
         if (useHalfWindow !== undefined && useHalfWindow)
             diff = diff / 2;
@@ -89,10 +85,31 @@ export function findAppropriateUnit(startTime: moment.Moment, endTime: moment.Mo
 * Determines a start time and end time for a window given by center time and duration
 */
 export function getStartEndTime(center: moment.Moment, duration: number, unit: TimeUnit): [moment.Moment, moment.Moment] {
-    const d = moment.duration(duration, unit);
-    const start = center.clone().subtract(d.asHours(), 'h');
-    const end = center.clone().add(d.asHours(), 'h');
+    const start = addDuration(center, -duration, unit);
+    const end = addDuration(center, duration, unit);
     return [start, end]
+}
+
+
+/*
+* Function to handle adding or subtracting duration
+*/
+export function addDuration(start: moment.Moment, duration: number, unit: TimeUnit): moment.Moment {
+    let t1 = start.clone();
+
+    const floor = duration > 0 ? Math.floor(duration) : Math.ceil(duration);    // if duration is negative, use Math.ceil() to get the floor
+    const ceil = duration > 0 ? Math.ceil(duration) : Math.floor(duration);     // if duration is negative, use Math.floor() to get the ceil
+
+    if (floor == ceil && units.findIndex(u => u == unit) >= 4)          // if duration is integer, add duration without modifying
+        return t1.add(duration, unit); 
+
+    t1.add(floor, unit);       
+
+    const t2 = t1.clone().add(Math.sign(duration), unit);      // Adds a duration of 1 or -1 depending on the sign of input duration
+
+    const hours = t2.diff(t1, 'h', true) * Math.abs(duration - floor)   // Calculates the difference in hours between t2 and t1 and adds to t1
+    return t1.add(hours, 'h');
+
 }
 
 /*

@@ -26,7 +26,7 @@ import * as React from 'react';
 import moment from 'moment';
 import { DatePicker, Select, Input } from '@gpa-gemstone/react-forms'
 import { findAppropriateUnit, getMoment, getStartEndTime, units, IStartEnd, IStartDuration, IEndDuration, 
-    ICenterDuration, readableUnit, TimeUnit } from './TimeWindowUtils';
+    ICenterDuration, readableUnit, addDuration, TimeUnit } from './TimeWindowUtils';
 import { AvailableQuickSelects, getFormat, DateUnit } from './TimeFilter/QuickSelects'
 
 
@@ -55,28 +55,25 @@ export function getTimeWindow (flt: ITimeFilter, format?: string){
     }
     else if ('start' in flt && 'duration' in flt){     // type is IStartDuration
         start = getMoment(flt.start, format);
-        const d = moment.duration(flt.duration / 2.0, flt.unit);
-        center = start.clone().add(d);
-        end= center.clone().add(d);
         unit = flt.unit;
         duration = flt.duration,
         halfDuration = duration / 2.0;
+        center = addDuration(start, halfDuration, unit);
+        end = addDuration(center, halfDuration, unit);
     }
     else if ('end' in flt && 'duration' in flt){     // type is IEndDuration
         end = getMoment(flt.end, format);
-        const d = moment.duration(flt.duration / 2.0, flt.unit);
-        center = end.clone().subtract(d);
-        start = center.clone().subtract(d);
         unit = flt.unit;
         duration = flt.duration,
         halfDuration = duration / 2.0;
+        center = addDuration(end, -halfDuration, unit);
+        start = addDuration(center, -halfDuration, unit);
     }
     else if ('start' in flt && 'end' in flt){     // type is IStartEnd
         start = getMoment(flt.start, format);
         end = getMoment(flt.end, format);
         [unit, halfDuration] = findAppropriateUnit(start, end, undefined, true);
-        const d = moment.duration(halfDuration, unit);
-        center = start.clone().add(d);
+        center = addDuration(start, halfDuration, unit);
         duration = halfDuration * 2;
     }
     return {center: center?.format(format) ?? '',
