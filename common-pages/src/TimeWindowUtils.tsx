@@ -92,36 +92,25 @@ export function getStartEndTime(center: moment.Moment, duration: number, unit: T
 
 
 /*
-* Adds duration as hours if duration is not an integer and adds offset from Daylight Savings Time
+* Function to handle adding or subtracting duration
 */
 export function addDuration(start: moment.Moment, duration: number, unit: TimeUnit): moment.Moment {
-    let end = start.clone();
+    let t1 = start.clone();
 
-    if ((unit == 'M' || unit == 'd' || unit == 'w' || unit == 'y') && Number.isInteger(duration)) {
-        return end.add(duration, unit);        // Don't do any math, duration is already an integer
-    }
-    else if (unit == 'M') {
-        end.add(start.daysInMonth() * duration * 24, 'h');
-    }
-    else if (unit == 'w') {
-        end.add(7 * duration * 24, 'h');
-    }
-    else if (unit == 'd') {
-        end.add(duration * 24, 'h');
-    }
-    else{
-        end.add(duration, unit);
-    }
+    const floor = duration > 0 ? Math.floor(duration) : Math.ceil(duration);    // if duration is negative, use Math.ceil() to get the floor
+    const ceil = duration > 0 ? Math.ceil(duration) : Math.floor(duration);     // if duration is negative, use Math.floor() to get the ceil
 
-    return end.add(getDSTAdjustedHours(start, end), 'h');   // Add offset from Daylight savings time
+    if (floor == ceil && units.findIndex(u => u == unit) >= 4)          // if duration is integer, add duration without modifying
+        return t1.add(duration, unit); 
+
+    t1.add(floor, unit);       
+
+    const t2 = t1.clone().add(Math.sign(duration), unit);      // Adds a duration of 1 or -1 depending on the sign of input duration
+
+    const hours = t2.diff(t1, 'h', true) * Math.abs(duration - floor)   // Calculates the difference in hours between t2 and t1 and adds to t1
+    return t1.add(hours, 'h');
+
 }
-
-function getDSTAdjustedHours(start: moment.Moment, end: moment.Moment): number {
-    if (!start.isDST() && end.isDST())  return -1;  //subtract an hour
-    else if (start.isDST() && !end.isDST())  return 1;  //Add an hour
-    else return 0;
-}
-
 
 /*
 * Returns a formatted version of date and time provided
