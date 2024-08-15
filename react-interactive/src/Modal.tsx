@@ -54,6 +54,8 @@ interface IProps {
     TertiaryBtnClass?: string,
     TertiaryShowToolTip?: boolean,
     TertiaryToolTipContent?: React.ReactNode,
+
+    ZIndex?: number
 }
 
 // Props Description:
@@ -79,7 +81,7 @@ const Modal: React.FunctionComponent<IProps> = (props) => {
 
     return (
         <Portal>
-            <div className={"modal" + (props.Show ? " show" : '')} style={props.Show ? {display: 'block', zIndex: 9990} : {}}>
+            <div className={"modal" + (props.Show ? " show" : '')} style={props.Show ? {display: 'block', zIndex: props.ZIndex ?? 9990} : {}}>
                 <div className={"modal-dialog" + (props.Size === undefined? '' : props.Size === 'xlg'? '' :(" modal-"  + props.Size))} style={props.Size === 'xlg'? {maxWidth: window.innerWidth - 100} : {}}>
                     <div className="modal-content">
                         <div className="modal-header" style={(props.HeaderStyle ?? {})}>
