@@ -132,9 +132,9 @@ namespace OpenXDA {
 
 		export interface RemoteXDAInstance { ID: number, Name: string, Address: string, Frequency: string, UserAccountID: string}
         export interface MetersToDataPush { ID: number, RemoteXDAInstanceID: number, LocalXDAMeterID: number, RemoteXDAMeterID: number, RemoteXDAName: string, RemoteXDAAssetKey: string, Obsfucate: boolean, Synced: boolean}
-        export interface RemoteXDAMeter extends MetersToDataPush { LocalAlias: string, LocalMeterName: string, LocalAssetKey: string}
+        export interface RemoteXDAMeter extends MetersToDataPush { LocalAlias: string, LocalMeterName: string, LocalAssetKey: string, RemoteAlias: string }
         export interface AssetsToDataPush { ID: number, RemoteXDAInstanceID: number, LocalXDAAssetID: number, RemoteXDAAssetID: number, RemoteXDAAssetKey: string, Obsfucate: boolean, Synced: boolean, RemoteAssetCreatedByDataPusher: boolean}
-        export interface RemoteXDAAsset extends AssetsToDataPush { LocalAssetName: string, LocalAssetKey: string}
+        export interface RemoteXDAAsset extends AssetsToDataPush { LocalAssetName: string, LocalAssetKey: string, RemoteAssetName: string, RemoteAssetKey: string }
     }
 }
 export default OpenXDA;
