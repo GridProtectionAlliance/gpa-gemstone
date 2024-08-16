@@ -40,7 +40,7 @@ namespace SystemCenter {
 		export interface ExternalOpenXDAField { ID: number, ParentTable: string, FieldName: string, ExternalDBTableID: number }
 		export interface ValueListGroup { ID: number, Name: string, Description: string, Items?: ValueListItem[]}
 		export interface ValueListItem { ID: number, GroupID: number, AltValue: string, Value: string, SortOrder: number}
-		export interface ChannelGroup { ID: number, Name: string, Description: string, Items?: ChannelGroupDetails[]}
+		export interface ChannelGroup { ID: number, Name: string, Description: string, Items?: number}
                 export interface ChannelGroupDetails { ID: number, ChannelGroupID: number, ChannelGroup: string, MeasurementTypeID: number, MeasurementType: string, MeasurementCharacteristicID: number, MeasurementCharacteristic: string, DisplayName: string, Unit: string}
 		
 		export interface LocationDrawing { ID: number, LocationID: number, Name: string, Link: string, Description: string, Number: string, Category: string }
