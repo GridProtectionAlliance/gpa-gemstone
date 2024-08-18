@@ -34,11 +34,13 @@ import ErrorBoundary from './ErrorBoundary';
 import TimeFilter from './TimeFilter';
 import EventTypeFilter from './EventTypeFilter';
 import EventCharacteristicFilter from './EventCharacteristicFilter';
+import NavBarFilterButton from './NavBarFilterButton';
 
 export {
   TimeFilter,
   EventTypeFilter,
   EventCharacteristicFilter,
+  NavBarFilterButton,
   Setting,
   Note,
   ValueList,
