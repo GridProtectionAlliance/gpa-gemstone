@@ -31,7 +31,7 @@ import { DefaultSearch } from './SearchBar';
 import SelectPopup from './StandardSelectPopup';
 import {DefaultSelects} from './SelectionPopup';
 import ErrorBoundary from './ErrorBoundary';
-import TimeFilter from './TimeFilter';
+import TimeFilter from './TimeFilter/TimeFilter';
 import EventTypeFilter from './EventTypeFilter';
 import EventCharacteristicFilter from './EventCharacteristicFilter';
 

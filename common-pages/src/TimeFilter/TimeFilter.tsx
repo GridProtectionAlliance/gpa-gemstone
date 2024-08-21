@@ -26,8 +26,8 @@ import * as React from 'react';
 import moment from 'moment';
 import { DatePicker, Select, Input } from '@gpa-gemstone/react-forms'
 import { findAppropriateUnit, getMoment, getStartEndTime, units, IStartEnd, IStartDuration, IEndDuration, 
-    ICenterDuration, readableUnit, addDuration, TimeUnit } from './TimeWindowUtils';
-import { AvailableQuickSelects, getFormat, DateUnit } from './TimeFilter/QuickSelects'
+    ICenterDuration, readableUnit, addDuration, TimeUnit } from '../TimeWindowUtils';
+import { AvailableQuickSelects, getFormat, DateUnit } from './QuickSelects'
 
 
 interface ITimeWindow {
@@ -39,20 +39,12 @@ interface ITimeWindow {
     halfDuration: number,
 }
 
-export type ITimeFilter = IStartEnd | IStartDuration | IEndDuration | ICenterDuration
-
+export type ITimeFilter = IStartEnd | IStartDuration | IEndDuration;
 
 // Converts ITimeFilter to an ITimeWindow filter           
 export function getTimeWindow (flt: ITimeFilter, format?: string){
     let center, start, end, unit, duration, halfDuration;
 
-    if ('center' in flt && 'halfDuration' in flt){     // type is ICenterDuration
-        center = getMoment(flt.center, format);
-        [start, end] = getStartEndTime(center, flt.halfDuration, flt.unit);        
-        unit = flt.unit;
-        halfDuration = flt.halfDuration;
-        duration = halfDuration * 2;
-    }
     else if ('start' in flt && 'duration' in flt){     // type is IStartDuration
         start = getMoment(flt.start, format);
         unit = flt.unit;

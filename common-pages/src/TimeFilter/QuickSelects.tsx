@@ -22,7 +22,7 @@
 //       Moved QuickSelects from TimeFilter to new file
 //******************************************************************************************************
 
-import { ITimeFilter } from '../TimeFilter';
+import { ITimeFilter } from './TimeFilter';
 import moment from 'moment';
 import momentTZ from 'moment-timezone';
 
