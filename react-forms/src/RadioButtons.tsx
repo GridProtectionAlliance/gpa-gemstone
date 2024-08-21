@@ -78,7 +78,20 @@ export default function RadioButtons<T>(props: IProps<T>) {
 
     return (
         <div className="form-group" data-help={guid.current}>
-            <label className="form-check-label d-block">{props.Label ?? props.Field}</label>
+            <label className="form-check-label d-block">
+                {props.Label ?? props.Field}
+                {showHelpIcon ?
+                    <>
+                        <div style={{ width: 20, height: 20, borderRadius: '50%', display: 'inline-block', background: '#0D6EFD', marginLeft: 10, textAlign: 'center', fontWeight: 'bold' }}
+                            onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)}>
+                            ?
+                        </div>
+                        <HelperMessage Show={showHelp} Target={guid.current}>
+                            {props.Help}
+                        </HelperMessage>
+                    </>
+                    : null}
+            </label>
             {props.Options.map((option, index) => (
                 <div key={index} className={`form-check ${props.Position == 'vertical' ? '' : 'form-check-inline'}`}>
                     <input
@@ -98,17 +111,6 @@ export default function RadioButtons<T>(props: IProps<T>) {
                     <label className="form-check-label" htmlFor={`${option.Label}-${index}`}>{option.Label}</label>
                 </div>
             ))}
-            {showHelpIcon ?
-                <>
-                    <div style={{ width: 20, height: 20, borderRadius: '50%', display: 'inline-block', background: '#0D6EFD', marginLeft: 10, textAlign: 'center', fontWeight: 'bold' }}
-                        onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)}>
-                        ?
-                    </div>
-                    <HelperMessage Show={showHelp} Target={guid.current}>
-                        {props.Help}
-                    </HelperMessage>
-                </>
-                : null}
         </div>
     );
 
