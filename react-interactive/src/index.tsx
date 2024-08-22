@@ -46,6 +46,7 @@ import BtnDropdown from './DropdownButton';
 import ConfigurableColumn from './ConfigurableTable/ConfigurableColumn';
 import GenericController from './GenericController';
 import LayoutGrid from './LayoutGrid';
+import { useCSVPipeline } from './Pipelines/CSVPipeline';
 import BulkUpload from './BulkUpload'
 import Alert from './Alert'
 
@@ -79,6 +80,7 @@ export {
   BtnDropdown,
   GenericController,
   LayoutGrid,
+  useCSVPipeline,
   BulkUpload,
   Alert
 };
