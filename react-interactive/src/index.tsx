@@ -46,6 +46,7 @@ import BtnDropdown from './DropdownButton';
 import ConfigurableColumn from './ConfigurableTable/ConfigurableColumn';
 import GenericController from './GenericController';
 import LayoutGrid from './LayoutGrid';
+import BulkUpload from './BulkUpload'
 import Alert from './Alert'
 
 const ConfigTable = {
@@ -78,5 +79,6 @@ export {
   BtnDropdown,
   GenericController,
   LayoutGrid,
+  BulkUpload,
   Alert
 };

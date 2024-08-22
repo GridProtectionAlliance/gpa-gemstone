@@ -24,7 +24,9 @@ import * as React from 'react';
 
 namespace Gemstone {
     export namespace TSX {
-        export namespace Types { }
+        export namespace Types {
+            export type BulkUploadStep = ('Upload' | 'Process' | 'Review' | 'Complete')
+        }
         export namespace Interfaces {
             export interface IElementPosition {
                 Top: number,
@@ -32,45 +34,46 @@ namespace Gemstone {
                 Width: number,
                 Height: number
             }
+            export interface ICSVFieldEditProps<T> { Value: string, SetValue: (val: string) => void, Valid: boolean, Feedback?: string, AllRecordValues: Partial<Record<keyof T, string>> }
             export interface ICSVField<T> {
                 /**
                  * The field in the record this definition applies to.
                  * @type {keyof T}
                  */
                 Field: keyof T;
-            
+
                 /**
                  * The label for the field, used for select element.
                  * @type {string}
                  */
                 Label: string;
-            
+
                 /**
                  * Function to validate the field value.
                  * @param {string} value - The value to validate.
                  * @returns {boolean}
                  */
                 Validate: (value: string) => boolean;
-            
+
                 /**
                  * Component for editing the field value.
                  */
-                EditComponent: React.FC<{ Value: string, SetValue: (val: string) => void, Valid: boolean, Feedback?: string }>;
-            
+                EditComponent: (props: ICSVFieldEditProps<T>) => JSX.Element;
+
                 /**
                  * Optional help text for the select element.
                  * @type {string}
                  * @optional
                  */
                 Help?: string;
-            
+
                 /**
                  * Optional feedback for the EditComponent
                  * @type {string}
                  * @optional
                  */
                 Feedback?: string;
-            
+
                 /**
                  * Function to process the field value and update the record.
                  * @param {string} val - The value to process.
@@ -78,19 +81,19 @@ namespace Gemstone {
                  * @returns {T}
                  */
                 Process: (val: string, record: T) => T;
-            
+
                 /**
                  * Flag indicating if the field is required.
                  * @type {boolean}
                  */
                 Required: boolean;
-            
+
                 /**
                  * Flag indicating if the field can be empty.
                  * @type {boolean}
                  */
                 AllowEmpty: boolean;
-            
+
                 /**
                  * Flag indicating if the field values must be unique.
                  * @type {boolean}
@@ -102,7 +105,29 @@ namespace Gemstone {
                 SearchParameter: string,
                 Operator: ('=' | '<>' | '>' | '<' | '>=' | '<=' | 'LIKE' | 'NOT LIKE' | 'IN' | 'NOT IN')
             }
-            
+
+            export interface IPipelineStepProps<T, U = null> {
+                RawFileData: string | null,
+                SetData: (data: T[]) => void,
+                CurrentPipelineStep: number,
+                SetPipelineStep: (step: number) => void,
+                Errors: string[],
+                SetErrors: (errors: string[]) => void,
+                AdditionalProps?: U,
+            }
+
+            export interface IPipelineSteps<T, U = null> {
+                Label: string,
+                UI: (props: IPipelineStepProps<T, U>) => JSX.Element
+                AdditionalProps?: U,
+            }
+
+            export interface IPipeline<T, U = null> {
+                Select: (mimeType: string, fileExtension: string) => boolean; //func to return true when the fileExtension is correct
+                Steps: IPipelineSteps<T, U>[]; //list of steps to go through based on current step,
+                AdditionalUploadUI?: JSX.Element //Additional UI to go under the input element in the Upload stage
+            }
+
         }
     }
 }
