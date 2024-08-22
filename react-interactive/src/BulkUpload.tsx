@@ -1,8 +1,8 @@
 // ******************************************************************************************************
-//  UploadCSV.tsx - Gbtc
+//  BulkUpload.tsx - Gbtc
 //
 //  Copyright © 2024, Grid Protection Alliance.  All Rights Reserved.
-//l
+//
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
 //  The GPA licenses this file to you under the MIT License (MIT), the "License"; you may not use this

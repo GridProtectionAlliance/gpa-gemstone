@@ -1,5 +1,5 @@
 // ******************************************************************************************************
-//  parseCSV.ts - Gbtc
+//  CsvStringToArray.ts - Gbtc
 //
 //  Copyright © 2023, Grid Protection Alliance.  All Rights Reserved.
 //
