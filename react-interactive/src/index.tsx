@@ -46,7 +46,7 @@ import BtnDropdown from './DropdownButton';
 import ConfigurableColumn from './ConfigurableTable/ConfigurableColumn';
 import GenericController from './GenericController';
 import LayoutGrid from './LayoutGrid';
-import UploadCSV from './UploadCSV';
+import Alert from './Alert'
 
 const ConfigTable = {
   Table: ConfigurableTable,
@@ -78,5 +78,5 @@ export {
   BtnDropdown,
   GenericController,
   LayoutGrid,
-  UploadCSV
+  Alert
 };
