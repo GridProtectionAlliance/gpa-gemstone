@@ -260,7 +260,7 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
                                             RowStyle={{ display: 'table-row', width: '100%', height: 'auto' }}
                                             TableStyle={{ width: '100%', height: '100%', tableLayout: 'fixed', marginBottom: 0, display: 'block' }}
                                             TableClass='table'
-                                            ModalZIndex={9982}
+                                            ModalZIndex={9995}
                                         >
                                             {headers.map((header, i) =>
                                                 <ConfigurableColumn Key={header} Label={header} Default={true}>
