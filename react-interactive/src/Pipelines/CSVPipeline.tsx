@@ -247,7 +247,7 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
                                         </div>
                                     </div>
                                 ) : null}
-                                <div className='row flex-grow-1'>
+                                <div className='row flex-grow-1' style={{overflowY: 'hidden'}}>
                                     <div className='col-12 h-100'>
                                         <ConfigurableTable<string[]>
                                             Data={pagedData}

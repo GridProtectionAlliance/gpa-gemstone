@@ -25,7 +25,7 @@ import * as React from 'react';
 import ProgressBar from './ProgressBar';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 
-interface IProps<T, U = null> {
+interface IProps<T> {
     /** 
     * Attribute used to control what type of files are filtered by default in file explorer
     * @type {string}
@@ -35,7 +35,7 @@ interface IProps<T, U = null> {
     * Array of available pipelines to use
     * @type {IPipeline[]}
     * */
-    Pipelines: Gemstone.TSX.Interfaces.IPipeline<T, U>[]
+    Pipelines: Gemstone.TSX.Interfaces.IPipeline<T, any>[]
     /** 
     * React Component to be used in the Review Step
     * @type {React.FC<IReviewProps<T>>}
