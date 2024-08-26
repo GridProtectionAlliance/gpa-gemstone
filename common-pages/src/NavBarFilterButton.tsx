@@ -24,15 +24,15 @@ import React from 'react';
 import 'moment';
 import { OpenXDA, SystemCenter } from '@gpa-gemstone/application-typings';
 
-interface S { ID: number }
-interface IProps<T extends S> {
-    Data: T[],
+type S = SystemCenter.Types.DetailedMeter|SystemCenter.Types.DetailedAsset|SystemCenter.Types.DetailedLocation|OpenXDA.Types.AssetGroup;
+interface IProps<S> {
+    Data: S[],
     Type: ('Meter' | 'Asset' | 'AssetGroup' | 'Station'),
     OnClick: () => void,
     AlternateColors?: { normal: string, selected: string }
 }
 
-function NavbarFilterButton<T extends S>(props: IProps<T>) {
+function NavbarFilterButton(props: IProps<S>) {
     const [hover, setHover] = React.useState<boolean>(false);
     const [rows, setRows] = React.useState<JSX.Element[]>([]);
     const [header, setHeader] = React.useState<JSX.Element|null>(null);
