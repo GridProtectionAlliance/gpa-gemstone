@@ -25,6 +25,7 @@
 //
 //******************************************************************************************************
 import React from 'react';
+import _ from 'lodash';
 import { Input, Select, MultiCheckBoxSelect } from '@gpa-gemstone/react-forms';
 import { OpenXDA } from '@gpa-gemstone/application-typings';
 
@@ -40,7 +41,7 @@ interface IProps {
 interface IPhaseFilters { AN: boolean, BN: boolean, CN: boolean, AB: boolean, BC: boolean, CA: boolean, ABG: boolean, BCG: boolean, ABC: boolean, ABCG: boolean }
 
 interface IEventCharacteristicFilters {
-    durationMin: number, durationMax: number,
+    durationMin?: number, durationMax?: number,
     phases: IPhaseFilters,
     transientMin?: number, transientMax?: number, transientType: ('LL'|'LN'|'both'),
     sagMin?: number, sagMax?: number, sagType: ('LL' | 'LN' | 'both'),
@@ -50,14 +51,9 @@ interface IEventCharacteristicFilters {
 
 const EventCharacteristicFilter = (props: IProps) => {
     const [newEventCharacteristicFilter, setNewEventCharacteristicFilter] = React.useState<IEventCharacteristicFilters>(props.eventCharacteristicFilter);
-
-    const [newTypeFilter, setNewTypeFilter] = React.useState<number[]>([]);
-
     const [newPhases, setNewPhases] = React.useState<{ Value: number, Text: string, Selected: boolean }[]>([]);
 
-
-    React.useEffect(() => { setNewTypeFilter(props.eventTypeFilter) }, [props.eventTypeFilter])
-    React.useEffect(() => { setNewEventCharacteristicFilter(props.eventCharacteristicFilter) }, [props.eventCharacteristicFilter])
+    React.useEffect(() => { setNewEventCharacteristicFilter(props.eventCharacteristicFilter); }, [props.eventCharacteristicFilter])
 
 
     React.useEffect(() => {
@@ -69,8 +65,8 @@ const EventCharacteristicFilter = (props: IProps) => {
 
     React.useEffect(() => {
         const characteristics = validEventCharacteristicsFilter() ? newEventCharacteristicFilter : undefined;
-        props.setEventFilters(characteristics, newTypeFilter);
-    }, [newEventCharacteristicFilter, newTypeFilter]);
+        if (!_.isEqual(characteristics, props.eventCharacteristicFilter)) props.setEventFilters(characteristics);
+    }, [newEventCharacteristicFilter]);
 
 
     function validEventCharacteristicsFilter() {
@@ -102,11 +98,11 @@ const EventCharacteristicFilter = (props: IProps) => {
         const filter = newEventCharacteristicFilter;
 
         if (field == 'durationMin')
-            return NullOrNaN(filter.durationMin) || (filter.durationMin >= 0 && filter.durationMin < 100 &&
-                (NullOrNaN(filter.durationMax) || filter.durationMax >= filter.durationMin))
+            return NullOrNaN(filter.durationMin) || (filter.durationMin! >= 0 && filter.durationMin! < 100 &&
+                (NullOrNaN(filter.durationMax) || filter.durationMax! >= filter.durationMin!))
         if (field == 'durationMax')
-            return NullOrNaN(filter.durationMax) || (filter.durationMax >= 0 && filter.durationMax < 100 &&
-                (NullOrNaN(filter.durationMin) || filter.durationMax >= filter.durationMin))
+            return NullOrNaN(filter.durationMax) || (filter.durationMax! >= 0 && filter.durationMax! < 100 &&
+                (NullOrNaN(filter.durationMin) || filter.durationMax! >= filter.durationMin!))
         if (field == 'sagMin')
             return NullOrNaN(filter.sagMin) || (filter.sagMin! >= 0 && filter.sagMin! < 1 &&
                 (NullOrNaN(filter.sagMax) || filter.sagMax! >= filter.sagMin!))
@@ -130,11 +126,11 @@ const EventCharacteristicFilter = (props: IProps) => {
         return true;
     }
 
-    const sagsSelected = newTypeFilter.find(i => i == props.eventTypes.find(item => item.Name == 'Sag')?.ID ?? -1) != null;
-    const swellsSelected = newTypeFilter.find(i => i == props.eventTypes.find(item => item.Name == 'Swell')?.ID ?? -1) != null;
-    const transientsSelected = newTypeFilter.find(i => i == props.eventTypes.find(item => item.Name == 'Transient')?.ID ?? -1) != null;
+    const sagsSelected = props.eventTypeFilter.find(i => i == props.eventTypes.find(item => item.Name == 'Sag')?.ID ?? -1) != null;
+    const swellsSelected = props.eventTypeFilter.find(i => i == props.eventTypes.find(item => item.Name == 'Swell')?.ID ?? -1) != null;
+    const transientsSelected = props.eventTypeFilter.find(i => i == props.eventTypes.find(item => item.Name == 'Transient')?.ID ?? -1) != null;
 
-    if (newEventCharacteristicFilter === null || newTypeFilter === null) return null;
+    if (newEventCharacteristicFilter === null || props.eventTypeFilter === null) return null;
 
     return (
                     <fieldset className="border" style={{ padding: '10px', height: '100%' }}>
