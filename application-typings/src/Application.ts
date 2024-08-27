@@ -21,23 +21,23 @@
 //
 // ******************************************************************************************************
 namespace Application{
-    export namespace Types{
+	export namespace Types{
 
-        export interface iByComponent {
-            (props: { Roles: Array<SecurityRoleName> }): any;
-        }
+		export interface iByComponent {
+			(props: { Roles: Array<SecurityRoleName> }): any;
+		}
 
-        export interface iApplicationRole<T> {
-    			ID: string,
-    			Name: T,
-    			Description: string,
-    			NodeID: string,
-    			CreatedOn: Date,
-    			CreatedBy: string,
-    			UpdatedOn: Date,
-    			UpdatedBy: string,
-    			Assigned?: boolean
-    		}
+		export interface iApplicationRole<T> {
+			ID: string,
+			Name: T,
+			Description: string,
+			NodeID: string,
+			CreatedOn: Date,
+			CreatedBy: string,
+			UpdatedOn: Date,
+			UpdatedBy: string,
+			Assigned?: boolean
+		}
 
 		export interface iApplicationRoleUserAccount {
 			ID: string,
@@ -58,53 +58,51 @@ namespace Application{
 			ApplicationRoleID: string,
 			SecurityGroupID: string
 		}
-    export interface iUserAccount {
+		export interface iUserAccount {
 			ID: string,
-      Name: string,
-      Password: string,
-      FirstName: string,
-      LastName: string,
-      DefaultNodeID?: string,
-      Phone: string,
-      PhoneConfirmed: boolean,
-      Email: string,
-      EmailConfirmed: boolean,
-      LockedOut: boolean,
-      Approved: boolean,
-      UseADAuthentication: boolean,
-      ChangePasswordOn: string,
-      AccountName?: string
+			Name: string,
+			Password: string,
+			FirstName: string,
+			LastName: string,
+			DefaultNodeID?: string,
+			Phone: string,
+			PhoneConfirmed: boolean,
+			Email: string,
+			EmailConfirmed: boolean,
+			LockedOut: boolean,
+			Approved: boolean,
+			UseADAuthentication: boolean,
+			ChangePasswordOn: string,
+			AccountName?: string
 		}
-    export interface iAdditionalUserFieldValue {
-        ID: number,
-        UserAccountID: string,
-        AdditionalUserFieldID: number,
-        Value: string
-    }
-    export interface iAdditionalUserField {
-      ID: number,
-      FieldName: string,
-      Type: string,
-      IsSecure: boolean
-    }
+		export interface iAdditionalUserFieldValue {
+			ID: number,
+			UserAccountID: string,
+			AdditionalUserFieldID: number,
+			Value: string
+		}
+		export interface iAdditionalUserField {
+			ID: number,
+			FieldName: string,
+			Type: string,
+			IsSecure: boolean
+		}
 
-    export interface iApplicationNode
-    {
-        ID: string,
-        Name: string
-    }
+		export interface iApplicationNode
+		{
+			ID: string,
+			Name: string
+		}
 
-    export type Status = 'loading' | 'idle' | 'error' | 'changed' | 'unintiated';
+		export type Status = 'loading' | 'idle' | 'error' | 'changed' | 'unintiated';
 		export type NewEdit = 'New' | 'Edit'
 
 		export type SecurityRoleName = 'Administrator' | 'Transmission SME' | 'PQ Data Viewer' | 'DataPusher' | 'Developer' | 'Viewer' | 'Engineer';
 		export type AttachedDatabases = 'SystemCenter' | 'OpenXDA' | 'MiMD'
-    }
+	}
 
-    export namespace Lists{
-
-
-    }
+	export namespace Lists{
+	}
 }
 
 

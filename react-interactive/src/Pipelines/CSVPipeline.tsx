@@ -348,7 +348,7 @@ function autoMapHeaders<T>(headers: string[], fields: (Array<keyof T>)) {
 
 const parseCSV = (csvContent: string, hasHeaders: boolean, numOfRequiredFields: number) => {
     const rows: string[][] = CsvStringToArray(csvContent);
-    let headers: string[] = hasHeaders ? rows[0] : [];
+    const headers: string[] = hasHeaders ? rows[0] : [];
     let data: string[][] = hasHeaders ? rows.slice(1) : rows;
     data = data.map((row, index) => [(index).toString(), ...row]); // Add index at the beginning of row
 

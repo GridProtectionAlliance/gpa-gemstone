@@ -25,8 +25,8 @@ export const CsvStringToArray = (strData: string) => {
     const regEx = /(,|\r?\n|\r|^)(?:"([^"]*(?:""[^"]*)*)"|([^,\r\n]*))/gi
     const result: string[][] = [[]]
     let matches;
-    while ((matches = regEx.exec(strData))) {
-        if (matches[1].length && matches[1] !== ',')
+    while ((matches = regEx.exec(strData)) != null) {
+        if (matches[1].length > 0 && matches[1] !== ',')
             result.push([])
         result[result.length - 1].push(matches[2] !== undefined ? matches[2].replace(/""/g, '"') : matches[3])
     }
