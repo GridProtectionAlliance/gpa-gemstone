@@ -110,6 +110,10 @@ interface TableProps<T> {
      * use this for displaying warnings when the Table content gets cut off
      */
     LastRow?: string | React.ReactNode;
+    /**
+     * Optional ZIndex for the configurable column modal
+     */
+    ModalZIndex?: number
 }
 
 interface IProps<T> extends TableProps<T> {
@@ -238,7 +242,7 @@ export default function ConfigurableTable<T>(props: React.PropsWithChildren<IPro
                 <p>Change Columns</p>
             </ToolTip>
             {props.SettingsPortal === undefined ?
-                <Modal Title={'Table Columns'} Show={showSettings} ShowX={true} ShowCancel={false}
+                <Modal Title={'Table Columns'} Show={showSettings} ShowX={true} ShowCancel={false} ZIndex={props.ModalZIndex}
                     CallBack={(conf: boolean) => {
                         setShowSettings(false);
                         if (conf)

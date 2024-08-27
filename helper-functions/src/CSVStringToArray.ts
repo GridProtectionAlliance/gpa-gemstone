@@ -1,7 +1,7 @@
 // ******************************************************************************************************
-//  index.ts - Gbtc
+//  CsvStringToArray.ts - Gbtc
 //
-//  Copyright � 2021, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2023, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -14,29 +14,26 @@
 //  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
 //  License for the specific language governing permissions and limitations.
 //
-//  https://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid
-//
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  01/04/2021 - Billy Ernest
+//  08/21/2024 - Preston Crawford
 //       Generated original version of source code.
 //
 // ******************************************************************************************************
 
-import {CreateGuid} from './CreateGuid';
-import {GetTextWidth} from './GetTextWidth';
-import {GetTextHeight} from './GetTextHeight';
-import {GetNodeSize} from './GetNodeSize';
-import { RandomColor } from './RandomColor';
-import { IsNumber } from './IsNumber';
-import { IsInteger } from './IsInteger';
-import { IsCron } from './IsCron';
-import { SpacedColor } from './SpacedColor';
-import { HsvToHex } from "./HsvToHex";
-import { HexToHsv } from "./HexToHsv";
-import { useEffectWithPrevious } from './React/useEffectWithPrevious';
-import { findLastIndex } from './FindLastIndex'
-import { IsRegex } from './IsRegex';
-import { CsvStringToArray } from './CSVStringToArray';
+export const CsvStringToArray = (strData: string) => {
+    const regEx = /(,|\r?\n|\r|^)(?:"([^"]*(?:""[^"]*)*)"|([^,\r\n]*))/gi
+    const result: string[][] = [[]]
+    let matches;
+    while ((matches = regEx.exec(strData))) {
+        if (matches[1].length && matches[1] !== ',')
+            result.push([])
+        result[result.length - 1].push(matches[2] !== undefined ? matches[2].replace(/""/g, '"') : matches[3])
+    }
 
-export {CreateGuid, GetTextWidth, GetNodeSize, RandomColor, GetTextHeight, IsNumber, IsInteger, IsCron, SpacedColor, HsvToHex, HexToHsv, findLastIndex, useEffectWithPrevious, IsRegex, CsvStringToArray}
+    //Remove trailing empty row
+    if (result.length !== 1 && result?.[result.length - 1]?.length === 1 && result?.[result.length - 1][0] === '')
+        result.pop();
+
+    return result
+}
