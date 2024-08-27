@@ -30,19 +30,19 @@ test('parse CSV with escaped quotes', () => {
 })
 
 test('parse CSV with newlines within quoted fields', () => {
-    const csv = 'Name,Description\nJohn Doe","GPA\nDeveloper"\nJane Smith,"GPA\nDeveloper"';
+    const csv = 'Name,Description\nJohn Doe,"GPA\nDeveloper"\nJane Smith,"GPA\nDeveloper"';
     const expected = [
         ['Name', 'Description'],
         ['John Doe', 'GPA\nDeveloper'],
         ['Jane Smith', 'GPA\nDeveloper']
     ];
     const output = CsvStringToArray(csv)
-    expect(output).toEqual(expected);}
-);
+    expect(output).toEqual(expected);
+});
 
 test('parse CSV with empty fields', () => {
     const csv = 'a,b,c\r\na,,c\r\n,b,';
-    const expected = [['a','b','c'], ['a', '', 'c'], ['', 'b', '']];
+    const expected = [['a', 'b', 'c'], ['a', '', 'c'], ['', 'b', '']];
     const output = CsvStringToArray(csv)
     expect(output).toEqual(expected);
 })
