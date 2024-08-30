@@ -701,14 +701,11 @@ function Header<T>(props: React.PropsWithChildren<IHeaderProps<T>>) {
         }, 
     [props.children],);
 
-    const onMove = React.useCallback (
-        (e: MouseEvent) => {
-            if (currentKeys === undefined) return;
-            const w = mouseDown - e.screenX;
-            setDeltaW(w);
-        },
-        [mouseDown, currentKeys],
-    );
+    const onMove = React.useCallback((e: MouseEvent) => {
+        if (currentKeys === undefined) return;
+        const w = mouseDown - e.screenX;
+        setDeltaW(w);
+    }, [mouseDown, currentKeys]);
 
     return (
         <thead
