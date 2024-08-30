@@ -452,10 +452,9 @@ interface IRowProps<T> {
 function Rows<T>(props: React.PropsWithChildren<IRowProps<T>>) {
     if (props.Data.length === 0) return null;
     
-    const onClick = React.useCallback(
-        (e, item: T, index: number) => {
-            if (props.OnClick !== undefined)
-                props.OnClick(
+    const onClick = React.useCallback((e: React.MouseEvent<HTMLTableRowElement, MouseEvent>, item: T, index: number) => {
+        if (props.OnClick !== undefined)
+            props.OnClick(
                 {
                     colKey: undefined,
                     colField: undefined,
@@ -465,9 +464,7 @@ function Rows<T>(props: React.PropsWithChildren<IRowProps<T>>) {
                 },
                 e,
             );
-        },
-        [props.OnClick],
-    );
+    }, [props.OnClick]);
     
     return (
         <tbody style={props.BodyStyle} className={props.BodyClass}>
