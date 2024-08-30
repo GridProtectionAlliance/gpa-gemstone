@@ -157,12 +157,9 @@ export default function AdjustableTable<T>(props: React.PropsWithChildren<TableP
 
     const [extraWidthPerRow, setExtraWidthPerRow] = React.useState<number>(0);
 
-    const setTableWidth = React.useCallback(
-        _.debounce(() => {
-            setCurrentTableWidth(tblref.current?.offsetWidth ?? 0);
-        }, 500),
-        [],
-    );
+    const setTableWidth = React.useCallback(_.debounce(() => {
+        setCurrentTableWidth(tblref.current?.offsetWidth ?? 0);
+    }, 500), []);
     
     React.useEffect(() => {
         const element = tblref?.current;
@@ -267,15 +264,9 @@ export default function AdjustableTable<T>(props: React.PropsWithChildren<TableP
         }
     }, [props.children]);
     
-    const handleSort = React.useCallback(
-        (
-            data: { colKey: string; colField?: keyof T; ascending: boolean },
-            event: React.MouseEvent<HTMLElement, MouseEvent>,
-        ) => {
+    const handleSort = React.useCallback((data: { colKey: string; colField?: keyof T; ascending: boolean }, event: React.MouseEvent<HTMLElement, MouseEvent>) => {
             if (data.colKey !== null) props.OnSort(data, event);
-        },
-        [props.OnSort],
-    );
+    }, [props.OnSort]);
     
     const setWidth = React.useCallback((colKey: string, key: string | number, width: number, isAuto: boolean, isUndefined: boolean) => {
         if (!autoWidth.current.has(colKey)) {                                     // does the column exist
