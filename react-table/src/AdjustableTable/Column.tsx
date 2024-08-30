@@ -50,7 +50,7 @@ export interface IColumnProps<T> {
      */
     RowStyle?: React.CSSProperties;
     /**
-     * Determines the Content to be displaye
+     * Determines the Content to be displayed
      * @param d the data to be turned into content
      * @returns the content displayed
      */

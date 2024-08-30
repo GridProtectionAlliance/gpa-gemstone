@@ -22,7 +22,7 @@
 //       Refactored to fix sizing issues.
 //
 //  ******************************************************************************************************
-import { SVGIcons } from '@gpa-gemstone/gpa-symbols';
+import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import { GetNodeSize } from '@gpa-gemstone/helper-functions';
 import * as React from 'react';
 import { IColumnProps, IDataWrapperProps, IHeaderWrapperProps } from './Column';
@@ -87,61 +87,52 @@ export function AdjustableColumnHeaderWrapper(props: React.PropsWithChildren<IAd
     }
 
     React.useLayoutEffect(() => {
-
-        
         if (thref.current == null) return;
-        if (mode != 'minWidth') return;
 
-        const w = GetNodeSize(thref.current)?.width;
-        if (w === undefined) return;
+        if (mode == 'minWidth') {
+            const w = GetNodeSize(thref.current)?.width;
+            if (w === undefined) return;
 
-        if (w !== minWidth) {
-            setMinWidth(w);
+            if (w !== minWidth) {
+                setMinWidth(w);
+            }
+
+            if (maxWidth === undefined && style.maxWidth !== undefined) {
+                setMode('maxWidth');
+                
+            } else if (props.width === undefined) {
+                setMode('width');
+            }
         }
 
-        if (maxWidth === undefined && style.maxWidth !== undefined) {
-            setMode('maxWidth');
-            
-        } else if (props.width === undefined) {
-            setMode('width');
-        }
-        
-    });
+        if (mode == 'maxWidth') {
+            const w = GetNodeSize(thref.current)?.width;
+            if (w === undefined) return;
 
-    React.useLayoutEffect(() => {
-        if (thref.current == null) return;
-        if (mode != 'maxWidth') return;
+            if (w !== maxWidth) {
+                setMaxWidth(w);
+            }
 
-        const w = GetNodeSize(thref.current)?.width;
-        if (w === undefined) return;
-
-        if (w !== maxWidth) {
-            setMaxWidth(w);
-        }
-        
-        if (props.width === undefined) {
-            setMode('width');
-        } else if (props.minWidth === undefined && style.minWidth !== undefined) {
-            setMode('minWidth');
-        }
-    
-    });
-
-    React.useLayoutEffect(() => {
-        if (thref.current == null) return;
-        if (mode != 'width') return;
-
-        const w = GetNodeSize(thref.current)?.width;
-        if (w === undefined) return;
-
-        if (props.width === undefined || (w !== (props.width + props.extraWidth))) {
-            props.setWidth(w, isAuto, isUndefined);
+            if (props.width === undefined) {
+                setMode('width');
+            } else if (props.minWidth === undefined && style.minWidth !== undefined) {
+                setMode('minWidth');
+            }
         }
 
-        if (maxWidth === undefined && style.maxWidth !== undefined) {
-            setMode('maxWidth');
-        } else if (minWidth === undefined && style.minWidth !== undefined) {
-            setMode('minWidth');
+        if (mode == 'width') {
+            const w = GetNodeSize(thref.current)?.width;
+            if (w === undefined) return;
+
+            if (props.width === undefined || (w !== (props.width + props.extraWidth))) {
+                props.setWidth(w, isAuto, isUndefined);
+            }
+
+            if (maxWidth === undefined && style.maxWidth !== undefined) {
+                setMode('maxWidth');
+            } else if (minWidth === undefined && style.minWidth !== undefined) {
+                setMode('minWidth');
+            }
         }
     });
 
@@ -151,9 +142,6 @@ export function AdjustableColumnHeaderWrapper(props: React.PropsWithChildren<IAd
     React.useEffect(() => { 
         if (maxWidth !== props.maxWidth) props.setMaxWidth(maxWidth as number);
     }, [maxWidth]);
-    //React.useEffect(() => { 
-    //    if (width !== props.width) props.setWidth(width as number, isAuto, isUndefined);
-    //}, [width]);
 
     const onClick = React.useCallback((e) => {
         if (props.allowSort ?? true) props.onSort(e);
@@ -189,7 +177,7 @@ export function AdjustableColumnHeaderWrapper(props: React.PropsWithChildren<IAd
         ></div>
         {props.sorted ? <div
             style={{ position: 'absolute', width: 25 }}>
-            {props.asc ? SVGIcons.ArrowDropUp : SVGIcons.ArrowDropDown}
+            {props.asc ? <ReactIcons.ArrowDropUp /> : <ReactIcons.ArrowDropDown />}
         </div> : null}
         <div style={{
             marginLeft: (props.sorted ? 25 : 0),
