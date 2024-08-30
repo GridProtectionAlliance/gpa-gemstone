@@ -679,27 +679,25 @@ function Header<T>(props: React.PropsWithChildren<IHeaderProps<T>>) {
         setDeltaW(0);
     };
 
-    const getLeftKey = React.useCallback (
-        (key: string) => {
-            const keys = React.Children.map(props.children ?? [], (element) => {
-                if (!React.isValidElement(element)) {
-                    return null;
-                }
-                if (!(props.AutoWidth.current.get((element.props as IColumnProps<T>).Key)!.enabled) ?? true) {
-                    return null;
-                }
-                if ((element as React.ReactElement<any>).type === AdjustableColumn) {
-                    return (element.props as IColumnProps<T>).Key;
-                }
+    const getLeftKey = React.useCallback((key: string) => {
+        const keys = React.Children.map(props.children ?? [], (element) => {
+            if (!React.isValidElement(element)) {
                 return null;
-            }).filter((item) => item !== null);
+            }
+            if (!(props.AutoWidth.current.get((element.props as IColumnProps<T>).Key)!.enabled) ?? true) {
+                return null;
+            }
+            if ((element as React.ReactElement<any>).type === AdjustableColumn) {
+                return (element.props as IColumnProps<T>).Key;
+            }
+            return null;
+        }).filter((item) => item !== null);
 
-            const index = keys.indexOf(key);
-            if (index < 1) return undefined;
+        const index = keys.indexOf(key);
+        if (index < 1) return undefined;
 
-            return keys[index - 1];
-        }, 
-    [props.children],);
+        return keys[index - 1];
+    }, [props.children]);
 
     const onMove = React.useCallback((e: MouseEvent) => {
         if (currentKeys === undefined) return;
