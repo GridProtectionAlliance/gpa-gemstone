@@ -23,13 +23,14 @@
 import * as React from 'react';
 import Modal from '../Modal';
 import { ReactTable } from '@gpa-gemstone/react-table';
-import { SVGIcons } from '@gpa-gemstone/gpa-symbols';
+import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import { Portal } from 'react-portal';
 import ToolTip from '../ToolTip';
 import { CreateGuid } from '@gpa-gemstone/helper-functions';
 import { CheckBox } from '@gpa-gemstone/react-forms';
 import * as _ from 'lodash';
 import ConfigurableColumn from './ConfigurableColumn';
+import { Alert } from '../Alert';
 
 interface TableProps<T> {
     /**
@@ -47,16 +48,16 @@ interface TableProps<T> {
         event: React.MouseEvent<HTMLElement, MouseEvent>,
     ) => void;
     /**
-    * Key of the collumn to sort by
+    * Key of the column to sort by
     */
     SortKey: string;
     /**
-    * Boolen to indicate whether the sort is ascending or descending
+    * Boolean to indicate whether the sort is ascending or descending
     */
     Ascending: boolean;
     /**
     * Callback when the data should be sorted
-    * @param data the information of the collumn including the Key of the collumn
+    * @param data the information of the collumn including the Key of the column
     * @param event The onCLick event to allow Propagation as needed
     */
     OnSort(data: { colKey: string; colField?: keyof T; ascending: boolean }, event: React.MouseEvent<HTMLElement, MouseEvent>): void;
@@ -111,11 +112,11 @@ interface TableProps<T> {
     */
     KeySelector: (data: T) => string | number;
     
-      /**
-      * Optional Element to display in the last row of the Table
-      * use this for displaying warnings when the Table content gets cut off
-      */
-      LastRow?: string | React.ReactNode;
+    /**
+    * Optional Element to display in the last row of the Table
+    * use this for displaying warnings when the Table content gets cut off
+    */
+    LastRow?: string | React.ReactNode;
     /**
      * Optional ZIndex for the configurable column modal
      */
@@ -243,7 +244,7 @@ export default function ConfigurableTable<T>(props: React.PropsWithChildren<IPro
             id={guid + '-tooltip'}
             onClick={() => setShowSettings(true)}
             >
-            {SVGIcons.Settings}
+                <ReactIcons.Settings />
             </div>
         }
         ReduceWidthCallback={handleReduceWidthCallback}
@@ -404,7 +405,7 @@ export default function ConfigurableTable<T>(props: React.PropsWithChildren<IPro
                 </div>
                 <div>
                 {props.disableAdd ? (
-                    <div className="alert alert-primary mb-0 mt-2">Additional columns disabled due to table size.</div>
+                    <Alert AlertColor='alert-primary' className="mb-0 mt-2">Additional columns disabled due to table size.</Alert>
                 ) : null}
                 </div>
                 </>
