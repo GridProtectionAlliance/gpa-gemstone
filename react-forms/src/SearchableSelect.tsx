@@ -88,10 +88,11 @@ interface IProps<T> {
     *    
     */
     BtnStyle?: React.CSSProperties
+    SearchLabel?: string //used instead of record[field] for options & to have a custom label for searches
 }
 
 export default function SearchableSelect<T>(props: IProps<T>) {
-    const [search, setSearch] = React.useState<string>((props.Record[props.Field] as any).toString());
+    const [search, setSearch] = React.useState<string>((props.SearchLabel ?? props.Record[props.Field] as any).toString());
     const [results, setResults] = React.useState<IStylableOption[]>([]);
     const [loading, setLoading] = React.useState<boolean>(false);
 
@@ -102,17 +103,23 @@ export default function SearchableSelect<T>(props: IProps<T>) {
         return c;
     }, [search])
 
+    React.useEffect(() => {
+        if (props.SearchLabel == null) return
+        setSearch(props.SearchLabel)
+    }, [props.SearchLabel])
+
     const options = React.useMemo(() => {
         const ops = [] as IStylableOption[];
 
         ops.push({
-            Value: props.Record[props.Field], Element: <div className='input-group'>
+            Value: props.Record[props.Field], Element:
+                <div className='input-group'>
                 <input
                     type="text"
                     className="form-control"
                     value={search}
                     onChange={(d) => setSearch(d.target.value)}
-                    onBlur={((props.AllowCustom ?? false) ? () => props.Setter({ ...props.Record, [props.Field]: search }) : () => setSearch((props.Record[props.Field] as any).toString()))}
+                        onBlur={((props.AllowCustom ?? false) ? () => props.Setter({ ...props.Record, [props.Field]: search }) : () => setSearch(props.SearchLabel ?? (props.Record[props.Field] as any).toString()))}
                 />
                 {loading ?
                     <div className="input-group-append">
@@ -122,22 +129,22 @@ export default function SearchableSelect<T>(props: IProps<T>) {
             </div>
         })
 
-        ops.push(...results.filter(f => f.Value !== search && f.Value !== props.Record[props.Field]));
-
         if (!(props.AllowCustom ?? false))
-            ops.push({ Value: 'search-' + props.Record[props.Field], Element: <p>{props.Record[props.Field]}</p> });
+            ops.push({ Value: 'search-' + props.Record[props.Field], Element: <p>{props.SearchLabel ?? props.Record[props.Field]}</p> });
 
         if (props.AllowCustom ?? false)
             ops.push({ Value: search, Element: <p>{search}</p> });
 
+        ops.push(...results.filter(f => f.Value !== search && f.Value !== props.Record[props.Field]));
+
         return ops;
-    }, [search, props.Record[props.Field], results, props.Disabled, loading]);
+    }, [search, props.Record[props.Field], results, props.Disabled, loading, props.SearchLabel]);
 
     const update = React.useCallback((record: T) => {
         if ((record[props.Field] as any).toString().startsWith('search-') as boolean)
             return;
-        props.Setter(record); setSearch((record[props.Field] as any).toString())
-    }, [props.Setter, props.Field])
+        setSearch(props.SearchLabel ?? (record[props.Field] as any).toString())
+    }, [props.Setter, props.Field, props.SearchLabel])
 
     return <StylableSelect<T>
         Record={props.Record}
