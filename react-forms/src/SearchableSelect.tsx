@@ -26,6 +26,7 @@ import HelperMessage from './HelperMessage';
 import { CreateGuid } from '@gpa-gemstone/helper-functions';
 import StylableSelect, { IOption as IStylableOption } from './StylableSelect';
 import styled, { keyframes } from 'styled-components';
+import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 interface IOption { Value: string; Label: string }
 
 interface IProps<T> {
@@ -80,6 +81,13 @@ interface IProps<T> {
     * @optional
     */
     Style?: React.CSSProperties;
+    /**
+    * CSS style to apply to the button holding the selected value
+    * @type {React.CSSProperties}
+    * @optional
+    *    
+    */
+    BtnStyle?: React.CSSProperties
 }
 
 export default function SearchableSelect<T>(props: IProps<T>) {
@@ -96,8 +104,10 @@ export default function SearchableSelect<T>(props: IProps<T>) {
 
     const options = React.useMemo(() => {
         const r = [] as IStylableOption[];
+
         if (props.AllowCustom ?? false)
             r.push({ Value: search, Element: <p>{search}</p> });
+
         r.push({
             Value: props.Record[props.Field], Element: <div className='input-group'>
                 <input
@@ -107,12 +117,16 @@ export default function SearchableSelect<T>(props: IProps<T>) {
                     onChange={(d) => setSearch(d.target.value)}
                     onBlur={((props.AllowCustom ?? false) ? () => props.Setter({ ...props.Record, [props.Field]: search }) : () => setSearch((props.Record[props.Field] as any).toString()))}
                 />
-                <div className="input-group-append">
-                    <span className="input-group-text"><Icon /></span>
-                </div>
+                {loading ?
+                    <div className="input-group-append">
+                        <span className="input-group-text"><ReactIcons.SpiningIcon /></span>
+                    </div>
+                    : null}
             </div>
         })
+
         r.push(...results.filter(f => f.Value !== search && f.Value !== props.Record[props.Field]));
+
         if (!(props.AllowCustom ?? false))
             r.push({ Value: 'search-' + props.Record[props.Field], Element: <p>{props.Record[props.Field]}</p> });
         return r;
@@ -133,22 +147,7 @@ export default function SearchableSelect<T>(props: IProps<T>) {
         Help={props.Help}
         Style={props.Style}
         Options={options}
+        BtnStyle={props.BtnStyle}
     />;
 }
-
-
-const spin = keyframes`
- 0% { transform: rotate(0deg); }
- 100% { transform: rotate(360deg); }
-`;
-
-
-const Icon = styled.div`
-	animation: ${spin} 1s linear infinite;
-	border: 5px solid #f3f3f3;
-	border-Top: 5px solid #555;
-	border-Radius: 50%;
-	width: 25px;
-	height: 25px
-`;
 
