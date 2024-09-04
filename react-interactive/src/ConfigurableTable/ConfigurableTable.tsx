@@ -30,7 +30,7 @@ import { CreateGuid } from '@gpa-gemstone/helper-functions';
 import { CheckBox } from '@gpa-gemstone/react-forms';
 import * as _ from 'lodash';
 import ConfigurableColumn from './ConfigurableColumn';
-import { Alert } from '../Alert';
+import Alert from '../Alert';
 
 interface TableProps<T> {
     /**
@@ -111,7 +111,7 @@ interface TableProps<T> {
     * @returns a unique Key
     */
     KeySelector: (data: T) => string | number;
-    
+
     /**
     * Optional Element to display in the last row of the Table
     * use this for displaying warnings when the Table content gets cut off
@@ -170,7 +170,7 @@ export default function ConfigurableTable<T>(props: React.PropsWithChildren<IPro
     const [hover, setHover] = React.useState<boolean>(false);
     const [guid] = React.useState<string>(CreateGuid());
     const [widthDisabledAdd, setWidthDisabledAdd] = React.useState<boolean>(false);
-    
+
     const handleReduceWidthCallback = React.useCallback((hiddenKeys: string[]) => {
         if (hiddenKeys.length !== 0) {
             setWidthDisabledAdd(true);
@@ -178,15 +178,15 @@ export default function ConfigurableTable<T>(props: React.PropsWithChildren<IPro
             setWidthDisabledAdd(false);
         }
     }, []);
-    
+
     React.useEffect(() => {
         if (props.OnSettingsChange !== undefined) props.OnSettingsChange(showSettings);
     }, [showSettings]);
-    
+
     React.useEffect(() => {
         saveLocal();
     }, [columns]);
-    
+
     /**
     *
     * @returns
@@ -196,14 +196,14 @@ export default function ConfigurableTable<T>(props: React.PropsWithChildren<IPro
         const currentState = localStorage.getItem(props.LocalStorageKey);
         let currentKeys: string[] = [];
         if (currentState !== null) currentKeys = currentState.split(',');
-        
+
         const allKeys = Array.from(columns.keys());
         currentKeys = currentKeys.filter((k) => !allKeys.includes(k));
         const enabled = Array.from(columns.keys()).filter((k) => columns.get(k)?.Enabled);
         currentKeys.push(...enabled);
         localStorage.setItem(props.LocalStorageKey, currentKeys.join(','));
     }
-    
+
     function changeColumns(key: string) {
         setColumns((d) => {
             const u = _.cloneDeep(d);
@@ -211,16 +211,16 @@ export default function ConfigurableTable<T>(props: React.PropsWithChildren<IPro
             return u;
         });
     }
-    
+
     function checkLocal(key: string | undefined): boolean {
         if (props.LocalStorageKey === undefined) return false;
         const keys = localStorage.getItem(props.LocalStorageKey);
         if (keys === null) return false;
-        
+
         const activeKeys = keys.split(',');
         return activeKeys.includes(key ?? '');
     }
-    
+
     /**
     *     * Determines if a column is enabled by default, required, or was saved in the users preferences
     *     * @param c Column to check
@@ -231,184 +231,183 @@ export default function ConfigurableTable<T>(props: React.PropsWithChildren<IPro
         const isLocal = checkLocal(c?.Key) && !skipLocal;
         return (c?.Default ?? false) || isSort || isLocal;
     }
-    
+
     return (
         <>
-        <ReactTable.Table
-        {...props}
-        LastColumn={
-            <div
-            style={{ marginLeft: -5, marginBottom: 12 }}
-            onMouseEnter={() => setHover(true)}
-            onMouseLeave={() => setHover(false)}
-            id={guid + '-tooltip'}
-            onClick={() => setShowSettings(true)}
+            <ReactTable.Table
+                {...props}
+                LastColumn={
+                    <div
+                        style={{ marginLeft: -5, marginBottom: 12 }}
+                        onMouseEnter={() => setHover(true)}
+                        onMouseLeave={() => setHover(false)}
+                        id={guid + '-tooltip'}
+                        onClick={() => setShowSettings(true)}
+                    >
+                        <ReactIcons.Settings />
+                    </div>
+                }
+                ReduceWidthCallback={handleReduceWidthCallback}
             >
-                <ReactIcons.Settings />
-            </div>
-        }
-        ReduceWidthCallback={handleReduceWidthCallback}
-        >
-        {React.Children.map(props.children, (element) => {
-            if (!React.isValidElement(element)) return null;
-            if ((element as React.ReactElement<any>).type === ConfigurableColumn)
-                return columns.get(element.props.Key)?.Enabled ?? false ? element.props.children : null;
-            return element;
-        })}
-        </ReactTable.Table>
-        <ToolTip Show={hover} Position={'bottom'} Theme={'dark'} Target={guid + '-tooltip'} Zindex={99999}>
-        <p>Change Columns</p>
-        </ToolTip>
-        {props.SettingsPortal === undefined ? (
-            <Modal
-            Title={'Table Columns'}
-            Show={showSettings}
-            ShowX={true}
-            ShowCancel={false} ZIndex={props.ModalZIndex}
-            CallBack={(conf: boolean) => {
-                setShowSettings(false);
-                if (conf)
-                    setColumns((d) => {
-                    const u = _.cloneDeep(d);
-                    Array.from(d.keys()).forEach((k) => {
-                        u.get(k)!.Enabled = isEnabled(u.get(k), true) ?? true;
-                    });
-                    return u;
-                });
-            }}
-            ConfirmText={'Reset Defaults'}
-            ConfirmBtnClass={'btn-primary float-left'}
-            >
-            {/*maxCollumns ? <div className="alert alert-primary">
+                {React.Children.map(props.children, (element) => {
+                    if (!React.isValidElement(element)) return null;
+                    if ((element as React.ReactElement<any>).type === ConfigurableColumn)
+                        return columns.get(element.props.Key)?.Enabled ?? false ? element.props.children : null;
+                    return element;
+                })}
+            </ReactTable.Table>
+            <ToolTip Show={hover} Position={'bottom'} Theme={'dark'} Target={guid + '-tooltip'} Zindex={99999}>
+                <p>Change Columns</p>
+            </ToolTip>
+            {props.SettingsPortal === undefined ? (
+                <Modal
+                    Title={'Table Columns'}
+                    Show={showSettings}
+                    ShowX={true}
+                    ShowCancel={false} ZIndex={props.ModalZIndex}
+                    CallBack={(conf: boolean) => {
+                        setShowSettings(false);
+                        if (conf)
+                            setColumns((d) => {
+                                const u = _.cloneDeep(d);
+                                Array.from(d.keys()).forEach((k) => {
+                                    u.get(k)!.Enabled = isEnabled(u.get(k), true) ?? true;
+                                });
+                                return u;
+                            });
+                    }}
+                    ConfirmText={'Reset Defaults'}
+                    ConfirmBtnClass={'btn-primary float-left'}
+                >
+                    {/*maxCollumns ? <div className="alert alert-primary">
                 Due to the size of the browser window only {Math.floor(tblWidth / minWidth)} columns can be displayed. Please remove some columns before adding more.
                 </div> : null*/}
-                <ColumnSelection
-                columns={Array.from(columns.values())}
-                onChange={changeColumns}
-                sortKey={props.SortKey}
-                disableAdd={widthDisabledAdd}
-                />
+                    <ColumnSelection
+                        columns={Array.from(columns.values())}
+                        onChange={changeColumns}
+                        sortKey={props.SortKey}
+                        disableAdd={widthDisabledAdd}
+                    />
                 </Modal>
             ) : showSettings ? (
                 <Portal node={document?.getElementById(props.SettingsPortal)}>
-                <div className="card">
-                <div className="card-header">
-                <h4 className="modal-title">Table Columns</h4>
-                <button type="button" className="close" onClick={() => setShowSettings(false)}>
-                &times;
-                </button>
-                </div>
-                <div className="card-body" style={{ maxHeight: 'calc(100% - 210px)', overflowY: 'auto' }}>
-                {/*maxCollumns ? <div className="alert alert-primary">
+                    <div className="card">
+                        <div className="card-header">
+                            <h4 className="modal-title">Table Columns</h4>
+                            <button type="button" className="close" onClick={() => setShowSettings(false)}>
+                                &times;
+                            </button>
+                        </div>
+                        <div className="card-body" style={{ maxHeight: 'calc(100% - 210px)', overflowY: 'auto' }}>
+                            {/*maxCollumns ? <div className="alert alert-primary">
                     Due to the size of the browser window only {Math.floor(tblWidth / minWidth)} columns can be displayed. Please remove some columns before adding more.
                     </div> : null*/}
-                    <ColumnSelection
-                    columns={Array.from(columns.values())}
-                    onChange={changeColumns}
-                    sortKey={props.SortKey}
-                    disableAdd={widthDisabledAdd}
-                    />
+                            <ColumnSelection
+                                columns={Array.from(columns.values())}
+                                onChange={changeColumns}
+                                sortKey={props.SortKey}
+                                disableAdd={widthDisabledAdd}
+                            />
+                        </div>
+                        <div className="card-footer">
+                            <button
+                                type="button"
+                                className={'btn btn-primary float-left'}
+                                onClick={() => {
+                                    setShowSettings(false);
+                                    setColumns((d) => {
+                                        const u = _.cloneDeep(d);
+                                        Array.from(d.keys()).forEach((k) => {
+                                            u.get(k)!.Enabled = isEnabled(u.get(k), true) ?? true;
+                                        });
+                                        return u;
+                                    });
+                                }}
+                            >
+                                Reset Defaults
+                            </button>
+                        </div>
                     </div>
-                    <div className="card-footer">
-                    <button
-                    type="button"
-                    className={'btn btn-primary float-left'}
-                    onClick={() => {
-                        setShowSettings(false);
-                        setColumns((d) => {
-                            const u = _.cloneDeep(d);
-                            Array.from(d.keys()).forEach((k) => {
-                                u.get(k)!.Enabled = isEnabled(u.get(k), true) ?? true;
-                            });
-                            return u;
-                        });
-                    }}
-                    >
-                    Reset Defaults
-                    </button>
-                    </div>
-                    </div>
-                    </Portal>
-                ) : null}
-                </>
-            );
-        }
-        interface IColSelectionProps<> {
-            requiredColumns?: string[];
-            columns: IColDesc[];
-            onChange: (key: string) => void;
-            sortKey: string;
-            disableAdd: boolean;
-        }
-        
-        function ColumnSelection(props: IColSelectionProps) {
-            return (
-                <>
-                <div className="row">
+                </Portal>
+            ) : null}
+        </>
+    );
+}
+interface IColSelectionProps<> {
+    requiredColumns?: string[];
+    columns: IColDesc[];
+    onChange: (key: string) => void;
+    sortKey: string;
+    disableAdd: boolean;
+}
+
+function ColumnSelection(props: IColSelectionProps) {
+    return (
+        <>
+            <div className="row">
                 <div className="col-4">
-                {props.columns.map((c: IColDesc, i: number) =>
-                    i % 3 == 0 ? (
-                        <CheckBox
-                        Label={c.Label}
-                        Field={'Enabled'}
-                        Record={c}
-                        Setter={() => props.onChange(c.Key)}
-                        key={c.Key}
-                        Disabled={c.Key == props.sortKey || (props.disableAdd && !c.Enabled)}
-                        Help={
-                            c.Key == props.sortKey
-                            ? 'The Table is currently sorted by this column so it cannot be hidden.'
-                            : undefined
-                        }
-                        />
-                    ) : null,
-                )}
-                </div>
-                <div className="col-4">
-                {props.columns.map((c: IColDesc, i: number) =>
-                    i % 3 == 1 ? (
-                        <CheckBox
-                        Label={c.Label}
-                        Field={'Enabled'}
-                        Record={c}
-                        Setter={() => props.onChange(c.Key)}
-                        key={c.Key}
-                        Disabled={c.Key == props.sortKey || (props.disableAdd && !c.Enabled)}
-                        Help={
-                            c.Key == props.sortKey
-                            ? 'The Table is currently sorted by this column so it cannot be hidden.'
-                            : undefined
-                        }
-                        />
-                    ) : null,
-                )}
+                    {props.columns.map((c: IColDesc, i: number) =>
+                        i % 3 == 0 ? (
+                            <CheckBox
+                                Label={c.Label}
+                                Field={'Enabled'}
+                                Record={c}
+                                Setter={() => props.onChange(c.Key)}
+                                key={c.Key}
+                                Disabled={c.Key == props.sortKey || (props.disableAdd && !c.Enabled)}
+                                Help={
+                                    c.Key == props.sortKey
+                                        ? 'The Table is currently sorted by this column so it cannot be hidden.'
+                                        : undefined
+                                }
+                            />
+                        ) : null,
+                    )}
                 </div>
                 <div className="col-4">
-                {props.columns.map((c: IColDesc, i: number) =>
-                    i % 3 == 2 ? (
-                        <CheckBox
-                        Label={c.Label}
-                        Field={'Enabled'}
-                        Record={c}
-                        Setter={() => props.onChange(c.Key)}
-                        key={c.Key}
-                        Disabled={c.Key == props.sortKey || (props.disableAdd && !c.Enabled)}
-                        Help={
-                            c.Key == props.sortKey
-                            ? 'The Table is currently sorted by this column so it cannot be hidden.'
-                            : undefined
-                        }
-                        />
-                    ) : null,
-                )}
+                    {props.columns.map((c: IColDesc, i: number) =>
+                        i % 3 == 1 ? (
+                            <CheckBox
+                                Label={c.Label}
+                                Field={'Enabled'}
+                                Record={c}
+                                Setter={() => props.onChange(c.Key)}
+                                key={c.Key}
+                                Disabled={c.Key == props.sortKey || (props.disableAdd && !c.Enabled)}
+                                Help={
+                                    c.Key == props.sortKey
+                                        ? 'The Table is currently sorted by this column so it cannot be hidden.'
+                                        : undefined
+                                }
+                            />
+                        ) : null,
+                    )}
                 </div>
+                <div className="col-4">
+                    {props.columns.map((c: IColDesc, i: number) =>
+                        i % 3 == 2 ? (
+                            <CheckBox
+                                Label={c.Label}
+                                Field={'Enabled'}
+                                Record={c}
+                                Setter={() => props.onChange(c.Key)}
+                                key={c.Key}
+                                Disabled={c.Key == props.sortKey || (props.disableAdd && !c.Enabled)}
+                                Help={
+                                    c.Key == props.sortKey
+                                        ? 'The Table is currently sorted by this column so it cannot be hidden.'
+                                        : undefined
+                                }
+                            />
+                        ) : null,
+                    )}
                 </div>
-                <div>
+            </div>
+            <div>
                 {props.disableAdd ? (
-                    <Alert AlertColor='alert-primary' className="mb-0 mt-2">Additional columns disabled due to table size.</Alert>
+                    <Alert AlertColor='alert-primary' Style={{ marginBottom: 0, marginTop: '0.5em' }}>Additional columns disabled due to table size.</Alert>
                 ) : null}
-                </div>
-                </>
-            );
-        }
-        
+            </div>
+        </>
+    );
+}
