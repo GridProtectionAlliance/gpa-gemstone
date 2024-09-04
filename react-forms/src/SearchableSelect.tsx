@@ -103,12 +103,9 @@ export default function SearchableSelect<T>(props: IProps<T>) {
     }, [search])
 
     const options = React.useMemo(() => {
-        const r = [] as IStylableOption[];
+        const ops = [] as IStylableOption[];
 
-        if (props.AllowCustom ?? false)
-            r.push({ Value: search, Element: <p>{search}</p> });
-
-        r.push({
+        ops.push({
             Value: props.Record[props.Field], Element: <div className='input-group'>
                 <input
                     type="text"
@@ -125,11 +122,15 @@ export default function SearchableSelect<T>(props: IProps<T>) {
             </div>
         })
 
-        r.push(...results.filter(f => f.Value !== search && f.Value !== props.Record[props.Field]));
+        ops.push(...results.filter(f => f.Value !== search && f.Value !== props.Record[props.Field]));
 
         if (!(props.AllowCustom ?? false))
-            r.push({ Value: 'search-' + props.Record[props.Field], Element: <p>{props.Record[props.Field]}</p> });
-        return r;
+            ops.push({ Value: 'search-' + props.Record[props.Field], Element: <p>{props.Record[props.Field]}</p> });
+
+        if (props.AllowCustom ?? false)
+            ops.push({ Value: search, Element: <p>{search}</p> });
+
+        return ops;
     }, [search, props.Record[props.Field], results, props.Disabled, loading]);
 
     const update = React.useCallback((record: T) => {
