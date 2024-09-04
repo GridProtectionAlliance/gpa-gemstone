@@ -76,6 +76,13 @@ interface IProps<T> {
     * @optional
   */
   Style?: React.CSSProperties;
+  /**
+   * CSS style to apply to the button holding the selected value
+    * @type {React.CSSProperties}
+    * @optional
+    *    
+    */
+   BtnStyle?: React.CSSProperties
 }
 
 export default function StylableSelect<T>(props: IProps<T>){
@@ -121,7 +128,7 @@ export default function StylableSelect<T>(props: IProps<T>){
   }, [props.Record, props.Options]);
 
   return (
-    <div ref={stylableSelect} style={{ position: 'absolute', display: 'inline-block', width: 'inherit' }}>
+    <div ref={stylableSelect} style={{ position: 'relative', display: 'inline-block', width: 'inherit' }}>
       {/* Label and help icon rendering */}
       {(props.Label !== "") ?
         <label>{props.Label === undefined ? props.Field : props.Label} 
@@ -137,7 +144,7 @@ export default function StylableSelect<T>(props: IProps<T>){
       {/* Dropdown toggle button */}
       <button
         type="button"
-        style={{ border: '1px solid #ced4da', padding: '.375rem .75rem', fontSize: '1rem', borderRadius: '.25rem' }}
+        style={{ border: '1px solid #ced4da', padding: '.375rem .75rem', fontSize: '1rem', borderRadius: '.25rem', ...(props.BtnStyle ?? {})}}
         data-help={guid}
         className="btn form-control dropdown-toggle"
         onClick={HandleShow}
