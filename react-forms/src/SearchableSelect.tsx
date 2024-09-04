@@ -114,19 +114,19 @@ export default function SearchableSelect<T>(props: IProps<T>) {
         ops.push({
             Value: props.Record[props.Field], Element:
                 <div className='input-group'>
-                <input
-                    type="text"
-                    className="form-control"
-                    value={search}
-                    onChange={(d) => setSearch(d.target.value)}
+                    <input
+                        type="text"
+                        className="form-control"
+                        value={search}
+                        onChange={(d) => setSearch(d.target.value)}
                         onBlur={((props.AllowCustom ?? false) ? () => props.Setter({ ...props.Record, [props.Field]: search }) : () => setSearch(props.SearchLabel ?? (props.Record[props.Field] as any).toString()))}
-                />
-                {loading ?
-                    <div className="input-group-append">
-                        <span className="input-group-text"><ReactIcons.SpiningIcon /></span>
-                    </div>
-                    : null}
-            </div>
+                    />
+                    {loading ?
+                        <div className="input-group-append">
+                            <span className="input-group-text"><ReactIcons.SpiningIcon /></span>
+                        </div>
+                        : null}
+                </div>
         })
 
         if (!(props.AllowCustom ?? false))
@@ -141,8 +141,14 @@ export default function SearchableSelect<T>(props: IProps<T>) {
     }, [search, props.Record[props.Field], results, props.Disabled, loading, props.SearchLabel]);
 
     const update = React.useCallback((record: T) => {
-        if ((record[props.Field] as any).toString().startsWith('search-') as boolean)
+        if ((record[props.Field] as any).toString().startsWith('search-') as boolean){
+            const value = (record[props.Field] as any).toString().replace('search-', '')
+            props.Setter({...record, [props.Field]: value})
+            setSearch(props.SearchLabel ?? value)
             return;
+        }
+
+        props.Setter(record);
         setSearch(props.SearchLabel ?? (record[props.Field] as any).toString())
     }, [props.Setter, props.Field, props.SearchLabel])
 
