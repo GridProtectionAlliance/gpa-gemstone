@@ -23,36 +23,39 @@
 //******************************************************************************************************
 import moment from 'moment';
 
+/**
+ * Interface represents picking a time based on Start Date and End Date
+ */
 export interface IStartEnd {
     start: string;
     end: string;
 }
+/**
+ * Interface represents picking a time based on Start Date and Duration
+ */
 export interface IStartDuration {
     start: string;
     duration: number;
     unit: TimeUnit;
 }
+/**
+ * Interface represents picking a time based on End Date and Duration
+ */
 export interface IEndDuration {
     end: string,
     duration: number;
     unit: TimeUnit;
 }
-export interface ICenterDuration {
-    center: string;
-    halfDuration: number;
-    unit: TimeUnit;
-}
 
-export type TimeUnit = 'y'|'M'|'w'|'d'|'h'|'m'|'s'|'ms'
-export const units = ['ms','s','m','h','d','w','M','y'] as TimeUnit[]
+export type TimeUnit = 'y' | 'M' | 'w' | 'd' | 'h' | 'm' | 's' | 'ms'
+export const units = ['ms', 's', 'm', 'h', 'd', 'w', 'M', 'y'] as TimeUnit[]
 
-/*
+/**
 * A Function to determine the most appropriate unit for a window of time specified by start and end time
 */
 export function findAppropriateUnit(startTime: moment.Moment, endTime: moment.Moment, unit?: TimeUnit, useHalfWindow?: boolean): [TimeUnit, number] {
-
     let unitIndex = units.findIndex(u => u == unit);
-    if (unit === undefined) 
+    if (unit === undefined)
         unitIndex = 7;
 
     let diff = endTime.diff(startTime, units[unitIndex], true);
@@ -75,13 +78,12 @@ export function findAppropriateUnit(startTime: moment.Moment, endTime: moment.Mo
                 diff = diff / 2;
             return [units[i], Math.round(diff)];
         }
-            
     }
 
     return [units[0], Math.round(diff)];
 }
 
-/*
+/**
 * Determines a start time and end time for a window given by center time and duration
 */
 export function getStartEndTime(center: moment.Moment, duration: number, unit: TimeUnit): [moment.Moment, moment.Moment] {
@@ -90,8 +92,7 @@ export function getStartEndTime(center: moment.Moment, duration: number, unit: T
     return [start, end]
 }
 
-
-/*
+/**
 * Function to handle adding or subtracting duration
 */
 export function addDuration(start: moment.Moment, duration: number, unit: TimeUnit): moment.Moment {
@@ -101,18 +102,18 @@ export function addDuration(start: moment.Moment, duration: number, unit: TimeUn
     const ceil = duration > 0 ? Math.ceil(duration) : Math.floor(duration);     // if duration is negative, use Math.floor() to get the ceil
 
     if (floor == ceil && units.findIndex(u => u == unit) >= 4)          // if duration is integer, add duration without modifying
-        return t1.add(duration, unit); 
+        return t1.add(duration, unit);
 
-    t1.add(floor, unit);       
+    t1.add(floor, unit);
 
-    const t2 = t1.clone().add(Math.sign(duration), unit);      // Adds a duration of 1 or -1 depending on the sign of input duration
+    const t2 = t1.clone().add(Math.sign(duration), unit);               // Adds a duration of 1 or -1 depending on the sign of input duration
 
     const hours = t2.diff(t1, 'h', true) * Math.abs(duration - floor)   // Calculates the difference in hours between t2 and t1 and adds to t1
     return t1.add(hours, 'h');
 
 }
 
-/*
+/**
 * Returns a formatted version of date and time provided
 */
 export function getMoment(date: string, format?: string, time?: string) {
@@ -121,8 +122,7 @@ export function getMoment(date: string, format?: string, time?: string) {
     return moment(date + ' ' + time, 'MM/DD/YYYY HH:mm:ss.SSS');
 }
 
-
-/*
+/**
 * Returns a unit string based on unit char input
 */
 export function readableUnit(unit: TimeUnit) {
