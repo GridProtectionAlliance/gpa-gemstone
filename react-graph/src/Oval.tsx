@@ -175,12 +175,12 @@ const Oval = (props: IProps) => {
         const isWithinHorizontalBounds = xClickTransformed >= x1Transformed && xClickTransformed <= x2Transformed;
         const isWithinVerticalBounds = yClickTransformed >= yTransformed - props.Radius && yClickTransformed <= yTransformed + props.Radius;
 
-        if (isWithinHorizontalBounds && isWithinVerticalBounds) 
+        if (isWithinHorizontalBounds && isWithinVerticalBounds)
             props.OnClick({
                 setYDomain: context.SetYDomain as React.SetStateAction<[number, number][]>,
                 setTDomain: context.SetXDomain as React.SetStateAction<[number, number]>
             });
-        
+
     }
 
     // Render null if coordinates are not valid, otherwise render the circle / text
@@ -189,10 +189,12 @@ const Oval = (props: IProps) => {
 
     return (
         <g>
-            <ellipse
-                cx={context.XTransformation((props.Data[0] + props.Data[1]) / 2)}
-                cy={context.YTransformation(props.Data[2], AxisMap.get(props.Axis))}
-                rx={Math.abs(context.XTransformation(props.Data[1]) - context.XTransformation(props.Data[0])) / 2}
+            <rect
+                x={context.XTransformation(props.Data[0]) - props.Radius}
+                y={context.YTransformation(props.Data[2], AxisMap.get(props.Axis)) - props.Radius}
+                width={Math.abs(context.XTransformation(props.Data[1]) - context.XTransformation(props.Data[0])) + (2 * props.Radius)}
+                height={2 * props.Radius}
+                rx={props.Radius}
                 ry={props.Radius}
                 fill={props.Color}
                 opacity={props.Opacity}
@@ -201,27 +203,6 @@ const Oval = (props: IProps) => {
                 onClick={(e) => onClick(e.clientX, e.clientY)}
             />
 
-            <circle
-                cx={context.XTransformation(props.Data[0])}
-                cy={context.YTransformation(props.Data[2], AxisMap.get(props.Axis))}
-                r={props.Radius / 4}
-                fill={props.CircleColor ?? props.Color}
-                opacity={props.Opacity}
-                stroke={props.BorderColor}
-                strokeWidth={props.BorderThickness}
-                onClick={(e) => onClick(e.clientX, e.clientY)}
-            />
-
-            <circle
-                cx={context.XTransformation(props.Data[1])}
-                cy={context.YTransformation(props.Data[2], AxisMap.get(props.Axis))}
-                r={props.Radius / 4}
-                fill={props.CircleColor ?? props.Color}
-                opacity={props.Opacity}
-                stroke={props.BorderColor}
-                strokeWidth={props.BorderThickness}
-                onClick={(e) => onClick(e.clientX, e.clientY)}
-            />
 
             {props.Text !== undefined ? <text fill={'black'}
                 style={{ fontSize: textSize + 'em', textAnchor: 'middle', dominantBaseline: 'middle' }}
