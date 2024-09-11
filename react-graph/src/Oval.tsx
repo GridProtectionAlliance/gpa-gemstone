@@ -43,13 +43,6 @@ export interface IProps {
     Color: string,
 
     /**
-     * Fill color of the circles at the ends of the oval. If not provided, the `Color` prop is used as the default.
-     * @optional
-     * @type {string}
-     */
-    CircleColor?: string,
-
-    /**
      * The vertical radius of the oval.
      * @type {number}
      */
@@ -171,8 +164,8 @@ const Oval = (props: IProps) => {
         const xClickTransformed = context.XTransformation(xClick);
         const yClickTransformed = context.YTransformation(yClick, axis);
 
-        const x1Transformed = context.XTransformation(props.Data[0]);
-        const x2Transformed = context.XTransformation(props.Data[1]);
+        const x1Transformed = context.XTransformation(props.Data[0]) - props.Radius;
+        const x2Transformed = context.XTransformation(props.Data[1]) + props.Radius;
         const yTransformed = context.YTransformation(props.Data[2], axis);
 
         const isWithinHorizontalBounds = xClickTransformed >= x1Transformed && xClickTransformed <= x2Transformed;
@@ -183,7 +176,6 @@ const Oval = (props: IProps) => {
                 setYDomain: context.SetYDomain as React.SetStateAction<[number, number][]>,
                 setTDomain: context.SetXDomain as React.SetStateAction<[number, number]>
             });
-
     }
 
     // Render null if coordinates are not valid, otherwise render the circle / text
