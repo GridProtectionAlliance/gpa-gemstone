@@ -138,17 +138,20 @@ const Oval = (props: IProps) => {
             return;
 
         let tSize = 5;
+        const ovalWidth = Math.abs(context.XTransformation(props.Data[1]) - context.XTransformation(props.Data[0])) + (2 * props.Radius); 
+        const ovalHeight = 2 * props.Radius; 
+
         let dX = GetTextWidth("Segoe UI", tSize + "em", props.Text);
         let dY = GetTextHeight("Segoe UI", tSize + "em", props.Text);
 
-        while ((dX > 2 * props.Radius || dY > 2 * props.Radius) && tSize > 0.05) {
+        while ((dX > ovalWidth || dY > ovalHeight) && tSize > 0.05) {
             tSize = tSize - 0.01;
             dX = GetTextWidth("Segoe UI", tSize + "em", props.Text);
             dY = GetTextHeight("Segoe UI", tSize + "em", props.Text);
         }
         setTextSize(tSize);
 
-    }, [props.Text, props.Radius])
+    }, [props.Text, props.Radius, context.XTransformation, props.Data])
 
     // Set up a click handler if provided in props
     React.useEffect(() => {
