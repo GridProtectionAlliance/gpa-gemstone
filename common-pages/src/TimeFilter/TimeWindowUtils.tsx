@@ -53,14 +53,10 @@ export const units = ['ms', 's', 'm', 'h', 'd', 'w', 'M', 'y'] as TimeUnit[]
 /**
 * A Function to determine the most appropriate unit for a window of time specified by start and end time
 */
-export function findAppropriateUnit(startTime: moment.Moment, endTime: moment.Moment, unit?: TimeUnit, useHalfWindow?: boolean): [TimeUnit, number] {
-    let unitIndex = units.findIndex(u => u == unit);
-    if (unit === undefined)
-        unitIndex = 7;
+export function findAppropriateUnit(startTime: moment.Moment, endTime: moment.Moment): [TimeUnit, number] {
+    let unitIndex = 7;
 
     let diff = endTime.diff(startTime, units[unitIndex], true);
-    if (useHalfWindow !== undefined && useHalfWindow)
-        diff = diff / 2;
 
     for (let i = unitIndex; i >= 1; i--) {
         if (Number.isInteger(diff)) {
@@ -69,13 +65,9 @@ export function findAppropriateUnit(startTime: moment.Moment, endTime: moment.Mo
         let nextI = i - 1;
 
         diff = endTime.diff(startTime, units[nextI], true);
-        if (useHalfWindow !== undefined && useHalfWindow)
-            diff = diff / 2;
 
         if (diff > 65000) {
             diff = endTime.diff(startTime, units[i], true);
-            if (useHalfWindow !== undefined && useHalfWindow)
-                diff = diff / 2;
             return [units[i], Math.round(diff)];
         }
     }
