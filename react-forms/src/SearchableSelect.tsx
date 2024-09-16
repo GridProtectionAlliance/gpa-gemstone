@@ -22,11 +22,9 @@
 // ******************************************************************************************************
 
 import * as React from 'react';
-import HelperMessage from './HelperMessage';
-import { CreateGuid } from '@gpa-gemstone/helper-functions';
 import StylableSelect, { IOption as IStylableOption } from './StylableSelect';
-import styled, { keyframes } from 'styled-components';
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
+
 interface IOption { Value: string; Label: string }
 
 interface IProps<T> {
