@@ -102,7 +102,7 @@ export default function DateTimePicker<T>(props: IProps<T>) {
     })
 
     React.useEffect(() => {
-        if (showOverlay){
+        if (showOverlay) {
             window.addEventListener('click', onWindowClick);
             return () => { window.removeEventListener('click', onWindowClick); }
         }

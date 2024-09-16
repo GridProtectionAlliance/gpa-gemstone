@@ -43,7 +43,7 @@ const EventTypeFilter: React.FC<IProps> = (props: IProps) => {
 
     React.useEffect(() => setEvtTypeCategories(_.uniq(props.EventTypes.map(e => e.Category)).map(c => ({ label: c ?? '', height: 0 }))), [props.EventTypes]);
     React.useEffect(() => {
-        if (props.Height == undefined){
+        if (props.Height == undefined) {
             setnCol(1);
             return;
         }
@@ -72,7 +72,7 @@ const EventTypeFilter: React.FC<IProps> = (props: IProps) => {
     }, [evtTypeCategories, props.Height]);
 
     function generateCollumn(colIndex: number) {
-        let flts: ICategory[] = [];      
+        let flts: ICategory[] = [];
 
         if (props.Height != undefined) {
             let navHeight = props.Height;
@@ -107,8 +107,8 @@ const EventTypeFilter: React.FC<IProps> = (props: IProps) => {
             {flts.map(c => (<EventSearchTypeCategory key={c.label} Label={c.label} SelectedID={props.SelectedTypeID}
                 SelectAll={(selected) => {
                     props.SetSelectedTypeIDs(
-                        selected ? props.SelectedTypeID.filter(id => props.EventTypes.find(t => id == t.ID && (t.Category ?? '') == c.label) == null) 
-                        : _.uniq([...props.SelectedTypeID, ...props.EventTypes.filter(t => (t.Category ?? '') == c.label).map(i => i.ID)])
+                        selected ? props.SelectedTypeID.filter(id => props.EventTypes.find(t => id == t.ID && (t.Category ?? '') == c.label) == null)
+                            : _.uniq([...props.SelectedTypeID, ...props.EventTypes.filter(t => (t.Category ?? '') == c.label).map(i => i.ID)])
                     );
                 }}
                 Data={props.EventTypes.filter(et => (et.Category ?? '') == c.label)}
@@ -118,7 +118,7 @@ const EventTypeFilter: React.FC<IProps> = (props: IProps) => {
                     );
                 }}
                 SetHeight={(h) => setHeight(c.label, h)} />))}
-        </li> 
+        </li>
     }
 
     function setHeight(label: string, h: number) {
@@ -131,17 +131,16 @@ const EventTypeFilter: React.FC<IProps> = (props: IProps) => {
             })
     }
     return (
-        <ul className="navbar-nav mr-auto" style={{width: "100%"}}>
+        <ul className="navbar-nav mr-auto" style={{ width: "100%" }}>
             {Array.from({ length: nCol }, (_, i) => i).map(c => generateCollumn(c))}
         </ul>);
-    
 }
 
 interface ICategoryProps {
     Label: string,
     SetHeight: (h: number) => void,
     Data: OpenXDA.Types.EventType[],
-    SelectedID:number[],
+    SelectedID: number[],
     OnChange: (record: OpenXDA.Types.EventType, selected: boolean) => void
     SelectAll: (selected: boolean) => void
 }
@@ -149,7 +148,7 @@ interface ICategoryProps {
 const EventSearchTypeCategory = (props: ICategoryProps) => {
     const formRef = React.useRef<HTMLFieldSetElement>(null);
 
-    React.useLayoutEffect(() => props.SetHeight(formRef?.current?.offsetHeight ?? 0) )
+    React.useLayoutEffect(() => props.SetHeight(formRef?.current?.offsetHeight ?? 0))
 
     return <fieldset className="border" style={{ padding: '10px' }} ref={formRef}>
         <legend className="w-auto" style={{ fontSize: 'large' }}>{(props.Label != null && props.Label.length > 0 ? props.Label : 'Other Types')}:
@@ -157,22 +156,23 @@ const EventSearchTypeCategory = (props: ICategoryProps) => {
                 onClick={() => {
                     const isSelected = props.Data.filter(item => props.SelectedID.find(i => i == item.ID) == null).length == 0;
                     props.SelectAll(isSelected);
-                    
                 }}>
                 ({props.Data.filter(item => props.SelectedID.find(i => i == item.ID) == null).length == 0 ? 'un' : ''}select all)
             </a>
         </legend>
         <form>
             <ul style={{ listStyleType: 'none', padding: 0, position: 'relative', float: 'left' }}>
-                {props.Data.map((item) => <li key={item.ID}>
-                    <label>
-                        <input type="checkbox"
-                            onChange={(e) => {
-                                props.OnChange(item, e.target.checked);
-                            }} checked={props.SelectedID.find(i => i == item.ID) != null} />
-                        {item.Description}
-                    </label>
-                </li>)}
+                {props.Data.map((item) =>
+                    <li key={item.ID}>
+                        <label>
+                            <input type="checkbox"
+                                onChange={(e) => {
+                                    props.OnChange(item, e.target.checked);
+                                }} checked={props.SelectedID.find(i => i == item.ID) != null} />
+                            {item.Description}
+                        </label>
+                    </li>
+                )}
             </ul>
         </form>
     </fieldset>

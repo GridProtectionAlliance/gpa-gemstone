@@ -49,6 +49,7 @@ export interface IEndDuration {
 
 export type TimeUnit = 'y' | 'M' | 'w' | 'd' | 'h' | 'm' | 's' | 'ms'
 export const units = ['ms', 's', 'm', 'h', 'd', 'w', 'M', 'y'] as TimeUnit[]
+export const dateTimeFormat = 'DD MM YYYY hh:mm:ss.SSS';
 
 /**
 * A Function to determine the most appropriate unit for a window of time specified by start and end time
@@ -76,15 +77,6 @@ export function findAppropriateUnit(startTime: moment.Moment, endTime: moment.Mo
 }
 
 /**
-* Determines a start time and end time for a window given by center time and duration
-*/
-export function getStartEndTime(center: moment.Moment, duration: number, unit: TimeUnit): [moment.Moment, moment.Moment] {
-    const start = addDuration(center, -duration, unit);
-    const end = addDuration(center, duration, unit);
-    return [start, end]
-}
-
-/**
 * Function to handle adding or subtracting duration
 */
 export function addDuration(start: moment.Moment, duration: number, unit: TimeUnit): moment.Moment {
@@ -103,15 +95,6 @@ export function addDuration(start: moment.Moment, duration: number, unit: TimeUn
     const hours = t2.diff(t1, 'h', true) * Math.abs(duration - floor)   // Calculates the difference in hours between t2 and t1 and adds to t1
     return t1.add(hours, 'h');
 
-}
-
-/**
-* Returns a formatted version of date and time provided
-*/
-export function getMoment(date: string, format?: string, time?: string) {
-    if (time === undefined)
-        return moment(date, format ?? 'MM/DD/YYYY HH:mm:ss.SSS');
-    return moment(date + ' ' + time, 'MM/DD/YYYY HH:mm:ss.SSS');
 }
 
 /**
