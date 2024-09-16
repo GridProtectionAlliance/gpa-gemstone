@@ -24,6 +24,9 @@
 import { CreateGuid } from '@gpa-gemstone/helper-functions';
 import * as React from 'react';
 import HelperMessage from './HelperMessage';
+import { Gemstone } from '@gpa-gemstone/application-typings';
+import { Portal } from 'react-portal';
+import * as _ from 'lodash';
 
 interface IProps {
   /**
@@ -60,14 +63,40 @@ interface IProps {
 
 const MultiSelect = (props: IProps) => {
   // State hooks for managing the visibility of the dropdown and help message.
+  const multiSelect = React.useRef<HTMLDivElement>(null);
+  const selectTable = React.useRef<HTMLTableElement>(null);
+
   const [show, setShow] = React.useState<boolean>(false);
   const [showHelp, setShowHelp] = React.useState<boolean>(false);
   const [showItems, setShowItems] = React.useState<boolean>(false);
   const [guid, setGuid] = React.useState<string>("");
-  const multiSelect = React.useRef<HTMLDivElement>(null);
   const showLabel = React.useMemo(() => props.Label !== "", [props.Label]);
   const showHelpIcon = React.useMemo(() => props.Help !== undefined, [props.Help]);
   const selectedOptions = React.useMemo(() => props.Options.filter(opt => opt.Selected), [props.Options]);
+  const [position, setPosition] = React.useState<Gemstone.TSX.Interfaces.IElementPosition>({ Top: 0, Left: 0, Width: 0, Height: 0 });
+
+  React.useEffect(() => {
+    const updatePosition = _.debounce(() => {
+      if (multiSelect.current != null) {
+        const rect = multiSelect.current.getBoundingClientRect();
+        setPosition({ Top: rect.bottom, Left: rect.left, Width: rect.width, Height: rect.height });
+      }
+    }, 200);
+  
+    if (show) {
+      updatePosition();
+  
+      window.addEventListener('scroll', updatePosition, true);
+      window.addEventListener('resize', updatePosition);
+  
+      return () => {
+        window.removeEventListener('scroll', updatePosition, true);
+        window.removeEventListener('resize', updatePosition);
+        updatePosition.cancel();
+      };
+    }
+  
+  }, [show]);
 
   // Effect to generate a unique ID for the component.
   React.useEffect(() => {
@@ -76,6 +105,8 @@ const MultiSelect = (props: IProps) => {
 
   // Handle showing and hiding of the dropdown.
   function HandleShow(evt: React.MouseEvent<HTMLButtonElement, MouseEvent> | MouseEvent) {
+    if(selectTable.current != null && selectTable.current.contains(evt.target as Node)) return;
+
     if (multiSelect.current === null) setShow(!show);
     else if (!(multiSelect.current as HTMLDivElement).contains(evt.target as Node)) setShow(false);
     else setShow(true);
@@ -136,57 +167,61 @@ const MultiSelect = (props: IProps) => {
           Selected
         </button>
         {/* Dropdown menu */}
-        <div
-          style={{
-            maxHeight: window.innerHeight * 0.75,
-            overflowY: 'auto',
-            padding: '10 5',
-            display: show ? 'block' : 'none',
-            position: 'absolute',
-            backgroundColor: '#fff',
-            color: 'black',
-            boxShadow: '0px 8px 16px 0px rgba(0,0,0,0.2)',
-            zIndex: 401,
-            minWidth: '100%',
-          }}
-        >
-          {/* Table for checkboxes and options */}
-          <table className="table" style={{ margin: 0 }}>
-            <tbody>
-              {/* Checkbox for selecting/deselecting all options */}
-              <tr
-                onClick={(evt) => {
-                  evt.preventDefault();
-                  props.OnChange(
-                    evt,
-                    props.Options.filter(
-                      (x) => x.Selected === (props.Options.filter((o) => o.Selected).length === props.Options.length),
-                    ),
-                  );
-                }}
-              >
-                <td>
-                  <input
-                    type="checkbox"
-                    checked={props.Options.filter((x) => x.Selected).length === props.Options.length}
-                    onChange={() => null}
-                  />
-                </td>
-                <td>All</td>
-              </tr>
-
-              {/* Checkboxes for individual options */}
-              {props.Options.map((f, i) => (
-                <tr key={i} onClick={(evt) => props.OnChange(evt, [f])}>
+        <Portal>
+          <div
+            style={{
+              maxHeight: window.innerHeight - position.Top,
+              overflowY: 'auto',
+              padding: '10 5',
+              display: show ? 'block' : 'none',
+              position: 'absolute',
+              backgroundColor: '#fff',
+              color: 'black',
+              boxShadow: '0px 8px 16px 0px rgba(0,0,0,0.2)',
+              zIndex: 9999,
+              top: `${position.Top}px`,
+              left: `${position.Left}px`,
+              width: `${position.Width}px`
+            }}
+          >
+            {/* Table for checkboxes and options */}
+            <table className="table" style={{ margin: 0 }} ref={selectTable}>
+              <tbody>
+                {/* Checkbox for selecting/deselecting all options */}
+                <tr
+                  onClick={(evt) => {
+                    evt.preventDefault();
+                    props.OnChange(
+                      evt,
+                      props.Options.filter(
+                        (x) => x.Selected === (props.Options.filter((o) => o.Selected).length === props.Options.length),
+                      ),
+                    );
+                  }}
+                >
                   <td>
-                    <input type="checkbox" checked={f.Selected} onChange={() => null} />
+                    <input
+                      type="checkbox"
+                      checked={props.Options.filter((x) => x.Selected).length === props.Options.length}
+                      onChange={() => null}
+                    />
                   </td>
-                  <td>{f.Text}</td>
+                  <td>All</td>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+
+                {/* Checkboxes for individual options */}
+                {props.Options.map((f, i) => (
+                  <tr key={i} onClick={(evt) => props.OnChange(evt, [f])}>
+                    <td>
+                      <input type="checkbox" checked={f.Selected} onChange={() => null} />
+                    </td>
+                    <td>{f.Text}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </Portal>
       </div>
     </div>
   );
