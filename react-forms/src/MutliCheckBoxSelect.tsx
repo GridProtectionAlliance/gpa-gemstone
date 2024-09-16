@@ -59,7 +59,7 @@ interface IProps {
 }
 
 const MultiSelect = (props: IProps) => {
-    // State hooks for managing the visibility of the dropdown and help message.
+  // State hooks for managing the visibility of the dropdown and help message.
   const [show, setShow] = React.useState<boolean>(false);
   const [showHelp, setShowHelp] = React.useState<boolean>(false);
   const [showItems, setShowItems] = React.useState<boolean>(false);
@@ -67,13 +67,13 @@ const MultiSelect = (props: IProps) => {
   const multiSelect = React.useRef<HTMLDivElement>(null);
   const showLabel = React.useMemo(() => props.Label !== "", [props.Label]);
   const showHelpIcon = React.useMemo(() => props.Help !== undefined, [props.Help]);
-  const selectedOptions = React.useMemo(()=> props.Options.filter(opt => opt.Selected), [props.Options]);
+  const selectedOptions = React.useMemo(() => props.Options.filter(opt => opt.Selected), [props.Options]);
 
   // Effect to generate a unique ID for the component.
   React.useEffect(() => {
     setGuid(CreateGuid());
   }, []);
-    
+
   // Handle showing and hiding of the dropdown.
   function HandleShow(evt: React.MouseEvent<HTMLButtonElement, MouseEvent> | MouseEvent) {
     if (multiSelect.current === null) setShow(!show);
@@ -93,42 +93,42 @@ const MultiSelect = (props: IProps) => {
     <div className="form-group">
       {/* Rendering label and help icon */}
       {showLabel || showHelpIcon ?
-        <label>{showLabel ? 
-      (props.Label === undefined ? 'Select' : props.Label) 
-      : ''} 
-          {showHelpIcon? 
-            <div 
+        <label>{showLabel ?
+          (props.Label === undefined ? 'Select' : props.Label)
+          : ''}
+          {showHelpIcon ?
+            <div
               style={{ width: 20, height: 20, borderRadius: '50%', display: 'inline-block', background: '#0D6EFD', marginLeft: 10, textAlign: 'center', fontWeight: 'bold' }}
-              onMouseEnter={() => setShowHelp(true)} 
-              onMouseLeave={() => setShowHelp(false)}> ? 
-            </div> 
-          : null}
+              onMouseEnter={() => setShowHelp(true)}
+              onMouseLeave={() => setShowHelp(false)}> ?
+            </div>
+            : null}
         </label> : null
       }
-      
-      {showHelpIcon? 
+
+      {showHelpIcon ?
         <HelperMessage Show={showHelp} Target={guid}>
           {props.Help}
         </HelperMessage>
-      : null}
-    {(props.ItemTooltip ?? 'no-tip') !== 'no-tip' ? 
-      <HelperMessage Show={showItems} Target={guid} Background={props.ItemTooltip === 'dark' ? "#222" :'#fff'} Color={props.ItemTooltip === 'dark' ? "#fff" :'#222'}>
-        <p>Selected Options:</p>
-        {selectedOptions.slice(0,10).map(opt => <p>{opt.Text}</p>)}
-        {selectedOptions.length > 10 ? <p>{`and ${selectedOptions.length - 10} other(s)`}</p> : null}
-      </HelperMessage>
-    : null}
+        : null}
+      {(props.ItemTooltip ?? 'no-tip') !== 'no-tip' ?
+        <HelperMessage Show={showItems} Target={guid} Background={props.ItemTooltip === 'dark' ? "#222" : '#fff'} Color={props.ItemTooltip === 'dark' ? "#fff" : '#222'}>
+          <p>Selected Options:</p>
+          {selectedOptions.slice(0, 10).map(opt => <p>{opt.Text}</p>)}
+          {selectedOptions.length > 10 ? <p>{`and ${selectedOptions.length - 10} other(s)`}</p> : null}
+        </HelperMessage>
+        : null}
 
       {/* Rendering the dropdown */}
       <div ref={multiSelect} style={{ position: 'relative', display: 'block', width: 'inherit' }}>
         <button
-        data-help={guid}
+          data-help={guid}
           type="button"
           style={{ border: '1px solid #ced4da', padding: '.375rem .75rem', fontSize: '1rem', borderRadius: '.25rem' }}
           className="btn form-control dropdown-toggle"
           onClick={HandleShow}
-        onMouseEnter={() => setShowItems(true)}
-        onMouseLeave={() => setShowItems(false)}
+          onMouseEnter={() => setShowItems(true)}
+          onMouseLeave={() => setShowItems(false)}
         >
           {props.Options.filter((x) => x.Selected).length !== props.Options.length
             ? props.Options.filter((x) => x.Selected).length
@@ -144,7 +144,7 @@ const MultiSelect = (props: IProps) => {
             display: show ? 'block' : 'none',
             position: 'absolute',
             backgroundColor: '#fff',
-          color: 'black',
+            color: 'black',
             boxShadow: '0px 8px 16px 0px rgba(0,0,0,0.2)',
             zIndex: 401,
             minWidth: '100%',
