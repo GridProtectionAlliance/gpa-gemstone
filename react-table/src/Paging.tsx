@@ -32,8 +32,16 @@ export default function (props: IProps) {
     const [pages, setPages] = React.useState<number[]>([]);
 
     const nPages = 7;
-    const minPg = React.useMemo(() => Math.min(...pages), [pages]);
-    const maxPg = React.useMemo(() => Math.max(...pages), [pages]);
+    const minPg = React.useMemo(() => {
+        const min = Math.min(...pages);
+        if (isFinite(min) && !isNaN(min)) return min;
+        return 0;
+    }, [pages]);
+    const maxPg = React.useMemo(() => {
+        const max = Math.max(...pages);
+        if (isFinite(max) && !isNaN(max)) return max;
+        return 0
+    }, [pages]);
 
     React.useEffect(() => {
         const display = [];
@@ -45,12 +53,11 @@ export default function (props: IProps) {
             display.push(p);
             p = p + 1;
         }
-        
         setPages(display);
     }, [props.Total, props.Current]);
 
     return <ul className="pagination justify-content-center">
-        <li className={"page-item" + (minPg == 1 ? ' disabled' : "")} key="previous">
+        <li className={"page-item" + (minPg <= 1 ? ' disabled' : "")} key="previous">
             <a className="page-link" onClick={() => {
                 if (minPg > 1)
                     props.SetPage(Math.max(props.Current - nPages,1))
