@@ -1,6 +1,6 @@
 {
   "name": "@gpa-gemstone/common-pages",
-  "version": "0.0.113",
+  "version": "0.0.114",
   "description": "Common UI pages for GPA products",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -47,8 +47,8 @@
     "@gpa-gemstone/application-typings": "0.0.75",
     "@gpa-gemstone/gpa-symbols": "0.0.40",
     "@gpa-gemstone/helper-functions": "0.0.33",
-    "@gpa-gemstone/react-forms": "1.1.68",
-    "@gpa-gemstone/react-interactive": "1.0.127",
+    "@gpa-gemstone/react-forms": "1.1.69",
+    "@gpa-gemstone/react-interactive": "1.0.128",
     "@gpa-gemstone/react-table": "1.2.50",
     "@reduxjs/toolkit": "1.8.3",
     "crypto-js": "4.0.0",
