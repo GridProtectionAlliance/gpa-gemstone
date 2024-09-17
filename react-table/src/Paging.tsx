@@ -34,10 +34,14 @@ export default function (props: IProps) {
     const nPages = 7;
     const minPg = React.useMemo(() => {
         const min = Math.min(...pages);
-        if (isFinite(min)) return min;
-        else return 0;
+        if (isFinite(min) && !isNaN(min)) return min;
+        return 0;
     }, [pages]);
-    const maxPg = React.useMemo(() => Math.max(...pages, 0), [pages]);
+    const maxPg = React.useMemo(() => {
+        const max = Math.max(...pages);
+        if (isFinite(max) && !isNaN(max)) return max;
+        return 0
+    }, [pages]);
 
     React.useEffect(() => {
         const display = [];
