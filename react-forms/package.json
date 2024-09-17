@@ -52,7 +52,6 @@
     "@gpa-gemstone/application-typings": "0.0.75",
     "@gpa-gemstone/gpa-symbols": "0.0.40",
     "@gpa-gemstone/helper-functions": "0.0.33",
-    "@gpa-gemstone/gpa-symbols": "0.0.40",
     "@types/react": "^17.0.14",
     "@types/styled-components": "^5.1.11",
     "lodash": "^4.17.21",
