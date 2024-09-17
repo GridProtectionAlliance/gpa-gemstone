@@ -65,6 +65,7 @@ const MultiSelect = (props: IProps) => {
   // State hooks for managing the visibility of the dropdown and help message.
   const multiSelect = React.useRef<HTMLDivElement>(null);
   const selectTable = React.useRef<HTMLTableElement>(null);
+  const tableContainer = React.useRef<HTMLDivElement>(null);
 
   const [show, setShow] = React.useState<boolean>(false);
   const [showHelp, setShowHelp] = React.useState<boolean>(false);
@@ -83,14 +84,22 @@ const MultiSelect = (props: IProps) => {
       }
     }, 200);
   
+    const handleScroll = (event: Event) => {
+      if(tableContainer.current == null) return
+
+      if (event.type === 'scroll' && !tableContainer.current.contains(event.target as Node)) 
+          setShow(false);
+        updatePosition()
+    };
+
     if (show) {
       updatePosition();
   
-      window.addEventListener('scroll', updatePosition, true);
+      window.addEventListener('scroll', handleScroll, true);
       window.addEventListener('resize', updatePosition);
   
       return () => {
-        window.removeEventListener('scroll', updatePosition, true);
+        window.removeEventListener('scroll', handleScroll, true);
         window.removeEventListener('resize', updatePosition);
         updatePosition.cancel();
       };
@@ -106,6 +115,10 @@ const MultiSelect = (props: IProps) => {
   // Handle showing and hiding of the dropdown.
   function HandleShow(evt: React.MouseEvent<HTMLButtonElement, MouseEvent> | MouseEvent) {
     if(selectTable.current != null && selectTable.current.contains(evt.target as Node)) return;
+
+    //ignore the click if it was inside the table or table container
+    if((selectTable.current != null && selectTable.current.contains(evt.target as Node)) || (tableContainer.current != null && tableContainer.current.contains(evt.target as Node)))
+      return 
 
     if (multiSelect.current === null) setShow(!show);
     else if (!(multiSelect.current as HTMLDivElement).contains(evt.target as Node)) setShow(false);
@@ -168,7 +181,7 @@ const MultiSelect = (props: IProps) => {
         </button>
         {/* Dropdown menu */}
         <Portal>
-          <div
+          <div ref={tableContainer}
             style={{
               maxHeight: window.innerHeight - position.Top,
               overflowY: 'auto',
