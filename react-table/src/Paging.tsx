@@ -32,7 +32,11 @@ export default function (props: IProps) {
     const [pages, setPages] = React.useState<number[]>([]);
 
     const nPages = 7;
-    const minPg = React.useMemo(() => Math.min(...pages, 0), [pages]);
+    const minPg = React.useMemo(() => {
+        const min = Math.min(...pages);
+        if (isFinite(min)) return min;
+        else return 0;
+    }, [pages]);
     const maxPg = React.useMemo(() => Math.max(...pages, 0), [pages]);
 
     React.useEffect(() => {
