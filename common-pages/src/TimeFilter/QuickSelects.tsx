@@ -40,7 +40,7 @@ export function getFormat(format?: DateUnit) {
     else if (format == "time")
         return 'HH:mm:ss.SSS'
     else
-        return 'MM/DD/YYYY HH:mm:ss.SSS' // default format
+        return 'MM/DD/YYYY HH:mm:ss.SSS'
 }
 
 //update all quick selects to use new timefilters
@@ -52,8 +52,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             const t = moment.utc().add(offset, 'minutes').startOf('hour');
             return {
                 start: t.format(getFormat(format)),
-                unit: 'm',
-                duration: 60,
+                end: t.add(60, 'm').format(getFormat(format)),
             }
         },
         hideQuickPick: (f) => {

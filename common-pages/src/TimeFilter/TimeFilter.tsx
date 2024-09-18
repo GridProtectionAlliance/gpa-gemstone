@@ -26,7 +26,8 @@ import * as React from 'react';
 import { DatePicker, Select, Input } from '@gpa-gemstone/react-forms'
 import {
     units, IStartEnd, IStartDuration, IEndDuration,
-    readableUnit, TimeUnit, dateTimeFormat
+    readableUnit, TimeUnit, findAppropriateUnit,
+    addDuration
 } from './TimeWindowUtils';
 import moment from 'moment';
 import { AvailableQuickSelects, getFormat, DateUnit } from './QuickSelects';
@@ -42,28 +43,45 @@ export type ITimeFilter = IStartEnd | IStartDuration | IEndDuration
 
 // Converts ITimeFilter to an ITimeWindow filter
 export function getTimeWindowFromFilter(flt: ITimeFilter, format?: string): ITimeWindow {
-    let center, start, end, unit, duration;
+    let start: moment.Moment;
+    let end: moment.Moment;
+    let unit: TimeUnit;
+    let duration: number;
+
+    const formatFunction = (
+        start: moment.Moment,
+        end: moment.Moment,
+        unit: TimeUnit,
+        duration: number) => ({
+            start: start.format(format),
+            end: end.format(format),
+            unit: unit,
+            duration: duration,
+        });
 
     if ('start' in flt && 'duration' in flt) {     // type is IStartDuration
         start = moment(flt.start, format);
-        unit = flt.unit;
         duration = flt.duration;
+        unit = flt.unit;
+        end = addDuration(start, duration, unit);
+        return formatFunction(start, end, unit, duration);
     }
-    else if ('end' in flt && 'duration' in flt) {  // type is IEndDuration
+    if ('end' in flt && 'duration' in flt) {  // type is IEndDuration
         end = moment(flt.end, format);
-        unit = flt.unit;
         duration = flt.duration;
+        unit = flt.unit;
+        start = addDuration(end, -duration, unit);
+        return formatFunction(start, end, unit, duration);
     }
-    else if ('start' in flt && 'end' in flt) {     // type is IStartEnd
+    if ('start' in flt && 'end' in flt) {     // type is IStartEnd
         start = moment(flt.start, format);
         end = moment(flt.end, format);
+        unit = findAppropriateUnit(start, end);
+        duration = end.diff(start, unit);
+        return formatFunction(start, end, unit, duration);
     }
-    return {
-        start: start?.format(format) ?? '',
-        end: end?.format(format) ?? '',
-        unit: unit ?? 'ms',
-        duration: duration ?? 0,
-    }
+
+    throw TypeError(`Unexpected type in getTimeWindowFromFilter, filter is: ${(flt as object).toString()}`);
 }
 
 /**
@@ -75,7 +93,7 @@ interface IProps {
     filter: ITimeFilter;
     setFilter: (start: string, end: string, unit: TimeUnit, duration: number) => void,
     showQuickSelect: boolean;
-    dateTimeSetting: 'center' | 'startWindow' | 'endWindow' | 'startEnd';
+    dateTimeSetting: 'startWindow' | 'endWindow' | 'startEnd';
     timeZone: string;
     isHorizontal: boolean;
     format?: DateUnit;
@@ -91,15 +109,10 @@ function Row(props: React.PropsWithChildren<{ addRow: boolean, class?: string }>
 }
 
 const TimeFilter = (props: IProps) => {
-    const format = getFormat(props.format); // ! This is problematic cause the format may not be the global one
+    const format = getFormat(props.format);
     const QuickSelects = React.useMemo(() => AvailableQuickSelects.filter(qs => !qs.hideQuickPick(props.format)), [props.format]);
     const [activeQP, setActiveQP] = React.useState<number>(-1);
     const [filter, setFilter] = React.useState<ITimeWindow>(getTimeWindowFromFilter(props.filter, format));
-
-    React.useEffect(() => {
-        if (!isEqual(filter, props.filter))
-            props.setFilter(filter.start, filter.end, filter.unit, filter.duration);
-    }, [filter])
 
     // Checks typing of ITimeFilter and then compares to ITimeWindow
     function isEqual(timeWindow: ITimeWindow, timeFilter: ITimeFilter) {
@@ -109,6 +122,12 @@ const TimeFilter = (props: IProps) => {
             && timeWindow.unit == flt.unit
             && timeWindow.duration == flt.duration
     }
+
+    React.useEffect(() => {
+        if (!isEqual(filter, props.filter)) {
+            props.setFilter(filter.start, filter.end, filter.unit, filter.duration);
+        }
+    }, [filter])
 
     React.useEffect(() => {
         if (!isEqual(filter, props.filter)) {
@@ -126,8 +145,9 @@ const TimeFilter = (props: IProps) => {
                         <div className={props.isHorizontal ? (props.showQuickSelect ? 'col-2' : 'col-6') : 'col-12'}>
                             <DatePicker< ITimeWindow > Record={filter} Field="start" Help={`All times are in system time. System time is currently set to ${props.timeZone}. `}
                                 Setter={(r) => {
-                                    let unit = filter.unit;
-                                    const flt = getTimeWindowFromFilter({ start: r.start, duration: r.duration, unit: unit }, format);
+                                    const flt = props.dateTimeSetting === 'startWindow' ?
+                                        getTimeWindowFromFilter({ start: r.start, duration: r.duration, unit: r.unit }, format) :
+                                        getTimeWindowFromFilter({ start: r.start, end: r.end }, format);
                                     setFilter(flt);
                                     setActiveQP(-1);
                                 }}
@@ -144,8 +164,9 @@ const TimeFilter = (props: IProps) => {
                         <div className={props.isHorizontal ? (props.showQuickSelect ? 'col-2' : 'col-6') : 'col-12'}>
                             <DatePicker<ITimeWindow> Record={filter} Field="end" Help={`All times are in system time. System time is currently set to ${props.timeZone}. `}
                                 Setter={(r) => {
-                                    let unit = filter.unit;
-                                    const flt = getTimeWindowFromFilter({ end: r.end, duration: r.duration, unit: unit }, format);
+                                    const flt = props.dateTimeSetting === 'endWindow' ?
+                                        getTimeWindowFromFilter({ end: r.end, duration: r.duration, unit: r.unit }, format) :
+                                        getTimeWindowFromFilter({ start: r.start, end: r.end }, format);
                                     setFilter(flt);
                                     setActiveQP(-1);
                                 }}
@@ -162,15 +183,11 @@ const TimeFilter = (props: IProps) => {
                         <label style={{ width: '100%', position: 'relative', float: "left" }}>Time Window(+): </label>
                         <Row addRow={!props.isHorizontal}>
                             <div className={props.isHorizontal ? (props.showQuickSelect ? 'col-1' : 'col-3') : 'col-6'}>
-                                <Input<ITimeWindow> Record={filter} Field='duration' Setter={(r) => {
-                                    const flt = getTimeWindowFromFilter({ start: filter.start, duration: r.duration, unit: filter.unit }, format);
-                                    setFilter(prevFilter => ({
-                                        ...prevFilter,
-                                        duration: r.duration,
-                                        end: flt.end
-                                    }));
-                                    setActiveQP(-1);
-                                }}
+                                <Input<ITimeWindow> Record={filter} Field='duration'
+                                    Setter={(r) => {
+                                        setFilter(getTimeWindowFromFilter({ start: r.start, duration: r.duration, unit: r.unit }, format));
+                                        setActiveQP(-1);
+                                    }}
                                     Label='' Valid={() => true}
                                     Type='number' />
                             </div>
@@ -178,12 +195,7 @@ const TimeFilter = (props: IProps) => {
                                 <Select<ITimeWindow> Record={filter} Label=''
                                     Field='unit'
                                     Setter={(r) => {
-                                        const flt = getTimeWindowFromFilter({ start: filter.start, duration: filter.duration, unit: r.unit }, format);
-                                        setFilter(prevFilter => ({
-                                            ...prevFilter,
-                                            unit: r.unit,
-                                            end: flt.end
-                                        }));
+                                        setFilter(getTimeWindowFromFilter({ start: r.start, duration: r.duration, unit: r.unit }, format));
                                         setActiveQP(-1);
                                     }}
                                     Options={
@@ -203,15 +215,11 @@ const TimeFilter = (props: IProps) => {
                         <label style={{ width: '100%', position: 'relative', float: "left" }}>Time Window(-): </label>
                         <Row addRow={!props.isHorizontal}>
                             <div className={props.isHorizontal ? (props.showQuickSelect ? 'col-1' : 'col-3') : 'col-6'}>
-                                <Input<ITimeWindow> Record={filter} Field='duration' Setter={(r) => {
-                                    const flt = getTimeWindowFromFilter({ end: filter.end, duration: r.duration, unit: filter.unit }, format);
-                                    setFilter(prevFilter => ({
-                                        ...prevFilter,
-                                        duration: r.duration,
-                                        start: flt.start
-                                    }));
-                                    setActiveQP(-1);
-                                }}
+                                <Input<ITimeWindow> Record={filter} Field='duration'
+                                    Setter={(r) => {
+                                        setFilter(getTimeWindowFromFilter({ end: r.end, duration: r.duration, unit: r.unit }, format));
+                                        setActiveQP(-1);
+                                    }}
                                     Label='' Valid={() => true}
                                     Type='number' />
                             </div>
@@ -219,12 +227,7 @@ const TimeFilter = (props: IProps) => {
                                 <Select<ITimeWindow> Record={filter} Label=''
                                     Field='unit'
                                     Setter={(r) => {
-                                        const flt = getTimeWindowFromFilter({ end: filter.end, duration: filter.duration, unit: r.unit }, format);
-                                        setFilter(prevFilter => ({
-                                            ...prevFilter,
-                                            unit: r.unit,
-                                            start: flt.start
-                                        }));
+                                        setFilter(getTimeWindowFromFilter({ end: r.end, duration: r.duration, unit: r.unit }, format));
                                         setActiveQP(-1);
                                     }}
                                     Options={

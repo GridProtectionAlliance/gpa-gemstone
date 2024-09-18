@@ -54,26 +54,25 @@ export const dateTimeFormat = 'DD MM YYYY hh:mm:ss.SSS';
 /**
 * A Function to determine the most appropriate unit for a window of time specified by start and end time
 */
-export function findAppropriateUnit(startTime: moment.Moment, endTime: moment.Moment): [TimeUnit, number] {
-    let unitIndex = 7;
-
+export function findAppropriateUnit(startTime: moment.Moment, endTime: moment.Moment): TimeUnit {
+    const unitIndex = 7;
     let diff = endTime.diff(startTime, units[unitIndex], true);
 
     for (let i = unitIndex; i >= 1; i--) {
         if (Number.isInteger(diff)) {
-            return [units[i], diff];
+            return units[i];
         }
-        let nextI = i - 1;
+        const nextI = i - 1;
 
         diff = endTime.diff(startTime, units[nextI], true);
 
         if (diff > 65000) {
             diff = endTime.diff(startTime, units[i], true);
-            return [units[i], Math.round(diff)];
+            return units[i];
         }
     }
 
-    return [units[0], Math.round(diff)];
+    return units[0];
 }
 
 /**
