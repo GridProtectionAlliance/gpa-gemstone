@@ -109,7 +109,7 @@ function Row(props: React.PropsWithChildren<{ addRow: boolean, class?: string }>
 }
 
 const TimeFilter = (props: IProps) => {
-    const format = getFormat(props.format); // ! This is problematic cause the format may not be the global one
+    const format = getFormat(props.format);
     const QuickSelects = React.useMemo(() => AvailableQuickSelects.filter(qs => !qs.hideQuickPick(props.format)), [props.format]);
     const [activeQP, setActiveQP] = React.useState<number>(-1);
     const [filter, setFilter] = React.useState<ITimeWindow>(getTimeWindowFromFilter(props.filter, format));
