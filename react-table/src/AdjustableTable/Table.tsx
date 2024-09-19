@@ -157,7 +157,7 @@ const defaultTableStyle: React.CSSProperties = {
 };
 
 export default function AdjustableTable<T>(props: React.PropsWithChildren<TableProps<T>>) {
-    const tblref = React.useRef<HTMLTableElement>(null);
+    const bodyRef = React.useRef<HTMLTableSectionElement | null>(null);
     const throtleRef = React.useRef<NodeJS.Timeout | null>(null);
     const colCountRef = React.useRef<NodeJS.Timeout | null>(null);
     
@@ -168,11 +168,11 @@ export default function AdjustableTable<T>(props: React.PropsWithChildren<TableP
     const [extraWidthPerRow, setExtraWidthPerRow] = React.useState<number>(0);
 
     const setTableWidth = React.useCallback(_.debounce(() => {
-        setCurrentTableWidth(tblref.current?.offsetWidth ?? 0);
+        setCurrentTableWidth(bodyRef.current?.offsetWidth ?? 0);
     }, 500), []);
     
     React.useEffect(() => {
-        const element = tblref?.current;
+        const element = bodyRef?.current;
         
         if (element == null) return;
         
@@ -192,11 +192,11 @@ export default function AdjustableTable<T>(props: React.PropsWithChildren<TableP
     }, [currentTableWidth]);
     
     React.useEffect(() => {
-        let t = 0;
+        let totalMaxWidth = 0;
         autoWidth.current.forEach((v) => {
-            t = t + v.maxColWidth;
+            totalMaxWidth += v.maxColWidth;
         });
-        if (t > currentTableWidth - 17 && currentTableWidth > 0) {
+        if (totalMaxWidth > currentTableWidth && currentTableWidth > 0) {
             const hideKeys: string[] = [];
             const showKeys: string[] = [];
             let t = 0;
@@ -204,7 +204,7 @@ export default function AdjustableTable<T>(props: React.PropsWithChildren<TableP
 
             autoWidth.current.forEach((v, k) => {
                 t = t + v.maxColWidth;
-                if (t < currentTableWidth - 17) {
+                if (t < currentTableWidth) {
                     showKeys.push(k);
                     colW += v.maxColWidth;
                 }
@@ -234,7 +234,7 @@ export default function AdjustableTable<T>(props: React.PropsWithChildren<TableP
                 if (numOfColsWithUndefinedCSS > 0 && numOfColsWithAutoCSS == 0) { // Split only on the css undefined if there are no auto-cols
                     colsToDivideBy = numOfColsWithUndefinedCSS;
                 }
-                const extraSpace = (currentTableWidth - 17 - colW - numEnabledColumns) / colsToDivideBy;
+                const extraSpace = (currentTableWidth - colW - numEnabledColumns) / colsToDivideBy;
                 setExtraWidthPerRow(extraSpace);
                 props.ReduceWidthCallback?.(hideKeys);
                 setAutoWidthVersion((v) => v + 1);
@@ -244,7 +244,7 @@ export default function AdjustableTable<T>(props: React.PropsWithChildren<TableP
             const numOfColsWithAutoCSS = Array.from(autoWidth.current.values()).filter(autoWidth => autoWidth.isAuto && autoWidth.enabled).length;
             const colsToDivideBy = (numOfColsWithAutoCSS > 0) ? numOfColsWithAutoCSS : numEnabledColumns; 
 
-            const extraSpace = (currentTableWidth - 17 - t - numEnabledColumns) / colsToDivideBy;
+            const extraSpace = (currentTableWidth - totalMaxWidth - numEnabledColumns) / colsToDivideBy;
             setExtraWidthPerRow(extraSpace);
 
             props.ReduceWidthCallback?.([]);
@@ -385,7 +385,6 @@ export default function AdjustableTable<T>(props: React.PropsWithChildren<TableP
         <table
         className={props.TableClass !== undefined ? props.TableClass : 'table table-hover'}
         style={props.TableStyle ?? defaultTableStyle}
-        ref={tblref}
         >
         <Header<T>
         Class={props.TheadClass}
@@ -417,14 +416,15 @@ export default function AdjustableTable<T>(props: React.PropsWithChildren<TableP
         AutoWidthVersion={autoWidthVersion}
         SetWidth={setWidth}
         ExtraWidth={extraWidthPerRow}
+        BodyRef={bodyRef}
         >
         {props.children}
         </Rows>
         {props.LastRow !== undefined ? (
             <tfoot style={props.TfootStyle} className={props.TfootClass}>
                 <tr style={props.RowStyle !== undefined ? { ...props.RowStyle } : {}}>
-            {props.LastRow}
-            </tr>
+                    {props.LastRow}
+                </tr>
             </tfoot>
         ) : null}
         </table>
@@ -449,7 +449,8 @@ interface IRowProps<T> {
     AutoWidthVersion: number;
     AutoWidth: React.MutableRefObject<Map<string, IAutoWidth>>;
     SetWidth: (key: string, itemKey: string | number, width: number, isAuto: boolean, isUndefined: boolean) => void;
-    ExtraWidth: number
+    ExtraWidth: number,
+    BodyRef?: React.MutableRefObject<HTMLTableSectionElement | null>;
 }
     
 function Rows<T>(props: React.PropsWithChildren<IRowProps<T>>) {
@@ -470,7 +471,7 @@ function Rows<T>(props: React.PropsWithChildren<IRowProps<T>>) {
     }, [props.OnClick]);
     
     return (
-        <tbody style={props.BodyStyle} className={props.BodyClass}>
+        <tbody style={props.BodyStyle} className={props.BodyClass} ref={props.BodyRef}>
         {props.Data.map((d, i) => {
             const style: React.CSSProperties = props.RowStyle !== undefined ? { ...props.RowStyle } : {};
             
@@ -661,10 +662,6 @@ function Header<T>(props: React.PropsWithChildren<IHeaderProps<T>>) {
 
         if (currentKeys !== undefined && currentKeys[0] == key) adj = delta;
         else if (currentKeys !== undefined && currentKeys[1] == key) adj = -delta;
-
-        console.log(tentativeLimits)
-        console.log(delta)
-
         return (props.AutoWidth.current.get(key)?.adjustement ?? 0) + adj;
     };
 
