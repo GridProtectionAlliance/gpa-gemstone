@@ -81,6 +81,15 @@ interface TableProps<T> {
     */
     TbodyClass?: string;
     /**
+    * style of the tfoot component
+    */
+    TfootStyle?: React.CSSProperties;
+    /**
+    * Class of the tfoot component
+    */
+    TfootClass?: string;
+
+    /**
     * determines if a row should be styled as selected
     * @param data the item to be checked
     * @returns true if the row should be styled as selected
@@ -109,7 +118,8 @@ interface TableProps<T> {
     
     /**
     * Optional Element to display in the last row of the Table
-    * use this for displaying warnings when the Table content gets cut off
+    * use this for displaying warnings when the Table content gets cut off.
+    * Data appears in the tfoot element
     */
     LastRow?: string | React.ReactNode;
     /**
@@ -411,9 +421,11 @@ export default function AdjustableTable<T>(props: React.PropsWithChildren<TableP
         {props.children}
         </Rows>
         {props.LastRow !== undefined ? (
-            <tr style={props.RowStyle !== undefined ? { ...props.RowStyle } : {}} key={-1}>
+            <tfoot style={props.TfootStyle} className={props.TfootClass}>
+                <tr style={props.RowStyle !== undefined ? { ...props.RowStyle } : {}}>
             {props.LastRow}
             </tr>
+            </tfoot>
         ) : null}
         </table>
     );
