@@ -18,10 +18,12 @@
 //  ----------------------------------------------------------------------------------------------------
 //  08/02/2018 - Billy Ernest
 //       Generated original version of source code.
+//  05/31/2024 - C. Lackner
+//       Refactored to fix sizing issues.
 //
 //  ******************************************************************************************************
 
-import { SVGIcons } from '@gpa-gemstone/gpa-symbols';
+import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import { GetNodeSize } from '@gpa-gemstone/helper-functions';
 import * as React from 'react';
 
@@ -40,19 +42,19 @@ export interface IColumnProps<T> {
      */
     Field?: keyof T;
     /**
-     * The Default style for the td element
-     */
-    RowStyle?: React.CSSProperties;
-    /**
      * The Default style for the th element
      */
     HeaderStyle?: React.CSSProperties;
     /**
-     * Determines the Content to be displaye
+     * The Default style for the td element
+     */
+    RowStyle?: React.CSSProperties;
+    /**
+     * Determines the Content to be displayed
      * @param d the data to be turned into content
      * @returns the content displayed
      */
-    Content?: (d: { item: T, key: string, field: keyof T | undefined, index: number, style?: React.CSSProperties }) => React.ReactNode;   
+    Content?: (d: { item: T, key: string, field: keyof T | undefined, index: number, style?: React.CSSProperties }) => React.ReactNode;
 }
 
 
@@ -60,127 +62,119 @@ export default function Column<T>(props: React.PropsWithChildren<IColumnProps<T>
     return <>{props.children}</>
 }
 
-interface IHeaderWrapperProps<T> extends IColumnProps<T> {
-    setWidth: (w: number) => void,
-    width?: number,
-    onSort: (key: string, event: any, field?: keyof T) => void,
+export interface IHeaderWrapperProps {
+    setWidth: (w: number, a: boolean, u: boolean) => void,
+    onSort: React.MouseEventHandler<HTMLTableCellElement>,
     sorted: boolean,
     asc: boolean,
-    fixedLayout: boolean,
-} 
+    style: React.CSSProperties,
+    allowSort?: boolean,
+    colKey: string,
+    width?: number,
+    enabled: boolean,
+    extraWidth: number
+}
 
-export function ColumnHeaderWrapper<T>(props: React.PropsWithChildren<IHeaderWrapperProps<T>>) {
+export function ColumnHeaderWrapper (props: React.PropsWithChildren<IHeaderWrapperProps>) {
     const thref = React.useRef(null);
 
-    const style = (props.RowStyle !== undefined) ? {...props.HeaderStyle } : { };
-    if (props.width !== undefined && props.fixedLayout){
-        style.width = props.width;
-        style.minWidth = props.width;
-        style.maxWidth = props.width;
-        style.overflowX = 'hidden';
-        style.display = 'inline-block'
+    const style = (props.style !== undefined) ? { ...props.style } : {};
+
+    style.overflowX = style.overflowX ?? 'hidden';
+    style.display = style.display ?? 'inline-block'
+    style.position = style.position ?? 'relative';
+    style.borderTop = style.borderTop ?? 'none';
+
+    const isAuto = style.width == 'auto';
+    const isUndefined = style.width === undefined;
+
+    if ((style.width == undefined || style.width == 'auto') && props.width !== undefined) {
+        style.width = (props.width) + props.extraWidth;
     }
 
-    if (style.cursor === undefined && (props.AllowSort ?? true)) {
+    if (style.cursor === undefined && (props.allowSort ?? true)) {
         style.cursor = 'pointer';
     }
 
-    if (style.position === undefined) {
-        style.position = 'relative';
-    }
-
-    if (style.borderTop === undefined) {
-        style.borderTop = 'none'
-    }
-
     React.useLayoutEffect(() => {
-        if (thref.current == null || props.width !== undefined)
+        if (thref.current == null)
             return;
         const w = GetNodeSize(thref.current)?.width;
-        if (w === undefined) return;
-            props.setWidth(w);
+        if (props.width !== undefined && (w === undefined || w == (props.width + props.extraWidth))) return;
+            props.setWidth(w, isAuto, isUndefined);
     })
-    
-    const onClick = React.useCallback((e) => { 
-        if (props.AllowSort ?? true) props.onSort(props.Key, e, props.Field);
-        }, [props.onSort, props.AllowSort])
-
-    return <th
-                ref={thref}
-                style={style}
-                onClick={onClick}
-                onDrag={(e) => {e.stopPropagation()}}
-            >
-            {props.sorted && !props.asc ? <div 
-                style={{ position: 'absolute', width: 25 }}>
-                    {SVGIcons.ArrowDropDown} 
-                </div> : null}
-            {props.sorted && props.asc ? <div 
-                style={{ position: 'absolute', width: 25 }}>
-                    {SVGIcons.ArrowDropUp} 
-                </div> : null}
-            <div style={{
-                marginLeft: (props.sorted ? 25 : 0),
-            }}>{props.children ?? props.Key}</div>
-        </th>
-}
-
-interface IDataWrapperProps<T> extends IColumnProps<T> {
-    width?: number,
-    item: T,
-    index: number,
-    dragStart: (data: { colKey: string, colField?: keyof T, row: T, data: T[keyof T] | null, index: number }, e: any) => void,
-    onClick?: (data: { colKey: string, colField?: keyof T, row: T, data: T[keyof T] | null, index: number }, e: React.MouseEvent<HTMLElement, MouseEvent>) => void,
-    fixedLayout: boolean
-} 
-
-
-export function ColumnDataWrapper<T>(props: IDataWrapperProps<T>) {
-
-    const css = (props.RowStyle !== undefined) ? {...props.RowStyle } : { };
-    if (props.width !== undefined && props.fixedLayout){
-        css.width = props.width;
-        css.minWidth = props.width;
-        css.maxWidth = props.width;
-        css.overflowX = 'hidden';
-        css.display = 'inline-block'
-    }
-
-    if (props.dragStart !== undefined) css.cursor = "grab";
-
-    const getFieldValue = () => props.Field !== undefined ? props.item[props.Field] : null;
-
-    const getFieldContent = () => props.Content !== undefined ? props.Content({
-        item: props.item, 
-        key: props.Key, 
-        field: props.Field, 
-        style: css,
-        index: props.index}) : getFieldValue();
 
     const onClick = React.useCallback((e) => {
-        if (props.onClick !== undefined)
-         props.onClick({
-            colKey: props.Key, 
-            colField: props.Field, 
-            row: props.item,
-             data: getFieldValue(),
-              index: props.index
-           }, e)
-    }, [props.Key,props.Field, props.item,props.index, props.onClick])
-      return (
+        if (props.allowSort ?? true) props.onSort(e);
+    }, [props.onSort, props.allowSort])
+
+
+    if (props.width != undefined && !props.enabled)
+        return null;
+
+    return <th
+        ref={thref}
+        style={style}
+        onClick={onClick}
+        onDrag={(e) => { e.stopPropagation() }}
+    >
+        {props.sorted? <div
+            style={{ position: 'absolute', width: 25 }}>
+            {props.asc ? <ReactIcons.ArrowDropUp /> : <ReactIcons.ArrowDropDown />}
+        </div> : null}
+        <div style={{
+            marginLeft: (props.sorted ? 25 : 0),
+        }}>{props.children ?? props.colKey}</div>
+    </th>
+}
+
+export interface IDataWrapperProps {
+    setWidth: (w: number, a: boolean, u: boolean) => void,
+    width?: number,
+    enabled: boolean
+    dragStart?: (e: React.DragEvent) => void,
+    onClick?: (e: React.MouseEvent<HTMLElement, MouseEvent>) => void,
+    style: React.CSSProperties,
+    extraWidth: number
+}
+
+
+export function ColumnDataWrapper (props: React.PropsWithChildren<IDataWrapperProps>) {
+    const tdref = React.useRef(null);
+    const style = (props.style !== undefined) ? { ...props.style } : {};
+
+    style.overflowX = style.overflowX ?? 'hidden';
+    style.display = style.display ?? 'inline-block'
+
+    const isAuto = style.width == 'auto';
+    const isUndefined = style.width === undefined;
+
+    if ((style.width == undefined || style.width == 'auto') && props.width !== undefined) {
+        style.width = (props.width) + props.extraWidth;
+    }
+
+    if (props.dragStart !== undefined) style.cursor = "grab";
+
+    React.useLayoutEffect(() => {
+        if (tdref.current == null)
+            return;
+        const w = GetNodeSize(tdref.current)?.width;
+        if (props.width !== undefined && (w === undefined || w == (props.width + props.extraWidth))) return;
+            props.setWidth(w, isAuto, isUndefined);
+    })
+
+    if (props.width != undefined && !props.enabled)
+        return null;
+
+    return (
         <td
-            style={css}
-            onClick={onClick}
+            ref={tdref}
+            style={style}
+            onClick={props.onClick}
             draggable={props.dragStart !== undefined}
-            onDragStart={(e) => { props.dragStart!({
-                 colKey: props.Key, 
-                 colField: props.Field, 
-                 row: props.item, 
-                 data: getFieldValue(),
-                 index: props.index 
-                }, e); }}
+            onDragStart={props.dragStart}
         >
-            {getFieldContent() as string}
+            {props.children}
         </td>
     );
 }

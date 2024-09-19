@@ -393,9 +393,15 @@ const DrawerHeader: React.FunctionComponent<IDrawerHeaderProps> = (props) => {
             onMouseDown={() => {props.onClick();}}
             onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
             <div style={{height: 24, width: 35, paddingLeft: 5}}>
-                {props.symbol === 'Open' ? <ReactIcons.ArrowForward /> : null}
-                {props.symbol === 'Close' ? <ReactIcons.ArrowBackward /> : null}
-                {props.symbol === 'X' ? <ReactIcons.CrossMark /> : null}
+                {props.symbol === 'Open' 
+                    ? <ReactIcons.ArrowForward /> 
+                    : null}
+                {props.symbol === 'Close' 
+                    ? <ReactIcons.ArrowBackward /> 
+                    : null}
+                {props.symbol === 'X'
+                    ? <ReactIcons.CrossMark /> 
+                    : null}
             </div>
             <span style={{ margin: 'auto', writingMode: 'vertical-rl', textOrientation: 'sideways', fontSize: 25, paddingTop: '5px'}}>
                 {props.title}
