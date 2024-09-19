@@ -617,52 +617,60 @@ function Header<T>(props: React.PropsWithChildren<IHeaderProps<T>>) {
     const [mouseDown, setMouseDown] = React.useState<number>(0);
     const [currentKeys, setCurrentKeys] = React.useState<[string, string] | undefined>(undefined);
     const [deltaW, setDeltaW] = React.useState<number>(0);
+    const [tentativeLimits, setTentativeLimits] = React.useState<{min: number, max: number}>({min: -Infinity, max: Infinity});
+
+    const calculateDeltaLimits = React.useCallback((mapKeys: [string, string] | undefined, autoWidthRef: React.MutableRefObject<Map<string, IAutoWidth>>) => {
+        if (mapKeys === undefined) return ({min: -Infinity, max: Infinity});
+
+        const maxLeftAdjustment = (autoWidthRef.current.get(mapKeys[0])?.maxColWidth ?? 0) + 
+            (autoWidthRef.current.get(mapKeys[0])?.adjustement ?? 0);
+        const minWidthLeftAdjusted = (autoWidthRef.current.get(mapKeys[0])?.minWidth ?? 100) - maxLeftAdjustment;
+        const maxWidthLeftAdjusted = (autoWidthRef.current.get(mapKeys[0])?.maxWidth ?? 9e10) - maxLeftAdjustment;
+
+        const maxRightAdjustment = (autoWidthRef.current.get(mapKeys[1])?.maxColWidth ?? 0) + 
+            (autoWidthRef.current.get(mapKeys[1])?.adjustement ?? 0);
+        const minWidthRightAdjusted = (autoWidthRef.current.get(mapKeys[1])?.minWidth ?? 100) - maxRightAdjustment;
+        const maxWidthRightAdjusted = (autoWidthRef.current.get(mapKeys[1])?.maxWidth ?? 9e10) - maxRightAdjustment;
+
+        // Recall that a right movement is the result of a negative value on deltaW
+        const minDeltaW = Math.abs(minWidthLeftAdjusted) < Math.abs(maxWidthRightAdjusted) ? minWidthLeftAdjusted : -maxWidthRightAdjusted;
+        const maxDeltaW = Math.abs(minWidthRightAdjusted) < Math.abs(maxWidthLeftAdjusted) ? -minWidthRightAdjusted : maxWidthLeftAdjusted;
+
+        return ({min: minDeltaW, max: maxDeltaW});
+    }, []);
 
     const calculateAdjustment = (key: string) => {
         let adj = 0;
-        if (currentKeys !== undefined && currentKeys[0] == key) adj = -deltaW;
-        else if (currentKeys !== undefined && currentKeys[1] == key) adj = deltaW;
+        let delta: number;
+
+        if (deltaW > tentativeLimits.max) delta = tentativeLimits.max;
+        else if (deltaW < tentativeLimits.min) delta = tentativeLimits.min;
+        else delta = deltaW;
+
+        if (currentKeys !== undefined && currentKeys[0] == key) adj = delta;
+        else if (currentKeys !== undefined && currentKeys[1] == key) adj = -delta;
+
+        console.log(tentativeLimits)
+        console.log(delta)
 
         return (props.AutoWidth.current.get(key)?.adjustement ?? 0) + adj;
     };
 
     const finishAdjustment = () => {
-        const d = deltaW;
         if (currentKeys === undefined) return;
 
-        if (Math.abs(d) > 5) {
-            const minWidthLeft   = props.AutoWidth.current.get(currentKeys[0])?.minWidth ?? 100;
-            const minWidthRight  = props.AutoWidth.current.get(currentKeys[1])?.minWidth ?? 100;
-            const maxWidthLeft   = props.AutoWidth.current.get(currentKeys[0])?.maxWidth ?? 9e10;
-            const maxWidthRight  = props.AutoWidth.current.get(currentKeys[1])?.maxWidth ?? 9e10;
-
-            const maxColWidthLeft = (props.AutoWidth.current.get(currentKeys[0])?.maxColWidth ?? 0);
-            const previousAdjLeft = (props.AutoWidth.current.get(currentKeys[0])?.adjustement ?? 0);
-            const widthLeft =  (maxColWidthLeft + previousAdjLeft);
-            const maxColWidthRight = (props.AutoWidth.current.get(currentKeys[1])?.maxColWidth ?? 0);
-            const previousAdjRight = (props.AutoWidth.current.get(currentKeys[1])?.adjustement ?? 0);
-            const widthRight = (maxColWidthRight + previousAdjRight);
-
-            let leftAdjustment = -d;
-            let rightAdjustment = d;
-
-            if (minWidthLeft > widthLeft + leftAdjustment) leftAdjustment = minWidthLeft - widthLeft;
-
-            if (minWidthRight > widthRight + rightAdjustment) rightAdjustment = minWidthRight - widthRight;
-
-            if (maxWidthLeft < widthLeft + leftAdjustment) leftAdjustment = maxWidthLeft - widthLeft;
-
-            if (maxWidthRight < widthRight + rightAdjustment) rightAdjustment = maxWidthRight - widthRight;
-
-            if (Math.abs(leftAdjustment) > Math.abs(rightAdjustment)) leftAdjustment = -rightAdjustment;
-
-            if (Math.abs(leftAdjustment) < Math.abs(rightAdjustment)) rightAdjustment = -leftAdjustment;
-            
-            props.SetAdjustment(currentKeys[0], leftAdjustment);
-            props.SetAdjustment(currentKeys[1], rightAdjustment);
+        if (Math.abs(deltaW) > 5) {
+            const deltaLimits = calculateDeltaLimits(currentKeys, props.AutoWidth);
+            let delta: number;
+            if (deltaW > deltaLimits.max) delta = deltaLimits.max;
+            else if (deltaW < deltaLimits.min) delta = deltaLimits.min;
+            else delta = deltaW;
+            props.SetAdjustment(currentKeys[0], delta);
+            props.SetAdjustment(currentKeys[1], -delta);
         }
 
         setMouseDown(0);
+        setTentativeLimits({min: -Infinity, max: Infinity});
         setCurrentKeys(undefined);
         setDeltaW(0);
     };
@@ -689,7 +697,7 @@ function Header<T>(props: React.PropsWithChildren<IHeaderProps<T>>) {
 
     const onMove = React.useCallback((e: MouseEvent) => {
         if (currentKeys === undefined) return;
-        const w = mouseDown - e.screenX;
+        const w = e.screenX - mouseDown;
         setDeltaW(w);
     }, [mouseDown, currentKeys]);
 
@@ -756,29 +764,32 @@ function Header<T>(props: React.PropsWithChildren<IHeaderProps<T>>) {
                     onSort={(e) =>
                         props.OnSort(
                             { colKey: element.props.Key, colField: element.props.Field, ascending: props.Ascending },
-                            e,)
-                        }
-                        sorted={props.SortKey === element.props.Key && (element.props.AllowSort ?? true)}
-                        key={element.props.Key}
-                        colKey={element.props.Key}
-                        asc={props.Ascending}
-                        allowSort={element.props.AllowSort}
-                        width={
-                            props.AutoWidth.current.get(element.props.Key)?.width.has(-1) ?? false
-                            ? props.AutoWidth.current.get(element.props.Key)?.maxColWidth
-                            : undefined
-                        }
-                        startAdjustment={(e) => {
-                            if (getLeftKey(element.props.Key) !== undefined)
-                                setCurrentKeys([getLeftKey(element.props.Key) as string, element.props.Key as string]);
-                            setMouseDown(e.screenX);
-                            setDeltaW(0);
-                        }}
-                        adjustment={calculateAdjustment(element.props.Key)}
-                        style={element.props.HeaderStyle ?? element.props.RowStyle}
-                    >
-                        {' '}
-                        {element.props.children ?? element.props.Key}
+                            e
+                        )
+                    }
+                    sorted={props.SortKey === element.props.Key && (element.props.AllowSort ?? true)}
+                    key={element.props.Key}
+                    colKey={element.props.Key}
+                    asc={props.Ascending}
+                    allowSort={element.props.AllowSort}
+                    width={
+                        props.AutoWidth.current.get(element.props.Key)?.width.has(-1) ?? false
+                        ? props.AutoWidth.current.get(element.props.Key)?.maxColWidth
+                        : undefined
+                    }
+                    startAdjustment={(e) => {
+                        let newCurrentKeys: [string, string] | undefined;
+                        if (getLeftKey(element.props.Key) !== undefined) newCurrentKeys = [getLeftKey(element.props.Key) as string, element.props.Key as string];
+                        setCurrentKeys(newCurrentKeys);
+                        setMouseDown(e.screenX);
+                        setTentativeLimits(calculateDeltaLimits(newCurrentKeys, props.AutoWidth));
+                        setDeltaW(0);
+                    }}
+                    adjustment={calculateAdjustment(element.props.Key)}
+                    style={element.props.HeaderStyle ?? element.props.RowStyle}
+                >
+                    {' '}
+                    {element.props.children ?? element.props.Key}
                     </AdjustableColumnHeaderWrapper>
                 );
                 return null;
