@@ -23,7 +23,6 @@
 //
 //  ******************************************************************************************************
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
-import { GetNodeSize } from '@gpa-gemstone/helper-functions';
 import * as React from 'react';
 import { IColumnProps, IDataWrapperProps, IHeaderWrapperProps } from './Column';
 
@@ -44,7 +43,7 @@ interface IAdjustableHeaderWrapperProps extends IHeaderWrapperProps {
 }
 
 export function AdjustableColumnHeaderWrapper(props: React.PropsWithChildren<IAdjustableHeaderWrapperProps>) {
-    const thref = React.useRef(null);
+    const thref = React.useRef<HTMLTableHeaderCellElement | null>(null);
     const [mode, setMode] = React.useState<'width' | 'minWidth' | 'maxWidth'>('minWidth');
     //const [width, setWidth] = React.useState<number>();
     const [minWidth, setMinWidth] = React.useState<number>();
@@ -90,7 +89,7 @@ export function AdjustableColumnHeaderWrapper(props: React.PropsWithChildren<IAd
         if (thref.current == null) return;
 
         if (mode == 'minWidth') {
-            const w = GetNodeSize(thref.current)?.width;
+            const w = thref.current?.getBoundingClientRect().width;
             if (w === undefined) return;
 
             if (w !== minWidth) {
@@ -106,7 +105,7 @@ export function AdjustableColumnHeaderWrapper(props: React.PropsWithChildren<IAd
         }
 
         if (mode == 'maxWidth') {
-            const w = GetNodeSize(thref.current)?.width;
+            const w = thref.current?.getBoundingClientRect().width;
             if (w === undefined) return;
 
             if (w !== maxWidth) {
@@ -121,7 +120,7 @@ export function AdjustableColumnHeaderWrapper(props: React.PropsWithChildren<IAd
         }
 
         if (mode == 'width') {
-            const w = GetNodeSize(thref.current)?.width;
+            const w = thref.current?.getBoundingClientRect().width;
             if (w === undefined) return;
 
             if (props.width === undefined || (w !== (props.width + props.extraWidth))) {
@@ -191,7 +190,7 @@ interface IAdjustableDataWrapperProps extends IDataWrapperProps {
 
 
 export function AdjustableColumnDataWrapper(props: React.PropsWithChildren<IAdjustableDataWrapperProps>) {
-    const tdref = React.useRef(null);
+    const tdref = React.useRef<HTMLTableDataCellElement | null>(null);
     const style = (props.style !== undefined) ? { ...props.style } : {};
 
     style.overflowX = style.overflowX ?? 'hidden';
@@ -210,7 +209,7 @@ export function AdjustableColumnDataWrapper(props: React.PropsWithChildren<IAdju
         if (tdref.current == null)
             return;
 
-        const w = GetNodeSize(tdref.current)?.width;
+        const w = tdref.current?.getBoundingClientRect().width;
 
         if (style.width === undefined && props.width === undefined) {
             props.setWidth(w, isAuto, isUndefined);
