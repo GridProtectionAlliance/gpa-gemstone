@@ -1,6 +1,6 @@
 {
   "name": "@gpa-gemstone/react-table",
-  "version": "1.2.52",
+  "version": "1.2.53",
   "description": "Table for GPA web applications",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
