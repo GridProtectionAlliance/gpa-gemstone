@@ -90,7 +90,7 @@ export function getStartEndTime(center: moment.Moment, duration: number, unit: T
 * Function to handle adding or subtracting duration
 */
 export function addDuration(start: moment.Moment, duration: number, unit: TimeUnit): moment.Moment {
-    let t1 = start.clone();
+    const t1 = start.clone();
 
     const floor = duration > 0 ? Math.floor(duration) : Math.ceil(duration);    // if duration is negative, use Math.ceil() to get the floor
     const ceil = duration > 0 ? Math.ceil(duration) : Math.floor(duration);     // if duration is negative, use Math.floor() to get the ceil
