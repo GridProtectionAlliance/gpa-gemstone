@@ -24,7 +24,6 @@
 //  ******************************************************************************************************
 
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
-import { GetNodeSize } from '@gpa-gemstone/helper-functions';
 import * as React from 'react';
 
 
@@ -75,8 +74,8 @@ export interface IHeaderWrapperProps {
     extraWidth: number
 }
 
-export function ColumnHeaderWrapper (props: React.PropsWithChildren<IHeaderWrapperProps>) {
-    const thref = React.useRef(null);
+export function ColumnHeaderWrapper(props: React.PropsWithChildren<IHeaderWrapperProps>) {
+    const thref = React.useRef<HTMLTableHeaderCellElement | null>(null);
 
     const style = (props.style !== undefined) ? { ...props.style } : {};
 
@@ -99,9 +98,9 @@ export function ColumnHeaderWrapper (props: React.PropsWithChildren<IHeaderWrapp
     React.useLayoutEffect(() => {
         if (thref.current == null)
             return;
-        const w = GetNodeSize(thref.current)?.width;
+        const w = thref.current?.getBoundingClientRect().width;
         if (props.width !== undefined && (w === undefined || w == (props.width + props.extraWidth))) return;
-            props.setWidth(w, isAuto, isUndefined);
+        props.setWidth(w, isAuto, isUndefined);
     })
 
     const onClick = React.useCallback((e) => {
@@ -140,7 +139,7 @@ export interface IDataWrapperProps {
 
 
 export function ColumnDataWrapper (props: React.PropsWithChildren<IDataWrapperProps>) {
-    const tdref = React.useRef(null);
+    const tdref = React.useRef<HTMLTableDataCellElement | null>(null);
     const style = (props.style !== undefined) ? { ...props.style } : {};
 
     style.overflowX = style.overflowX ?? 'hidden';
@@ -158,9 +157,9 @@ export function ColumnDataWrapper (props: React.PropsWithChildren<IDataWrapperPr
     React.useLayoutEffect(() => {
         if (tdref.current == null)
             return;
-        const w = GetNodeSize(tdref.current)?.width;
+        const w = tdref.current?.getBoundingClientRect().width;
         if (props.width !== undefined && (w === undefined || w == (props.width + props.extraWidth))) return;
-            props.setWidth(w, isAuto, isUndefined);
+        props.setWidth(w, isAuto, isUndefined);
     })
 
     if (props.width != undefined && !props.enabled)
