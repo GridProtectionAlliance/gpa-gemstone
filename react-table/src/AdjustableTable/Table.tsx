@@ -175,19 +175,20 @@ export default function AdjustableTable<T>(props: React.PropsWithChildren<TableP
         else newScroll = bodyRef.current.clientHeight < bodyRef.current.scrollHeight;
         setScrolled(newScroll);
         setCurrentTableWidth((bodyRef.current?.clientWidth ?? 17) - (newScroll ? 0 : 17));
+    }, 100), []);
     
     React.useEffect(() => {
         let resizeObserver: ResizeObserver;
-        
+
         const intervalHandle = setInterval(() => {
             if (bodyRef?.current == null) return;
             resizeObserver = new ResizeObserver(() => {
-            setTableWidth();
-        });
+                setTableWidth();
+            });
             resizeObserver.observe(bodyRef.current);
             clearInterval(intervalHandle);
         }, 10);
-
+        
         return () => {
             clearInterval(intervalHandle);
             if (resizeObserver != null && resizeObserver.disconnect != null) resizeObserver.disconnect();
@@ -218,7 +219,6 @@ export default function AdjustableTable<T>(props: React.PropsWithChildren<TableP
                 }
                 else hideKeys.push(k);
             });
-            
             
             const numEnabledColumns = showKeys.length;
 
@@ -480,7 +480,7 @@ function Rows<T>(props: React.PropsWithChildren<IRowProps<T>>) {
                 e,
             );
     }, [props.OnClick]);
-    
+
     const bodyStyle = React.useMemo(() => ({ ...props.BodyStyle, paddingRight: (props.BodyScrolled ? 0 : 17) }), [props.BodyStyle, props.BodyScrolled]);
     
     return (
