@@ -164,12 +164,17 @@ export default function AdjustableTable<T>(props: React.PropsWithChildren<TableP
     const autoWidth = React.useRef<Map<string, IAutoWidth>>(new Map<string, IAutoWidth>());
     const [autoWidthVersion, setAutoWidthVersion] = React.useState<number>(0);
     const [currentTableWidth, setCurrentTableWidth] = React.useState<number>(0);
-
+    const [scrolled, setScrolled] = React.useState<boolean>(false);
     const [extraWidthPerRow, setExtraWidthPerRow] = React.useState<number>(0);
 
     const setTableWidth = React.useCallback(_.debounce(() => {
-        setCurrentTableWidth(bodyRef.current?.offsetWidth ?? 0);
-    }, 500), []);
+        if (bodyRef.current == null) return;
+        // Note: certain body classes may break this check if they set overflow to scroll
+        let newScroll = false;
+        if (props.TbodyStyle?.overflowY === 'scroll' || props.TbodyStyle?.overflow === 'scroll') newScroll = true;
+        else newScroll = bodyRef.current.clientHeight < bodyRef.current.scrollHeight;
+        setScrolled(newScroll);
+        setCurrentTableWidth((bodyRef.current?.clientWidth ?? 17) - (newScroll ? 0 : 17));
     
     React.useEffect(() => {
         let resizeObserver: ResizeObserver;
@@ -421,6 +426,7 @@ export default function AdjustableTable<T>(props: React.PropsWithChildren<TableP
         SetWidth={setWidth}
         ExtraWidth={extraWidthPerRow}
         BodyRef={bodyRef}
+        BodyScrolled={scrolled}
         >
         {props.children}
         </Rows>
@@ -455,6 +461,7 @@ interface IRowProps<T> {
     SetWidth: (key: string, itemKey: string | number, width: number, isAuto: boolean, isUndefined: boolean) => void;
     ExtraWidth: number,
     BodyRef?: React.MutableRefObject<HTMLTableSectionElement | null>;
+    BodyScrolled: boolean
 }
     
 function Rows<T>(props: React.PropsWithChildren<IRowProps<T>>) {
@@ -474,8 +481,10 @@ function Rows<T>(props: React.PropsWithChildren<IRowProps<T>>) {
             );
     }, [props.OnClick]);
     
+    const bodyStyle = React.useMemo(() => ({ ...props.BodyStyle, paddingRight: (props.BodyScrolled ? 0 : 17) }), [props.BodyStyle, props.BodyScrolled]);
+    
     return (
-        <tbody style={props.BodyStyle} className={props.BodyClass} ref={props.BodyRef}>
+        <tbody style={bodyStyle} className={props.BodyClass} ref={props.BodyRef}>
         {props.Data.map((d, i) => {
             const style: React.CSSProperties = props.RowStyle !== undefined ? { ...props.RowStyle } : {};
             
