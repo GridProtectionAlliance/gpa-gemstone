@@ -282,29 +282,30 @@ export default function AdjustableTable<T>(props: React.PropsWithChildren<TableP
     }, [props.OnSort]);
     
     const setWidth = React.useCallback((colKey: string, key: string | number, width: number, isAuto: boolean, isUndefined: boolean) => {
+        const flooredWidth = Math.floor(width);
         if (!autoWidth.current.has(colKey)) {                                     // does the column exist
             autoWidth.current.set(colKey, {                                       // if not, add it.
-                maxColWidth: width,
-                width: new Map<string | number, number>([[key, width]]),
+                maxColWidth: flooredWidth,
+                width: new Map<string | number, number>([[key, flooredWidth]]),
                 enabled: true,
                 adjustement: 0,
                 isAuto: isAuto,
                 isUndefined: isUndefined
             })
         } else if (!(autoWidth.current.get(colKey)?.width.has(key) ?? false)) {   // it exists but the key does not
-            autoWidth.current.get(colKey)?.width.set(key, width);                 // add the width for this key
+            autoWidth.current.get(colKey)?.width.set(key, flooredWidth);                 // add the width for this key
             autoWidth.current.get(colKey)!.isAuto = isAuto;
-            if (width > (autoWidth.current.get(colKey)?.maxColWidth ?? 9e10))     // if width is > to max col
-            autoWidth.current.get(colKey)!.maxColWidth = width;                   // set max to width
+            if (flooredWidth > (autoWidth.current.get(colKey)?.maxColWidth ?? 9e10))     // if width is > to max col
+                autoWidth.current.get(colKey)!.maxColWidth = flooredWidth;                   // set max to width
             
-        } else if (autoWidth.current.get(colKey)!.width.get(key) == width) {    // width == newW
+        } else if (autoWidth.current.get(colKey)!.width.get(key) == flooredWidth) {    // width == newW
             autoWidth.current.get(colKey)!.isAuto = isAuto;
             return;
             
         } else {
-            autoWidth.current.get(colKey)!.width.set(key, width);                 // otherwise, it exists, just set the width
+            autoWidth.current.get(colKey)!.width.set(key, flooredWidth);                 // otherwise, it exists, just set the width
             autoWidth.current.get(colKey)!.isAuto = isAuto;
-            if (width == autoWidth.current.get(colKey)?.maxColWidth)            // check against max
+            if (flooredWidth == autoWidth.current.get(colKey)?.maxColWidth)            // check against max
             autoWidth.current.get(colKey)!.maxColWidth = Math.max(...autoWidth.current.get(colKey)!.width.values());
         }
 
@@ -520,7 +521,7 @@ function Rows<T>(props: React.PropsWithChildren<IRowProps<T>>) {
                                     e,
                                 ) : undefined
                             }
-                            setWidth={(w: number, a: boolean, u: boolean) => props.SetWidth(element.props.Key, key, Math.floor(w), a, u)}
+                            setWidth={(w: number, a: boolean, u: boolean) => props.SetWidth(element.props.Key, key, w, a, u)}
                             style={element.props.RowStyle}
                             width={
                                 props.AutoWidth.current.get(element.props.Key)?.width.has(key) ?? false
@@ -574,7 +575,7 @@ function Rows<T>(props: React.PropsWithChildren<IRowProps<T>>) {
                                                 e,
                                             ) : undefined
                                         }
-                                        setWidth={(w: number, a: boolean, u: boolean) => props.SetWidth(element.props.Key, key, Math.floor(w), a, u)}
+                                        setWidth={(w: number, a: boolean, u: boolean) => props.SetWidth(element.props.Key, key, w, a, u)}
                                         style={element.props.RowStyle}
                                         width={
                                             props.AutoWidth.current.get(element.props.Key)?.width.has(key) ?? false
@@ -738,7 +739,7 @@ function Header<T>(props: React.PropsWithChildren<IHeaderProps<T>>) {
                     return (
                 <ColumnHeaderWrapper
                     enabled={props.AutoWidth.current.get(element.props.Key)?.enabled ?? true}
-                    setWidth={(w: number, a: boolean, u: boolean) => props.SetWidth(element.props.Key, Math.floor(w), a, u)}
+                    setWidth={(w: number, a: boolean, u: boolean) => props.SetWidth(element.props.Key, w, a, u)}
                     onSort={(e) =>
                         props.OnSort(
                             { colKey: element.props.Key, colField: element.props.Field, ascending: props.Ascending },
