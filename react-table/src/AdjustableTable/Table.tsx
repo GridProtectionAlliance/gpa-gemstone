@@ -172,17 +172,20 @@ export default function AdjustableTable<T>(props: React.PropsWithChildren<TableP
     }, 500), []);
     
     React.useEffect(() => {
-        const element = bodyRef?.current;
+        let resizeObserver: ResizeObserver;
         
-        if (element == null) return;
-        
-        const resizeObserver = new ResizeObserver(() => {
+        const intervalHandle = setInterval(() => {
+            if (bodyRef?.current == null) return;
+            resizeObserver = new ResizeObserver(() => {
             setTableWidth();
         });
+            resizeObserver.observe(bodyRef.current);
+            clearInterval(intervalHandle);
+        }, 10);
 
-        resizeObserver.observe(element);
         return () => {
-            resizeObserver.disconnect();
+            clearInterval(intervalHandle);
+            if (resizeObserver != null && resizeObserver.disconnect != null) resizeObserver.disconnect();
         };
     }, []);
     
