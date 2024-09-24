@@ -38,5 +38,6 @@ import { useEffectWithPrevious } from './React/useEffectWithPrevious';
 import { findLastIndex } from './FindLastIndex'
 import { IsRegex } from './IsRegex';
 import { CsvStringToArray } from './CSVStringToArray';
+import { useGetContainerPosition } from './useGetContainerPosition';
 
-export {CreateGuid, GetTextWidth, GetNodeSize, RandomColor, GetTextHeight, IsNumber, IsInteger, IsCron, SpacedColor, HsvToHex, HexToHsv, findLastIndex, useEffectWithPrevious, IsRegex, CsvStringToArray}
+export {CreateGuid, GetTextWidth, GetNodeSize, RandomColor, GetTextHeight, IsNumber, IsInteger, IsCron, SpacedColor, HsvToHex, HexToHsv, findLastIndex, useEffectWithPrevious, IsRegex, CsvStringToArray, useGetContainerPosition}
