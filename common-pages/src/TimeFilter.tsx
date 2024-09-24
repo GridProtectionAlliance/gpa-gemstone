@@ -28,7 +28,7 @@ import { DatePicker, Select, Input } from '@gpa-gemstone/react-forms'
 import { findAppropriateUnit, getMoment, getStartEndTime, units, IStartEnd, IStartDuration, IEndDuration, 
     ICenterDuration, readableUnit, TimeUnit } from './TimeWindowUtils';
 import { AvailableQuickSelects, getFormat, DateUnit } from './TimeFilter/QuickSelects'
-
+import _ from 'lodash'
 
 interface ITimeWindow {
     center: string,
@@ -125,9 +125,7 @@ const TimeFilter = (props: IProps) => {
     //Checks typing of ITimeFilter and then compares to ITimeWindow
     function isEqual(flt1: ITimeWindow, flt2: ITimeFilter) {
         const flt = getTimeWindow(flt2, format);
-        return flt1.center == flt.center &&
-            flt1.unit == flt.unit &&
-            flt1.duration == flt.duration
+        return _.isEqual(flt, flt1)
     }
 
     React.useEffect(() => {
@@ -220,8 +218,8 @@ const TimeFilter = (props: IProps) => {
                                 const flt = getTimeWindow({center: filter.center, halfDuration: r.halfDuration, unit: filter.unit}, format);
                                 setFilter(prevFilter => ({
                                     ...prevFilter,
-                                    duration: r.duration,
-                                    halfDuration: r.halfDuration,
+                                    duration: flt.duration,
+                                    halfDuration: flt.halfDuration,
                                     start: flt.start,
                                     end: flt.end
                                 }));
