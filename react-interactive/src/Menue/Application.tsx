@@ -29,9 +29,10 @@ import Section from './Section';
 import LoadingScreen from '../LoadingScreen';
 import ServerErrorIcon from '../ServerErrorIcon';
 import styled from "styled-components";
-import { SVGIcons } from "@gpa-gemstone/gpa-symbols";
+import { ReactIcons } from "@gpa-gemstone/gpa-symbols"; 
 import { Application } from '@gpa-gemstone/application-typings';
 import Content from "./Content";
+import { useGetContainerPosition } from '../../../helper-functions/src/useGetContainerPosition';
 
 interface IProps {
     HomePath: string,
@@ -87,6 +88,8 @@ const SidebarDiv = styled.div`
     position: -webkit-sticky;
     position: sticky;
     height: calc( 100% - 35px);
+    overflow-y: auto;
+    overflow-x: hidden;
   }`;
 
 const MainDiv = styled.div<IMainDivProps>`
@@ -106,17 +109,40 @@ const Applications: React.ForwardRefRenderFunction<IApplicationRefs, React.Props
     const [collapsed, setCollapsed] = React.useState<boolean>(false)
     const navBarRef = React.useRef<HTMLDivElement>(null);
     const mainDivRef = React.useRef<HTMLDivElement>(null);
-
-    const showOpen = props.AllowCollapsed !== undefined && props.AllowCollapsed && collapsed;
-    const showClose = props.AllowCollapsed !== undefined && props.AllowCollapsed && !collapsed;
+    const mainDivSize = useGetContainerPosition(mainDivRef);
 
     const [ignored, forceUpdate] = React.useReducer((x: number) => x + 1, 0); // integer state for resize renders
 
     const [navBarHeight, setNavBarHeight] = React.useState<number>(40);
 
+    const [shouldRemoveSideNav, setShouldRemoveSideNav] = React.useState<boolean>(false);
+    const [shouldAddCollapseOptions, setShouldAddCollapseOptions] = React.useState<boolean>(false);
+
+    const showOpen = (props.AllowCollapsed !== undefined && props.AllowCollapsed || shouldAddCollapseOptions) && collapsed;
+    const showClose = (props.AllowCollapsed !== undefined && props.AllowCollapsed || shouldAddCollapseOptions) && !collapsed;
+    const hideSide = (props.HideSideBar === undefined && !shouldRemoveSideNav) ? false : (props.HideSideBar || shouldRemoveSideNav);
+
+
     React.useLayoutEffect(() => {
         setNavBarHeight(navBarRef.current?.offsetHeight ?? 40)
     });
+
+    React.useEffect(() => {
+        if(mainDivSize.Width === 0) return;
+
+        if (mainDivSize.Width <= 200)
+            setShouldRemoveSideNav(true);
+        else
+            setShouldRemoveSideNav(false);
+
+        if (mainDivSize.Width <= 600) {
+            if (!props.AllowCollapsed)
+                setShouldAddCollapseOptions(true);
+
+            setCollapsed(true);
+        }
+
+    }, [mainDivSize, props.AllowCollapsed])
 
     React.useEffect(() => {
         const listener = (evt: any) => forceUpdate();
@@ -162,9 +188,6 @@ const Applications: React.ForwardRefRenderFunction<IApplicationRefs, React.Props
         return routes;
     }
 
-
-    const hideSide = props.HideSideBar === undefined ? false : props.HideSideBar;
-
     return <>
         <Context.Provider value={GetContext()}>
             {props.UseLegacyNavigation === undefined || !props.UseLegacyNavigation ? <Router>
@@ -174,8 +197,8 @@ const Applications: React.ForwardRefRenderFunction<IApplicationRefs, React.Props
                         HomePath={props.HomePath}
                         Logo={props.Logo}
                         OnSignOut={props.OnSignOut}
-                        ShowOpen={showOpen}
-                        ShowClose={showClose}
+                        ShowOpen={hideSide ? false : showOpen}
+                        ShowClose={hideSide ? false : showClose}
                         NavBarContent={props.NavBarContent}
                         ref={navBarRef}
                     />
@@ -274,10 +297,10 @@ const HeaderContent = React.forwardRef<HTMLDivElement, IHeaderProps>((props, ref
     return <>
         <nav className="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow" ref={ref}>
             {props.ShowOpen ? <a style={{ color: '#f8f9fa', marginLeft: 15 }} onClick={() => props.SetCollapsed(false)} >
-                {SVGIcons.ArrowForward}
+                <ReactIcons.ArrowForward/>
             </a> : null}
             {props.ShowClose ? <a style={{ color: '#f8f9fa', marginLeft: 15 }} onClick={() => props.SetCollapsed(true)}>
-                {SVGIcons.ArrowBackward}
+                <ReactIcons.ArrowBackward/>
             </a> : null}
             {props.Logo !== undefined ?
                 < a className="navbar-brand col-sm-2 col-md-1 mr-0 mr-auto" href={props.HomePath} ><img style={{ maxHeight: 35, margin: -5 }} src={props.Logo} /></a> : null}
