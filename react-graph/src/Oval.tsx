@@ -41,7 +41,11 @@ export interface IProps {
      * @type {string}
      */
     Color: string,
-
+    /**
+     * Color of text in oval.
+     * @type {string}
+     */
+    TextColor?: string,
     /**
      * The vertical radius of the oval.
      * @type {number}
@@ -214,9 +218,9 @@ const Oval = (props: IProps) => {
 
             {props.Text !== undefined ?
                 <text
-                    fill={'black'}
+                    fill={props.TextColor ?? 'black'}
                     style={{ fontSize: textSize + 'em', textAnchor: 'middle', dominantBaseline: 'middle' }}
-                    y={context.YTransformation(props.Data[2], AxisMap.get(props.Axis)) - props.Radius - 5}
+                    y={context.YTransformation(props.Data[2], AxisMap.get(props.Axis))}
                     x={context.XTransformation(props.Data[0]) + ((Math.abs(context.XTransformation(props.Data[1]) - context.XTransformation(props.Data[0])) + (2 * props.Radius)) / 2) }
                 >
                     {props.Text}
