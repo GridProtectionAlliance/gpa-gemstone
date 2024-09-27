@@ -26,7 +26,7 @@
 //******************************************************************************************************
 import React from 'react';
 import _ from 'lodash';
-import { Input, Select, MultiCheckBoxSelect } from '@gpa-gemstone/react-forms';
+import { Input, Select, MultiCheckBoxSelect, RadioButtons } from '@gpa-gemstone/react-forms';
 import { OpenXDA } from '@gpa-gemstone/application-typings';
 
 
@@ -145,22 +145,17 @@ const EventCharacteristicFilter = (props: IProps) => {
                                     Options={props.magDurCurves.map((v) => ({ Value: v.ID.toString(), Label: v.Name }))} />
                             </div>
                             <div className='form-check form-check-inline'>
-                                <input className="form-check-input" type="radio" onChange={() => {
-                                    setNewEventCharacteristicFilter({ ...newEventCharacteristicFilter, curveInside: true, curveOutside: false });
-                                }} checked={newEventCharacteristicFilter.curveInside && !props.eventCharacteristicFilter.curveOutside} />
-                                <label className="form-check-label">Inside</label>
-                            </div>
-                            <div className='form-check form-check-inline'>
-                                <input className="form-check-input" type="radio" onChange={() => {
-                                    setNewEventCharacteristicFilter({ ...newEventCharacteristicFilter, curveOutside: true, curveInside: false });
-                                }} checked={newEventCharacteristicFilter.curveOutside && !newEventCharacteristicFilter.curveInside} />
-                                <label className="form-check-label">Outside</label>
-                            </div>
-                            <div className='form-check form-check-inline'>
-                                <input className="form-check-input" type="radio" onChange={() => {
-                                    setNewEventCharacteristicFilter({ ...newEventCharacteristicFilter, curveOutside: true, curveInside: true });
-                                }} checked={newEventCharacteristicFilter.curveOutside && newEventCharacteristicFilter.curveInside} />
-                                <label className="form-check-label">Both</label>
+                                <RadioButtons<IEventCharacteristicFilters>
+                                    Record={newEventCharacteristicFilter}
+                                    Label=''
+                                    Field='sagType'
+                                    Setter={setNewEventCharacteristicFilter}
+                                    Options={[
+                                        { Value: 'LL', Label: 'LL' },
+                                        { Value: 'LN', Label: 'LN' },
+                                        { Value: 'both', Label: 'Both' }
+                                    ]}
+                                />
                             </div>
                         </div>
                     </form>
@@ -241,22 +236,17 @@ const EventCharacteristicFilter = (props: IProps) => {
                             </div>
                             <div className="row justify-content-md-center">
                                 <div className='form-check form-check-inline'>
-                                    <input className="form-check-input" type="radio" onChange={() => {
-                                        setNewEventCharacteristicFilter({ ...newEventCharacteristicFilter, sagType: 'LL' });
-                                    }} checked={newEventCharacteristicFilter.sagType == 'LL'} />
-                                    <label className="form-check-label">LL</label>
-                                </div>
-                                <div className='form-check form-check-inline'>
-                                    <input className="form-check-input" type="radio" onChange={() => {
-                                        setNewEventCharacteristicFilter({ ...newEventCharacteristicFilter, sagType: 'LN' });
-                                    }} checked={newEventCharacteristicFilter.sagType == 'LN'} />
-                                    <label className="form-check-label">LN</label>
-                                </div>
-                                <div className='form-check form-check-inline'>
-                                    <input className="form-check-input" type="radio" onChange={() => {
-                                        setNewEventCharacteristicFilter({ ...newEventCharacteristicFilter, sagType: 'both' });
-                                    }} checked={newEventCharacteristicFilter.sagType == 'both'} />
-                                    <label className="form-check-label">Both</label>
+                                    <RadioButtons<IEventCharacteristicFilters>
+                                        Record={newEventCharacteristicFilter}
+                                        Label=''
+                                        Field='sagType'
+                                        Setter={setNewEventCharacteristicFilter}
+                                        Options={[
+                                            { Value: 'LL', Label: 'LL' },
+                                            { Value: 'LN', Label: 'LN' },
+                                            { Value: 'both', Label: 'Both' }
+                                        ]}
+                                    />
                                 </div>
                             </div>
                         </div>
@@ -321,22 +311,17 @@ const EventCharacteristicFilter = (props: IProps) => {
                             </div>
                             <div className="row justify-content-md-center">
                                 <div className='form-check form-check-inline'>
-                                    <input className="form-check-input" type="radio" onChange={() => {
-                                        setNewEventCharacteristicFilter({ ...newEventCharacteristicFilter, transientType: 'LL' });
-                                    }} checked={newEventCharacteristicFilter.transientType == 'LL'} />
-                                    <label className="form-check-label">LL</label>
-                                </div>
-                                <div className='form-check form-check-inline'>
-                                    <input className="form-check-input" type="radio" onChange={() => {
-                                        setNewEventCharacteristicFilter({ ...newEventCharacteristicFilter, transientType: 'LN' });
-                                    }} checked={newEventCharacteristicFilter.transientType == 'LN'} />
-                                    <label className="form-check-label">LN</label>
-                                </div>
-                                <div className='form-check form-check-inline'>
-                                    <input className="form-check-input" type="radio" onChange={() => {
-                                        setNewEventCharacteristicFilter({ ...newEventCharacteristicFilter, transientType: 'both' });
-                                    }} checked={newEventCharacteristicFilter.transientType == 'both'} />
-                                    <label className="form-check-label">Both</label>
+                                    <RadioButtons<IEventCharacteristicFilters>
+                                        Record={newEventCharacteristicFilter}
+                                        Label=''
+                                        Field='sagType'
+                                        Setter={setNewEventCharacteristicFilter}
+                                        Options={[
+                                            { Value: 'LL', Label: 'LL' },
+                                            { Value: 'LN', Label: 'LN' },
+                                            { Value: 'both', Label: 'Both' }
+                                        ]}
+                                    />
                                 </div>
                             </div>
                         </div>
@@ -382,22 +367,17 @@ const EventCharacteristicFilter = (props: IProps) => {
                             </div>
                             <div className="row justify-content-md-center">
                                 <div className='form-check form-check-inline'>
-                                    <input className="form-check-input" type="radio" onChange={() => {
-                                        setNewEventCharacteristicFilter({ ...newEventCharacteristicFilter, swellType: 'LL' });
-                                    }} checked={newEventCharacteristicFilter.swellType == 'LL'} />
-                                    <label className="form-check-label">LL</label>
-                                </div>
-                                <div className='form-check form-check-inline'>
-                                    <input className="form-check-input" type="radio" onChange={() => {
-                                        setNewEventCharacteristicFilter({ ...newEventCharacteristicFilter, swellType: 'LN' });
-                                    }} checked={newEventCharacteristicFilter.swellType == 'LN'} />
-                                    <label className="form-check-label">LN</label>
-                                </div>
-                                <div className='form-check form-check-inline'>
-                                    <input className="form-check-input" type="radio" onChange={() => {
-                                        setNewEventCharacteristicFilter({ ...newEventCharacteristicFilter, swellType: 'both' });
-                                    }} checked={newEventCharacteristicFilter.swellType == 'both'} />
-                                    <label className="form-check-label">Both</label>
+                                    <RadioButtons<IEventCharacteristicFilters>
+                                        Record={newEventCharacteristicFilter}
+                                        Label=''
+                                        Field='sagType'
+                                        Setter={setNewEventCharacteristicFilter}
+                                        Options={[
+                                            { Value: 'LL', Label: 'LL' },
+                                            { Value: 'LN', Label: 'LN' },
+                                            { Value: 'both', Label: 'Both' }
+                                        ]}
+                                    />
                                 </div>
                             </div>
                         </div>
