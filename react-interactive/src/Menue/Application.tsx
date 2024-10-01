@@ -127,14 +127,14 @@ const Applications: React.ForwardRefRenderFunction<IApplicationRefs, React.Props
     });
 
     React.useEffect(() => {
-        if(mainDivSize.Width === 0) return;
+        if(mainDivSize.width === 0) return;
 
-        if (mainDivSize.Width <= 200)
+        if (mainDivSize.width <= 200)
             setShouldRemoveSideNav(true);
         else
             setShouldRemoveSideNav(false);
 
-        if (mainDivSize.Width <= 600) {
+        if (mainDivSize.width <= 600) {
             if (!(props.AllowCollapsed ?? false))
                 setShouldAddCollapseOptions(true);
 
