@@ -120,8 +120,7 @@ const Applications: React.ForwardRefRenderFunction<IApplicationRefs, React.Props
 
     const showOpen = (props.AllowCollapsed !== undefined && props.AllowCollapsed || shouldAddCollapseOptions) && collapsed;
     const showClose = (props.AllowCollapsed !== undefined && props.AllowCollapsed || shouldAddCollapseOptions) && !collapsed;
-    const hideSide = (props.HideSideBar === undefined && !shouldRemoveSideNav) ? false : (props.HideSideBar || shouldRemoveSideNav);
-
+    const hideSide = (props.HideSideBar === undefined && !shouldRemoveSideNav) ? false : ((props.HideSideBar ?? false) || shouldRemoveSideNav);
 
     React.useLayoutEffect(() => {
         setNavBarHeight(navBarRef.current?.offsetHeight ?? 40)
@@ -136,7 +135,7 @@ const Applications: React.ForwardRefRenderFunction<IApplicationRefs, React.Props
             setShouldRemoveSideNav(false);
 
         if (mainDivSize.Width <= 600) {
-            if (!props.AllowCollapsed)
+            if (!(props.AllowCollapsed ?? false))
                 setShouldAddCollapseOptions(true);
 
             setCollapsed(true);
