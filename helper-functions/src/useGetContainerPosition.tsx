@@ -20,11 +20,11 @@
 //       Generated original version of source code.
 //
 // ******************************************************************************************************
-import {Gemstone} from '@gpa-gemstone/application-typings';
 import * as React from 'react'
+import * as _ from 'lodash';
 
 export const useGetContainerPosition = (containerRef: React.MutableRefObject<HTMLDivElement | null>) => {
-    const [containerPosition, setContainerSize] = React.useState<Gemstone.TSX.Interfaces.IElementPosition>({ Top: 0, Left: 0, Height: 0, Width: 0 });
+    const [containerPosition, setContainerSize] = React.useState<DOMRect>({ top: 0, left: 0, height: 0, width: 0, x: 0, y: 0, bottom: 0, right: 0, toJSON: () => {} });
 
     React.useLayoutEffect(() => {
         if (containerRef.current == null) return
@@ -32,8 +32,8 @@ export const useGetContainerPosition = (containerRef: React.MutableRefObject<HTM
         const handleResize = () => {
             if (containerRef.current == null) return
             const newSize = containerRef.current.getBoundingClientRect()
-            if (newSize.top !== containerPosition.Top || newSize.left !== containerPosition.Left || newSize.height !== containerPosition.Height || newSize.width !== containerPosition.Width) {
-                setContainerSize({ Height: newSize.height, Top: newSize.top, Left: newSize.left, Width: newSize.width })
+            if (!_.isEqual(newSize, containerPosition)) {
+                setContainerSize(newSize)
             }
         }
 
