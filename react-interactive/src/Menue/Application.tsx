@@ -32,7 +32,7 @@ import styled from "styled-components";
 import { ReactIcons } from "@gpa-gemstone/gpa-symbols"; 
 import { Application } from '@gpa-gemstone/application-typings';
 import Content from "./Content";
-import { useGetContainerPosition } from '../../../helper-functions/src/useGetContainerPosition';
+import { useGetContainerPosition } from '@gpa-gemstone/helper-functions';
 
 interface IProps {
     HomePath: string,
