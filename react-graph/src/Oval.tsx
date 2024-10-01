@@ -41,7 +41,11 @@ export interface IProps {
      * @type {string}
      */
     Color: string,
-
+    /**
+     * Color of text in oval.
+     * @type {string}
+     */
+    TextColor?: string,
     /**
      * The vertical radius of the oval.
      * @type {number}
@@ -127,24 +131,37 @@ const Oval = (props: IProps) => {
 
     // Adjust text size within the oval to ensure it fits
     React.useEffect(() => {
-        if (props.Text === undefined)
-            return;
-
-        let tSize = 5;
-        const ovalWidth = Math.abs(context.XTransformation(props.Data[1]) - context.XTransformation(props.Data[0])) + (2 * props.Radius); 
-        const ovalHeight = 2 * props.Radius; 
-
-        let dX = GetTextWidth("Segoe UI", tSize + "em", props.Text);
-        let dY = GetTextHeight("Segoe UI", tSize + "em", props.Text);
-
-        while ((dX > ovalWidth || dY > ovalHeight) && tSize > 0.05) {
-            tSize = tSize - 0.01;
-            dX = GetTextWidth("Segoe UI", tSize + "em", props.Text);
-            dY = GetTextHeight("Segoe UI", tSize + "em", props.Text);
+        if (props.Text === undefined) return;
+    
+        const fontFamily = "Segoe UI";
+        const fontSizeUnit = "em";
+    
+        const ovalWidth =  Math.abs(context.XTransformation(props.Data[1]) - context.XTransformation(props.Data[0])) + (2 * props.Radius);
+        const ovalHeight = 2 * props.Radius;
+    
+        let minSize = 0.05;
+        let maxSize = 5;
+        let bestSize = maxSize;
+    
+        const calculateTextSize = (size: number) => {
+            const dX = GetTextWidth(fontFamily, size + fontSizeUnit, props.Text as string);
+            const dY = GetTextHeight(fontFamily, size + fontSizeUnit, props.Text as string);
+            return { dX, dY };
         }
-        setTextSize(tSize);
-
-    }, [props.Text, props.Radius, context.XTransformation, props.Data])
+    
+        while (maxSize - minSize > 0.01) {
+            const midSize = (maxSize + minSize) / 2;
+            const { dX, dY } = calculateTextSize(midSize);
+    
+            if (dX <= ovalWidth && dY <= ovalHeight) {
+                bestSize = midSize;
+                minSize = midSize; // Try larger
+            } else 
+                maxSize = midSize; // Try smaller
+        }
+    
+        setTextSize(bestSize);
+    }, [props.Text, props.Radius, context.XTransformation, props.Data]);
 
     // Set up a click handler if provided in props
     React.useEffect(() => {
@@ -199,13 +216,15 @@ const Oval = (props: IProps) => {
             />
 
 
-            {props.Text !== undefined ? <text fill={'black'}
-                style={{ fontSize: textSize + 'em', textAnchor: 'middle', dominantBaseline: 'middle' }}
-                y={context.YTransformation(props.Data[1], AxisMap.get(props.Axis))}
-                x={context.XTransformation(props.Data[0])}
-            >
-
-                {props.Text}</text> : null}
+            {props.Text !== undefined ?
+                <text
+                    fill={props.TextColor ?? 'black'}
+                    style={{ fontSize: textSize + 'em', textAnchor: 'middle', dominantBaseline: 'middle' }}
+                    y={context.YTransformation(props.Data[2], AxisMap.get(props.Axis))}
+                    x={context.XTransformation(props.Data[0]) + ((Math.abs(context.XTransformation(props.Data[1]) - context.XTransformation(props.Data[0])) + (2 * props.Radius)) / 2) }
+                >
+                    {props.Text}
+                </text> : null}
         </g>
     );
 }
