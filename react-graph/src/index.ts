@@ -11,6 +11,7 @@ import Circle from './Circle';
 import Infobox from './Infobox';
 import Oval from './Oval';
 import { AxisMap } from './GraphContext';
+import HighlightBox from './HighlightBox';
 
 export { 
     Plot,
@@ -25,5 +26,6 @@ export {
     Oval,
     AggregatingCircles,
     Infobox,
-    AxisMap
+    AxisMap,
+    HighlightBox
  };
