@@ -840,7 +840,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
                         heightAxis={heightXLabel} showLeftMostTick={!yHasData[0]}  showRightMostTick={!yHasData[1]} showDate={props.showDateOnTimeAxis} /> :
                       <LogAxis offsetTop={offsetTop} showGrid={props.showGrid} label={props.Tlabel} offsetBottom={offsetBottom} offsetLeft={offsetLeft} offsetRight={offsetRight} width={svgWidth} 
                         height={svgHeight} setHeight={setHeightXLabel} heightAxis={heightXLabel} showLeftMostTick={!yHasData[0]}  showRightMostTick={!yHasData[1]} /> }
-                        {props.hideYAxis ? null : (
+                        {(props.hideYAxis ?? false) ? null : (
                           <>
                             {yHasData[0] ? (
                               <ValueAxis
