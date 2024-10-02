@@ -109,7 +109,7 @@ const Applications: React.ForwardRefRenderFunction<IApplicationRefs, React.Props
     const [collapsed, setCollapsed] = React.useState<boolean>(false)
     const navBarRef = React.useRef<HTMLDivElement>(null);
     const mainDivRef = React.useRef<HTMLDivElement>(null);
-    const mainDivSize = useGetContainerPosition(mainDivRef);
+    const { width } = useGetContainerPosition(mainDivRef);
 
     const [ignored, forceUpdate] = React.useReducer((x: number) => x + 1, 0); // integer state for resize renders
 
@@ -127,21 +127,21 @@ const Applications: React.ForwardRefRenderFunction<IApplicationRefs, React.Props
     });
 
     React.useEffect(() => {
-        if(mainDivSize.width === 0) return;
+        if(width === 0) return;
 
-        if (mainDivSize.width <= 200)
+        if (width <= 200)
             setShouldRemoveSideNav(true);
         else
             setShouldRemoveSideNav(false);
 
-        if (mainDivSize.width <= 600) {
+        if (width <= 600) {
             if (!(props.AllowCollapsed ?? false))
                 setShouldAddCollapseOptions(true);
 
             setCollapsed(true);
         }
 
-    }, [mainDivSize, props.AllowCollapsed])
+    }, [width, props.AllowCollapsed])
 
     React.useEffect(() => {
         const listener = (evt: any) => forceUpdate();
