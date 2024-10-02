@@ -1,4 +1,4 @@
-// ******************************************************************************************************
+﻿// ******************************************************************************************************
 //  Plot.tsx - Gbtc
 //
 //  Copyright © 2020, Grid Protection Alliance.  All Rights Reserved.
@@ -55,6 +55,7 @@ export interface IProps {
     defaultYdomain?: [number,number] | [number,number][],
     defaultMouseMode?: SelectType,
     yDomain?: 'Manual'|'AutoValue'|'HalfAutoValue',
+    hideYAxis? : boolean
     limitZoom?: boolean
     height: number,
     width: number,
@@ -839,12 +840,47 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
                         heightAxis={heightXLabel} showLeftMostTick={!yHasData[0]}  showRightMostTick={!yHasData[1]} showDate={props.showDateOnTimeAxis} /> :
                       <LogAxis offsetTop={offsetTop} showGrid={props.showGrid} label={props.Tlabel} offsetBottom={offsetBottom} offsetLeft={offsetLeft} offsetRight={offsetRight} width={svgWidth} 
                         height={svgHeight} setHeight={setHeightXLabel} heightAxis={heightXLabel} showLeftMostTick={!yHasData[0]}  showRightMostTick={!yHasData[1]} /> }
-                      {yHasData[0] ? <ValueAxis offsetRight={offsetRight} showGrid={props.showGrid} label={typeCorrect<string>(props.Ylabel, 0)} offsetTop={offsetTop} offsetLeft={offsetLeft} offsetBottom={offsetBottom}
-                        width={svgWidth} height={svgHeight} setWidthAxis={setHeightLeftYLabel} setHeightFactor={setHeightYFactor} axis={'left'}
-                        hAxis={heightLeftYLabel} hFactor={heightYFactor} useFactor={props.useMetricFactors === undefined? true: props.useMetricFactors}/> : null}
-                      {yHasData[1] ? <ValueAxis offsetRight={offsetRight} showGrid={props.showGrid} label={typeCorrect<string>(props.Ylabel, 1)} offsetTop={offsetTop} offsetLeft={offsetLeft} offsetBottom={offsetBottom}
-                        width={svgWidth} height={svgHeight} setWidthAxis={setHeightRightYLabel} setHeightFactor={setHeightYFactor} axis={'right'}
-                        hAxis={heightRightYLabel} hFactor={heightYFactor} useFactor={props.useMetricFactors === undefined? true: props.useMetricFactors}/> : null}
+                        {props.hideYAxis ? null : (
+                          <>
+                            {yHasData[0] ? (
+                              <ValueAxis
+                                offsetRight={offsetRight}
+                                showGrid={props.showGrid}
+                                label={typeCorrect<string>(props.Ylabel, 0)}
+                                offsetTop={offsetTop}
+                                offsetLeft={offsetLeft}
+                                offsetBottom={offsetBottom}
+                                width={svgWidth}
+                                height={svgHeight}
+                                setWidthAxis={setHeightLeftYLabel}
+                                setHeightFactor={setHeightYFactor}
+                                axis={'left'}
+                                hAxis={heightLeftYLabel}
+                                hFactor={heightYFactor}
+                                useFactor={props.useMetricFactors === undefined ? true : props.useMetricFactors}
+                              />
+                            ) : null}
+
+                            {yHasData[1] ? (
+                              <ValueAxis
+                                offsetRight={offsetRight}
+                                showGrid={props.showGrid}
+                                label={typeCorrect<string>(props.Ylabel, 1)}
+                                offsetTop={offsetTop}
+                                offsetLeft={offsetLeft}
+                                offsetBottom={offsetBottom}
+                                width={svgWidth}
+                                height={svgHeight}
+                                setWidthAxis={setHeightRightYLabel}
+                                setHeightFactor={setHeightYFactor}
+                                axis={'right'}
+                                hAxis={heightRightYLabel}
+                                hFactor={heightYFactor}
+                                useFactor={props.useMetricFactors === undefined ? true : props.useMetricFactors}
+                              />
+                            ) : null}
+                          </>
+                          )}
                       <defs>
                           <clipPath id={"cp-" + guid}>
                               <path stroke={'none'} fill={'none'} d={` M ${offsetLeft},${offsetTop - 5} H  ${svgWidth - offsetRight + 5} V ${svgHeight - offsetBottom} H ${offsetLeft} Z`} />
