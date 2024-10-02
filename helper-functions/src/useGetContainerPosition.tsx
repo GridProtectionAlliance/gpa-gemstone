@@ -61,13 +61,15 @@ export const useGetContainerPosition = (containerRef: React.MutableRefObject<HTM
             if (newSize.bottom !== bottom) setBottom(newSize.bottom);
             if (newSize.right !== right) setRight(newSize.right);
         }
+        
+        const resizeObserver = new ResizeObserver(handleResize);
+        resizeObserver.observe(containerRef.current);
 
-        handleResize()
-        window.addEventListener('resize', handleResize)
+        handleResize();
 
         return () => {
-            window.removeEventListener('resize', handleResize)
-        }
+            resizeObserver.disconnect(); 
+        };
     })
 
     return {top, left, height, width, x, y, bottom, right}
