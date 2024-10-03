@@ -29,15 +29,17 @@ import ByUser from './user/ByUser';
 import User from './user/User';
 import { DefaultSearch } from './SearchBar';
 import SelectPopup from './StandardSelectPopup';
-import {DefaultSelects} from './SelectionPopup';
+import { DefaultSelects } from './SelectionPopup';
 import ErrorBoundary from './ErrorBoundary';
-import TimeFilter from './TimeFilter';
+import TimeFilter from './TimeFilter/TimeFilter';
 import EventTypeFilter from './EventTypeFilter';
 import EventCharacteristicFilter from './EventCharacteristicFilter';
 import NavBarFilterButton from './NavBarFilterButton';
+import * as TimeWindowUtils from './TimeFilter/TimeWindowUtils'
 
 export {
   TimeFilter,
+  TimeWindowUtils,
   EventTypeFilter,
   EventCharacteristicFilter,
   NavBarFilterButton,

@@ -1,4 +1,5 @@
-﻿//******************************************************************************************************
+﻿
+//******************************************************************************************************
 //  TimeWindowUtils.tsx - Gbtc
 //
 //  Copyright © 2023, Grid Protection Alliance.  All Rights Reserved.
@@ -23,76 +24,87 @@
 //******************************************************************************************************
 import moment from 'moment';
 
+/**
+ * Interface represents picking a time based on Start Date and End Date
+ */
 export interface IStartEnd {
     start: string;
     end: string;
 }
+/**
+ * Interface represents picking a time based on Start Date and Duration
+ */
 export interface IStartDuration {
     start: string;
     duration: number;
     unit: TimeUnit;
 }
+/**
+ * Interface represents picking a time based on End Date and Duration
+ */
 export interface IEndDuration {
     end: string,
     duration: number;
     unit: TimeUnit;
 }
-export interface ICenterDuration {
-    center: string;
-    halfDuration: number;
-    unit: TimeUnit;
-}
 
-export type TimeUnit = 'y'|'M'|'w'|'d'|'h'|'m'|'s'|'ms'
-export const units = ['ms','s','m','h','d','w','M','y'] as TimeUnit[]
+export type TimeUnit = 'y' | 'M' | 'w' | 'd' | 'h' | 'm' | 's' | 'ms'
+export const units = ['ms', 's', 'm', 'h', 'd', 'w', 'M', 'y'] as TimeUnit[]
+export const dateTimeFormat = 'DD MM YYYY hh:mm:ss.SSS';
 
-/*
+/**
 * A Function to determine the most appropriate unit for a window of time specified by start and end time
 */
-export function findAppropriateUnit(startTime: moment.Moment, endTime: moment.Moment, unit?: TimeUnit, useHalfWindow?: boolean): [TimeUnit, number] {
-
-    let unitIndex = units.findIndex(u => u == unit);
-    if (unit === undefined) 
-        unitIndex = 7;
-
+export function findAppropriateUnit(startTime: moment.Moment, endTime: moment.Moment): TimeUnit {
+    const unitIndex = 7;
     let diff = endTime.diff(startTime, units[unitIndex], true);
-    if (useHalfWindow !== undefined && useHalfWindow)
-        diff = diff / 2;
 
     for (let i = unitIndex; i >= 1; i--) {
-        if (i == 6) // Remove month as appropriate due to innacuracy in definition (31/30/28/29 days)
-            continue;
         if (Number.isInteger(diff)) {
-            return [units[i], diff];
+            return units[i];
         }
-        let nextI = i - 1;
-        if (nextI == 6)
-            nextI = 5;
-          
+        const nextI = i - 1;
+
         diff = endTime.diff(startTime, units[nextI], true);
-        if (useHalfWindow !== undefined && useHalfWindow)
-            diff = diff / 2;
 
         if (diff > 65000) {
             diff = endTime.diff(startTime, units[i], true);
-            if (useHalfWindow !== undefined && useHalfWindow)
-                diff = diff / 2;
-            return [units[i], Math.round(diff)];
+            return units[i];
         }
-            
     }
 
-    return [units[0], Math.round(diff)];
+    return units[0];
 }
 
-/*
-* Determines a start time and end time for a window given by center time and duration
+/**
+* Function to handle adding or subtracting duration
 */
 export function getStartEndTime(center: moment.Moment, duration: number, unit: TimeUnit): [moment.Moment, moment.Moment] {
-    const d = moment.duration(duration, unit);
-    const start = center.clone().subtract(d.asHours(), 'h');
-    const end = center.clone().add(d.asHours(), 'h');
+    const start = addDuration(center, -duration, unit);
+    const end = addDuration(center, duration, unit);
     return [start, end]
+}
+
+
+/*
+* Function to handle adding or subtracting duration
+*/
+export function addDuration(start: moment.Moment, duration: number, unit: TimeUnit): moment.Moment {
+    const t1 = start.clone();
+
+    const floor = duration > 0 ? Math.floor(duration) : Math.ceil(duration);    // if duration is negative, use Math.ceil() to get the floor
+    const ceil = duration > 0 ? Math.ceil(duration) : Math.floor(duration);     // if duration is negative, use Math.floor() to get the ceil
+
+    if (floor == ceil && units.findIndex(u => u == unit) >= 4)          // if duration is integer, add duration without modifying
+        return t1.add(duration, unit);
+
+    t1.add(floor, unit);
+
+    const t2 = t1.clone().add(Math.sign(duration), unit);      // Adds a duration of 1 or -1 depending on the sign of input duration
+
+    const hours = t2.diff(t1, 'h', true) * Math.abs(duration - floor)   // Calculates the difference in hours between t2 and t1 and adds to t1
+    return t1.add(hours, 'h');
+
 }
 
 /*
