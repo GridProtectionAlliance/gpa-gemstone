@@ -130,7 +130,7 @@ namespace OpenXDA {
         export interface DataOperation { ID: number, AssemblyName: string, TypeName: string, LoadOrder: number }
         export interface DataReader { ID: number, FilePattern: string, AssemblyName: string, TypeName: string, LoadOrder: number }
 
-		export interface RemoteXDAInstance { ID: number, Name: string, Address: string, Frequency: string, UserAccountID?: string, UseApiAuth: boolean, APIToken?: string, RegistrationKey?: string }
+		export interface RemoteXDAInstance { ID: number, Name: string, Address: string, Frequency: string, APIToken: string, RegistrationKey: string }
         export interface MetersToDataPush { ID: number, RemoteXDAInstanceID: number, LocalXDAMeterID: number, RemoteXDAMeterID: number, RemoteXDAName: string, RemoteXDAAssetKey: string, Obsfucate: boolean, Synced: boolean}
         export interface RemoteXDAMeter extends MetersToDataPush { LocalAlias: string, LocalMeterName: string, LocalAssetKey: string, RemoteAlias: string }
         export interface AssetsToDataPush { ID: number, RemoteXDAInstanceID: number, LocalXDAAssetID: number, RemoteXDAAssetID: number, RemoteXDAAssetKey: string, Obsfucate: boolean, Synced: boolean, RemoteAssetCreatedByDataPusher: boolean}
