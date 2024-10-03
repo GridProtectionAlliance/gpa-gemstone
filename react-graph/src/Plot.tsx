@@ -44,6 +44,7 @@ import AggregatingCircles from './AggregatingCircles';
 import Infobox from './Infobox';
 import HeatMapChart from './HeatMapChart';
 import * as _html2canvas from "html2canvas";
+import HighlightBox from './HighlightBox';
 const html2canvas: any = _html2canvas;
 
 // A ZoomMode of AutoValue means it will zoom on time, and auto Adjust the Value to fit the data.
@@ -54,6 +55,7 @@ export interface IProps {
     defaultYdomain?: [number,number] | [number,number][],
     defaultMouseMode?: SelectType,
     yDomain?: 'Manual'|'AutoValue'|'HalfAutoValue',
+    hideYAxis? : boolean
     limitZoom?: boolean
     height: number,
     width: number,
@@ -838,12 +840,47 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
                         heightAxis={heightXLabel} showLeftMostTick={!yHasData[0]}  showRightMostTick={!yHasData[1]} showDate={props.showDateOnTimeAxis} /> :
                       <LogAxis offsetTop={offsetTop} showGrid={props.showGrid} label={props.Tlabel} offsetBottom={offsetBottom} offsetLeft={offsetLeft} offsetRight={offsetRight} width={svgWidth} 
                         height={svgHeight} setHeight={setHeightXLabel} heightAxis={heightXLabel} showLeftMostTick={!yHasData[0]}  showRightMostTick={!yHasData[1]} /> }
-                      {yHasData[0] ? <ValueAxis offsetRight={offsetRight} showGrid={props.showGrid} label={typeCorrect<string>(props.Ylabel, 0)} offsetTop={offsetTop} offsetLeft={offsetLeft} offsetBottom={offsetBottom}
-                        width={svgWidth} height={svgHeight} setWidthAxis={setHeightLeftYLabel} setHeightFactor={setHeightYFactor} axis={'left'}
-                        hAxis={heightLeftYLabel} hFactor={heightYFactor} useFactor={props.useMetricFactors === undefined? true: props.useMetricFactors}/> : null}
-                      {yHasData[1] ? <ValueAxis offsetRight={offsetRight} showGrid={props.showGrid} label={typeCorrect<string>(props.Ylabel, 1)} offsetTop={offsetTop} offsetLeft={offsetLeft} offsetBottom={offsetBottom}
-                        width={svgWidth} height={svgHeight} setWidthAxis={setHeightRightYLabel} setHeightFactor={setHeightYFactor} axis={'right'}
-                        hAxis={heightRightYLabel} hFactor={heightYFactor} useFactor={props.useMetricFactors === undefined? true: props.useMetricFactors}/> : null}
+                        {(props.hideYAxis ?? false) ? null : (
+                          <>
+                            {yHasData[0] ? (
+                              <ValueAxis
+                                offsetRight={offsetRight}
+                                showGrid={props.showGrid}
+                                label={typeCorrect<string>(props.Ylabel, 0)}
+                                offsetTop={offsetTop}
+                                offsetLeft={offsetLeft}
+                                offsetBottom={offsetBottom}
+                                width={svgWidth}
+                                height={svgHeight}
+                                setWidthAxis={setHeightLeftYLabel}
+                                setHeightFactor={setHeightYFactor}
+                                axis={'left'}
+                                hAxis={heightLeftYLabel}
+                                hFactor={heightYFactor}
+                                useFactor={props.useMetricFactors === undefined ? true : props.useMetricFactors}
+                              />
+                            ) : null}
+
+                            {yHasData[1] ? (
+                              <ValueAxis
+                                offsetRight={offsetRight}
+                                showGrid={props.showGrid}
+                                label={typeCorrect<string>(props.Ylabel, 1)}
+                                offsetTop={offsetTop}
+                                offsetLeft={offsetLeft}
+                                offsetBottom={offsetBottom}
+                                width={svgWidth}
+                                height={svgHeight}
+                                setWidthAxis={setHeightRightYLabel}
+                                setHeightFactor={setHeightYFactor}
+                                axis={'right'}
+                                hAxis={heightRightYLabel}
+                                hFactor={heightYFactor}
+                                useFactor={props.useMetricFactors === undefined ? true : props.useMetricFactors}
+                              />
+                            ) : null}
+                          </>
+                          )}
                       <defs>
                           <clipPath id={"cp-" + guid}>
                               <path stroke={'none'} fill={'none'} d={` M ${offsetLeft},${offsetTop - 5} H  ${svgWidth - offsetRight + 5} V ${svgHeight - offsetBottom} H ${offsetLeft} Z`} />
@@ -857,7 +894,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
                                    if ((element as React.ReactElement<any>).type === Line || (element as React.ReactElement<any>).type === LineWithThreshold || (element as React.ReactElement<any>).type === Infobox ||
                                    (element as React.ReactElement<any>).type === HorizontalMarker || (element as React.ReactElement<any>).type === VerticalMarker || (element as React.ReactElement<any>).type === SymbolicMarker
                                    || (element as React.ReactElement<any>).type === Circle || (element as React.ReactElement<any>).type === AggregatingCircles || (element as React.ReactElement<any>).type === HeatMapChart || 
-                                    (element as React.ReactElement<any>).type === Oval)
+                                    (element as React.ReactElement<any>).type === Oval || (element as React.ReactElement<any>).type === HighlightBox)
                                        return element;
                                    return null;
                                })}
