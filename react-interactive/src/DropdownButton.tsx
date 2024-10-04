@@ -31,20 +31,21 @@ interface IButton {
     /** 
      * text label that appears on the button
      */
-    Label: string,
+    Label: JSX.Element | string,
     Callback: () => void,
     Group?: number,
     Disabled?: boolean
     ToolTipContent?: JSX.Element,
     ShowToolTip?: boolean,
     ToolTipLocation?: ('top' | 'bottom' | 'left' | 'right'),
+    Key?: string | number
 }
 
 /**
 * Represents the properties for a component that renders buttons.
 */
 interface IProps {
-    Label: string,
+    Label: JSX.Element | string,
     Callback: () => void,
     Disabled?: boolean,
     Options: IButton[],
@@ -84,7 +85,7 @@ const BtnDropdown = (props: IProps) => {
             </button>
             <div className={"dropdown-menu" + (showDropdown ? " show" : "")}>
                 {props.Options.map((option, i) => 
-                    <React.Fragment key={option.Label}>
+                    <React.Fragment key={option.Key ?? i}>
                         {i > 0 && props.Options[i].Group !== props.Options[i - 1].Group ?
                             <div className="dropdown-divider" /> 
                             : null}
