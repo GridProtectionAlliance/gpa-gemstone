@@ -465,8 +465,6 @@ interface IRowProps<T> {
 }
     
 function Rows<T>(props: React.PropsWithChildren<IRowProps<T>>) {
-    if (props.Data.length === 0) return null;
-    
     const onClick = React.useCallback((e: React.MouseEvent<HTMLTableRowElement, MouseEvent>, item: T, index: number) => {
         if (props.OnClick !== undefined)
             props.OnClick(
