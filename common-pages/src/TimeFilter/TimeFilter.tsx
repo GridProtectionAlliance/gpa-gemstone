@@ -55,6 +55,7 @@ interface IProps {
     timeZone: string;
     isHorizontal: boolean;
     format?: DateUnit;
+    showHelpMessage?: boolean
 }
 
 const TimeFilter = (props: IProps) => {
@@ -89,7 +90,7 @@ const TimeFilter = (props: IProps) => {
                 {props.dateTimeSetting === 'startWindow' || props.dateTimeSetting === 'startEnd' ?
                     <Row addRow={!props.isHorizontal} class='m-0'>
                         <div className={props.isHorizontal ? (props.showQuickSelect ? props.dateTimeSetting === 'startEnd' ? 'col-2' : 'col-4' : 'col-6') : 'col-12 p-0'}>
-                            <DatePicker< ITimeWindow > Record={filter} Field="start" Help={`All times are in system time. System time is currently set to ${props.timeZone}. `}
+                            <DatePicker< ITimeWindow > Record={filter} Field="start" Help={(props.showHelpMessage ?? true) ? `All times are in system time. System time is currently set to ${props.timeZone}. ` : undefined}
                                 Setter={(r) => {
                                     const flt = props.dateTimeSetting === 'startWindow' ?
                                         getTimeWindowFromFilter({ start: r.start, duration: r.duration, unit: r.unit }, format) :
@@ -113,7 +114,7 @@ const TimeFilter = (props: IProps) => {
                 {props.dateTimeSetting === 'endWindow' || props.dateTimeSetting === 'startEnd' ?
                     <Row addRow={!props.isHorizontal} class='m-0'>
                         <div className={props.isHorizontal ? (props.showQuickSelect ? props.dateTimeSetting === 'startEnd' ? 'col-2' : 'col-4' : 'col-6') : 'col-12 p-0'}>
-                            <DatePicker<ITimeWindow> Record={filter} Field="end" Help={`All times are in system time. System time is currently set to ${props.timeZone}. `}
+                            <DatePicker<ITimeWindow> Record={filter} Field="end" Help={(props.showHelpMessage ?? true) ? `All times are in system time. System time is currently set to ${props.timeZone}. ` : undefined}
                                 Setter={(r) => {
                                     const flt = props.dateTimeSetting === 'endWindow' ?
                                         getTimeWindowFromFilter({ end: r.end, duration: r.duration, unit: r.unit }, format) :
