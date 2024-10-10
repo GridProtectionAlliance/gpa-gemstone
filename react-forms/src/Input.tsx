@@ -159,6 +159,9 @@ export default function Input<T>(props: IProps<T>) {
       }
     }
     else {
+      if (props.Type === 'text' && (props.AllowNull ?? false))
+        console.warn("Input component: Empty strings are set to null for Type='text' and AllowNull=true to maintain current functionality.");
+
       props.Setter({ ...props.Record, [props.Field]: value !== '' ? value : null });
       setHeldVal(value);
     }
