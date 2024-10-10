@@ -24,8 +24,8 @@ import * as React from 'react';
 import { CreateGuid, GetNodeSize, GetTextWidth } from '@gpa-gemstone/helper-functions';
 
 interface ITab {
-	Label: string,
-	Id: string,
+    Label: string,
+    Id: string,
 }
 
 interface IProps {
@@ -54,11 +54,11 @@ const TabSelector = (props: IProps) => {
     // Dynamically calculates number of visible tabs.
     React.useEffect(() => {
         let Wtext = 40;
-		
+
         let Ntext = 0;
         while (Ntext < props.Tabs.length) {
             const w = 2 * 17 + GetTextWidth("Segoe UI", '14px', props.Tabs[Ntext].Label) + 1
-            if (Wtext + w > (width-2))
+            if (Wtext + w > (width - 2))
                 break;
             Wtext = Wtext + w;
             Ntext = Ntext + 1;
@@ -85,9 +85,9 @@ const TabSelector = (props: IProps) => {
     // Determines if there are more tabs to show in dropdown option.
     const showExp = nVisible < props.Tabs.length;
 
-	if (width < 50)
-		return <div style={{ width: '100%' }} ref={guid}> </div>
-		
+    if (width < 50)
+        return <div style={{ width: '100%' }} ref={guid}> </div>
+
     return <div style={{ width: '100%' }} ref={guid}>
         <ul className="nav nav-tabs" style={{ maxHeight: 38 }}>
             {props.Tabs.map((t, i) => i > (nVisible - 1) ? null :
@@ -96,11 +96,11 @@ const TabSelector = (props: IProps) => {
                 </li>
             )}
             {showExp ?
-                <li className={`nav-item dropdown ${dropDownOpen ? ' show' : ''}`} style={{zIndex: 1040}}> 
+                <li className={`nav-item dropdown ${dropDownOpen ? ' show' : ''}`} style={{ zIndex: 1040 }}>
                     <a className="nav-link dropdown-toggle" onClick={() => setDropDownOpen(s => !s)} >...</a>
-                    <div className={`dropdown-menu dropdown-menu-right ${dropDownOpen? ' show' : ''}`}>
+                    <div className={`dropdown-menu dropdown-menu-right ${dropDownOpen ? ' show' : ''}`}>
                         {props.Tabs.map((t, i) => i > (nVisible - 1) ?
-                            <a className={`dropdown-item ${props.CurrentTab === t.Id ? ' active' : ''}`} onClick={() => props.SetTab(t.Id)} key={i}>{t.Label}</a> : null)
+                            <a className={`dropdown-item ${props.CurrentTab === t.Id ? ' active' : ''}`} style={{ cursor: 'pointer' }} onClick={() => props.SetTab(t.Id)} key={i}>{t.Label}</a> : null)
                         }
                     </div>
                 </li> : null}
