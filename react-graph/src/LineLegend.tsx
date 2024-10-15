@@ -88,8 +88,8 @@ function LineLegend(props: IProps) {
         <div style={{ height: legendHeight, width: legendWidth }}>
             <div onClick={() => props.setEnabled(!props.enabled)} style={{ width: '100%', display: 'flex', alignItems: 'center', marginRight: '5px', height: '100%' }}>
                 {(props.lineStyle === '-' ?
-                    <div style={{ width: ' 10px', height: 0, borderTop: '2px solid', borderRight: '10px solid', borderBottom: '2px solid', borderLeft: '10px solid', borderColor: props.color, overflow: 'hidden', marginRight: '5px', opacity: (props.enabled ? 1 : 0.5) }}></div> :
-                    <div style={{ width: ' 10px', height: '4px', borderTop: '0px solid', borderRight: '3px solid', borderBottom: '0px solid', borderLeft: '3px solid', borderColor: props.color, overflow: 'hidden', marginRight: '5px', opacity: (props.enabled ? 1 : 0.5) }}></div>
+                    <div style={{ width: ' 10px', height: 0, borderTop: `2px solid ${props.color}`, borderRight: `10px solid ${props.color}`, borderBottom: `2px solid ${props.color}`, borderLeft: `10px solid ${props.color}`, overflow: 'hidden', marginRight: '5px', opacity: (props.enabled ? 1 : 0.5) }}></div> :
+                    <div style={{ width: ' 10px', height: '4px', borderTop: 'none', borderRight: `3px solid ${props.color}`, borderBottom: 'none', borderLeft: `3px solid ${props.color}`, overflow: 'hidden', marginRight: '5px', opacity: (props.enabled ? 1 : 0.5) }}></div>
                 )}
                 <label style={{ fontFamily: fontFamily, fontWeight: 400, display: 'inline-block', margin: 'auto', marginLeft: 0, fontSize: textSize + 'em', whiteSpace: (useMultiLine ? 'normal' : 'nowrap') }}> {label}</label>
             </div>

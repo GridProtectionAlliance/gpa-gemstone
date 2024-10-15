@@ -79,6 +79,9 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
     const [page, setPage] = React.useState<number>(0);
     const [totalPages, setTotalPages] = React.useState<number>(1);
 
+    const [showDataHeaderAlert, setShowDataHeaderAlert] = React.useState<boolean>(true);
+    const [showDataOrHeaderAlert, setShowDataOrHeaderAlert] = React.useState<boolean>(true);
+
     React.useEffect(() => {
         if (data.length === 0) return
 
@@ -224,7 +227,7 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
                                 {isCSVMissingDataCells && isCSVMissingHeaders ? (
                                     <div className='row'>
                                         <div className='col-12'>
-                                            <Alert AlertColor='alert-info'>
+                                            <Alert AlertColor='alert-info' Show={showDataHeaderAlert} SetShow={setShowDataHeaderAlert}>
                                                 <p style={{ whiteSpace: 'nowrap' }}>
                                                     Missing data cells were added to meet the number of required fields.
                                                 </p>
@@ -239,7 +242,7 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
                                 ) : isCSVMissingDataCells || isCSVMissingHeaders ? (
                                     <div className='row'>
                                         <div className='col-12'>
-                                            <Alert AlertColor='alert-info'>
+                                            <Alert AlertColor='alert-info' Show={showDataOrHeaderAlert} SetShow={setShowDataOrHeaderAlert}>
                                                 <p style={{ whiteSpace: 'nowrap' }}>
                                                     {isCSVMissingDataCells ? 'Missing data cells were added to meet the number of required fields.' : 'Missing headers were added to meet the number of required fields.'}
                                                 </p>

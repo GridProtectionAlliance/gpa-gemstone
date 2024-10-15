@@ -342,6 +342,7 @@ interface IColSelectionProps<> {
 }
 
 function ColumnSelection(props: IColSelectionProps) {
+    const [showAlert, setShowAlert] = React.useState<boolean>(true);
     return (
         <>
             <div className="row">
@@ -403,11 +404,9 @@ function ColumnSelection(props: IColSelectionProps) {
                     )}
                 </div>
             </div>
-            <div>
-                {props.disableAdd ? (
-                    <Alert AlertColor='alert-primary' Style={{ marginBottom: 0, marginTop: '0.5em' }}>Additional columns disabled due to table size.</Alert>
-                ) : null}
-            </div>
+            {props.disableAdd ? (
+                <Alert AlertColor='alert-primary' Style={{ marginBottom: 0, marginTop: '0.5em' }} Show={showAlert} SetShow={setShowAlert}>Additional columns disabled due to table size.</Alert>
+            ) : null}
         </>
     );
 }
