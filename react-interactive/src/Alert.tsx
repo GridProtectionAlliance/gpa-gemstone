@@ -25,15 +25,16 @@ import * as React from 'react';
 interface IProps {
     AlertColor?: 'alert-primary' | 'alert-secondary' | 'alert-success' | 'alert-danger' | 'alert-warning' | 'alert-info' | 'alert-light'
     Style?: React.CSSProperties,
+    Show: boolean,
+    SetShow: (show: boolean) => void
 }
 
 const DismissibleAlert = (props: React.PropsWithChildren<IProps>) => {
-    const [showAlert, setShowAlert] = React.useState<boolean>(true);
 
     return (
-        <div className={`alert ${props.AlertColor ?? 'alert-dark'} alert-dismissible fade ${showAlert ? 'show' : 'd-none'}`} style={props.Style}>
+        <div className={`alert ${props.AlertColor ?? 'alert-dark'} alert-dismissible fade ${props.Show ? 'show' : 'd-none'}`} style={props.Style}>
             {props.children}
-            <button type="button" className="close" onClick={() => setShowAlert(false)}> <span aria-hidden="true">&times;</span> </button>
+            <button type="button" className="close" onClick={() => props.SetShow(false)}> <span aria-hidden="true">&times;</span> </button>
         </div>
     )
 }
