@@ -31,6 +31,7 @@ import ConfigurableTable from '../ConfigurableTable/ConfigurableTable';
 import Alert from '../Alert';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 import { CsvStringToArray } from '@gpa-gemstone/helper-functions';
+import * as _ from 'lodash';
 
 interface IAdditionalProps<T> {
     Fields: Gemstone.TSX.Interfaces.ICSVField<T>[],
@@ -366,6 +367,19 @@ const parseCSV = (csvContent: string, hasHeaders: boolean, numOfRequiredFields: 
                 headers.push(String.fromCharCode(65 + headers.length)); // A, B, C, etc.
             }
         }
+        // Fix headers so no duplicates
+        for (let headerIndex = 0; headerIndex < headers.length; headerIndex ++) {
+            let count = 1;
+            for (let index = 0; index < headerIndex; index++) {
+                if (headers[headerIndex] === headers[index]) {
+                    // Change header and restart loop to look for another duplicate
+                    headers[headerIndex] += `_${count}`;
+                    count++;
+                    index = -1;
+                    continue;
+                }
+            }
+        };
     }
     else {
         const colCount = rows[0].length - 1 < numOfRequiredFields ? numOfRequiredFields : rows[0].length - 1;
