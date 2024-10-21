@@ -242,8 +242,8 @@ export default function AdjustableTable<T>(props: React.PropsWithChildren<TableP
                 if (numOfColsWithUndefinedCSS > 0 && numOfColsWithAutoCSS == 0) { // Split only on the css undefined if there are no auto-cols
                     colsToDivideBy = numOfColsWithUndefinedCSS;
                 }
-                const extraSpace = (currentTableWidth - colW - numEnabledColumns) / colsToDivideBy;
-                setExtraWidthPerRow(extraSpace);
+                const extraSpace = (currentTableWidth - colW) / colsToDivideBy;
+                setExtraWidthPerRow(Math.floor(extraSpace));
                 props.ReduceWidthCallback?.(hideKeys);
                 setAutoWidthVersion((v) => v + 1);
             }, 500);
