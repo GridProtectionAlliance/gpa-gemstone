@@ -260,7 +260,7 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
                                             OnSort={() => {/*no sort*/ }}
                                             KeySelector={data => data[0]}
                                             TheadStyle={{ width: '100%', display: 'table-header-group', }}
-                                            TbodyStyle={{ width: '100%', display: 'table-row-group', height: '100%' }}
+                                            TbodyStyle={{ width: '100%', display: 'block', height: '100%' }}
                                             RowStyle={{ display: 'table-row', width: '100%', height: 'auto' }}
                                             TableStyle={{ width: '100%', height: '100%', tableLayout: 'fixed', marginBottom: 0, display: 'block' }}
                                             TableClass='table'
