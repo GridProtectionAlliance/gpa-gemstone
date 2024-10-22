@@ -31,6 +31,7 @@ import ConfigurableTable from '../ConfigurableTable/ConfigurableTable';
 import Alert from '../Alert';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 import { CsvStringToArray } from '@gpa-gemstone/helper-functions';
+import * as _ from 'lodash';
 
 interface IAdditionalProps<T> {
     Fields: Gemstone.TSX.Interfaces.ICSVField<T>[],
@@ -259,7 +260,7 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
                                             OnSort={() => {/*no sort*/ }}
                                             KeySelector={data => data[0]}
                                             TheadStyle={{ width: '100%', display: 'table-header-group', }}
-                                            TbodyStyle={{ width: '100%', display: 'table-row-group', height: '100%' }}
+                                            TbodyStyle={{ width: '100%', display: 'block', height: '100%' }}
                                             RowStyle={{ display: 'table-row', width: '100%', height: 'auto' }}
                                             TableStyle={{ width: '100%', height: '100%', tableLayout: 'fixed', marginBottom: 0, display: 'block' }}
                                             TableClass='table'
@@ -364,6 +365,19 @@ const parseCSV = (csvContent: string, hasHeaders: boolean, numOfRequiredFields: 
             missingHeaders = true;
             while (headers.length < numOfRequiredFields) {
                 headers.push(String.fromCharCode(65 + headers.length)); // A, B, C, etc.
+            }
+        }
+        // Fix headers so no duplicates
+        for (let headerIndex = 0; headerIndex < headers.length; headerIndex ++) {
+            let count = 1;
+            for (let index = 0; index < headerIndex; index++) {
+                if (headers[headerIndex] === headers[index]) {
+                    // Change header and restart loop to look for another duplicate
+                    headers[headerIndex] += `_${count}`;
+                    count++;
+                    index = -1;
+                    continue;
+                }
             }
         }
     }

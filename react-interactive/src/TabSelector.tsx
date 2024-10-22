@@ -21,7 +21,7 @@
 // ******************************************************************************************************
 
 import * as React from 'react';
-import { CreateGuid, GetNodeSize, GetTextWidth } from '@gpa-gemstone/helper-functions';
+import { GetTextWidth, useGetContainerPosition } from '@gpa-gemstone/helper-functions';
 
 interface ITab {
     Label: string,
@@ -39,11 +39,11 @@ interface IProps {
  * @param props - configures and manages tab selector.
  */
 const TabSelector = (props: IProps) => {
-
     // State to manage things like visible tabs and container width.
-    const [nVisible, setNVisible] = React.useState<number>(1);
-    const [width, setWidth] = React.useState<number>(100);
-    const guid = React.useRef<HTMLDivElement | null>(null);
+    const containerRef = React.useRef<HTMLDivElement | null>(null);
+    const { width } = useGetContainerPosition(containerRef)
+
+    const [numVisibleTabs, setNumVisibleTabs] = React.useState<number>(1);
     const [dropDownOpen, setDropDownOpen] = React.useState<boolean>(false);
 
     // Resets dropdown state with the CurrentTab changes.
@@ -53,53 +53,38 @@ const TabSelector = (props: IProps) => {
 
     // Dynamically calculates number of visible tabs.
     React.useEffect(() => {
-        let Wtext = 40;
+        let totalAllocatedWidth = 40;
 
-        let Ntext = 0;
-        while (Ntext < props.Tabs.length) {
-            const w = 2 * 17 + GetTextWidth("Segoe UI", '14px', props.Tabs[Ntext].Label) + 1
-            if (Wtext + w > (width - 2))
+        let visibleTabCount = 0;
+
+        while (visibleTabCount < props.Tabs.length) {
+            const currentTabWidth = 2 * 17 + GetTextWidth("Segoe UI", '1em', props.Tabs[visibleTabCount].Label) + 1
+            if (totalAllocatedWidth + currentTabWidth > (width - 2))
                 break;
-            Wtext = Wtext + w;
-            Ntext = Ntext + 1;
+            totalAllocatedWidth = totalAllocatedWidth + currentTabWidth;
+            visibleTabCount = visibleTabCount + 1;
         }
-        setNVisible(Ntext);
+        setNumVisibleTabs(visibleTabCount);
     }, [width, props.Tabs]);
 
-    React.useEffect(() => {
-        const target = guid.current;
-        if (target != null) {
-            const observer = new ResizeObserver(entries => {
-                for (const entry of entries) {
-                    const newWidth = entry.contentRect.width;
-                    if (newWidth !== width) {
-                        setWidth(newWidth);
-                    }
-                }
-            });
-            observer.observe(target);
-            return () => observer.unobserve(target);
-        }
-    }, [guid]);
-
     // Determines if there are more tabs to show in dropdown option.
-    const showExp = nVisible < props.Tabs.length;
+    const showDropDown = numVisibleTabs < props.Tabs.length;
 
     if (width < 50)
-        return <div style={{ width: '100%' }} ref={guid}> </div>
+        return <div style={{ width: '100%' }} ref={containerRef}> </div>
 
-    return <div style={{ width: '100%' }} ref={guid}>
+    return <div style={{ width: '100%' }} ref={containerRef}>
         <ul className="nav nav-tabs" style={{ maxHeight: 38 }}>
-            {props.Tabs.map((t, i) => i > (nVisible - 1) ? null :
+            {props.Tabs.map((t, i) => i > (numVisibleTabs - 1) ? null :
                 <li className="nav-item" key={i} style={{ cursor: 'pointer' }}>
                     <a className={"nav-link" + (props.CurrentTab === t.Id ? " active" : "")} onClick={() => props.SetTab(t.Id)}>{t.Label}</a>
                 </li>
             )}
-            {showExp ?
+            {showDropDown ?
                 <li className={`nav-item dropdown ${dropDownOpen ? ' show' : ''}`} style={{ zIndex: 1040 }}>
                     <a className="nav-link dropdown-toggle" onClick={() => setDropDownOpen(s => !s)} >...</a>
                     <div className={`dropdown-menu dropdown-menu-right ${dropDownOpen ? ' show' : ''}`}>
-                        {props.Tabs.map((t, i) => i > (nVisible - 1) ?
+                        {props.Tabs.map((t, i) => i > (numVisibleTabs - 1) ?
                             <a className={`dropdown-item ${props.CurrentTab === t.Id ? ' active' : ''}`} style={{ cursor: 'pointer' }} onClick={() => props.SetTab(t.Id)} key={i}>{t.Label}</a> : null)
                         }
                     </div>

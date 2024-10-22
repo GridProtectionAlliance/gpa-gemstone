@@ -27,10 +27,10 @@ import * as _ from 'lodash';
 import InteractiveButtons from './InteractiveButtons';
 import {IDataSeries, IHandlers, ContextWrapper, IActionFunctions, AxisIdentifier, AxisMap, SelectType} from './GraphContext';
 import {CreateGuid} from '@gpa-gemstone/helper-functions';
-import {cloneDeep, isEqual} from 'lodash';
+import {isEqual} from 'lodash';
 import TimeAxis from './TimeAxis';
 import LogAxis from './LogAxis'; 
-import ValueAxis from './ValueAxis';
+import YValueAxis from './YValueAxis';
 import Legend from './Legend';
 import LineWithThreshold from './LineWithThreshold';
 import Line from './Line';
@@ -45,6 +45,7 @@ import Infobox from './Infobox';
 import HeatMapChart from './HeatMapChart';
 import * as _html2canvas from "html2canvas";
 import HighlightBox from './HighlightBox';
+import XValueAxis from './XValueAxis';
 const html2canvas: any = _html2canvas;
 
 // A ZoomMode of AutoValue means it will zoom on time, and auto Adjust the Value to fit the data.
@@ -61,7 +62,7 @@ export interface IProps {
     width: number,
 
     showGrid?: boolean,
-    XAxisType?: 'time' | 'log',
+    XAxisType?: 'time' | 'log' | 'value',
     zoom?: boolean,
     pan?: boolean,
     Tmin?: number,
@@ -838,12 +839,14 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
                       { props.XAxisType === 'time' || props.XAxisType === undefined ?
                       <TimeAxis label={props.Tlabel} offsetBottom={offsetBottom} offsetLeft={offsetLeft} offsetRight={offsetRight} width={svgWidth} height={svgHeight} setHeight={setHeightXLabel} 
                         heightAxis={heightXLabel} showLeftMostTick={!yHasData[0]}  showRightMostTick={!yHasData[1]} showDate={props.showDateOnTimeAxis} /> :
+                        props.XAxisType === 'value' ? <XValueAxis offsetBottom={offsetBottom} offsetLeft={offsetLeft} offsetRight={offsetRight} width={svgWidth} height={svgHeight} setHeight={setHeightXLabel} heightAxis={heightXLabel} 
+                        label={props.Tlabel} showLeftMostTick={!yHasData[0]}  showRightMostTick={!yHasData[1]}/>  :
                       <LogAxis offsetTop={offsetTop} showGrid={props.showGrid} label={props.Tlabel} offsetBottom={offsetBottom} offsetLeft={offsetLeft} offsetRight={offsetRight} width={svgWidth} 
                         height={svgHeight} setHeight={setHeightXLabel} heightAxis={heightXLabel} showLeftMostTick={!yHasData[0]}  showRightMostTick={!yHasData[1]} /> }
                         {(props.hideYAxis ?? false) ? null : (
                           <>
                             {yHasData[0] ? (
-                              <ValueAxis
+                              <YValueAxis
                                 offsetRight={offsetRight}
                                 showGrid={props.showGrid}
                                 label={typeCorrect<string>(props.Ylabel, 0)}
@@ -862,7 +865,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
                             ) : null}
 
                             {yHasData[1] ? (
-                              <ValueAxis
+                              <YValueAxis
                                 offsetRight={offsetRight}
                                 showGrid={props.showGrid}
                                 label={typeCorrect<string>(props.Ylabel, 1)}

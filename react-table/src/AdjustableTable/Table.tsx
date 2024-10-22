@@ -74,6 +74,7 @@ interface TableProps<T> {
     TheadClass?: string;
     /**
     * style of the tbody component
+    * Note: Display style overwritten to "block"
     */
     TbodyStyle?: React.CSSProperties;
     /**
@@ -242,8 +243,8 @@ export default function AdjustableTable<T>(props: React.PropsWithChildren<TableP
                 if (numOfColsWithUndefinedCSS > 0 && numOfColsWithAutoCSS == 0) { // Split only on the css undefined if there are no auto-cols
                     colsToDivideBy = numOfColsWithUndefinedCSS;
                 }
-                const extraSpace = (currentTableWidth - colW - numEnabledColumns) / colsToDivideBy;
-                setExtraWidthPerRow(extraSpace);
+                const extraSpace = (currentTableWidth - colW) / colsToDivideBy;
+                setExtraWidthPerRow(Math.floor(extraSpace));
                 props.ReduceWidthCallback?.(hideKeys);
                 setAutoWidthVersion((v) => v + 1);
             }, 500);
@@ -479,7 +480,7 @@ function Rows<T>(props: React.PropsWithChildren<IRowProps<T>>) {
             );
     }, [props.OnClick]);
 
-    const bodyStyle = React.useMemo(() => ({ ...props.BodyStyle, paddingRight: (props.BodyScrolled ? 0 : 17) }), [props.BodyStyle, props.BodyScrolled]);
+    const bodyStyle = React.useMemo(() => ({ ...props.BodyStyle, paddingRight: (props.BodyScrolled ? 0 : 17), display: "block" }), [props.BodyStyle, props.BodyScrolled]);
     
     return (
         <tbody style={bodyStyle} className={props.BodyClass} ref={props.BodyRef}>
