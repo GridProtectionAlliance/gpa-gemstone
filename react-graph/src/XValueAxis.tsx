@@ -25,7 +25,7 @@ function XValueAxis(props: IProps) {
 
     // Adjust space for X Axis labels
     React.useEffect(() => {
-        setHlabel(title ? GetTextHeight('Segoe UI', '1em', title) : 0);
+        setHlabel(title != null ? GetTextHeight('Segoe UI', '1em', title) : 0);
     }, [title]);
 
     // Adjust axis title
