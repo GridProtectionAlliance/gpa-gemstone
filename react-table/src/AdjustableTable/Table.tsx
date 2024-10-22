@@ -74,6 +74,7 @@ interface TableProps<T> {
     TheadClass?: string;
     /**
     * style of the tbody component
+    * Note: Display style overwritten to "block"
     */
     TbodyStyle?: React.CSSProperties;
     /**
@@ -479,7 +480,7 @@ function Rows<T>(props: React.PropsWithChildren<IRowProps<T>>) {
             );
     }, [props.OnClick]);
 
-    const bodyStyle = React.useMemo(() => ({ ...props.BodyStyle, paddingRight: (props.BodyScrolled ? 0 : 17) }), [props.BodyStyle, props.BodyScrolled]);
+    const bodyStyle = React.useMemo(() => ({ ...props.BodyStyle, paddingRight: (props.BodyScrolled ? 0 : 17), display: "block" }), [props.BodyStyle, props.BodyScrolled]);
     
     return (
         <tbody style={bodyStyle} className={props.BodyClass} ref={props.BodyRef}>
