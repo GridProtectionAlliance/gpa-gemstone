@@ -379,7 +379,7 @@ const parseCSV = (csvContent: string, hasHeaders: boolean, numOfRequiredFields: 
                     continue;
                 }
             }
-        };
+        }
     }
     else {
         const colCount = rows[0].length - 1 < numOfRequiredFields ? numOfRequiredFields : rows[0].length - 1;
