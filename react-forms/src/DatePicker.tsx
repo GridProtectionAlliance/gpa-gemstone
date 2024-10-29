@@ -75,6 +75,8 @@ export default function DateTimePicker<T>(props: IProps<T>) {
     const [top, setTop] = React.useState<number>(0);
     const [left, setLeft] = React.useState<number>(0);
 
+    const allowNull = React.useMemo(() => props.AllowEmpty ?? false, [props.AllowEmpty]);
+
     React.useEffect(() => {
         setGuid(CreateGuid());
     }, []);
@@ -111,13 +113,12 @@ export default function DateTimePicker<T>(props: IProps<T>) {
     function setPickerAndRecord(arg: moment.Moment | undefined) {
         setPickerRecord(arg);
 
-        if ((props.AllowEmpty ?? false) && arg === undefined && props.Record[props.Field] !== null)
+        if (allowNull && arg === undefined && props.Record[props.Field] !== null)
             props.Setter({ ...props.Record, [props.Field]: null });
-
-        const valid = arg != undefined && validateDate(arg);
-
-        if (valid && (props.Record[props.Field] as any).toString() !== arg.format(recordFormat))
-            props.Setter({ ...props.Record, [props.Field]: arg.format(recordFormat) });
+        else if (
+            (arg != undefined && validateDate(arg)) && 
+            (props.Record[props.Field] as any).toString() !== arg.format(recordFormat)
+        ) props.Setter({ ...props.Record, [props.Field]: arg.format(recordFormat) });
     }
 
     // Handle clicks outside the component.
@@ -170,11 +171,14 @@ export default function DateTimePicker<T>(props: IProps<T>) {
         }
     }
 
-    function validateDate(date: moment.Moment) {
-
+    function validateDate(date?: moment.Moment) {
         const minStartDate = props.MinDate != null ? props.MinDate.startOf('day') : moment("1753-01-01", "YYYY-MM-DD").startOf('day');
 
-        if (!date.isValid()) {
+        if (allowNull && date == null){
+            setFeedbackMessage("");
+            return true;
+        }
+        else if (date == null || !date.isValid()) {
             setFeedbackMessage(`Please enter a valid date.`);
             return false;
         }
@@ -203,15 +207,14 @@ export default function DateTimePicker<T>(props: IProps<T>) {
 
 
     function valueChange(value: string) {
-
-        const allowNull = props.AllowEmpty === undefined ? false : props.AllowEmpty;
-        const date = moment(value, boxFormat);
+        const date = (value === '') ? undefined : moment(value, boxFormat);
+        const validDate = validateDate(date);
 
         if (allowNull && value === '') {
             props.Setter({ ...props.Record, [props.Field]: null });
             setPickerAndRecord(undefined);
         }
-        else if (validateDate(date)) {
+        else if (validDate) {
             props.Setter({ ...props.Record, [props.Field]: moment(value, boxFormat).format(recordFormat) });
             setPickerAndRecord(moment(value, boxFormat));
         }
