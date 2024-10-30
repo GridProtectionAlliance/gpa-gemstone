@@ -128,13 +128,13 @@ const Modal: React.FunctionComponent<IProps> = (props) => {
                     </div>
                 </div>
             </div>
-            <ToolTip Show={(props.ConfirmShowToolTip ?? false) && hover === 'confirm'} Position={'top'} Theme={'dark'} Target={guid + '-confirm'} Zindex={9999}>
+            <ToolTip Show={(props.ConfirmShowToolTip ?? false) && hover === 'confirm'} Position={'top'}  Target={guid + '-confirm'} Zindex={9999}>
                 {props.ConfirmToolTipContent}
             </ToolTip>
-            <ToolTip Show={(props.TertiaryShowToolTip ?? false) && hover === 'tertiary'} Position={'top'} Theme={'dark'} Target={guid + '-tertiary'} Zindex={9999}>
+            <ToolTip Show={(props.TertiaryShowToolTip ?? false) && hover === 'tertiary'} Position={'top'} Target={guid + '-tertiary'} Zindex={9999}>
                 {props.TertiaryToolTipContent}
             </ToolTip>
-            <ToolTip Show={(props.CancelShowToolTip ?? false) && hover === 'cancel'} Position={'top'} Theme={'dark'} Target={guid + '-cancel'} Zindex={9999}>
+            <ToolTip Show={(props.CancelShowToolTip ?? false) && hover === 'cancel'} Position={'top'} Target={guid + '-cancel'} Zindex={9999}>
                 {props.CancelToolTipContent}
             </ToolTip>
             {props.Show ? < div style={{
