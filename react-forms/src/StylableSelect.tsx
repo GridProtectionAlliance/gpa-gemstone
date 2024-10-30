@@ -108,39 +108,39 @@ export default function StylableSelect<T>(props: IProps<T>) {
         setPosition({ Top: rect.bottom, Left: rect.left, Width: rect.width, Height: rect.height });
       }
     }, 200);
-  
-    const handleScroll = (event: Event) => {
-      if(tableContainer.current == null) return
 
-      if (event.type === 'scroll' && !tableContainer.current.contains(event.target as Node)) 
-          setShow(false);
-        updatePosition()
+    const handleScroll = (event: Event) => {
+      if (tableContainer.current == null) return
+
+      if (event.type === 'scroll' && !tableContainer.current.contains(event.target as Node))
+        setShow(false);
+      updatePosition()
     };
 
     if (show) {
       updatePosition();
-  
+
       window.addEventListener('scroll', handleScroll, true);
       window.addEventListener('resize', updatePosition);
-  
+
       return () => {
         window.removeEventListener('scroll', handleScroll, true);
         window.removeEventListener('resize', updatePosition);
         updatePosition.cancel();
       };
     }
-  
+
   }, [show]);
 
   // Handle showing and hiding of the dropdown.
   function HandleShow(evt: React.MouseEvent<HTMLButtonElement, MouseEvent> | MouseEvent) {
     // Ignore if disabled or not a mousedown event
-    if ((props.Disabled === undefined ? false : props.Disabled) || evt.type !== 'mousedown' || stylableSelect.current == null ) return;
+    if ((props.Disabled === undefined ? false : props.Disabled) || evt.type !== 'mousedown' || stylableSelect.current == null) return;
 
     //ignore the click if it was inside the table or table container
-    if((selectTable.current != null && selectTable.current.contains(evt.target as Node)) || (tableContainer.current != null && tableContainer.current.contains(evt.target as Node)))
-      return 
-    
+    if ((selectTable.current != null && selectTable.current.contains(evt.target as Node)) || (tableContainer.current != null && tableContainer.current.contains(evt.target as Node)))
+      return
+
     if (!stylableSelect.current.contains(evt.target as Node)) setShow(false);
     else setShow(!show);
   }
@@ -210,22 +210,21 @@ export default function StylableSelect<T>(props: IProps<T>) {
 
       {/* Dropdown menu with options */}
       <Portal>
-        <div ref={tableContainer}
+        <div ref={tableContainer} className='popover'
           style={{
             maxHeight: window.innerHeight - position.Top,
             overflowY: 'auto',
             padding: '10 5',
             display: show ? 'block' : 'none',
             position: 'absolute',
-            backgroundColor: '#fff',
-            boxShadow: '0px 8px 16px 0px rgba(0,0,0,0.2)',
             zIndex: 9999,
             top: `${position.Top}px`,
             left: `${position.Left}px`,
             width: `${position.Width}px`,
+            maxWidth: '100%'
           }}
         >
-          <table className="table" style={{ margin: 0 }} ref={selectTable}>
+          <table className="table table-hover" style={{ margin: 0 }} ref={selectTable}>
             <tbody>
               {props.Options.map((f, i) => (
                 f.Value === props.Record[props.Field] ? null :
