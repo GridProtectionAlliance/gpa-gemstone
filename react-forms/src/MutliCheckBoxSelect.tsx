@@ -27,6 +27,7 @@ import HelperMessage from './HelperMessage';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 import { Portal } from 'react-portal';
 import * as _ from 'lodash';
+import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 
 interface IProps {
   /**
@@ -137,15 +138,12 @@ const MultiSelect = (props: IProps) => {
     <div className="form-group">
       {/* Rendering label and help icon */}
       {showLabel || showHelpIcon ?
-        <label>{showLabel ?
-          (props.Label === undefined ? 'Select' : props.Label)
-          : ''}
+        <label className='d-flex align-items-center'>{showLabel ?
+          (props.Label === undefined ? 'Select' : props.Label) : ''}
           {showHelpIcon ?
-            <div
-              style={{ width: 20, height: 20, borderRadius: '50%', display: 'inline-block', background: '#0D6EFD', marginLeft: 10, textAlign: 'center', fontWeight: 'bold' }}
-              onMouseEnter={() => setShowHelp(true)}
-              onMouseLeave={() => setShowHelp(false)}> ?
-            </div>
+            <button className='btn btn mb-1 pt-0 pb-0' onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)}>
+            <ReactIcons.QuestionMark Color='var(--info)' Size={20}/>
+          </button>
             : null}
         </label> : null
       }

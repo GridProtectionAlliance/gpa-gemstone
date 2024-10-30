@@ -101,8 +101,7 @@ const WrapperDiv = styled.div<IWrapperProps>`
     z-index: 99999;
     pointer-events: ${props => props.Show ? 'auto' : 'none'};
     opacity: ${props => props.Show ? "0.9" : "0"};
-    color: #fff; // Dark theme color
-    background: #222; // Dark theme background
+    color: currentColor;
     top: ${props => `${props.Top}px`};
     left: ${props => `${props.Left}px`};
     border: 1px solid transparent;
@@ -155,7 +154,7 @@ export default function ColorPicker<T>(props: IProps<T>) {
                 </div> : null}
             <Portal>
                 {!(props.Disabled ?? false) ?
-                    <WrapperDiv Show={show} Top={top} Left={left} ref={toolTipRef} onMouseOver={() => (props.Disabled ?? false) ? {} : setShow(true)} onMouseOut={() => setShow(false)}>
+                    <WrapperDiv className="popover popover-body border" Show={show} Top={top} Left={left} ref={toolTipRef} onMouseOver={() => (props.Disabled ?? false) ? {} : setShow(true)} onMouseOut={() => setShow(false)}>
                         <BlockPicker
                             color={props.Record[props.Field] as unknown as Color}
                             colors={colors}

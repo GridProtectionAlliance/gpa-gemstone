@@ -24,8 +24,9 @@
 import * as React from 'react';
 import HelperMessage from './HelperMessage';
 import { CreateGuid } from '@gpa-gemstone/helper-functions';
+import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 
-interface IProps<T>{
+interface IProps<T> {
   /**
     * Record to be used in form
     * @type {T}
@@ -71,7 +72,7 @@ interface IProps<T>{
     * @optional
   */
   Step?: number;
-  Help?: string|JSX.Element;
+  Help?: string | JSX.Element;
 }
 
 export default function DatePicker<T>(props: IProps<T>) {
@@ -81,12 +82,13 @@ export default function DatePicker<T>(props: IProps<T>) {
   return (
     <div className="form-group">
       {(props.Help != null || props.Label !== "") ?
-      <label>{props.Label ?? props.Field}
-        {props.Help != null ? 
-          <div style={{ width: 20, height: 20, borderRadius: '50%', display: 'inline-block', background: '#0D6EFD', marginLeft: 10, textAlign: 'center', fontWeight: 'bold' }} 
-          onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)}> ? </div> : <></>}
-      </label> 
-      : <></>}
+        <label className='d-flex align-items-center'>{props.Label ?? props.Field}
+          {props.Help != null ?
+            <button className='btn mb-1 pt-0 pb-0' onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)}>
+              <ReactIcons.QuestionMark Color='var(--info)' Size={20} />
+            </button> : <></>}
+        </label>
+        : <></>}
       <HelperMessage Show={showHelp} Target={guid.current}>
         {props.Help}
       </HelperMessage>

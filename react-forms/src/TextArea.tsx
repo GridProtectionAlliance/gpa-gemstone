@@ -25,6 +25,7 @@
 import * as React from 'react';
 import { CreateGuid } from '@gpa-gemstone/helper-functions'
 import HelperMessage from './HelperMessage';
+import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 
 interface IProps<T> {
   /**
@@ -86,7 +87,7 @@ export default function TextArea<T>(props: IProps<T>) {
 
   const [showHelp, setShowHelp] = React.useState<boolean>(false);
   const [heldVal, setHeldVal] = React.useState<string>('');
-  
+
   // Effect to handle changes to the record's field value.
   React.useEffect(() => {
     if (!internal.current) {
@@ -107,13 +108,17 @@ export default function TextArea<T>(props: IProps<T>) {
   const showLabel = props.Label !== "";
   const showHelpIcon = props.Help !== undefined;
   const label = props.Label === undefined ? props.Field : props.Label;
-  
+
   return (
     <div className="form-group" data-help={guid.current}>
       {/* Rendering label and help icon */}
       {showHelpIcon || showLabel ?
-        <label>{showLabel ? label : ''}
-          {showHelpIcon ? <div style={{ width: 20, height: 20, borderRadius: '50%', display: 'inline-block', background: '#0D6EFD', marginLeft: 10, textAlign: 'center', fontWeight: 'bold' }} onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)}> ? </div> : null}
+        <label className='d-flex align-items-center'>{showLabel ? label : ''}
+          {showHelpIcon ?
+            <button className='btn mb-1 pt-0 pb-0' onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)}>
+              <ReactIcons.QuestionMark Color='var(--info)' Size={20} />
+            </button>
+            : null}
         </label> : null}
 
       {/* Help message component */}
@@ -134,7 +139,7 @@ export default function TextArea<T>(props: IProps<T>) {
 
       {/* Invalid feedback message */}
       <div className="invalid-feedback">
-        {props.Feedback == null ? (props.Field as string)+ ' is a required field.' : props.Feedback}
+        {props.Feedback == null ? (props.Field as string) + ' is a required field.' : props.Feedback}
       </div>
     </div>
   );

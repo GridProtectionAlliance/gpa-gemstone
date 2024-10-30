@@ -24,41 +24,42 @@
 import * as React from 'react';
 import HelperMessage from './HelperMessage';
 import { CreateGuid, IsInteger, IsNumber } from '@gpa-gemstone/helper-functions'
+import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 
 interface IProps<T> {
-  /**
-    * Record to be used in form
-    * @type {T}
-  */
-  Record: T;
-  /**
-    * Field of the record to be edited
-    * @type {keyof T}
-  */
-  Field: keyof T;
-  /**
-    * Setter function to update the Record
-    * @param record - Updated Record
-  */
-  Setter: (record: T) => void;
-  /**
-    * Function to determine the validity of a field
-    * @param field - Field of the record to check
-    * @returns {boolean}
-  */
-  Valid: (field: keyof T) => boolean;
-  /**
-    * Label to display for the form, defaults to the Field prop
-    * @type {string}
-    * @optional
-  */
-  Label?: string;
-  /**
-    * Feedback message to show when input is invalid
-    * @type {string}
-    * @optional
-  */
-  Feedback?: string;
+    /**
+      * Record to be used in form
+      * @type {T}
+    */
+    Record: T;
+    /**
+      * Field of the record to be edited
+      * @type {keyof T}
+    */
+    Field: keyof T;
+    /**
+      * Setter function to update the Record
+      * @param record - Updated Record
+    */
+    Setter: (record: T) => void;
+    /**
+      * Function to determine the validity of a field
+      * @param field - Field of the record to check
+      * @returns {boolean}
+    */
+    Valid: (field: keyof T) => boolean;
+    /**
+      * Label to display for the form, defaults to the Field prop
+      * @type {string}
+      * @optional
+    */
+    Label?: string;
+    /**
+      * Feedback message to show when input is invalid
+      * @type {string}
+      * @optional
+    */
+    Feedback?: string;
     /**
     * Flag to disable the input element
     * @type {boolean}
@@ -195,8 +196,11 @@ function InputWithButton<T>(props: IProps<T>) {
     return (
         <div className={"form-group " + (props.Size === 'large' ? 'form-group-lg' : '') + (props.Size === 'small' ? 'form-group-sm' : '')} style={props.InputStyle}>
             {showHelpIcon || showLabel ?
-                <label>{showLabel ? label : ''}
-                    {showHelpIcon ? <div style={{ width: 20, height: 20, borderRadius: '50%', display: 'inline-block', background: '#0D6EFD', marginLeft: 10, textAlign: 'center', fontWeight: 'bold' }} onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)}> ? </div> : null}
+                <label className='d-flex align-items-center'>{showLabel ? label : ''}
+                    {showHelpIcon ?
+                        <button className='btn mb-1 pt-0 pb-0' onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)}>
+                            <ReactIcons.QuestionMark Color='var(--info)' Size={20} />
+                        </button> : null}
                 </label> : null}
             {showHelpIcon ?
                 <HelperMessage Show={showHelp} Target={guid}>

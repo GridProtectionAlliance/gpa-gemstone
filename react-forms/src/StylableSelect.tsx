@@ -28,6 +28,7 @@ import { isEqual } from 'lodash';
 import { Portal } from 'react-portal';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 import * as _ from 'lodash';
+import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 
 export interface IOption {
   Value: any;
@@ -179,8 +180,12 @@ export default function StylableSelect<T>(props: IProps<T>) {
     <div ref={stylableSelect} style={{ position: 'relative', display: 'inline-block', width: 'inherit' }}>
       {/* Label and help icon rendering */}
       {(props.Label !== "") ?
-        <label>{props.Label === undefined ? props.Field : props.Label}
-          {props.Help !== undefined ? <div style={{ width: 20, height: 20, borderRadius: '50%', display: 'inline-block', background: '#0D6EFD', marginLeft: 10, textAlign: 'center', fontWeight: 'bold' }} onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)}> ? </div> : null}
+        <label className='d-flex align-items-center'>{props.Label === undefined ? props.Field : props.Label}
+          {props.Help !== undefined ?
+            <button className='btn mb-1 pt-0 pb-0' onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)}>
+              <ReactIcons.QuestionMark Color='var(--info)' Size={20} />
+            </button>
+            : null}
         </label> : null}
 
       {props.Help !== undefined ?
