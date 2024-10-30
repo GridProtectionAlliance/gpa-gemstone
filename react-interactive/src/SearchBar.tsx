@@ -229,16 +229,12 @@ function FilterCreator<T>(props: IPropsFilterCreator<T> ) {
     React.useEffect(() => {
         if (props.Field === undefined)
             return;
-        if (props.Field.enum !== undefined) {
+        if (props.Field.enum !== undefined)
             setOptions(props.Field.enum);
-            return;
-        }
         if (props.Enum !== undefined)
             return props.Enum(setOptions,props.Field);
-        if (props.Field.enum === undefined) {
-            setOptions([]);
-            return;
-        }
+        if (props.Field.enum === undefined)
+        setOptions([]);
     },[props.Field, props.Enum]);
 
     if (props.Field === undefined)
