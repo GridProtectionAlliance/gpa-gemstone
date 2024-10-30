@@ -212,7 +212,7 @@ const Oval = (props: IProps) => {
             />
 
             {props.Text !== undefined ?
-                <text fill={props.TextColor ?? 'black'} style={{ fontSize: textSize + 'em', textAnchor: 'middle', dominantBaseline: 'middle' }}
+                <text fill={props.TextColor ?? 'currentColor'} style={{ fontSize: textSize + 'em', textAnchor: 'middle', dominantBaseline: 'middle' }}
                     y={context.YTransformation(props.Data[2], AxisMap.get(props.Axis))}
                     x={(context.XTransformation(props.Data[0]) + context.XTransformation(props.Data[1])) / 2}>
                     {props.Text}

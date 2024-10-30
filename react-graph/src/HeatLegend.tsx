@@ -107,7 +107,7 @@ function HeatLegend(props: IProps) {
   
         {/* Rectangle path filled with the defined gradient */}
         <path 
-          stroke='black' 
+          stroke='currentColor' 
           fill={`url(#${guid})`} 
           style={{ strokeWidth: 1, transition: 'd 0.5s' }} 
             d={wLegend < hLegend ? 
@@ -116,12 +116,12 @@ function HeatLegend(props: IProps) {
         />
   
         {/* Text elements for min and max values */}
-        <text fill={'black'} style={TextStyle} x={wLegend*(wLegend < hLegend ? 0.5 : 0.1)} y={hLegend*(wLegend < hLegend ? 0.1 : 0.5)}
+        <text fill={'currentColor'} style={TextStyle} x={wLegend*(wLegend < hLegend ? 0.5 : 0.1)} y={hLegend*(wLegend < hLegend ? 0.1 : 0.5)}
           transform={`rotate(${wLegend < hLegend ? 270 : 0},${wLegend*(wLegend < hLegend ? 0.5 : 0.1)},${hLegend*(wLegend < hLegend ? 0.1 : 0.5)})`}>
             {`${props.minValue.toFixed(nDigits)}${props.unitLabel !== undefined ? `${props.unitLabel}` : ''}`}
           </text>
   
-        <text fill={'black'} style={TextStyle} x={wLegend*(wLegend < hLegend ? 0.5 : 0.9)} y={hLegend*(wLegend < hLegend ? 0.9 : 0.5)}
+        <text fill={'currentColor'} style={TextStyle} x={wLegend*(wLegend < hLegend ? 0.5 : 0.9)} y={hLegend*(wLegend < hLegend ? 0.9 : 0.5)}
           transform={`rotate(${wLegend < hLegend ? 270 : 0},${wLegend*(wLegend < hLegend ? 0.5 : 0.9)},${hLegend*(wLegend < hLegend ? 0.9 : 0.5)})`}>
             {`${props.maxValue.toFixed(nDigits)}${props.unitLabel !== undefined ? `${props.unitLabel}` : ''}`}
           </text>
