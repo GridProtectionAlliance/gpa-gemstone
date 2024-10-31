@@ -67,18 +67,21 @@ const WrapperDiv = styled.div<IWrapperProps>`
   }
 `;
 
+const defaultTargetPosition = { Top: -999, Left: -999, Width: 0, Height: 0 }
+
 // The other element needs to have data-tooltip attribute equal the target prop used for positioning
 const ToolTip: React.FunctionComponent<IProps> = (props) => {
   const toolTip = React.useRef<HTMLDivElement | null>(null);
   const [top, setTop] = React.useState<number>(0);
   const [left, setLeft] = React.useState<number>(0);
+  const [arrowPositionPercent, setArrowPositionPercent] = React.useState<number>(50);
 
-  const [targetPosition, setTargetPosition] = React.useState<IElementPosition>({ Top: -999, Left: -999, Width: 0, Height: 0 })
+  const [targetPosition, setTargetPosition] = React.useState<IElementPosition>(defaultTargetPosition)
 
   React.useEffect(() => {
     const target = document.querySelectorAll(`[data-tooltip${props.Target === undefined ? '' : `="${props.Target}"`}]`)
     if (target.length === 0) {
-      setTargetPosition({ Top: -999, Left: -999, Width: 0, Height: 0 })
+      setTargetPosition(defaultTargetPosition)
       return;
     }
 
@@ -89,9 +92,10 @@ const ToolTip: React.FunctionComponent<IProps> = (props) => {
   }, [props.Show, props.Target, targetPosition]);
 
   React.useLayoutEffect(() => {
-    const [t, l] = getPosition(toolTip, targetPosition, props.Position ?? 'top');
+    const [t, l, arrowLeft] = getPosition(toolTip, targetPosition, props.Position ?? 'top');
     setTop(t);
     setLeft(l);
+    setArrowPositionPercent(arrowLeft);
   }, [targetPosition, props?.children, props.Position]);
 
   const zIndex = (props.Zindex === undefined ? 2000 : props.Zindex);
@@ -99,7 +103,7 @@ const ToolTip: React.FunctionComponent<IProps> = (props) => {
   return (
     <Portal>
       <WrapperDiv className={`popover bs-popover-${props.Position ?? 'top'} border`} Show={props.Show} Top={top} Left={left} ref={toolTip} Location={props.Position === undefined ? 'top' : props.Position} Zindex={zIndex} TargetLeft={targetPosition.Left} TargetWidth={targetPosition.Width}>
-        <div className='arrow' style={{ left: 'calc(50% - 1em)' }} />
+        <div className='arrow' style={props.Position === 'left' || props.Position === 'right' ? { top: `calc(${arrowPositionPercent}% - 1em)` } : { left: `calc(${arrowPositionPercent}% - 1em)` }} />
         <div className='popover-body'>
           {props.children}
         </div>
@@ -117,7 +121,6 @@ const getPosition = (toolTip: React.MutableRefObject<HTMLDivElement | null>, tar
   const offset = 5;
   let top = 0;
   let left = 0;
-
   const windowWidth = window.innerWidth;
 
   if (position === 'left') {
@@ -153,7 +156,17 @@ const getPosition = (toolTip: React.MutableRefObject<HTMLDivElement | null>, tar
       left = offset;
   }
 
-  return [top, left];
+  let arrowPositionPercent = 50; // Default to center
+
+  if (position === 'top' || position === 'bottom') {
+    const targetCenter = targetPosition.Left + 0.5 * targetPosition.Width;
+    arrowPositionPercent = ((targetCenter - left) / tipLocation.width) * 100;
+  } else if (position === 'left' || position === 'right') {
+    const targetCenter = targetPosition.Top + 0.5 * targetPosition.Height;
+    arrowPositionPercent = ((targetCenter - top) / tipLocation.height) * 100;
+  }
+
+  return [top, left, arrowPositionPercent];
 }
 
 export default ToolTip;
