@@ -1,6 +1,6 @@
 {
   "name": "@gpa-gemstone/react-forms",
-  "version": "1.1.74",
+  "version": "1.1.75",
   "description": "React Form modules for gpa webapps",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -45,7 +45,7 @@
     "typescript": "5.5.3"
   },
   "dependencies":   {
-    "@gpa-gemstone/application-typings": "0.0.77",
+    "@gpa-gemstone/application-typings": "0.0.78",
     "@gpa-gemstone/gpa-symbols": "0.0.43",
     "@gpa-gemstone/helper-functions": "0.0.35",
     "@types/react": "^17.0.14",
