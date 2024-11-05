@@ -52,7 +52,7 @@ export namespace DefaultSearch {
       const defaultSearchcols: Search.IField<SystemCenter.Types.DetailedMeter>[] = [
         { label: 'Key', key: 'AssetKey', type: 'string', isPivotField: false },
         { label: 'Name', key: 'Name', type: 'string', isPivotField: false },
-        { label: 'Substation', key: 'Location', type: 'string', isPivotField: false },
+        { label: 'Substation Key', key: 'Location', type: 'string', isPivotField: false },
         { label: 'Make', key: 'Make', type: 'string', isPivotField: false },
         { label: 'Model', key: 'Model', type: 'string', isPivotField: false },
         { label: 'Number of Assets', key: 'MappedAssets', type: 'number', isPivotField: false },
@@ -104,8 +104,8 @@ export namespace DefaultSearch {
         const defaultSearchcols: Search.IField<SystemCenter.Types.DetailedLocation>[] = [
             { label: 'Name', key: 'Name', type: 'string', isPivotField: false },
             { label: 'Key', key: 'LocationKey', type: 'string', isPivotField: false },
-            { label: 'Transmission Asset', key: 'Asset', type: 'string', isPivotField: false },
-            { label: 'Meter', key: 'Meter', type: 'string', isPivotField: false },
+            { label: 'Asset Key', key: 'Asset', type: 'string', isPivotField: false },
+            { label: 'Meter Key', key: 'Meter', type: 'string', isPivotField: false },
             { label: 'Number of Transmission Assets', key: 'Assets', type: 'integer', isPivotField: false },
             { label: 'Number of Meters', key: 'Meters', type: 'integer', isPivotField: false },
             { label: 'Description', key: 'Description', type: 'string', isPivotField: false },
