@@ -23,10 +23,6 @@
 //
 //  ******************************************************************************************************
 
-import Table, {TableProps,Rows, Column} from './Table';
-import {SelectTable, ISelectTableProps} from './SelectTable';
-import { SearchableTable } from './SearchableTable';
-import { DynamicTableProps, DynamicTable } from './DynamicTable';
 import Paging from './Paging';
 import AdjustableTable from './AdjustableTable/Table';
 import { Column as RegularColumn, AdjustableColumn } from './AdjustableTable/Column';
@@ -39,7 +35,5 @@ const ReactTable = {
 
 export {
 	ReactTable,
-	TableProps, SelectTable, ISelectTableProps, SearchableTable, DynamicTable, DynamicTableProps , Rows, Column, Paging
+	Paging
 }
-
-export default Table;
