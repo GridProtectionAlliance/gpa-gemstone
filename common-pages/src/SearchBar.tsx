@@ -52,7 +52,7 @@ export namespace DefaultSearch {
       const defaultSearchcols: Search.IField<SystemCenter.Types.DetailedMeter>[] = [
         { label: 'Key', key: 'AssetKey', type: 'string', isPivotField: false },
         { label: 'Name', key: 'Name', type: 'string', isPivotField: false },
-        { label: 'Substation Key', key: 'Location', type: 'string', isPivotField: false },
+        { label: 'Substation Name', key: 'Location', type: 'string', isPivotField: false },
         { label: 'Make', key: 'Make', type: 'string', isPivotField: false },
         { label: 'Model', key: 'Model', type: 'string', isPivotField: false },
         { label: 'Number of Assets', key: 'MappedAssets', type: 'number', isPivotField: false },
