@@ -90,7 +90,7 @@ interface IProps<T> {
 }
 
 export default function SearchableSelect<T>(props: IProps<T>) {
-    const [search, setSearch] = React.useState<string>((props.SearchLabel ?? props.Record[props.Field] as any).toString());
+    const [search, setSearch] = React.useState<string>((props.SearchLabel ?? props.Record[props.Field] as any)?.toString() ?? '');
     const [results, setResults] = React.useState<IStylableOption[]>([]);
     const [loading, setLoading] = React.useState<boolean>(false);
 
