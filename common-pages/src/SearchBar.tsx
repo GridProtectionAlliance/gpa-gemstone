@@ -106,7 +106,7 @@ export namespace DefaultSearch {
             { label: 'Key', key: 'LocationKey', type: 'string', isPivotField: false },
             { label: 'Asset Key', key: 'Asset', type: 'string', isPivotField: false },
             { label: 'Meter Key', key: 'Meter', type: 'string', isPivotField: false },
-            { label: 'Number of Transmission Assets', key: 'Assets', type: 'integer', isPivotField: false },
+            { label: 'Number of Assets', key: 'Assets', type: 'integer', isPivotField: false },
             { label: 'Number of Meters', key: 'Meters', type: 'integer', isPivotField: false },
             { label: 'Description', key: 'Description', type: 'string', isPivotField: false },
         ]; 
