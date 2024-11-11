@@ -91,8 +91,11 @@ const Modal: React.FunctionComponent<IProps> = (props) => {
                         <div className="modal-body" style={props.BodyStyle ?? { maxHeight: 'calc(100vh - 210px)', overflowY: 'auto' }}>
                             {props.Show? props.children : null}
                         </div>
-                        {props.ShowConfirm == false && props.ShowCancel == false && props.ShowTertiary == false ?
-                            <div className="modal-footer">
+                        {(!props.ShowConfirm && props.ShowConfirm != undefined)
+                         && (!props.ShowCancel && props.ShowCancel != undefined)
+                         && (!props.ShowTertiary) ?
+                            null
+                            : <div className="modal-footer">
                                 {props.ShowConfirm === undefined || props.ShowConfirm ?
                                     <button type="button"
                                         className={`btn ${(props.ConfirmBtnClass ?? 'btn-primary')} ${((props.DisableConfirm ?? false) ? 'disabled' : '')}`}
@@ -101,7 +104,7 @@ const Modal: React.FunctionComponent<IProps> = (props) => {
                                         onMouseEnter={() => setHover('confirm')}
                                         onMouseLeave={() => setHover('none')}
                                     >{(props.ConfirmText ?? 'Save')}</button>
-                                    : null}
+                                : null}
                                 {(props.ShowTertiary ?? false) ?
                                     <button type="button"
                                         className={`btn ${(props.TertiaryBtnClass ?? 'btn-secondary')} ${((props.DisableTertiary ?? false) ? 'disabled' : '')}`}
@@ -110,7 +113,7 @@ const Modal: React.FunctionComponent<IProps> = (props) => {
                                         onMouseEnter={() => setHover('tertiary')}
                                         onMouseLeave={() => setHover('none')}
                                     >{(props.TertiaryText ?? 'Action')}</button>
-                                    : null}
+                                : null}
                                 {props.ShowCancel === undefined || props.ShowCancel ?
                                     <button type="button"
                                         className={`btn ${(props.CancelBtnClass ?? 'btn-danger')} ${((props.DisableCancel ?? false) ? 'disabled' : '')}`}
@@ -119,9 +122,9 @@ const Modal: React.FunctionComponent<IProps> = (props) => {
                                         onMouseEnter={() => setHover('cancel') }
                                         onMouseLeave={() => setHover('none')}
                                     >{(props.CancelText ?? 'Cancel')}</button>
-                                    : null}
+                                : null}
                             </div>
-                        : null}
+                        }
                     </div>
                 </div>
             </div>
