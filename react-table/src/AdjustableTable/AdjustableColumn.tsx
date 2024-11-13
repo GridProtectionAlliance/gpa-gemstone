@@ -148,6 +148,7 @@ export function AdjustableColumnHeaderWrapper(props: React.PropsWithChildren<IAd
 
     const onClickBorder = React.useCallback((e) => {
         props.startAdjustment(e);
+        e.stopPropagation();
     }, [props.startAdjustment])
 
 
