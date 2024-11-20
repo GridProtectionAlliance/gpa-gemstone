@@ -277,7 +277,7 @@ export default function ConfigurableTable<T>(props: React.PropsWithChildren<IPro
                             });
                     }}
                     ConfirmText={'Reset Defaults'}
-                    ConfirmBtnClass={'btn-primary float-left'}
+                    ConfirmBtnClass={'btn-warning float-left'}
                 >
                     {/*maxCollumns ? <div className="alert alert-primary">
                 Due to the size of the browser window only {Math.floor(tblWidth / minWidth)} columns can be displayed. Please remove some columns before adding more.
