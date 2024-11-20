@@ -91,9 +91,9 @@ const Modal: React.FunctionComponent<IProps> = (props) => {
                         <div className="modal-body" style={props.BodyStyle ?? { maxHeight: 'calc(100vh - 210px)', overflowY: 'auto' }}>
                             {props.Show? props.children : null}
                         </div>
-                        {(!props.ShowConfirm && props.ShowConfirm != undefined)
-                         && (!props.ShowCancel && props.ShowCancel != undefined)
-                         && (!props.ShowTertiary) ?
+                        {(props.ShowConfirm != undefined && !(props.ShowConfirm))
+                         && (props.ShowCancel != undefined && !(props.ShowCancel))
+                         && (props.ShowTertiary != undefined && !(props.ShowTertiary)) ?
                             null
                             : <div className="modal-footer">
                                 {props.ShowConfirm === undefined || props.ShowConfirm ?
