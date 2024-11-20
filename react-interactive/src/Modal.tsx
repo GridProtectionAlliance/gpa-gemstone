@@ -91,35 +91,40 @@ const Modal: React.FunctionComponent<IProps> = (props) => {
                         <div className="modal-body" style={props.BodyStyle ?? { maxHeight: 'calc(100vh - 210px)', overflowY: 'auto' }}>
                             {props.Show? props.children : null}
                         </div>
-                        <div className="modal-footer">
-                            {props.ShowConfirm === undefined || props.ShowConfirm ?
-                                <button type="button"
-                                    className={`btn ${(props.ConfirmBtnClass ?? 'btn-primary')} ${((props.DisableConfirm ?? false) ? 'disabled' : '')}`}
-                                    data-tooltip={guid + '-confirm'}
-                                    onClick={() => { if (!(props.DisableConfirm === undefined || !props.DisableConfirm)) return; props.CallBack(true,true,false)}}
-                                    onMouseEnter={() => setHover('confirm')}
-                                    onMouseLeave={() => setHover('none')}
-                                >{(props.ConfirmText ?? 'Save')}</button>
+                        {(props.ShowConfirm != undefined && !(props.ShowConfirm))
+                         && (props.ShowCancel != undefined && !(props.ShowCancel))
+                         && (props.ShowTertiary != undefined && !(props.ShowTertiary)) ?
+                            null
+                            : <div className="modal-footer">
+                                {props.ShowConfirm === undefined || props.ShowConfirm ?
+                                    <button type="button"
+                                        className={`btn ${(props.ConfirmBtnClass ?? 'btn-primary')} ${((props.DisableConfirm ?? false) ? 'disabled' : '')}`}
+                                        data-tooltip={guid + '-confirm'}
+                                        onClick={() => { if (!(props.DisableConfirm === undefined || !props.DisableConfirm)) return; props.CallBack(true,true,false)}}
+                                        onMouseEnter={() => setHover('confirm')}
+                                        onMouseLeave={() => setHover('none')}
+                                    >{(props.ConfirmText ?? 'Save')}</button>
                                 : null}
-                            {(props.ShowTertiary ?? false) ?
-                                <button type="button"
-                                    className={`btn ${(props.TertiaryBtnClass ?? 'btn-secondary')} ${((props.DisableTertiary ?? false) ? 'disabled' : '')}`}
-                                    data-tooltip={guid + '-tertiary'}
-                                    onClick={() => { if (props.DisableTertiary ?? false) return; props.CallBack(false,true,true)}}
-                                    onMouseEnter={() => setHover('tertiary')}
-                                    onMouseLeave={() => setHover('none')}
-                                >{(props.TertiaryText ?? 'Action')}</button>
+                                {(props.ShowTertiary ?? false) ?
+                                    <button type="button"
+                                        className={`btn ${(props.TertiaryBtnClass ?? 'btn-secondary')} ${((props.DisableTertiary ?? false) ? 'disabled' : '')}`}
+                                        data-tooltip={guid + '-tertiary'}
+                                        onClick={() => { if (props.DisableTertiary ?? false) return; props.CallBack(false,true,true)}}
+                                        onMouseEnter={() => setHover('tertiary')}
+                                        onMouseLeave={() => setHover('none')}
+                                    >{(props.TertiaryText ?? 'Action')}</button>
                                 : null}
-                            {props.ShowCancel === undefined || props.ShowCancel ?
-                                <button type="button"
-                                    className={`btn ${(props.CancelBtnClass ?? 'btn-danger')} ${((props.DisableCancel ?? false) ? 'disabled' : '')}`}
-                                    data-tooltip={guid + '-cancel'}
-                                    onClick={() => { if (!(props.DisableCancel === undefined || !props.DisableCancel)) return; props.CallBack(false,true,false)}}
-                                    onMouseEnter={() => setHover('cancel') }
-                                    onMouseLeave={() => setHover('none')}
-                                >{(props.CancelText ?? 'Cancel')}</button>
+                                {props.ShowCancel === undefined || props.ShowCancel ?
+                                    <button type="button"
+                                        className={`btn ${(props.CancelBtnClass ?? 'btn-danger')} ${((props.DisableCancel ?? false) ? 'disabled' : '')}`}
+                                        data-tooltip={guid + '-cancel'}
+                                        onClick={() => { if (!(props.DisableCancel === undefined || !props.DisableCancel)) return; props.CallBack(false,true,false)}}
+                                        onMouseEnter={() => setHover('cancel') }
+                                        onMouseLeave={() => setHover('none')}
+                                    >{(props.CancelText ?? 'Cancel')}</button>
                                 : null}
-                        </div>
+                            </div>
+                        }
                     </div>
                 </div>
             </div>
