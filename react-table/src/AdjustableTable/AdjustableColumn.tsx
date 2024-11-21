@@ -142,13 +142,17 @@ export function AdjustableColumnHeaderWrapper(props: React.PropsWithChildren<IAd
         if (maxWidth !== props.maxWidth) props.setMaxWidth(maxWidth as number);
     }, [maxWidth]);
 
-    const onClick = React.useCallback((e) => {
+    const onClick = React.useCallback((e: React.MouseEvent<HTMLTableCellElement, MouseEvent>) => {
         if (props.allowSort ?? true) props.onSort(e);
     }, [props.onSort, props.allowSort]);
 
-    const onClickBorder = React.useCallback((e) => {
+    const onClickBorder = React.useCallback((e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         props.startAdjustment(e);
-    }, [props.startAdjustment])
+    }, [props.startAdjustment]);
+
+    const preventPropagation = React.useCallback((e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        e.stopPropagation();
+    }, []);
 
 
     if (props.width != undefined && !props.enabled)
@@ -172,6 +176,7 @@ export function AdjustableColumnHeaderWrapper(props: React.PropsWithChildren<IAd
             }}
             onMouseEnter={onHover}
             onMouseLeave={onLeave}
+            onClick={preventPropagation}
             onMouseDown={onClickBorder}
         ></div>
         {props.sorted ? <div
