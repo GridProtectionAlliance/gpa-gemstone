@@ -148,13 +148,16 @@ interface IAutoWidth {
 
 const defaultTableStyle: React.CSSProperties = {
     padding: 0,
-    width: '100%',
     height: '100%',
     tableLayout: 'fixed',
     overflow: 'hidden',
     display: 'flex',
     flexDirection: 'column',
     marginBottom: 0,
+};
+
+const defaultHeadStyle: React.CSSProperties = {
+    width: "calc(100% - 15px)"
 };
 
 export default function AdjustableTable<T>(props: React.PropsWithChildren<TableProps<T>>) {
@@ -167,6 +170,28 @@ export default function AdjustableTable<T>(props: React.PropsWithChildren<TableP
     const [currentTableWidth, setCurrentTableWidth] = React.useState<number>(0);
     const [scrolled, setScrolled] = React.useState<boolean>(false);
     const [extraWidthPerRow, setExtraWidthPerRow] = React.useState<number>(0);
+
+
+    const [fullWidth, setFullWidth] = React.useState<number>(100);
+    const measurementDivs = React.useRef<HTMLDivElement>(null);
+
+    // Send warning if styles are overridden
+    React.useEffect(() => {
+        if (props.TableStyle !== undefined)
+            console.warn('TableStyle properties may be overridden if needed. consider using the defaults');
+        if (props.TheadStyle !== undefined)
+            console.warn('TheadStyle properties may be overridden if needed. consider using the defaults');
+    }, [])
+    
+
+    // Check which columns need to be hidden. If anything needs to be hidden try to deal with it here and 
+    React.useLayoutEffect(() => {
+
+
+    });
+
+    const tableStyle = React.useMemo(() => ({...defaultTableStyle, ...props.TableStyle}),[props.TableStyle]);
+
 
     const setTableWidth = React.useCallback(_.debounce(() => {
         if (bodyRef.current == null) return;
@@ -322,95 +347,52 @@ export default function AdjustableTable<T>(props: React.PropsWithChildren<TableP
             setAutoWidthVersion((v) => v + 1);
         }, 10);
     }, []);
-
-    const setAdjustment = React.useCallback((colKey: string, w: number) => {
-        if (!autoWidth.current.has(colKey) || autoWidth.current.get(colKey) == undefined) {  // doesnt exist/is undefined
-            autoWidth.current.set(colKey, {                                                  // create it
-                maxColWidth: 0,
-                width: new Map<string | number, number>(),
-                enabled: true,
-                adjustement: w,
-                isAuto: false,
-                isUndefined: false
-            })
-        } else {
-            const x = autoWidth.current.get(colKey);
-            if (x?.adjustement != undefined)
-                x.adjustement += w; 
-        }
-        //cancel ref
-        //Add a Timer - runs within 10 ms from when the Timer started to avoid React thinking this is an indinfinte loop....
-        if (throtleRef.current !== null) clearTimeout(throtleRef.current);
-        
-        throtleRef.current = setTimeout(() => {
-            setAutoWidthVersion((v) => v + 1);
-        }, 10);
-    }, []);
     
-    const setMinWidth = React.useCallback((colKey: string, w: number) => {
-        if (!autoWidth.current.has(colKey))
-        autoWidth.current.set(colKey, {
-            maxColWidth: 0,
-            width: new Map<string | number, number>(),
-            enabled: true,
-            adjustement: 0,
-            minWidth: w,
-            isAuto: false,
-            isUndefined: false
-        });
-        else if (autoWidth.current.get(colKey)?.minWidth == w) return;
-        autoWidth.current.get(colKey)!.minWidth = w;
-        //cancel ref
-        //Add a Timer - runs within 10 ms from when the Timer started to avoid React thinking this is an indinfinte loop....
-        if (throtleRef.current !== null) clearTimeout(throtleRef.current);
-        throtleRef.current = setTimeout(() => {
-            setAutoWidthVersion((v) => v + 1);
-        }, 10);
-    }, []);
-        
-    const setMaxWidth = React.useCallback((colKey: string, w: number) => {
-        if (!autoWidth.current.has(colKey))
-            autoWidth.current.set(colKey, {
-            maxColWidth: 0,
-            width: new Map<string | number, number>(),
-            enabled: true,
-            adjustement: 0,
-            maxWidth: w,
-            isAuto: false,
-            isUndefined: false
-        });
-        else if (autoWidth.current.get(colKey)?.maxWidth == w) return;
-        
-        autoWidth.current.get(colKey)!.maxWidth = w;
-        
-        //cancel ref
-        //Add a Timer - runs within 10 ms from when the Timer started to avoid React thinking this is an indinfinte loop....
-        if (throtleRef.current !== null) clearTimeout(throtleRef.current);
-        throtleRef.current = setTimeout(() => {
-            setAutoWidthVersion((v) => v + 1);
-        }, 10);
-    }, []);
-        
+    function getWidthfromProps(p: IColumnProps<T>): number| string | undefined {
+        if (p.RowStyle?.width !== undefined && p.RowStyle?.width != 'auto') return p.RowStyle.width;
+        if (p.HeaderStyle?.width !== undefined && p.HeaderStyle?.width != 'auto') return p.HeaderStyle.width;
+        return undefined;
+    }
+
+    function getMinWidthfromProps(p: IColumnProps<T>): number| string {
+        if (p.RowStyle?.minWidth !== undefined && p.RowStyle?.minWidth != 'auto') return p.RowStyle.minWidth;
+        if (p.HeaderStyle?.minWidth !== undefined && p.HeaderStyle?.minWidth != 'auto') return p.HeaderStyle.minWidth;
+        return 100;
+    }
+
+    function getMaxWidthfromProps(p: IColumnProps<T>): number| string | undefined {
+        if (p.RowStyle?.maxWidth !== undefined && p.RowStyle?.maxWidth != 'auto') return p.RowStyle.maxWidth;
+        if (p.HeaderStyle?.maxWidth !== undefined && p.HeaderStyle?.maxWidth != 'auto') return p.HeaderStyle.maxWidth;
+        return undefined;
+    }
+
     return (
+        <>
+        <div ref={measurementDivs} style={{height: 0, width: fullWidth}}>
+        {React.Children.map(props.children, (element,index) => {
+            if (!React.isValidElement(element)) return null;
+            if ((element as React.ReactElement<any>).type === Column || (element as React.ReactElement<any>).type === AdjustableColumn) {
+                return <>
+                {getWidthfromProps(element.props) !== undefined? <div id={"w-" + element.props.Key} style={{height: 0, width: getWidthfromProps(element.props)}} /> : null}
+                {getMinWidthfromProps(element.props) !== undefined? <div id={"min-" + element.props.Key} style={{height: 0, width: getMinWidthfromProps(element.props)}} /> : null}
+                {getMaxWidthfromProps(element.props) !== undefined? <div id={"max-" + element.props.Key} style={{height: 0, width: getMaxWidthfromProps(element.props)}} /> : null}
+                </>
+            }
+            return null;
+            })}
+        </div>
         <table
         className={props.TableClass !== undefined ? props.TableClass : 'table table-hover'}
-        style={props.TableStyle ?? defaultTableStyle}
+        style={tableStyle}
         >
         <Header<T>
-        Class={props.TheadClass}
-        Style={props.TheadStyle}
-        SortKey={props.SortKey}
-        Ascending={props.Ascending}
-        OnSort={handleSort}
-        SetWidth={(k, w, a, u) => setWidth(k, -1, w, a, u)}
-        SetMaxWidth={setMaxWidth}
-        SetMinWidth={setMinWidth}
-        AutoWidth={autoWidth}
-        AutoWidthVersion={autoWidthVersion}
-        LastColumn={props.LastColumn}
-        SetAdjustment={setAdjustment}
-        ExtraWidth={extraWidthPerRow}
-        >
+            Class={props.TheadClass}
+            Style={props.TheadStyle}
+            SortKey={props.SortKey}
+            Ascending={props.Ascending}
+            OnSort={handleSort}
+            SetTotalWidth={setTableWidth}
+            >
         {props.children}
         </Header>
         <Rows<T>
@@ -439,6 +421,7 @@ export default function AdjustableTable<T>(props: React.PropsWithChildren<TableP
             </tfoot>
         ) : null}
         </table>
+        </>
     );
 }
 
@@ -622,28 +605,29 @@ interface IHeaderProps<T> {
     Style?: React.CSSProperties;
     SortKey: string;
     Ascending: boolean;
+    SetTotalWidth: (w: number) => void;
     OnSort: (
         data: { colKey: string; colField?: keyof T; ascending: boolean },
         event: React.MouseEvent<HTMLElement, MouseEvent>,
     ) => void;
-    LastColumn?: string | React.ReactNode;
-    AutoWidthVersion: number;
-    AutoWidth: React.MutableRefObject<Map<string, IAutoWidth>>;
-    SetWidth: (key: string, width: number, isAuto: boolean, isUndefined: boolean) => void;
-    SetMinWidth: (key: string, width: number) => void;
-    SetMaxWidth: (key: string, width: number) => void;
-    SetAdjustment: (key: string, width: number) => void;
-    ExtraWidth: number
 }
 
 function Header<T>(props: React.PropsWithChildren<IHeaderProps<T>>) {
     const trRef = React.useRef<HTMLTableRowElement>(null);
 
+    const style = React.useMemo(() => ({ ...defaultHeadStyle, ...props.Style }), [props.Style]);
+
+    React.useLayoutEffect(() => { 
+        if (trRef.current == null) return;
+        props.SetTotalWidth(trRef.current.clientWidth);
+    });
+    /*
     const [mouseDown, setMouseDown] = React.useState<number>(0);
     const [currentKeys, setCurrentKeys] = React.useState<[string, string] | undefined>(undefined);
     const [deltaW, setDeltaW] = React.useState<number>(0);
     const [tentativeLimits, setTentativeLimits] = React.useState<{min: number, max: number}>({min: -Infinity, max: Infinity});
 
+    
     const calculateDeltaLimits = React.useCallback((mapKeys: [string, string] | undefined, autoWidthRef: React.MutableRefObject<Map<string, IAutoWidth>>) => {
         if (mapKeys === undefined) return ({min: -Infinity, max: Infinity});
 
@@ -721,33 +705,30 @@ function Header<T>(props: React.PropsWithChildren<IHeaderProps<T>>) {
         const w = e.screenX - mouseDown;
         setDeltaW(w);
     }, [mouseDown, currentKeys]);
-
+    */
+    
     return (
         <thead
             className={props.Class}
-            style={props.Style}
+            style={style}
             onMouseMove={(e) => {
-                onMove(e.nativeEvent);
+                //onMove(e.nativeEvent);
                 e.stopPropagation();
             }}
             onMouseUp={(e) => {
-                finishAdjustment();
+                //finishAdjustment();
                 e.stopPropagation();
             }}
             onMouseLeave={(e) => {
-                finishAdjustment();
+                //finishAdjustment();
                 e.stopPropagation();
             }}
         >
-        <tr ref={trRef}>
+        <tr ref={trRef} style={{width: '100%', display: 'table'}}>
         {React.Children.map(props.children, (element) => {
             if (!React.isValidElement(element)) return null;
             if ((element as React.ReactElement<any>).type === Column)
-                if (props.AutoWidth.current.get(element.props.Key)?.enabled ?? true)
-                    return (
                 <ColumnHeaderWrapper
-                    enabled={props.AutoWidth.current.get(element.props.Key)?.enabled ?? true}
-                    setWidth={(w: number, a: boolean, u: boolean) => props.SetWidth(element.props.Key, w, a, u)}
                     onSort={(e) =>
                         props.OnSort(
                             { colKey: element.props.Key, colField: element.props.Field, ascending: props.Ascending },
@@ -759,22 +740,14 @@ function Header<T>(props: React.PropsWithChildren<IHeaderProps<T>>) {
                     colKey={element.props.Key}
                     key={element.props.Key}
                     allowSort={element.props.AllowSort}
-                    width={
-                        props.AutoWidth.current.get(element.props.Key)?.width.has(-1) ?? false
-                        ? props.AutoWidth.current.get(element.props.Key)?.maxColWidth
-                        : undefined
-                    }
                     style={element.props.HeaderStyle ?? element.props.RowStyle}
-                    extraWidth={props.ExtraWidth}
                 >
                     {' '}
                     {element.props.children ?? element.props.Key}{' '}
                 </ColumnHeaderWrapper>
-            );
+            
             if ((element as React.ReactElement<any>).type === AdjustableColumn)
-                if (props.AutoWidth.current.get(element.props.Key)?.enabled ?? true)
-                    return (
-                <AdjustableColumnHeaderWrapper
+                {/*<AdjustableColumnHeaderWrapper
                     enabled={props.AutoWidth.current.get(element.props.Key)?.enabled ?? true}
                     setWidth={(w: number, a: boolean, u: boolean) => props.SetWidth(element.props.Key, w, a, u)}
                     setMinWidth={(w) => props.SetMinWidth(element.props.Key, Math.round(w))}
@@ -800,22 +773,21 @@ function Header<T>(props: React.PropsWithChildren<IHeaderProps<T>>) {
                     }
                     startAdjustment={(e) => {
                         let newCurrentKeys: [string, string] | undefined;
-                        if (getLeftKey(element.props.Key) !== undefined) newCurrentKeys = [getLeftKey(element.props.Key) as string, element.props.Key as string];
-                        setCurrentKeys(newCurrentKeys);
-                        setMouseDown(e.screenX);
-                        setTentativeLimits(calculateDeltaLimits(newCurrentKeys, props.AutoWidth));
-                        setDeltaW(0);
+                        //if (getLeftKey(element.props.Key) !== undefined) newCurrentKeys = [getLeftKey(element.props.Key) as string, element.props.Key as string];
+                        //setCurrentKeys(newCurrentKeys);
+                        //setMouseDown(e.screenX);
+                        //setTentativeLimits(calculateDeltaLimits(newCurrentKeys, props.AutoWidth));
+                        //setDeltaW(0);
                     }}
-                    adjustment={calculateAdjustment(element.props.Key)}
+                    adjustment={0}
                     style={element.props.HeaderStyle ?? element.props.RowStyle}
                 >
                     {' '}
                     {element.props.children ?? element.props.Key}
-                    </AdjustableColumnHeaderWrapper>
-                );
+                    </AdjustableColumnHeaderWrapper>*/}
+                
                 return null;
             })}
-        <th style={{ width: 17, padding: 0 }}>{props.LastColumn}</th>
         </tr>
         </thead>
     );

@@ -62,60 +62,31 @@ export default function Column<T>(props: React.PropsWithChildren<IColumnProps<T>
 }
 
 export interface IHeaderWrapperProps {
-    setWidth: (w: number, a: boolean, u: boolean) => void,
     onSort: React.MouseEventHandler<HTMLTableCellElement>,
     sorted: boolean,
     asc: boolean,
     style: React.CSSProperties,
     allowSort?: boolean,
-    colKey: string,
-    width?: number,
-    enabled: boolean,
-    extraWidth: number
+    colKey: string
 }
 
 export function ColumnHeaderWrapper(props: React.PropsWithChildren<IHeaderWrapperProps>) {
-    const thref = React.useRef<HTMLTableHeaderCellElement | null>(null);
-
     const style = (props.style !== undefined) ? { ...props.style } : {};
-
-    style.overflowX = style.overflowX ?? 'hidden';
-    style.display = style.display ?? 'inline-block'
-    style.position = style.position ?? 'relative';
-    style.borderTop = style.borderTop ?? 'none';
-
-    const isAuto = style.width == 'auto';
-    const isUndefined = style.width === undefined;
-
-    if ((style.width == undefined || style.width == 'auto') && props.width !== undefined) {
-        style.width = (props.width) + props.extraWidth;
-    }
 
     if (style.cursor === undefined && (props.allowSort ?? true)) {
         style.cursor = 'pointer';
     }
-
-    React.useLayoutEffect(() => {
-        if (thref.current == null)
-            return;
-        const w = thref.current?.getBoundingClientRect().width;
-        if (props.width !== undefined && (w === undefined || w == (props.width + props.extraWidth))) return;
-        props.setWidth(w, isAuto, isUndefined);
-    })
 
     const onClick = React.useCallback((e) => {
         if (props.allowSort ?? true) props.onSort(e);
     }, [props.onSort, props.allowSort])
 
 
-    if (props.width != undefined && !props.enabled)
-        return null;
-
     return <th
-        ref={thref}
         style={style}
         onClick={onClick}
         onDrag={(e) => { e.stopPropagation() }}
+        id={props.colKey}
     >
         {props.sorted? <div
             style={{ position: 'absolute', width: 25 }}>
