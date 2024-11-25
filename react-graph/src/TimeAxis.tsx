@@ -70,7 +70,10 @@ function TimeAxis(props: IProps) {
 
     // Adjust unit label
     React.useEffect(() => {
-      if (props.label === undefined) setTitle(undefined);
+      if (props.label === undefined){
+        setTitle(undefined);
+        return;
+      }
 
       let titleFormat = "";
       let unitLabel = "";
