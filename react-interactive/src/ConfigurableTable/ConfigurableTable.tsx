@@ -256,7 +256,7 @@ export default function ConfigurableTable<T>(props: React.PropsWithChildren<IPro
                     return element;
                 })}
             </ReactTable.Table>
-            <ToolTip Show={hover} Position={'bottom'} Theme={'dark'} Target={guid + '-tooltip'} Zindex={99999}>
+            <ToolTip Show={hover} Position={'bottom'} Target={guid + '-tooltip'} Zindex={99999}>
                 <p>Change Columns</p>
             </ToolTip>
             {props.SettingsPortal === undefined ? (
