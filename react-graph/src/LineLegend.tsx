@@ -35,8 +35,9 @@ export interface IProps extends ILegendRequiredProps {
     setEnabled: (arg: boolean) => void,
     hasNoData: boolean
 }
+
 const fontFamily = window.getComputedStyle(document.body).fontFamily;
-const nonTextualWidth = 45;
+const nonTextualWidth = 25;
 const cssStyle = `margin: auto auto auto 0px; display: inline-block; font-weight: 400; font-family: ${fontFamily};`
 
 function LineLegend(props: IProps) {
