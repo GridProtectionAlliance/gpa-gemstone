@@ -182,7 +182,7 @@ function AdditionalField<Field extends IField, Value extends IValue>(props: IPro
                         {(mode === 'Edit') ?
                             <button className="btn btn-default pull-right" data-tooltip='View' onClick={() => { setMode('View'); setEditValues(values) }} onMouseEnter={() => setHover('View')} onMouseLeave={() => setHover('None')}>View</button> :
                             <button className="btn btn-primary pull-right" onClick={() => setMode('Edit')}>Edit</button>}
-                        <ToolTip Show={hover === 'View' && changedFields.length > 0} Position={'left'} Theme={'dark'} Target={"View"}>
+                        <ToolTip Show={hover === 'View' && changedFields.length > 0} Position={'left'} Target={"View"}>
                             {changedFields.map((fld,i) => <p key={i}>{Warning} Changes to '{fld}' will be lost. </p>)}
                         </ToolTip>
                     </div>
@@ -234,14 +234,14 @@ function AdditionalField<Field extends IField, Value extends IValue>(props: IPro
                     <button className={"btn btn-primary" + (mode === 'View' ? ' disabled' : '')} onMouseEnter={() => setHover('New')} onMouseLeave={() => setHover('None')}
                         onClick={() => { if (mode === 'Edit') { setShowEdit(true); setNewField(props.EmptyField) } }} data-tooltip={'New'} >Add Field</button>
                 </div>
-                <ToolTip Show={hover === 'New' && mode === 'View'} Position={'top'} Theme={'dark'} Target={"New"}>
+                <ToolTip Show={hover === 'New' && mode === 'View'} Position={'top'} Target={"New"}>
                     <p> To add a new Field switch to Edit mode by clicking on the Edit Button on the upper right corner.</p>
                 </ToolTip>
                 <div className="btn-group mr-2">
                     <button className={"btn btn-primary" + (changedFields.length === 0 || mode==='View' || errorFields.length > 0 ? ' disabled' : '')} onClick={() => { if (errorFields.length === 0  && changedFields.length > 0  && mode === 'Edit') dispatch(props.AdditionalFieldSlice.UpdateValues({ParentID: props.Id, Values: editValues})); }}
                         onMouseEnter={() => setHover('Save')} onMouseLeave={() => setHover('None')} data-tooltip={'SaveValues'}>Save Changes</button>
                 </div>
-                <ToolTip Show={hover === 'Save' && (mode === 'View' || changedFields.length > 0)} Position={'top'} Theme={'dark'} Target={"SaveValues"}>
+                <ToolTip Show={hover === 'Save' && (mode === 'View' || changedFields.length > 0)} Position={'top'} Target={"SaveValues"}>
                     {mode==='View' ? <p> To change any Fields switch to Edit mode by clicking on the Edit Button on the upper right corner.</p> : null}
                     {changedFields.length > 0 && errorFields.length === 0 ? changedFields.map((fld,i) => <p key={i}> {HeavyCheckMark } Changes to '{fld}' are valid.</p>) : null}
                     {changedFields.length > 0 && errorFields.length > 0 ? errorFields.map((t,i) =><p key={i}> {CrossMark} {t}.</p> ) : null}
@@ -255,7 +255,7 @@ function AdditionalField<Field extends IField, Value extends IValue>(props: IPro
                                          onMouseEnter={() => setHover('Clear')}
                     onMouseLeave={() => setHover('None')} data-tooltip={'Reset'}>Reset</button>
                 </div>
-                <ToolTip Show={hover === 'Clear' && (mode === 'View' || changedFields.length > 0)} Position={'top'} Theme={'dark'} Target={'Reset'}>
+                <ToolTip Show={hover === 'Clear' && (mode === 'View' || changedFields.length > 0)} Position={'top'} Target={'Reset'}>
                     {mode === 'View'? <p> To change any Fields switch to Edit mode by clicking on the Edit Button on the upper right corner.</p> : null}
                     {changedFields.length > 0? changedFields.map((fld,i) => <p key={i}>{Warning} Changes to '{fld}' will be lost. </p>) : null }
                 </ToolTip>

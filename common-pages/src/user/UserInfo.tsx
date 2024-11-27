@@ -102,7 +102,7 @@ function UserInfo(props: IProps)  {
                     <button className="btn btn-default" onClick={() => setUser(currentUser)} disabled={warnings.length === 0} data-tooltip={'Clr'}
                         onMouseEnter={() => setHover('Clear')} onMouseLeave={() => setHover('None')}>Reset</button>
                 </div>
-                <ToolTip Show={hover === 'Clear' && (warnings.length > 0)} Position={'top'} Theme={'dark'} Target={"Clr"}>
+                <ToolTip Show={hover === 'Clear' && (warnings.length > 0)} Position={'top'} Target={"Clr"}>
                     {warnings.map((t, i) => <p key={i}>{Warning} {t}</p>)}
                 </ToolTip>
             </div>

@@ -1,4 +1,4 @@
-// ******************************************************************************************************
+﻿// ******************************************************************************************************
 //  LineLegend.tsx - Gbtc
 //
 //  Copyright © 2023, Grid Protection Alliance.  All Rights Reserved.
@@ -24,7 +24,7 @@
 
 import * as React from 'react';
 import { LineStyle } from './GraphContext';
-import { GetTextWidth, GetTextHeight,  CreateGuid } from '@gpa-gemstone/helper-functions';
+import { GetTextHeight,  CreateGuid } from '@gpa-gemstone/helper-functions';
 import { Warning } from '@gpa-gemstone/gpa-symbols';
 import { ILegendRequiredProps, LegendContext } from './LegendContext';
 
@@ -97,6 +97,42 @@ function LineLegend(props: IProps) {
             </div>
         </div>
     );
+}
+
+function GetTextWidth(font: string, fontSize: string, word: string, cssStyle?: string, height?: string, whiteSpace?: string, containerWidth?: string): number {
+    const text = document.createElement("span");
+
+    if (cssStyle !== undefined)
+        text.style.cssText = cssStyle;
+
+    // Set font properties
+    text.style.font = font;
+    text.style.fontSize = fontSize;
+    text.style.height = height ?? 'auto';
+    text.style.width = 'auto';
+    text.style.whiteSpace = whiteSpace ?? 'nowrap';
+    text.innerHTML = word;
+
+    // Create a container
+    const container = document.createElement('div');
+    container.style.position = 'absolute';
+    container.style.visibility = 'hidden';
+    container.style.overflow = 'visible'; // So overflowed text is measured
+    container.style.height = height ?? 'auto';
+    container.style.width = containerWidth ?? 'auto';
+    container.style.whiteSpace = whiteSpace ?? 'nowrap';
+
+    // Append text to the container
+    container.appendChild(text);
+    document.body.appendChild(container);
+
+    // Measure the width
+    const width = text.offsetWidth;
+
+    // Clean up
+    document.body.removeChild(container);
+
+    return Math.ceil(width);
 }
 
 export default LineLegend;
