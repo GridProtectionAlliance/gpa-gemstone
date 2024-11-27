@@ -1,4 +1,4 @@
-﻿// ******************************************************************************************************
+// ******************************************************************************************************
 //  LineLegend.tsx - Gbtc
 //
 //  Copyright © 2023, Grid Protection Alliance.  All Rights Reserved.
@@ -35,7 +35,7 @@ export interface IProps extends ILegendRequiredProps {
     setEnabled: (arg: boolean) => void,
     hasNoData: boolean
 }
-const fontFamily = `-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol"`
+const fontFamily = window.getComputedStyle(document.body).fontFamily;
 const nonTextualWidth = 45;
 const cssStyle = `margin: auto auto auto 0px; display: inline-block; font-weight: 400; font-family: ${fontFamily};`
 
@@ -69,15 +69,16 @@ function LineLegend(props: IProps) {
         context.RequestLegendWidth(textWidth + nonTextualWidth, guid);
 
         while (fontSize > 0.4 && (textWidth > legendWidth - nonTextualWidth || textHeight > legendHeight)) {
-            fontSize = fontSize - 0.05;
-            textWidth = GetTextWidth(fontFamily, `${fontSize}em`, label, `${cssStyle}`, `${textHeight}px`, `${useML ? 'normal' : undefined}`);
+            fontSize -= 0.05;
+            
+            textWidth = GetTextWidth(fontFamily, `${fontSize}em`, label, `${cssStyle}`, `${legendHeight}px`, `${useML ? 'normal' : undefined}`, `${legendWidth - nonTextualWidth}px`);
             textHeight = GetTextHeight(fontFamily, `${fontSize}em`, label, `${cssStyle}`, `${legendWidth - nonTextualWidth}px`, `${useML ? 'normal' : undefined}`);
             useML = false;
             // Consider special case when width is limiting but height is available
-            if (textWidth > (legendWidth - nonTextualWidth) && textHeight < legendHeight) {
+            if (textWidth >= (legendWidth - nonTextualWidth) && textHeight < legendHeight) {
                 useML = true;
                 textHeight = GetTextHeight(fontFamily, `${fontSize}em`, label, `${cssStyle}`, `${legendWidth - nonTextualWidth}px`, `${useML ? 'normal' : undefined}`);
-                textWidth = legendWidth - nonTextualWidth;
+                textWidth = GetTextWidth(fontFamily, `${fontSize}em`, label, `${cssStyle}`, `${legendHeight}px`, `${useML ? 'normal' : undefined}`, `${legendWidth - nonTextualWidth}px`);
             }
         }
         setTextSize(fontSize);
