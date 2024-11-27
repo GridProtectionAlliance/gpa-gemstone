@@ -97,7 +97,10 @@ export default function SearchableSelect<T>(props: IProps<T>) {
     React.useEffect(() => {
         setLoading(true);
         const [h, c] = props.Search(search);
-        h.then((d: IOption[]) => { setResults(d.map(o => ({ Value: o.Value, Element: <p>{o.Label}</p> }))); setLoading(false); });
+        h.then((d: IOption[]) => {
+            setResults(d.map(o => ({ Value: o.Value, Element: <p>{o.Label}</p> })));
+            setLoading(false);
+        });
         return c;
     }, [search])
 
@@ -136,12 +139,12 @@ export default function SearchableSelect<T>(props: IProps<T>) {
         ops.push(...results.filter(f => f.Value !== search && f.Value !== props.Record[props.Field]));
 
         return ops;
-    }, [search, props.Record[props.Field], props.Disabled, loading, props.SearchLabel]);
+    }, [search, props.Record[props.Field], props.Disabled, loading, props.SearchLabel, results]);
 
     const update = React.useCallback((record: T) => {
-        if ((record[props.Field] as any).toString().startsWith('search-') as boolean){
+        if ((record[props.Field] as any).toString().startsWith('search-') as boolean) {
             const value = (record[props.Field] as any).toString().replace('search-', '')
-            props.Setter({...record, [props.Field]: value})
+            props.Setter({ ...record, [props.Field]: value })
             setSearch(props.SearchLabel ?? value)
             return;
         }
