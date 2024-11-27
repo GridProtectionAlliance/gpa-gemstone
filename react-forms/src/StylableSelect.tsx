@@ -133,7 +133,7 @@ export default function StylableSelect<T>(props: IProps<T>) {
   }, [show]);
 
   // Handle showing and hiding of the dropdown.
-  function HandleShow(evt: React.MouseEvent<HTMLButtonElement, MouseEvent> | MouseEvent) {
+  const HandleShow = React.useCallback((evt: React.MouseEvent<HTMLButtonElement, MouseEvent> | MouseEvent) => {
     // Ignore if disabled or not a mousedown event
     if ((props.Disabled === undefined ? false : props.Disabled) || evt.type !== 'mousedown' || stylableSelect.current == null) return;
 
@@ -143,7 +143,7 @@ export default function StylableSelect<T>(props: IProps<T>) {
 
     if (!stylableSelect.current.contains(evt.target as Node)) setShow(false);
     else setShow(!show);
-  }
+}, [props.Disabled, show])
 
 
   // Update the parent component's state with the selected option.
@@ -163,7 +163,7 @@ export default function StylableSelect<T>(props: IProps<T>) {
     return () => {
       document.removeEventListener('mousedown', HandleShow, false);
     };
-  }, []);
+  }, [HandleShow]);
 
   // Effect to handle changes to the record's field value.
   React.useEffect(() => {
