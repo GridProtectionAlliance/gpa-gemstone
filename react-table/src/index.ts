@@ -29,12 +29,11 @@ import { SearchableTable } from './SearchableTable';
 import { DynamicTableProps, DynamicTable } from './DynamicTable';
 import Paging from './Paging';
 import AdjustableTable from './AdjustableTable/Table';
-import UpdatedColumn from './AdjustableTable/Column';
-import AdjustableColumn from './AdjustableTable/AdjustableColumn';
+import { Column as RegularColumn, AdjustableColumn } from './AdjustableTable/Column';
 
 const ReactTable = {
 	Table: AdjustableTable,
-	Column: UpdatedColumn,
+	Column: RegularColumn,
 	AdjustableColumn: AdjustableColumn,
 }
 
