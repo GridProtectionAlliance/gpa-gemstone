@@ -144,13 +144,46 @@ type width = {
 
 const defaultTableStyle: React.CSSProperties = {
     padding: 0,
-    width: '100%',
-    height: '100%',
+    flex: 1,
     tableLayout: 'fixed',
     overflow: 'hidden',
     display: 'flex',
     flexDirection: 'column',
     marginBottom: 0,
+    width: '100%'
+};
+
+const defaultHeadStyle: React.CSSProperties = {
+    fontSize: 'auto', 
+    tableLayout: 'fixed', 
+    display: 'table', 
+    width: '100%'
+};
+
+const defaultBodyStyle: React.CSSProperties = {
+    flex: 1,
+    display: 'block',
+    overflow: 'auto'
+};
+
+const defaultRowStyle: React.CSSProperties = {
+    display: 'table',
+    tableLayout: 'fixed',
+    width: '100%'
+};
+
+const defaultDataHeadStyle: React.CSSProperties = {
+    overflowX: 'hidden',
+    display: 'inline-block',
+    position: 'relative',
+    borderTop: 'none',
+    width: 'auto'
+};
+
+const defaultDataCellStyle: React.CSSProperties = {
+    overflowX: 'hidden',
+    display: 'inline-block',
+    width: 'auto'
 };
 
 export default function AdjustableTable<T>(props: React.PropsWithChildren<TableProps<T>>) {
@@ -161,6 +194,25 @@ export default function AdjustableTable<T>(props: React.PropsWithChildren<TableP
     const [currentTableWidth, setCurrentTableWidth] = React.useState<number>(0);
     const [scrolled, setScrolled] = React.useState<boolean>(false);
     const [trigger, setTrigger] = React.useState<number>(0);
+
+    // Style consts
+    const tableStyle = React.useMemo(() => ({...defaultTableStyle, ...props.TableStyle}),[props.TableStyle]);
+    const headStyle = React.useMemo(() => ({...defaultHeadStyle, ...props.TheadStyle}),[props.TheadStyle]);
+    const bodyStyle = React.useMemo(() => ({...defaultBodyStyle, ...props.TbodyStyle}),[props.TbodyStyle]);
+    const rowStyle = React.useMemo(() => ({...defaultRowStyle, ...props.RowStyle}),[props.RowStyle]);
+
+    // Send warning if styles are overridden
+    React.useEffect(() => {
+        if (props.TableStyle !== undefined)
+            console.warn('TableStyle properties may be overridden if needed. consider using the defaults');
+        if (props.TheadStyle !== undefined)
+            console.warn('TheadStyle properties may be overridden if needed. consider using the defaults');
+        if (props.TbodyStyle !== undefined)
+            console.warn('TBodyStyle properties may be overridden if needed. consider using the defaults');
+        if (props.RowStyle !== undefined)
+            console.warn('RowStyle properties may be overridden if needed. consider using the defaults');
+    }, []);
+    
 
     // Measure widths and hide columns
     React.useLayoutEffect(() => {
@@ -313,45 +365,44 @@ export default function AdjustableTable<T>(props: React.PropsWithChildren<TableP
     const handleSort = React.useCallback((data: { colKey: string; colField?: keyof T; ascending: boolean }, event: React.MouseEvent<HTMLElement, MouseEvent>) => {
             if (data.colKey !== null) props.OnSort(data, event);
     }, [props.OnSort]);
-    
+
     return (
         <table
-        className={props.TableClass !== undefined ? props.TableClass : 'table table-hover'}
-        style={props.TableStyle ?? defaultTableStyle}
-        >
-        <Header<T>
-        Class={props.TheadClass}
-        Style={props.TheadStyle}
-        SortKey={props.SortKey}
-        Ascending={props.Ascending}
-        OnSort={handleSort}
-                    ColWidths={colWidthsRef}
-                    Trigger={trigger}
-                    TriggerRerender={() => setTrigger(c => c+1)}>
-        {props.children}
-        </Header>
-        <Rows<T>
-        DragStart={props.OnDragStart}
-        Data={props.Data}
-        RowStyle={props.RowStyle}
-        BodyStyle={props.TbodyStyle}
-        BodyClass={props.TbodyClass}
-        OnClick={props.OnClick}
-        Selected={props.Selected}
-        KeySelector={props.KeySelector}
-        BodyRef={bodyRef}
-        BodyScrolled={scrolled}
+            className={props.TableClass !== undefined ? props.TableClass : 'table table-hover'}
+            style={tableStyle}>
+            <Header<T>
+                Class={props.TheadClass}
+                Style={headStyle}
+                SortKey={props.SortKey}
+                Ascending={props.Ascending}
+                OnSort={handleSort}
+                ColWidths={colWidthsRef}
+                Trigger={trigger}
+                TriggerRerender={() => setTrigger(c => c+1)}>
+                {props.children}
+            </Header>
+            <Rows<T>
+                DragStart={props.OnDragStart}
+                Data={props.Data}
+                RowStyle={rowStyle}
+                BodyStyle={bodyStyle}
+                BodyClass={props.TbodyClass}
+                OnClick={props.OnClick}
+                Selected={props.Selected}
+                KeySelector={props.KeySelector}
+                BodyRef={bodyRef}
+                BodyScrolled={scrolled}
                 ColWidths={colWidthsRef}
                 Trigger={trigger}>
-        {props.children}
-        </Rows>
+                {props.children}
+            </Rows>
             {
                 props.LastRow !== undefined ? (
-            <tfoot style={props.TfootStyle} className={props.TfootClass}>
-                <tr style={props.RowStyle !== undefined ? { ...props.RowStyle } : {}}>
-                    {props.LastRow}
-                </tr>
-            </tfoot>
+                    <tfoot style={props.TfootStyle} className={props.TfootClass}>
+                        <tr style={props.RowStyle !== undefined ? { ...props.RowStyle } : {}}>
+                            {props.LastRow}
+                        </tr>
+                    </tfoot>
                 ) : null
             }
         </table>
@@ -395,7 +446,7 @@ function Rows<T>(props: React.PropsWithChildren<IRowProps<T>>) {
                 e,
             );
     }, [props.OnClick]);
-
+    
     return (
         <tbody style={bodyStyle} className={props.BodyClass} ref={props.BodyRef}>
         {props.Data.map((d, i) => {
@@ -425,51 +476,51 @@ function Rows<T>(props: React.PropsWithChildren<IRowProps<T>>) {
                     };
                     if ((element as React.ReactElement<any>).type === Column || 
                         (element as React.ReactElement<any>).type === AdjustableColumn)
-                            return (
-                        <ColumnDataWrapper
-                            key={element.key}
-                            onClick={
+                        return (
+                            <ColumnDataWrapper
+                                key={element.key}
+                                onClick={
                                     (props.OnClick != null) ? (e) =>
-                                props.OnClick!(
-                                    {
-                                        colKey: element.props.Key,
-                                        colField: element.props.Field,
-                                        row: d,
-                                        data: d[element.props.Field as keyof T],
-                                        index: i,
-                                    },
-                                    e,
-                                ) : undefined
-                            }
-                            dragStart={
+                                    props.OnClick!(
+                                        {
+                                            colKey: element.props.Key,
+                                            colField: element.props.Field,
+                                            row: d,
+                                            data: d[element.props.Field as keyof T],
+                                            index: i,
+                                        },
+                                        e,
+                                    ) : undefined
+                                }
+                                dragStart={
                                     (props.DragStart != null) ? (e) =>
-                                props.DragStart!(
-                                    {
-                                        colKey: element.props.Key,
-                                        colField: element.props.Field,
-                                        row: d,
-                                        data: d[element.props.Field as keyof T],
-                                        index: i,
-                                    },
-                                    e,
-                                ) : undefined
-                            }
+                                    props.DragStart!(
+                                        {
+                                            colKey: element.props.Key,
+                                            colField: element.props.Field,
+                                            row: d,
+                                            data: d[element.props.Field as keyof T],
+                                            index: i,
+                                        },
+                                        e,
+                                    ) : undefined
+                                }
                                 style={style}
-                            >
-                            {element.props.Content !== undefined
-                                ? element.props.Content({
-                                    item: d,
-                                    key: element.props.Key,
-                                    field: element.props.Field,
-                                    style: style,
-                                    index: i,
-                                })
-                                : element.props.Field !== undefined
-                                ? d[element.props.Field as keyof T]
-                                : null}
-                        </ColumnDataWrapper>
+                                >
+                                {element.props.Content !== undefined
+                                    ? element.props.Content({
+                                        item: d,
+                                        key: element.props.Key,
+                                        field: element.props.Field,
+                                        style: style,
+                                        index: i,
+                                    })
+                                    : element.props.Field !== undefined
+                                    ? d[element.props.Field as keyof T]
+                                    : null}
+                            </ColumnDataWrapper>
                         );
-                            return null;
+                        return null;
                         })}
                     </tr>
                 );
@@ -494,7 +545,7 @@ interface IHeaderProps<T> {
 }
 
 function Header<T>(props: React.PropsWithChildren<IHeaderProps<T>>) {
-    const trRef = React.useRef<HTMLTableRowElement>(null);
+    const headStyle = React.useMemo(() => ({ ...defaultHeadStyle, ...props.Style }), [props.Style]);
 
     // Consts for adjustable columns
     const [mouseDown, setMouseDown] = React.useState<number>(0);
@@ -582,11 +633,11 @@ function Header<T>(props: React.PropsWithChildren<IHeaderProps<T>>) {
         const w = e.screenX - mouseDown;
         setDeltaW(w);
     }, [mouseDown, currentKeys]);
-
+    
     return (
         <thead
             className={props.Class}
-            style={props.Style}
+            style={headStyle}
             onMouseMove={(e) => {
                 onMove(e.nativeEvent);
                 e.stopPropagation();
@@ -640,26 +691,26 @@ function Header<T>(props: React.PropsWithChildren<IHeaderProps<T>>) {
                 }
             if (((element as React.ReactElement<any>).type === Column) ||
                 ((element as React.ReactElement<any>).type === AdjustableColumn))
-                    return (
-                <ColumnHeaderWrapper
-                    onSort={(e) =>
-                        props.OnSort(
-                            { colKey: element.props.Key, colField: element.props.Field, ascending: props.Ascending },
-                            e,
-                        )
-                    }
-                    sorted={props.SortKey === element.props.Key && (element.props.AllowSort ?? true)}
-                    asc={props.Ascending}
-                    colKey={element.props.Key}
-                    key={element.props.Key}
-                    allowSort={element.props.AllowSort}
+                return (
+                    <ColumnHeaderWrapper
+                        onSort={(e) =>
+                            props.OnSort(
+                                { colKey: element.props.Key, colField: element.props.Field, ascending: props.Ascending },
+                                e,
+                            )
+                        }
+                        sorted={props.SortKey === element.props.Key && (element.props.AllowSort ?? true)}
+                        asc={props.Ascending}
+                        colKey={element.props.Key}
+                        key={element.props.Key}
+                        allowSort={element.props.AllowSort}
                         startAdjustment={startAdjustment}
                         style={style}
-                >
-                    {' '}
-                    {element.props.children ?? element.props.Key}{' '}
-                </ColumnHeaderWrapper>
-            );
+                    >
+                        {' '}
+                        {element.props.children ?? element.props.Key}{' '}
+                    </ColumnHeaderWrapper>
+                );
                 return null;
             })}
         </tr>
