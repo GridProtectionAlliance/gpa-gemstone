@@ -57,13 +57,17 @@ export interface IColumnProps<T> {
     Content?: (d: { item: T, key: string, field: keyof T | undefined, index: number, style?: React.CSSProperties }) => React.ReactNode;
 }
 
+export function AdjustableColumn<T>(props: React.PropsWithChildren<IColumnProps<T>>) {
+    return <>{props.children}</>
+}
 
-export default function Column<T>(props: React.PropsWithChildren<IColumnProps<T>>) {
+export function Column<T>(props: React.PropsWithChildren<IColumnProps<T>>) {
     return <>{props.children}</>
 }
 
 export interface IHeaderWrapperProps {
     onSort: React.MouseEventHandler<HTMLTableCellElement>,
+    startAdjustment?: React.MouseEventHandler<HTMLDivElement>,
     sorted: boolean,
     asc: boolean,
     style: React.CSSProperties,
@@ -72,13 +76,22 @@ export interface IHeaderWrapperProps {
 }
 
 export function ColumnHeaderWrapper(props: React.PropsWithChildren<IHeaderWrapperProps>) {
+    const [showBorder, setShowBorder] = React.useState(false);
 
+    const onHover = React.useCallback(() => { setShowBorder(true); }, []);
+    const onLeave = React.useCallback(() => { setShowBorder(false); }, []);
 
+    const onClickBorder = React.useCallback((e) => {
+        if (props.startAdjustment != null) props.startAdjustment(e);
+    }, [props.startAdjustment]);
 
     const onClick = React.useCallback((e) => {
         if (props.allowSort ?? true) props.onSort(e);
     }, [props.onSort, props.allowSort]);
-
+    
+    const preventPropagation = React.useCallback((e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        e.stopPropagation();
+    }, []);
 
     return <th
         style={props.style}
