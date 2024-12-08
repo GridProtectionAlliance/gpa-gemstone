@@ -160,4 +160,6 @@ namespace ReactTableProps {
     }
 }
 
+export const IsColumnProps = (props: any) => (props?.['Key'] != null); 
+
 export default ReactTableProps;

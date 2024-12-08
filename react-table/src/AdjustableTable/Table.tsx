@@ -26,8 +26,8 @@
 //  ******************************************************************************************************
 import * as React from 'react';
 import * as _ from 'lodash';
-import ReactTableProps from './Types';
-import { Column, AdjustableColumn, ColumnDataWrapper, ColumnHeaderWrapper } from './Column';
+import ReactTableProps, { IsColumnProps } from './Types';
+import { AdjustableColumn, ColumnDataWrapper, ColumnHeaderWrapper } from './Column';
 
 type width = {
     width: number,
@@ -111,22 +111,18 @@ export function AdjustableTable<T>(props: React.PropsWithChildren<ReactTableProp
     React.useLayoutEffect(() => {
         if (currentTableWidth <= 0) return;
 
-        // Some helper functions for the calculations
-        const isValidColumn = (element: React.ReactElement<any, string | React.JSXElementConstructor<any>> | React.ReactPortal) => {
-            return (element as React.ReactElement<any>).type === Column || 
-            (element as React.ReactElement<any>).type === AdjustableColumn;
-        }
+        // Helper functions for the calculations
         const getWidthfromProps = (p: ReactTableProps.IColumn<T>, type: 'width'|'maxWidth'|'minWidth') => {
             // This priotizes rowstyling for width over header, since it was decided that they need to be the same
-            if (p.RowStyle?.[type] !== undefined) return p.RowStyle[type];
-            if (p.HeaderStyle?.[type] !== undefined) return p.HeaderStyle[type];
+            if (p?.RowStyle?.[type] !== undefined) return p.RowStyle[type];
+            if (p?.HeaderStyle?.[type] !== undefined) return p.HeaderStyle[type];
             return undefined;
         }
 
         // Construct base map
         const newMap = new Map<string, width>();
         React.Children.forEach(props.children, (element) => {
-            if (React.isValidElement(element) && isValidColumn(element)) {
+            if (React.isValidElement(element) && IsColumnProps(element.props)) {
                 if (newMap.get(element.props.Key) != null) console.error("Multiple of the same key detected in table, this will cause issues.");
                 newMap.set(element.props.Key, {minWidth: 100, maxWidth: 1000, width: 100})
             }
@@ -150,7 +146,7 @@ export function AdjustableTable<T>(props: React.PropsWithChildren<ReactTableProp
             const autoKeys: string[] = [];
             const measureKeys: string[] = [];
             React.Children.forEach(props.children, (element) => {
-                if (React.isValidElement(element) && isValidColumn(element)) {
+                if (React.isValidElement(element) && IsColumnProps(element.props)) {
                     let widthValue = getWidthfromProps(element.props, type as 'minWidth'|'width'|'maxWidth');
                     if (type === 'width' && widthValue == null) widthValue = 'auto';
                     if (widthValue != null) {
@@ -353,22 +349,21 @@ function Rows<T>(props: React.PropsWithChildren<IRowProps<T>>) {
             const key = props.KeySelector(d, i);
             return (
                 <tr key={key} style={style} onClick={(e) => onClick(e, d, i)}>
-                {React.Children.map(props.children, (element) => {
-                    if (!React.isValidElement(element)) return null;
-                    const colWidth = props.ColWidths.current.get(element.props.Key);
-                    if (colWidth == null || colWidth.width === 0) return null;
-                    let cursor = undefined;
-                    if (element.props.RowStyle?.cursor != null) cursor = element.props.RowStyle.cursor
-                    else if (props.OnClick != null) cursor = 'pointer';
-                    else if (props.DragStart != null) cursor = 'grab';
-                    const style = {
-                        ...defaultDataCellStyle,
-                        ...(element.props.RowStyle), 
-                        width: colWidth.width, 
-                        cursor: cursor
-                    };
-                    if ((element as React.ReactElement<any>).type === Column || 
-                        (element as React.ReactElement<any>).type === AdjustableColumn)
+                    {React.Children.map(props.children, (element) => {
+                        if (!React.isValidElement(element)) return null;
+                        if (!IsColumnProps(element.props)) return null;
+                        const colWidth = props.ColWidths.current.get(element.props.Key);
+                        if (colWidth == null || colWidth.width === 0) return null;
+                        let cursor = undefined;
+                        if (element.props?.RowStyle?.cursor != null) cursor = element.props.RowStyle.cursor
+                        else if (props?.OnClick != null) cursor = 'pointer';
+                        else if (props?.DragStart != null) cursor = 'grab';
+                        const style = {
+                            ...defaultDataCellStyle,
+                            ...(element.props?.RowStyle), 
+                            width: colWidth.width, 
+                            cursor: cursor
+                        };
                         return (
                             <ColumnDataWrapper
                                 key={element.key}
@@ -377,9 +372,9 @@ function Rows<T>(props: React.PropsWithChildren<IRowProps<T>>) {
                                     props.OnClick!(
                                         {
                                             colKey: element.props.Key,
-                                            colField: element.props.Field,
+                                            colField: element.props?.Field,
                                             row: d,
-                                            data: d[element.props.Field as keyof T],
+                                            data: d[element.props?.Field as keyof T],
                                             index: i,
                                         },
                                         e,
@@ -390,9 +385,9 @@ function Rows<T>(props: React.PropsWithChildren<IRowProps<T>>) {
                                     props.DragStart!(
                                         {
                                             colKey: element.props.Key,
-                                            colField: element.props.Field,
+                                            colField: element.props?.Field,
                                             row: d,
-                                            data: d[element.props.Field as keyof T],
+                                            data: d[element.props?.Field as keyof T],
                                             index: i,
                                         },
                                         e,
@@ -400,25 +395,23 @@ function Rows<T>(props: React.PropsWithChildren<IRowProps<T>>) {
                                 }
                                 style={style}
                                 >
-                                {element.props.Content !== undefined
+                                {element.props?.Content != null
                                     ? element.props.Content({
                                         item: d,
                                         key: element.props.Key,
-                                        field: element.props.Field,
+                                        field: element.props?.Field,
                                         style: style,
                                         index: i,
                                     })
-                                    : element.props.Field !== undefined
+                                    : element.props?.Field != null
                                     ? d[element.props.Field as keyof T]
                                     : null}
                             </ColumnDataWrapper>
                         );
-                        return null;
-                        })}
-                    </tr>
-                );
-            })
-        }
+                    })}
+                </tr>
+            );
+        })}
         </tbody>
     );
 }
@@ -551,6 +544,7 @@ function Header<T>(props: React.PropsWithChildren<IHeaderProps<T>>) {
         <tr style={{width: '100%', display: 'table'}}>
         {React.Children.map(props.children, (element) => {
             if (!React.isValidElement(element)) return null;
+            if (!IsColumnProps(element.props)) return null;
             const colWidth = props.ColWidths.current.get(element.props.Key);
             if (colWidth == null || colWidth.width === 0) return null;
             // Handling temporary width changes due to being in mid-adjustments
@@ -565,9 +559,9 @@ function Header<T>(props: React.PropsWithChildren<IHeaderProps<T>>) {
             }
             const style = {
                 ...defaultDataHeadStyle,
-                ...element.props.HeaderStyle,
+                ...element.props?.HeaderStyle,
                 width: currentWidth,
-                cursor: (element.props.HeaderStyle?.cursor ?? ((element.props.AllowSort ?? true) ? 'pointer' : undefined))
+                cursor: (element.props?.HeaderStyle?.cursor ?? ((element.props?.AllowSort ?? true) ? 'pointer' : undefined))
             };
             let startAdjustment: React.MouseEventHandler<HTMLDivElement> | undefined;
             if ((element as React.ReactElement<any>).type === AdjustableColumn)
@@ -582,21 +576,19 @@ function Header<T>(props: React.PropsWithChildren<IHeaderProps<T>>) {
                     }
 
                 }
-            if (((element as React.ReactElement<any>).type === Column) ||
-                ((element as React.ReactElement<any>).type === AdjustableColumn))
                 return (
                     <ColumnHeaderWrapper
                         onSort={(e) =>
                             props.OnSort(
-                                { colKey: element.props.Key, colField: element.props.Field, ascending: props.Ascending },
+                                { colKey: element.props.Key, colField: element.props?.Field, ascending: props.Ascending },
                                 e,
                             )
                         }
-                        sorted={props.SortKey === element.props.Key && (element.props.AllowSort ?? true)}
+                        sorted={props.SortKey === element.props.Key && (element.props?.AllowSort ?? true)}
                         asc={props.Ascending}
                         colKey={element.props.Key}
                         key={element.props.Key}
-                        allowSort={element.props.AllowSort}
+                        allowSort={element.props?.AllowSort}
                         startAdjustment={startAdjustment}
                         style={style}
                     >
