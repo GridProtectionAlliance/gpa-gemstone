@@ -24,16 +24,18 @@
 //  ******************************************************************************************************
 
 import Paging from './Paging';
-import AdjustableTable from './AdjustableTable/Table';
-import { Column as RegularColumn, AdjustableColumn } from './AdjustableTable/Column';
+import ReactTableProps from './AdjustableTable/Types'
+import { AdjustableTable } from './AdjustableTable/Table';
+import { Column, AdjustableColumn } from './AdjustableTable/Column';
 
 const ReactTable = {
 	Table: AdjustableTable,
-	Column: RegularColumn,
+	Column: Column,
 	AdjustableColumn: AdjustableColumn,
 }
 
 export {
 	ReactTable,
+	ReactTableProps,
 	Paging
 }

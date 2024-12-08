@@ -26,115 +26,8 @@
 //  ******************************************************************************************************
 import * as React from 'react';
 import * as _ from 'lodash';
-import { Column, AdjustableColumn, ColumnDataWrapper, ColumnHeaderWrapper, IColumnProps } from './Column';
-
-interface TableProps<T> {
-    /**
-    * List of T objects used to generate rows
-    */
-    Data: T[];
-    /**
-    * Callback when the user clicks on a data entry
-    * @param data contains the data including the columnKey
-    * @param event the onClick Event to allow propagation as needed
-    * @returns
-    */
-    OnClick?: (
-        data: { colKey?: string; colField?: keyof T; row: T; data: T[keyof T] | null; index: number },
-        event: React.MouseEvent<HTMLElement, MouseEvent>,
-    ) => void;
-    /**
-    * Key of the collumn to sort by
-    */
-    SortKey: string;
-    /**
-    * Boolen to indicate whether the sort is ascending or descending
-    */
-    Ascending: boolean;
-    /**
-    * Callback when the data should be sorted
-    * @param data the information of the collumn including the Key of the collumn
-    * @param event The onCLick event to allow Propagation as needed
-    */
-    OnSort(data: { colKey: string; colField?: keyof T; ascending: boolean }, event: React.MouseEvent<HTMLElement, MouseEvent>): void;
-    /**
-    * Class of the table component
-    */
-    TableClass?: string;
-    /**
-    * style of the table component
-    */
-    TableStyle?: React.CSSProperties;
-    /**
-    * style of the thead component
-    */
-    TheadStyle?: React.CSSProperties;
-    /**
-    * Class of the thead component
-    */
-    TheadClass?: string;
-    /**
-    * style of the tbody component
-    * Note: Display style overwritten to "block"
-    */
-    TbodyStyle?: React.CSSProperties;
-    /**
-    * Class of the tbody component
-    */
-    TbodyClass?: string;
-    /**
-    * style of the tfoot component
-    */
-    TfootStyle?: React.CSSProperties;
-    /**
-    * Class of the tfoot component
-    */
-    TfootClass?: string;
-
-    /**
-    * determines if a row should be styled as selected
-    * @param data the item to be checked
-    * @returns true if the row should be styled as selected
-    */
-    Selected?: (data: T, index: number) => boolean;
-    /**
-    *
-    * @param data the information of the row including the item of the row
-    * @param e the event triggering this
-    * @returns
-    */
-    OnDragStart?: (
-        data: { colKey?: string; colField?: keyof T; row: T; data: T[keyof T] | null; index: number },
-        e: React.DragEvent<Element>,
-    ) => void;
-    /**
-    * The default style for the tr element
-    */
-    RowStyle?: React.CSSProperties;
-    /**
-    * a Function that retrieves a unique key used for React key properties
-    * @param data the item to be turned into a key
-    * @returns a unique Key
-    */
-    KeySelector: (data: T, index?: number) => string | number;
-    
-    /**
-    * Optional Element to display in the last row of the Table
-    * use this for displaying warnings when the Table content gets cut off.
-    * Data appears in the tfoot element
-    */
-    LastRow?: string | React.ReactNode;
-    /**
-    * Optional Element to display on upper Right corner
-    */
-    LastColumn?: string | React.ReactNode;
-    
-    /**
-    * Optional Callback that gets called when there is not enough space to display columns
-    * @param disabled takes in string of disabled keys
-    */
-    ReduceWidthCallback?: (disabled: string[]) => void;
-}
+import ReactTableProps from './Types';
+import { Column, AdjustableColumn, ColumnDataWrapper, ColumnHeaderWrapper } from './Column';
 
 type width = {
     width: number,
@@ -186,7 +79,7 @@ const defaultDataCellStyle: React.CSSProperties = {
     width: 'auto'
 };
 
-export default function AdjustableTable<T>(props: React.PropsWithChildren<TableProps<T>>) {
+export function AdjustableTable<T>(props: React.PropsWithChildren<ReactTableProps.ITable<T>>) {
     const bodyRef = React.useRef<HTMLTableSectionElement | null>(null);
     const colWidthsRef = React.useRef<Map<string, width>>(new Map<string, width>());
     const oldWidthRef = React.useRef<number>(0);
@@ -223,7 +116,7 @@ export default function AdjustableTable<T>(props: React.PropsWithChildren<TableP
             return (element as React.ReactElement<any>).type === Column || 
             (element as React.ReactElement<any>).type === AdjustableColumn;
         }
-        const getWidthfromProps = (p: IColumnProps<T>, type: 'width'|'maxWidth'|'minWidth') => {
+        const getWidthfromProps = (p: ReactTableProps.IColumn<T>, type: 'width'|'maxWidth'|'minWidth') => {
             // This priotizes rowstyling for width over header, since it was decided that they need to be the same
             if (p.RowStyle?.[type] !== undefined) return p.RowStyle[type];
             if (p.HeaderStyle?.[type] !== undefined) return p.HeaderStyle[type];
@@ -564,7 +457,7 @@ function Header<T>(props: React.PropsWithChildren<IHeaderProps<T>>) {
                 return null;
             }
             if ((element as React.ReactElement<any>).type === AdjustableColumn) {
-                return (element.props as IColumnProps<T>).Key;
+                return (element.props as ReactTableProps.IColumn<T>).Key;
             }
             return null;
         }).filter((item) => item !== null);
