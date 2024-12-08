@@ -27,41 +27,13 @@
 
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import * as React from 'react';
+import ReactTableProps from './Types';
 
-export interface IColumnProps<T> {
-    /**
-     * a unique Key for this Collumn
-     */
-    Key: string;
-    /**
-     * Flag indicating whether sorting by this Collumn is allowed
-     */
-    AllowSort?: boolean;
-    /**
-     * Optional - the Field to be used 
-     */
-    Field?: keyof T;
-    /**
-     * The Default style for the th element
-     */
-    HeaderStyle?: React.CSSProperties;
-    /**
-     * The Default style for the td element
-     */
-    RowStyle?: React.CSSProperties;
-    /**
-     * Determines the Content to be displayed
-     * @param d the data to be turned into content
-     * @returns the content displayed
-     */
-    Content?: (d: { item: T, key: string, field: keyof T | undefined, index: number, style?: React.CSSProperties }) => React.ReactNode;
-}
-
-export function AdjustableColumn<T>(props: React.PropsWithChildren<IColumnProps<T>>) {
+export function AdjustableColumn<T>(props: React.PropsWithChildren<ReactTableProps.IColumn<T>>) {
     return <>{props.children}</>
 }
 
-export function Column<T>(props: React.PropsWithChildren<IColumnProps<T>>) {
+export function Column<T>(props: React.PropsWithChildren<ReactTableProps.IColumn<T>>) {
     return <>{props.children}</>
 }
 
