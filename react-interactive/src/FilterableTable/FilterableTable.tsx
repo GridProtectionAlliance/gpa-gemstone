@@ -21,8 +21,8 @@
 // ******************************************************************************************************
 
 import * as React from 'react';
-import Table, { TableProps, Column } from '@gpa-gemstone/react-table';
-import {Search} from '../SearchBar';
+import { ReactTable, ReactTableProps } from '@gpa-gemstone/react-table';
+import { Search } from '../SearchBar';
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import { BooleanFilter } from './BooleanFilter';
 import { TextFilter } from './TextFilter';
@@ -30,27 +30,21 @@ import { EnumFilter } from './EnumFilter';
 import { NumberFilter, IUnit } from './NumberFilter';
 import { DateFilter, DateTimeFilter, TimeFilter } from './DateTimeFilters';
 import { CreateGuid} from '@gpa-gemstone/helper-functions';
+import { IsFilterableColumnProps } from './FilterableColumn';
 
 interface IOptions { Value: string | number, Label: string }
 
-     
-interface IFilterableCollumn<T> extends Column<T> { 
-    Type?: Search.FieldType, 
-    Enum?: IOptions[],
-    ExpandedLabel?: string,
-    Unit?: IUnit[]
-}
-
-interface IProps<T> extends TableProps<T> {
+interface IProps<T> extends ReactTableProps.ITable<T> {
     SetFilter: (filters: Search.IFilter<T>[]) => void,
-    cols: IFilterableCollumn<T>[],
     DefaultFilter?: Search.IFilter<T>[]
 }
+
+// ToDo: This whole structure is kinda gross, this should live in react-table so we don't have to map FilterableColumn -> Column -> HeaderWrapper
 
 /**
  * Table with Filters in the column headers
  */
-export default function FilterableTable<T>(props: IProps<T>) {
+export default function FilterableTable<T>(props: React.PropsWithChildren<IProps<T>>) {
     const [filters, setFilters] = React.useState<Search.IFilter<T>[]>((props.DefaultFilter === undefined ? [] : props.DefaultFilter));
     const [guid] = React.useState<string>(CreateGuid());
 
@@ -64,43 +58,55 @@ export default function FilterableTable<T>(props: IProps<T>) {
     React.useEffect(() => { props.SetFilter(filters); }, [filters]);
 
     return (
-        <>
-            <Table
-                cols={props.cols.map(c => ({
-                    ...c, label: <Header
-                        Label={c.label}
-                        Filter={filters.filter(f => f.FieldName === c.field?.toString())}
-                        SetFilter={(f) => updateFilters(f, c.field)}
-                        Field={c.field}
-                        Type={c.Type}
-                        Options={c.Enum}
-                        ExpandedLabel={c.ExpandedLabel}
-                        Guid={guid}
-                        Unit={c.Unit}
-                    />
-                }))}
-                data={props.data}
-                onClick={props.onClick}
-                sortKey={props.sortKey}
-                ascending={props.ascending}
-                onSort={(d,evt) => {
-                    // make sure we do not sort when clicking on the filter
-                    const $div = evt.target.closest(`div[data-tableid="${guid}"]`);
-                    if ($div === null)
-                        props.onSort(d,evt);
-                }}
-                tableClass={props.tableClass}
-                tableStyle={props.tableStyle}
-                theadStyle={props.theadStyle}
-                theadClass={props.theadClass}
-                tbodyStyle={props.tbodyStyle}
-                tbodyClass={props.tbodyClass}
-                selected={props.selected}
-                rowStyle={props.rowStyle}
-                keySelector={props.keySelector}
-            />
-
-        </>
+        <ReactTable.Table<T>
+            Data={props.Data}
+            OnClick={props.OnClick}
+            SortKey={props.SortKey}
+            Ascending={props.Ascending}
+            OnSort={(d,evt) => {
+                // make sure we do not sort when clicking on the filter
+                // ToDo: Avoid this any and just add onclicks to the filters themselves to prevent propagation
+                const $div = (evt as any).target.closest(`div[data-tableid="${guid}"]`);
+                if ($div === null)
+                    props.OnSort(d,evt);
+            }}
+            TableClass={props.TableClass}
+            TableStyle={props.TableStyle}
+            TheadStyle={props.TheadStyle}
+            TheadClass={props.TheadClass}
+            TbodyStyle={props.TbodyStyle}
+            TbodyClass={props.TbodyClass}
+            Selected={props.Selected}
+            RowStyle={props.RowStyle}
+            KeySelector={props.KeySelector}
+        >
+            {React.Children.map(props.children, (element) => {
+                if (!React.isValidElement(element)) return null;
+                if (!IsFilterableColumnProps(element.props)) return null;
+                return (
+                    <ReactTable.Column<T>
+                        Key={element.props.Key}
+                        AllowSort={element.props.AllowSort}
+                        Field={element.props.Field}
+                        HeaderStyle={element.props.HeaderStyle}
+                        RowStyle={element.props.RowStyle}
+                        Content={element.props.Content}
+                    >
+                        <Header
+                            Label={element.props?.children}
+                            Filter={filters.filter(f => f.FieldName === element.props?.Field?.toString())}
+                            SetFilter={(f) => updateFilters(f, element.props?.Field)}
+                            Field={element.props?.Field}
+                            Type={element.props?.Type}
+                            Options={element.props?.Enum}
+                            ExpandedLabel={element.props?.ExpandedLabel}
+                            Guid={guid}
+                            Unit={element.props?.Unit}
+                        />
+                    </ReactTable.Column>
+                );
+            })}
+        </ReactTable.Table>
     );
 
 }
