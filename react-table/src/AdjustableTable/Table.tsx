@@ -263,6 +263,7 @@ export function AdjustableTable<T>(props: React.PropsWithChildren<ReactTableProp
                 Style={headStyle}
                 SortKey={props.SortKey}
                 Ascending={props.Ascending}
+                LastColumn={props.LastColumn}
                 OnSort={handleSort}
                 ColWidths={colWidthsRef}
                 Trigger={trigger}
@@ -427,6 +428,7 @@ interface IHeaderProps<T> {
     ColWidths: React.MutableRefObject<Map<string, width>>;
     TriggerRerender: ()=>void;
     Trigger: number;
+    LastColumn?: string | React.ReactNode;
 }
 
 function Header<T>(props: React.PropsWithChildren<IHeaderProps<T>>) {
@@ -595,8 +597,8 @@ function Header<T>(props: React.PropsWithChildren<IHeaderProps<T>>) {
                         {element.props.children ?? element.props.Key}{' '}
                     </ColumnHeaderWrapper>
                 );
-                return null;
             })}
+        <th style={{ width: 17, padding: 0, maxWidth: 17 }}>{props.LastColumn}</th>
         </tr>
         </thead>
     );
