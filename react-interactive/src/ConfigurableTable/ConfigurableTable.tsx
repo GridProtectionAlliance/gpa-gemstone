@@ -22,7 +22,7 @@
 
 import * as React from 'react';
 import Modal from '../Modal';
-import { ReactTable } from '@gpa-gemstone/react-table';
+import { ReactTable, ReactTableProps } from '@gpa-gemstone/react-table';
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import { Portal } from 'react-portal';
 import ToolTip from '../ToolTip';
@@ -32,98 +32,11 @@ import * as _ from 'lodash';
 import ConfigurableColumn from './ConfigurableColumn';
 import Alert from '../Alert';
 
-interface TableProps<T> {
-    /**
-    * List of T objects used to generate rows
-    */
-    Data: T[];
-    /**
-    * Callback when the user clicks on a data entry
-    * @param data contains the data including the columnKey
-    * @param event the onClick Event to allow propagation as needed
-    * @returns
-    */
-    OnClick?: (
-        data: { colKey?: string; colField?: keyof T; row: T; data: T[keyof T] | null; index: number },
-        event: React.MouseEvent<HTMLElement, MouseEvent>,
-    ) => void;
-    /**
-    * Key of the column to sort by
-    */
-    SortKey: string;
-    /**
-    * Boolean to indicate whether the sort is ascending or descending
-    */
-    Ascending: boolean;
-    /**
-    * Callback when the data should be sorted
-    * @param data the information of the collumn including the Key of the column
-    * @param event The onCLick event to allow Propagation as needed
-    */
-    OnSort(data: { colKey: string; colField?: keyof T; ascending: boolean }, event: React.MouseEvent<HTMLElement, MouseEvent>): void;
-    /**
-    * Class of the table component
-    */
-    TableClass?: string;
-    /**
-    * style of the table component
-    */
-    TableStyle?: React.CSSProperties;
-    /**
-    * style of the thead component
-    */
-    TheadStyle?: React.CSSProperties;
-    /**
-    * Class of the thead component
-    */
-    TheadClass?: string;
-    /**
-    * style of the tbody component
-    */
-    TbodyStyle?: React.CSSProperties;
-    /**
-    * Class of the tbody component
-    */
-    TbodyClass?: string;
-    /**
-    * determines if a row should be styled as selected
-    * @param data the item to be checked
-    * @returns true if the row should be styled as selected
-    */
-    Selected?: (data: T) => boolean;
-    /**
-    *
-    * @param data he information of the row including the item of the row
-    * @param e the event triggering this
-    * @returns
-    */
-    OnDragStart?: (
-        data: { colKey?: string; colField?: keyof T; row: T; data: T[keyof T] | null; index: number },
-        e: React.DragEvent<Element>,
-    ) => void;
-    /**
-    * The default style for the tr element
-    */
-    RowStyle?: React.CSSProperties;
-    /**
-    * a Function that retrieves a unique key used for React key properties
-    * @param data the item to be turned into a key
-    * @returns a unique Key
-    */
-    KeySelector: (data: T) => string | number;
-
-    /**
-    * Optional Element to display in the last row of the Table
-    * use this for displaying warnings when the Table content gets cut off
-    */
-    LastRow?: string | React.ReactNode;
+interface ITableProps<T> extends ReactTableProps.ITable<T> {
     /**
      * Optional ZIndex for the configurable column modal
      */
     ModalZIndex?: number
-}
-
-interface IProps<T> extends TableProps<T> {
     /**
     * ID of the Portal used for tunneling Collumn settings
     */
@@ -147,7 +60,7 @@ interface IColDesc {
 /**
 * Table with modal to show and hide columns
 */
-export default function ConfigurableTable<T>(props: React.PropsWithChildren<IProps<T>>) {
+export default function ConfigurableTable<T>(props: React.PropsWithChildren<ITableProps<T>>) {
     const getKeyMappings: () => Map<string, IColDesc> = () => {
         const u = new Map<string, IColDesc>();
         React.Children.forEach(props.children, (element) => {
