@@ -66,7 +66,6 @@ const defaultRowStyle: React.CSSProperties = {
 };
 
 const defaultDataHeadStyle: React.CSSProperties = {
-    overflowX: 'hidden',
     display: 'inline-block',
     position: 'relative',
     borderTop: 'none',
