@@ -32,35 +32,43 @@ export class PointNode {
     maxT: number;
     minV: number[];
     maxV: number[];
-    avgV: number[];
+    sum: number[];
+    count: number;
     // Count of all dimensions (including time)
     dim: number;
 
     private children: PointNode[] | null;
-    private points: [...number[]][] | null;
+    private points: number[][] | null;
 
-    constructor(data: [...number[]][]) {
+    constructor(data: number[][]) {
         this.dim = data[0].length;
         // That minimum time stamp that fits in this bucket
         this.minT = data[0][0];
         // The maximum time stamp that might fit in this bucket
         this.maxT = data[data.length - 1][0];
         // Intializing other vars
-        this.avgV = Array(this.dim - 1).fill(0);
+        this.sum = Array(this.dim - 1).fill(0);
+        this.count = 0;
         this.minV = Array(this.dim - 1).fill(0);
         this.maxV = Array(this.dim - 1).fill(0);
         this.children = null;
         this.points = null;
 
         if (data.length <= MaxPoints) {
-            if (data.some((point) => point.length != this.dim)) throw new TypeError(`Jagged data passed to PointNode. All points should all be ${this.dim} dimensions.`)
+            if (data.some(point => point.length != this.dim)) throw new TypeError(`Jagged data passed to PointNode. All points should all be ${this.dim} dimensions.`)
             this.points = data;
-            for (let index = 1; index < this.dim; index++) this.minV[index - 1] = Math.min(...data.filter(pt => !isNaN(pt[index])).map(pt => pt[index]));
-            for (let index = 1; index < this.dim; index++) this.maxV[index - 1] = Math.max(...data.filter(pt => !isNaN(pt[index])).map(pt => pt[index]));
+
+            for (let index = 1; index < this.dim; index++) {
+                const values = data.filter(pt => !isNaN(pt[index])).map(pt => pt[index]);
+                this.minV[index - 1] = Math.min(...values);
+                this.maxV[index - 1] = Math.max(...values);
+                this.sum[index - 1] = values.reduce((sum, val) => sum + val, 0);
+            }
+            this.count = data.length;
             return;
         }
 
-        const nLevel = Math.floor(Math.pow(data.length, 1 / MaxPoints));
+        const nLevel = Math.floor((Math.log((data.length) / Math.log(MaxPoints)))) - 1;
         const blockSize = nLevel * MaxPoints;
 
         let index = 0;
@@ -69,8 +77,13 @@ export class PointNode {
             this.children.push(new PointNode(data.slice(index, index + blockSize)));
             index = index + blockSize;
         }
-        for (let index = 0; index < this.dim - 1; index++) this.minV[index] = Math.min(...this.children.map(node => node.minV[index]));
-        for (let index = 0; index < this.dim - 1; index++) this.maxV[index] = Math.max(...this.children.map(node => node.maxV[index]));
+
+        for (let index = 0; index < this.dim - 1; index++) {
+            this.minV[index] = Math.min(...this.children.map(node => node.minV[index]));
+            this.maxV[index] = Math.max(...this.children.map(node => node.maxV[index]));
+            this.sum[index] = this.children.reduce((s, node) => s + node.sum[index], 0);
+        }
+        this.count = this.children.reduce((s, node) => s + node.count, 0);
     }
 
     public GetData(Tstart: number, Tend: number, IncludeEdges?: boolean): [...number[]][] {
@@ -90,10 +103,17 @@ export class PointNode {
         ).map(node => node.GetData(Tstart, Tend, IncludeEdges)));
     }
 
-    public GetFullData(): [...number[]][] {
+
+    public GetFullData(): number[][] {
         return this.GetData(this.minT, this.maxT);
     }
 
+    /**
+     * Get Limits for all dimensions
+     * @param Tstart start time of the timerange to be looked at
+     * @param Tend end time of the timerange to be looked at
+     * @returns The min and max value of the data in the given timerange
+     */
     public GetAllLimits(Tstart: number, Tend: number): [number, number][] {
         const result: [number, number][] = Array(this.dim - 1);
         for (let index = 0; index < this.dim - 1; index++)
@@ -101,6 +121,13 @@ export class PointNode {
         return result;
     }
 
+    /**
+     * Retrieves the limits of the data in the given timerange
+     * @param Tstart start time of the timerange to be looked at
+     * @param Tend end time of the timerange to be looked at
+     * @param dimension dimension of the data to be retrieved (x,y,z) to get y use 0
+     * @returns The min and max value of the data in the given timerange
+     */
     // Note: Dimension indexing does not include time, I.E. in (x,y), y would be dimension 0;
     public GetLimits(Tstart: number, Tend: number, dimension?: number): [number, number] {
         const currentIndex = dimension ?? 0;
@@ -127,7 +154,7 @@ export class PointNode {
      * Retrieves a point from the PointNode tree
      * @param {number} tVal - The time value of the point to retrieve from the tree.
      */
-    public GetPoint(tVal: number): [...number[]] {
+    public GetPoint(tVal: number): number[] {
         return this.PointBinarySearch(tVal, 1)[0];
     }
 
@@ -140,7 +167,7 @@ export class PointNode {
         return this.PointBinarySearch(tVal, pointsRetrieved);
     }
 
-    private PointBinarySearch(tVal: number, pointsRetrieved = 1, bucketLowerNeighbor?: PointNode, bucketUpperNeighbor?: PointNode): [...number[]][] {
+    private PointBinarySearch(tVal: number, pointsRetrieved = 1, bucketLowerNeighbor?: PointNode, bucketUpperNeighbor?: PointNode): number[][] {
         if (pointsRetrieved <= 0) throw new RangeError(`Requested number of points must be positive value.`);
         // round tVal back to whole integer 
 
@@ -207,7 +234,7 @@ export class PointNode {
             // if the subsection is null, and the tVal is less than the minimum value of the subsection, ??Start over again looking for the point in the first subsection??
             if (tVal < this.minT) childIndex = 0;
             else if (tVal > this.maxT) childIndex = this.children.length - 1;
-            else childIndex = this.children.findIndex(n => n.maxT >= tVal);
+            else childIndex = this.children.findIndex(n => n.maxT > tVal);
 
             if (childIndex === -1) throw new RangeError(`Could not find child bucket with point that has a time value of ${tVal}`);
 
@@ -218,4 +245,13 @@ export class PointNode {
         }
         else throw new RangeError(`Both children and points are null for PointNode, unabled to find point with time value of ${tVal}`);
     }
+
+    /**
+    * Returns the size of the Tree below this PointNode
+    */
+    public GetTreeSize(): number {
+        if (this.children == null) return 1;
+        return 1 + Math.max(...this.children.map((node) => node.GetTreeSize()));
+    }
+
 }
