@@ -37,6 +37,7 @@ import Application from './Menue/Application';
 import Page from './Menue/Page';
 import Section from './Menue/Section';
 import FilterableTable from './FilterableTable/FilterableTable';
+import FilterableColumn from './FilterableTable/FilterableColumn'
 import SplitSection from './Layout/SplitSection';
 import VerticalSplit from './Layout/VerticalSplit';
 import SplitDrawer from './Layout/SplitDrawer';
@@ -72,7 +73,7 @@ export {
   Application,
   Page,
   Section,
-  FilterableTable,
+  FilterableTable, FilterableColumn,
   SplitSection,
   VerticalSplit,
   SplitDrawer,
