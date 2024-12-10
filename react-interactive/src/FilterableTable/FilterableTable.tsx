@@ -59,38 +59,14 @@ export default function FilterableTable<T>(props: React.PropsWithChildren<IProps
 
     return (
         <ReactTable.Table<T>
-            Data={props.Data}
-            OnClick={props.OnClick}
-            SortKey={props.SortKey}
-            Ascending={props.Ascending}
-            OnSort={(d,evt) => {
-                // make sure we do not sort when clicking on the filter
-                // ToDo: Avoid this any and just add onclicks to the filters themselves to prevent propagation
-                const $div = (evt as any).target.closest(`div[data-tableid="${guid}"]`);
-                if ($div === null)
-                    props.OnSort(d,evt);
-            }}
-            TableClass={props.TableClass}
-            TableStyle={props.TableStyle}
-            TheadStyle={props.TheadStyle}
-            TheadClass={props.TheadClass}
-            TbodyStyle={props.TbodyStyle}
-            TbodyClass={props.TbodyClass}
-            Selected={props.Selected}
-            RowStyle={props.RowStyle}
-            KeySelector={props.KeySelector}
+            {...props}
         >
             {React.Children.map(props.children, (element) => {
                 if (!React.isValidElement(element)) return null;
                 if (!IsFilterableColumnProps(element.props)) return null;
                 return (
                     <ReactTable.Column<T>
-                        Key={element.props.Key}
-                        AllowSort={element.props.AllowSort}
-                        Field={element.props.Field}
-                        HeaderStyle={element.props.HeaderStyle}
-                        RowStyle={element.props.RowStyle}
-                        Content={element.props.Content}
+                        {...element.props}
                     >
                         <Header
                             Label={element.props?.children}
@@ -149,8 +125,8 @@ function Header<T>(props: IHeaderProps<T>) {
                         minWidth: 'calc(100% - 50px)',
                         marginLeft: -25
                     }} data-tableid={props.Guid}
+                    onClick={(evt) => { evt.preventDefault(); evt.stopPropagation(); }}
                 >
-                    {/*onClick={(evt) => { evt.preventDefault(); evt.stopPropagation(); }}*/}
                     <table style={{ margin: 0 }}>
                         <tbody>
                             {((props.ExpandedLabel !== null) && (props.ExpandedLabel !== "") && (props.ExpandedLabel !== undefined)) ? 
