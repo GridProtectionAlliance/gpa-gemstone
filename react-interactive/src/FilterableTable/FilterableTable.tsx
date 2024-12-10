@@ -23,7 +23,7 @@
 import * as React from 'react';
 import Table, { TableProps, Column } from '@gpa-gemstone/react-table';
 import {Search} from '../SearchBar';
-import { SVGIcons } from '@gpa-gemstone/gpa-symbols';
+import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import { BooleanFilter } from './BooleanFilter';
 import { TextFilter } from './TextFilter';
 import { EnumFilter } from './EnumFilter';
@@ -128,7 +128,7 @@ function Header<T>(props: IHeaderProps<T>) {
             </div>
             {props.Type !== undefined ? <>
                 <div style={{ width: 25, position: 'absolute', right: 12, top: 12 }}>
-                    {props.Filter.length > 0? SVGIcons.Filter : null}
+                    {props.Filter.length > 0? <ReactIcons.Filter/> : null}
                 </div>
                 <div
                     style={{
