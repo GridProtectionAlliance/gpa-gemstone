@@ -21,7 +21,6 @@
 //
 // ******************************************************************************************************
 
-import Setting from './Setting';
 import Note from './Note';
 import ByValueList from './ValueList/ByValueList';
 import ValueList from './ValueList/Group';
@@ -43,7 +42,6 @@ export {
   EventTypeFilter,
   EventCharacteristicFilter,
   NavBarFilterButton,
-  Setting,
   Note,
   ValueList,
   ByValueList,
