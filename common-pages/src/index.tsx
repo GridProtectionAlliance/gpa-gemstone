@@ -22,8 +22,6 @@
 // ******************************************************************************************************
 
 import Note from './Note';
-import ByValueList from './ValueList/ByValueList';
-import ValueList from './ValueList/Group';
 import { DefaultSearch } from './SearchBar';
 import SelectPopup from './StandardSelectPopup';
 import { DefaultSelects } from './SelectionPopup';
@@ -41,8 +39,6 @@ export {
   EventCharacteristicFilter,
   NavBarFilterButton,
   Note,
-  ValueList,
-  ByValueList,
   DefaultSearch,
   SelectPopup,
   DefaultSelects,
