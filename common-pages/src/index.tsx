@@ -24,8 +24,6 @@
 import Note from './Note';
 import ByValueList from './ValueList/ByValueList';
 import ValueList from './ValueList/Group';
-import ByUser from './user/ByUser';
-import User from './user/User';
 import { DefaultSearch } from './SearchBar';
 import SelectPopup from './StandardSelectPopup';
 import { DefaultSelects } from './SelectionPopup';
@@ -45,8 +43,6 @@ export {
   Note,
   ValueList,
   ByValueList,
-  User,
-  ByUser,
   DefaultSearch,
   SelectPopup,
   DefaultSelects,
