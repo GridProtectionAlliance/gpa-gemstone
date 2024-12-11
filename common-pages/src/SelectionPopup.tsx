@@ -25,9 +25,10 @@ import { GenericSlice, Search} from "@gpa-gemstone/react-interactive";
 import { Application, OpenXDA, SystemCenter } from "@gpa-gemstone/application-typings";
 import SelectPopup from "./StandardSelectPopup";
 import {DefaultSearch} from './SearchBar';
-import { Column } from "@gpa-gemstone/react-table";
 
 interface U { ID: number|string }
+
+// Pass columns in via children
 
 interface IProps<T extends U> {
     Slice: GenericSlice<T>,
@@ -35,7 +36,6 @@ interface IProps<T extends U> {
     OnClose: (selected: T[], conf: boolean ) => void
     Show: boolean,
     Type?: 'single'|'multiple',
-    Columns: Column<T>[],
     Title: string,
     GetEnum: (setOptions: (options: IOptions[]) => void, field: Search.IField<T>) => () => void,
     GetAddlFields: (setAddlFields: (cols: Search.IField<T>[]) => void) => () => void,
