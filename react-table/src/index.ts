@@ -24,7 +24,7 @@
 //  ******************************************************************************************************
 
 import Paging from './Paging';
-import ReactTableProps from './AdjustableTable/Types'
+import * as ReactTableProps from './AdjustableTable/Types';
 import { AdjustableTable } from './AdjustableTable/Table';
 import { Column, AdjustableColumn } from './AdjustableTable/Column';
 

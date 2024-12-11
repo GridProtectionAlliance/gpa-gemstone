@@ -26,7 +26,7 @@
 //  ******************************************************************************************************
 import * as React from 'react';
 import * as _ from 'lodash';
-import ReactTableProps, { IsColumnProps } from './Types';
+import * as ReactTableProps from './Types';
 import { AdjustableColumn, ColumnDataWrapper, ColumnHeaderWrapper } from './Column';
 
 type width = {
@@ -77,6 +77,8 @@ const defaultDataCellStyle: React.CSSProperties = {
     display: 'inline-block',
     width: 'auto'
 };
+
+const IsColumnProps = (props: any) => (props?.['Key'] != null);
 
 export function AdjustableTable<T>(props: React.PropsWithChildren<ReactTableProps.ITable<T>>) {
     const bodyRef = React.useRef<HTMLTableSectionElement | null>(null);
@@ -185,7 +187,7 @@ export function AdjustableTable<T>(props: React.PropsWithChildren<ReactTableProp
         
             // Handle Autos (width type only)
             if (type === 'width' && autoKeys.length > 0) {
-                let spacePerElement = Math.floor(autoSpace / autoKeys.length);
+                const spacePerElement = Math.floor(autoSpace / autoKeys.length);
                 autoKeys.forEach(key => {
                     const widthObj = newMap.get(key);
                     if (widthObj != null) widthObj[type] = spacePerElement;
@@ -558,11 +560,14 @@ function Header<T>(props: React.PropsWithChildren<IHeaderProps<T>>) {
                 else delta = deltaW;
                 currentWidth += (getDeltaSign(keyIndex) * delta);
             }
+            let cursor = undefined;
+            if (element.props?.HeaderStyle?.cursor != null) cursor = element.props.HeaderStyle.cursor
+            else if ((element.props?.AllowSort ?? true) as boolean) cursor = 'pointer';
             const style = {
                 ...defaultDataHeadStyle,
                 ...element.props?.HeaderStyle,
                 width: currentWidth,
-                cursor: (element.props?.HeaderStyle?.cursor ?? ((element.props?.AllowSort ?? true) ? 'pointer' : undefined))
+                cursor: cursor
             };
             let startAdjustment: React.MouseEventHandler<HTMLDivElement> | undefined;
             if ((element as React.ReactElement<any>).type === AdjustableColumn)
