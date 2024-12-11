@@ -1,7 +1,7 @@
 // ******************************************************************************************************
-//  index.tsx - Gbtc
+//  FilterableColumn.tsx - Gbtc
 //
-//  Copyright © 2020, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2023, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -16,31 +16,29 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  12/29/2020 - C. Lackner
+//  12/05/2024 - G. Santos
 //       Generated original version of source code.
-//
 // ******************************************************************************************************
 
-import Note from './Note';
-import { DefaultSearch } from './SearchBar';
-import SelectPopup from './StandardSelectPopup';
-import { DefaultSelects } from './SelectionPopup';
-import ErrorBoundary from './ErrorBoundary';
-import TimeFilter from './TimeFilter/TimeFilter';
-import EventTypeFilter from './EventTypeFilter';
-import EventCharacteristicFilter from './EventCharacteristicFilter';
-import NavBarFilterButton from './NavBarFilterButton';
-import * as TimeWindowUtils from './TimeFilter/TimeWindowUtils'
+import { ReactTableProps } from '@gpa-gemstone/react-table';
+import * as React from 'react';
+import { Search } from '../SearchBar';
+import { IUnit } from './NumberFilter';
 
-export {
-  TimeFilter,
-  TimeWindowUtils,
-  EventTypeFilter,
-  EventCharacteristicFilter,
-  NavBarFilterButton,
-  Note,
-  DefaultSearch,
-  SelectPopup,
-  DefaultSelects,
-  ErrorBoundary
-};
+interface IOptions { Value: string | number, Label: string }
+
+export const IsFilterableColumnProps = (props: any) => (props?.['Key'] != null); 
+
+interface IFilterableCollumn<T> extends ReactTableProps.IColumn<T> { 
+    Type?: Search.FieldType, 
+    Enum?: IOptions[],
+    ExpandedLabel?: string,
+    Unit?: IUnit[]
+}
+
+/**
+ * Wrapper to make any column configurable
+ */
+export default function FilterableColumn<T>(props: React.PropsWithChildren<IFilterableCollumn<T>>) {
+    return <>{props.children}</>
+}
