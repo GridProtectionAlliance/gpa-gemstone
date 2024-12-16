@@ -46,6 +46,7 @@ import HeatMapChart from './HeatMapChart';
 import * as _html2canvas from "html2canvas";
 import HighlightBox from './HighlightBox';
 import XValueAxis from './XValueAxis';
+import StreamingLine from './StreamingLine';
 const html2canvas: any = _html2canvas;
 
 // A ZoomMode of AutoValue means it will zoom on time, and auto Adjust the Value to fit the data.
@@ -897,7 +898,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
                                    if ((element as React.ReactElement<any>).type === Line || (element as React.ReactElement<any>).type === LineWithThreshold || (element as React.ReactElement<any>).type === Infobox ||
                                    (element as React.ReactElement<any>).type === HorizontalMarker || (element as React.ReactElement<any>).type === VerticalMarker || (element as React.ReactElement<any>).type === SymbolicMarker
                                    || (element as React.ReactElement<any>).type === Circle || (element as React.ReactElement<any>).type === AggregatingCircles || (element as React.ReactElement<any>).type === HeatMapChart || 
-                                    (element as React.ReactElement<any>).type === Oval || (element as React.ReactElement<any>).type === HighlightBox)
+                                    (element as React.ReactElement<any>).type === Oval || (element as React.ReactElement<any>).type === HighlightBox || (element as  React.ReactElement<any>).type === StreamingLine)
                                        return element;
                                    return null;
                                })}
