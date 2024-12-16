@@ -246,3 +246,40 @@ test('Large number of points GetCount', () => {
   const count = node.GetCount(2500, 7500);
   expect(count).toBe(expectedCount);
 })
+
+test('Count with empty data', () => {
+  const node = new PointNode([]);
+  const count = node.GetCount(0,1);
+  expect(count).toBe(0)
+})
+
+test('GetLimits with empty data', () => {
+  const node = new PointNode([]);
+  const limits = node.GetLimits(0, 1000000);
+  expect(limits[0]).toBe(Infinity);
+  expect(limits[1]).toBe(-Infinity);
+})
+
+test('GetPoint with empty data', () => {
+  const node = new PointNode([]);
+  const [x] = node.GetPoint(0);
+  expect(x).toBe(NaN);
+})
+
+test('GetPoints with empty data', () => {
+  const node = new PointNode([]);
+  const [x] = node.GetPoints(0, 2);
+  expect(x.toString()).toBe([NaN].toString());
+})
+
+test('GetFullData with empty data', () => {
+  const node = new PointNode([]);
+  const points = node.GetFullData();
+  expect(points.toString()).toBe([].toString());
+})
+
+test('GetData with empty data', () => {
+  const node = new PointNode([]);
+  const points = node.GetData(0 ,10);
+  expect(points.toString()).toBe([].toString());
+})
