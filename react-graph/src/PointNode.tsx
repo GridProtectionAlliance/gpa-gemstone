@@ -1,4 +1,4 @@
-// ******************************************************************************************************
+﻿// ******************************************************************************************************
 //  PointNode.tsx - Gbtc
 //
 //  Copyright © 2020, Grid Protection Alliance.  All Rights Reserved.
@@ -177,7 +177,7 @@ export class PointNode {
 
         //Step 5: return results
         return false;
-        }
+    }
 
     /**
      * Splits the given data points into child nodes based on the MaxPoints threshold.
@@ -436,14 +436,14 @@ export class PointNode {
             // if the tVal is less than the minimum value of the subsection, return the first point
             if (tVal < this.minT) {
                 const spillOver = pointsRetrieved - this.points.length;
-                const spillOverPoints = (spillOver > 0 && bucketUpperNeighbor !== undefined) ? bucketUpperNeighbor.PointBinarySearch(tVal, spillOver, this, undefined) : [];
+                const spillOverPoints = (spillOver > 0 && nodeUpperNeighbor !== undefined) ? nodeUpperNeighbor.PointBinarySearch(tVal, spillOver, this, undefined) : [];
                 return this.points.slice(0, pointsRetrieved).concat(spillOverPoints);
             }
 
             // if the tVal is greater than the largest value of the subsection, return the last point
             if (tVal > this.maxT) {
                 const spillOver = pointsRetrieved - this.points.length;
-                const spillOverPoints = (spillOver > 0 && bucketLowerNeighbor !== undefined) ? bucketLowerNeighbor.PointBinarySearch(tVal, spillOver, undefined, this) : [];
+                const spillOverPoints = (spillOver > 0 && nodeLowerNeighbor !== undefined) ? nodeLowerNeighbor.PointBinarySearch(tVal, spillOver, undefined, this) : [];
                 return spillOverPoints.concat(this.points.slice(-pointsRetrieved));
             }
 
@@ -483,9 +483,9 @@ export class PointNode {
 
             // Note: If we have spillover and no neighbor on the spillover side, then we discard the idea of spillover, and just return as many as we can on that side
             const upperSpillOver = centerIndex + upperPoints + 1 - this.points.length;
-            const upperNeighborPoints = (upperSpillOver > 0 && bucketUpperNeighbor !== undefined) ? bucketUpperNeighbor.PointBinarySearch(tVal, upperSpillOver, this, undefined) : [];
+            const upperNeighborPoints = (upperSpillOver > 0 && nodeUpperNeighbor !== undefined) ? nodeUpperNeighbor.PointBinarySearch(tVal, upperSpillOver, this, undefined) : [];
             const lowerSpillOver = lowerPoints - centerIndex;
-            const lowerNeighborPoints = (lowerSpillOver > 0 && bucketLowerNeighbor !== undefined) ? bucketLowerNeighbor.PointBinarySearch(tVal, lowerSpillOver, undefined, this) : [];
+            const lowerNeighborPoints = (lowerSpillOver > 0 && nodeLowerNeighbor !== undefined) ? nodeLowerNeighbor.PointBinarySearch(tVal, lowerSpillOver, undefined, this) : [];
 
             return lowerNeighborPoints.concat(this.points.slice(Math.max(centerIndex - lowerPoints, 0), Math.min(centerIndex + upperPoints + 1, this.points.length))).concat(upperNeighborPoints);
 
@@ -493,18 +493,31 @@ export class PointNode {
         else if (this.children !== null) {
             let childIndex = -1;
             // if the subsection is null, and the tVal is less than the minimum value of the subsection, ??Start over again looking for the point in the first subsection??
-            if (tVal < this.minT) childIndex = 0;
-            else if (tVal > this.maxT) childIndex = this.children.length - 1;
-            else childIndex = this.children.findIndex(n => n.maxT > tVal);
+            if (tVal < this.minT)
+                childIndex = 0;
+            else if (tVal > this.maxT)
+                childIndex = this.children.length - 1;
+            else {
+                childIndex = this.children.findIndex(n => n.maxT >= tVal);
 
-            if (childIndex === -1) throw new RangeError(`Could not find child bucket with point that has a time value of ${tVal}`);
+                if (childIndex > 0 && this.children[childIndex].minT > tVal) {
+                    const currentChildMinT = this.children[childIndex].minT;
+                    const previousChildMaxT = this.children[childIndex - 1].maxT;
+
+                    if (Math.abs(tVal - previousChildMaxT) < Math.abs(tVal - currentChildMinT))
+                        childIndex--;
+
+                }
+            }
+
+            if (childIndex === -1) throw new RangeError(`Could not find child node with point that has a time value of ${tVal}`);
 
             // Find neighbors
             const upperNeighbor = childIndex !== this.children.length - 1 ? this.children[childIndex + 1] : undefined;
             const lowerNeighbor = childIndex !== 0 ? this.children[childIndex - 1] : undefined;
             return this.children[childIndex].PointBinarySearch(tVal, pointsRetrieved, lowerNeighbor, upperNeighbor);
         }
-        else throw new RangeError(`Both children and points are null for PointNode, unabled to find point with time value of ${tVal}`);
+        else throw new RangeError(`Both children and points are null for PointNode, unable to find point with time value of ${tVal}`);
     }
 
     /**
