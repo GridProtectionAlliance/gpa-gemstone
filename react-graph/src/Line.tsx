@@ -1,4 +1,4 @@
-﻿// ******************************************************************************************************
+// ******************************************************************************************************
 //  Line.tsx - Gbtc
 //
 //  Copyright © 2020, Grid Protection Alliance.  All Rights Reserved.
@@ -23,11 +23,10 @@
 
 
 import * as React from 'react';
-import {IDataSeries, GraphContext, LineStyle, AxisIdentifier, AxisMap, LineMap} from './GraphContext';
+import { IDataSeries, GraphContext, LineStyle, AxisIdentifier, AxisMap, LineMap } from './GraphContext';
 import * as moment from 'moment';
-import {PointNode} from './PointNode';
+import { PointNode } from './PointNode';
 import LineLegend from './LineLegend';
-import { CreateGuid } from '@gpa-gemstone/helper-functions';
 
 
 export interface IProps {
@@ -47,15 +46,14 @@ function Line(props: IProps) {
         Single Line with ability to turn off and on.
     */
     const [guid, setGuid] = React.useState<string>("");
-    const [dataGuid, setDataGuid] = React.useState<string>("");
-    const [highlight, setHighlight] = React.useState<[number, number]>([NaN,NaN]);
+    const [highlight, setHighlight] = React.useState<[number, number]>([NaN, NaN]);
     const [enabled, setEnabled] = React.useState<boolean>(true);
-    const [data, setData] = React.useState<PointNode|null>(null);
-    const [visibleData, setVisibleData] = React.useState<[...number[]][]>([]);
+    const [data, setData] = React.useState<PointNode | null>(null);
     const context = React.useContext(GraphContext);
-    const showPoints = React.useMemo(() => (props.showPoints !== undefined && props.showPoints) || 
-        ((props.autoShowPoints === undefined || props.autoShowPoints) && visibleData.length <= 100), 
-        [props.showPoints, props.autoShowPoints, visibleData]);
+    const showPoints = React.useMemo(() => (props.showPoints ?? false) || ((props.autoShowPoints ?? true) && (data?.GetCount(context.XDomain[0], context.XDomain[1], true) ?? 1000)  <= 100),
+        [props.showPoints, props.autoShowPoints, data, context.XDomain]);
+
+    const points = data?.GetData(context.XDomain[0], context.XDomain[1], true) ?? [];
 
     const createLegend = React.useCallback(() => {
         if (props.legend === undefined)
@@ -67,8 +65,8 @@ function Line(props: IProps) {
         txt = txt + ` (${moment.utc(highlight[0]).format('MM/DD/YY hh:mm:ss')}: ${highlight[1].toPrecision(6)})`
     
         return <LineLegend 
-            size = 'sm' label={txt} color={props.color} lineStyle={props.lineStyle}
-            setEnabled={setEnabled} enabled={enabled} hasNoData={data == null}/>;
+            size='sm' label={txt} color={props.color} lineStyle={props.lineStyle}
+            setEnabled={setEnabled} enabled={enabled} hasNoData={data == null} />;
     }, [props.color, props.lineStyle, enabled, data]);
 
     const createContextData = React.useCallback(() => {
@@ -87,10 +85,6 @@ function Line(props: IProps) {
             return;
         context.UpdateData(guid, createContextData());
     }, [createContextData]);
-
-    React.useEffect(() => {
-        setDataGuid(CreateGuid());
-    }, [data]);
 
     React.useEffect(() => {
         if (data == null || props.data == null || props.data.length === 0 || isNaN(context.XHover))
@@ -118,43 +112,39 @@ function Line(props: IProps) {
 
    }, [highlight, enabled]);
 
-   React.useEffect(() => {
-        if (data == null) {
-            setVisibleData([]);
-            return;
-        }
-        setVisibleData(data.GetData(context.XDomain[0],context.XDomain[1],true));
-    },[data, context.XDomain[0], context.XDomain[1]])
-
     React.useEffect(() => {
         const id = context.AddData(createContextData());
         setGuid(id);
         return () => { context.RemoveData(id) }
     }, []);
 
-   function generateData() {
+    const generateData = React.useCallback((pointsToDraw: number[][]) => {
        let result = "M ";
        if (data == null)
         return ""
-     result = result + visibleData.map((pt, _) => {
+
+        result = result + pointsToDraw.map((pt, _) => {
            const x = context.XTransformation(pt[0]);
            const y = context.YTransformation(pt[1], AxisMap.get(props.axis));
            return `${x},${y}`
        }).join(" L ")
 
        return result
-   }
-
+    }, [context.XTransformation, context.YTransformation])
 
    return (
-       enabled?
+        enabled ?
        <g>
-           <path d={generateData()} style={{ fill: 'none', strokeWidth: props.width === undefined ? 3 : props.width, stroke: props.color }} strokeDasharray={LineMap.get(props.lineStyle)} />
-           {showPoints && data != null? visibleData.map((pt, i) => <circle key={i} r={3} cx={context.XTransformation(pt[0])} cy={context.YTransformation(pt[1], AxisMap.get(props.axis))} fill={props.color} stroke={'currentColor'} style={{ opacity: 0.8/*, transition: 'cx 0.5s,cy 0.5s'*/ }} />) : null}
-           {(props.highlightHover ?? false) && !isNaN(highlight[0]) && !isNaN(highlight[1])? 
-            <circle r={5} cx={context.XTransformation(highlight[0])} cy={context.YTransformation(highlight[1], AxisMap.get(props.axis))} fill={props.color} stroke={'currentColor'} style={{ opacity: 0.8/*, transition: 'cx 0.5s,cy 0.5s'*/ }} /> : null}
+                <path d={generateData(points)} style={{ fill: 'none', strokeWidth: props.width === undefined ? 3 : props.width, stroke: props.color }} strokeDasharray={LineMap.get(props.lineStyle)} />
+
+                {showPoints && data != null ? points.map((pt, i) => <circle key={i} r={3} cx={context.XTransformation(pt[0])} cy={context.YTransformation(pt[1], AxisMap.get(props.axis))} fill={props.color} stroke={'currentColor'}
+                    style={{ opacity: 0.8/*, transition: 'cx 0.5s,cy 0.5s'*/ }} />) : null}
+
+                {(props.highlightHover ?? false) && !isNaN(highlight[0]) && !isNaN(highlight[1]) ?
+                    <circle r={5} cx={context.XTransformation(highlight[0])} cy={context.YTransformation(highlight[1], AxisMap.get(props.axis))} fill={props.color} stroke={'currentColor'} style={{ opacity: 0.8/*, transition: 'cx 0.5s,cy 0.5s'*/ }} />
+                    : null}
        </g > : null
    );
-}
+});
 
 export default Line;
