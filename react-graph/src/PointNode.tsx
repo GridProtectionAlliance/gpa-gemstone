@@ -56,9 +56,9 @@ export class PointNode {
 
         if (data === undefined) return;
 
-        this.dim = data[0].length;
+        this.dim = data.length === 0 ? NaN : data[0].length;
 
-        if (data.some(point => point.length !== this.dim))
+        if (data.length !== 0 && data.some(point => point.length !== this.dim))
             throw new TypeError(`Jagged data passed to PointNode. All points should all be ${this.dim} dimensions.`);
 
         // Initialize normally
@@ -126,6 +126,9 @@ export class PointNode {
      * @param newPoints points to add, one array of size dim
      */
     public AddPoints(newPoints: number[]): void {
+        if(Number.isNaN(this.dim))
+            this.dim = newPoints.length
+        
         if (newPoints.length === 0) throw new Error('No point to add');
         if (newPoints.length !== this.dim) throw new TypeError(`Jagged data passed to PointNode.Add(). Points should be ${this.dim} dimension.`);
         if (this.TryAddPoints(newPoints)) return
@@ -220,9 +223,9 @@ export class PointNode {
         if (this.points === null || this.points.length === 0) return;
 
         this.count = this.points.length;
-        this.minT = this.points[0][0];
-        this.maxT = this.points[this.points.length - 1][0];
-        this.dim = this.points[0].length;
+        this.minT = this.points?.[0]?.[0] ?? NaN;
+        this.maxT = this.points?.[this.points.length - 1]?.[0] ?? NaN;
+        this.dim = this.points?.[0]?.length ?? NaN;
 
         for (let index = 1; index < this.dim; index++) {
             const values = this.points.map(pt => pt[index]);
@@ -433,6 +436,8 @@ export class PointNode {
         // round tVal back to whole integer 
 
         if (this.points !== null) {
+            if(this.points.length === 0) return [[NaN]] //points should only ever be empty when an empty array is passed into constructor
+
             // if the tVal is less than the minimum value of the subsection, return the first point
             if (tVal < this.minT) {
                 const spillOver = pointsRetrieved - this.points.length;
