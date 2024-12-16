@@ -95,7 +95,7 @@ export class PointNode {
                 i > 0 && (this.points != null ? this.points[i - 1][0] : 0) <= Tend);
         if (this.points != null)
             return this.points.filter(pt => pt[0] >= Tstart && pt[0] <= Tend);
-        const result: [...number[]][] = [];
+        const result: number[][] = [];
         return result.concat(...this.children!.filter(node =>
             (node.minT <= Tstart && node.maxT > Tstart) ||
             (node.maxT >= Tend && node.minT < Tend) ||
@@ -103,7 +103,10 @@ export class PointNode {
         ).map(node => node.GetData(Tstart, Tend, IncludeEdges)));
     }
 
-
+    /**
+     * Retrieves all data points stored in the PointNode tree.
+     * @returns An array of all points in the tre.
+     */
     public GetFullData(): number[][] {
         return this.GetData(this.minT, this.maxT);
     }
@@ -170,13 +173,13 @@ export class PointNode {
         let min = this.minV[currentIndex];
 
         if (this.points == null && !(Tstart <= this.minT && Tend > this.maxT)) {
-            // Array represents all limits of buckets
+            // Array represents all limits o nodes
             const limits = this.children!.filter(n => n.maxT > Tstart && n.minT < Tend).map(n => n.GetLimits(Tstart, Tend, currentIndex));
             min = Math.min(...limits.map(pt => pt[0]));
             max = Math.max(...limits.map(pt => pt[1]));
         }
         if (this.points != null && !(Tstart <= this.minT && Tend > this.maxT)) {
-            // Array represents all numbers within this bucket that fall in range
+            // Array represents all numbers within this node that fall in range
             const limits = this.points!.filter(pt => pt[0] > Tstart && pt[0] < Tend).map(pt => pt[currentIndex + 1]);
             min = Math.min(...limits);
             max = Math.max(...limits);
@@ -198,11 +201,19 @@ export class PointNode {
      * @param {number} tVal - The time value of the center point of the point retrieval.
      * @param {number} pointsRetrieved - The number of points to retrieve
      */
-    public GetPoints(tVal: number, pointsRetrieved = 1): [...number[]][] {
+    public GetPoints(tVal: number, pointsRetrieved = 1): number[][] {
         return this.PointBinarySearch(tVal, pointsRetrieved);
     }
 
-    private PointBinarySearch(tVal: number, pointsRetrieved = 1, bucketLowerNeighbor?: PointNode, bucketUpperNeighbor?: PointNode): number[][] {
+    /**
+     * Implements a binary search to locate points within the PointNode tree or across neighboring nodes based on the timestamp.
+     * @param tVal The time value to search for.
+     * @param pointsRetrieved The number of points to retrieve.
+     * @param nodeLowerNeighbor Optional lower neighboring node for spillover.
+     * @param nodeUpperNeighbor Optional upper neighboring node for spillover.
+     * @returns An array of points matching the search criteria.
+     */
+    private PointBinarySearch(tVal: number, pointsRetrieved = 1, nodeLowerNeighbor?: PointNode, nodeUpperNeighbor?: PointNode): number[][] {
         if (pointsRetrieved <= 0) throw new RangeError(`Requested number of points must be positive value.`);
         // round tVal back to whole integer 
 
