@@ -26,6 +26,7 @@
 import * as React from 'react';
 import HelperMessage from './HelperMessage';
 import { CreateGuid } from '@gpa-gemstone/helper-functions'
+import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 
 interface IProps<T> {
   /**
@@ -104,8 +105,8 @@ export default function Select<T>(props: IProps<T>) {
   // Update the parent component's state with the new value.
   function SetRecord(value: string | number): void {
     const record: T = { ...props.Record };
-    if (value !== ''){
-      const val =  props.Options.find(op => op.Value == value)?.Value ?? value
+    if (value !== '') {
+      const val = props.Options.find(op => op.Value == value)?.Value ?? value
       record[props.Field] = val as unknown as T[keyof T];
     }
     else
@@ -130,8 +131,12 @@ export default function Select<T>(props: IProps<T>) {
     <div className="form-group">
       {/* Rendering label and optional help icon */}
       {showHelpIcon || showLabel ?
-        <label>{showLabel ? label : ''}
-          {showHelpIcon ? <div style={{ width: 20, height: 20, borderRadius: '50%', display: 'inline-block', background: '#0D6EFD', marginLeft: 10, textAlign: 'center', fontWeight: 'bold' }} onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)}> ? </div> : null}
+        <label className='d-flex align-items-center'>{showLabel ? label : ''}
+          {showHelpIcon ?
+            <button className='btn mb-1 pt-0 pb-0' onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)}>
+              <ReactIcons.QuestionMark Color='var(--info)' Size={20} />
+            </button>
+            : null}
         </label> : null}
 
       {showHelpIcon ?

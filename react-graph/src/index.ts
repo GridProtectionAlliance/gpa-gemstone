@@ -12,6 +12,8 @@ import Infobox from './Infobox';
 import Oval from './Oval';
 import { AxisMap } from './GraphContext';
 import HighlightBox from './HighlightBox';
+import { PointNode } from './PointNode';
+import StreamingLine from './StreamingLine';
 
 export { 
     Plot,
@@ -27,5 +29,7 @@ export {
     AggregatingCircles,
     Infobox,
     AxisMap,
-    HighlightBox
+    HighlightBox,
+    PointNode,
+    StreamingLine
  };

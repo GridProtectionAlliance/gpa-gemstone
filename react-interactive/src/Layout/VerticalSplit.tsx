@@ -407,7 +407,7 @@ const DrawerHeader: React.FunctionComponent<IDrawerHeaderProps> = (props) => {
                 {props.title}
             </span>
         </div>
-        {props.showTooltip ? <ToolTip Show={hover} Position={'right'} Theme={'dark'} Target={guid + '-tooltip'} Zindex={9999}>
+        {props.showTooltip ? <ToolTip Show={hover} Position={'right'} Target={guid + '-tooltip'} Zindex={9999}>
             {props.title}
         </ToolTip> : null}
     </>
