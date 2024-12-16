@@ -1,4 +1,4 @@
-﻿// ******************************************************************************************************
+// ******************************************************************************************************
 //  PointNode.tsx - Gbtc
 //
 //  Copyright © 2020, Grid Protection Alliance.  All Rights Reserved.
@@ -106,6 +106,41 @@ export class PointNode {
 
     public GetFullData(): number[][] {
         return this.GetData(this.minT, this.maxT);
+    }
+
+    /**
+     * Retrieves the count of data points within a specified time range.
+     * @param Tstart Start time of the timerange to be looked at.
+     * @param Tend End time of the timerange to be looked at.
+     * @param IncludeEdges Optional parameter to include edge points in the count.
+     * @returns The number of points within the specified time range.
+     */
+    public GetCount(Tstart: number, Tend: number, IncludeEdges?: boolean): number {
+        // Case 1: Leaf Node with points
+        if (this.points !== null) {
+            // Entire node is within the range
+            if (Tstart <= this.minT && Tend >= this.maxT)
+                return this.count;
+
+            // Include edges if specified
+            if (IncludeEdges)
+                return this.points.filter((pt, i) => (pt[0] >= Tstart && pt[0] <= Tend) || (i < (this.points!.length - 1) && this.points![i + 1][0] >= Tstart) || (i > 0 && this.points![i - 1][0] <= Tend)).length;
+
+            // Standard range filtering
+            return this.points.filter(pt => pt[0] >= Tstart && pt[0] <= Tend).length;
+        }
+
+        // Case 2: Internal Node with children
+        if (this.children !== null) {
+            // Relevant children
+            const relevantChildren = this.children.filter(node => node.minT <= Tend && node.maxT >= Tstart);
+
+            // Aggregate counts from relevant children
+            return relevantChildren.reduce((acc, node) => acc + node.GetCount(Tstart, Tend, IncludeEdges), 0);
+        }
+
+        // Case 3: No points or children match
+        return 0;
     }
 
     /**
