@@ -40,53 +40,268 @@ export class PointNode {
     private children: PointNode[] | null;
     private points: number[][] | null;
 
-    constructor(data: number[][]) {
-        this.dim = data[0].length;
-        // That minimum time stamp that fits in this bucket
-        this.minT = data[0][0];
-        // The maximum time stamp that might fit in this bucket
-        this.maxT = data[data.length - 1][0];
+    constructor(data?: number[][]) {
+        // The minimum/maximum time stamp that fits in this node
+        this.minT = NaN;
+        this.maxT = NaN;
+
         // Intializing other vars
-        this.sum = Array(this.dim - 1).fill(0);
-        this.count = 0;
-        this.minV = Array(this.dim - 1).fill(0);
-        this.maxV = Array(this.dim - 1).fill(0);
+        this.sum = [NaN];
+        this.count = NaN;
+        this.minV = [NaN];
+        this.maxV = [NaN];
         this.children = null;
         this.points = null;
+        this.dim = NaN;
+
+        if (data === undefined) return;
+
+        this.dim = data[0].length;
+
+        if (data.some(point => point.length !== this.dim))
+            throw new TypeError(`Jagged data passed to PointNode. All points should all be ${this.dim} dimensions.`);
+
+        // Initialize normally
+        this.initializeNode(data);
+    }
+
+    public static createNodeWithDesiredTreeSize(data: number[], desiredTreeSize: number): PointNode {
+        const node = new PointNode();
+
+        node.dim = data.length;
+        node.minT = data[0];
+        node.maxT = data[0];
+        node.count = 1;
+        node.sum = data.filter((_, i) => i != 0);
+        node.minV = data.filter((_, i) => i != 0);
+        node.maxV = data.filter((_, i) => i != 0);
+
+        if (desiredTreeSize === 1)
+            node.points = [data];
+        else
+            node.children = [PointNode.createNodeWithDesiredTreeSize(data, desiredTreeSize - 1)]
+
+        return node
+    }
+
+    public static CreateCopy(oldNode: PointNode): PointNode {
+        const node = new PointNode();
+
+        node.dim = oldNode.dim;
+
+        node.minT = oldNode.minT;
+        node.maxT = oldNode.maxT;
+        node.minV = oldNode.minV
+        node.maxV = oldNode.maxV
+
+        node.sum = oldNode.sum;
+        node.count = oldNode.count;
+        node.children = oldNode.children != null ? [...oldNode.children] : null;
+        node.points = oldNode.points != null ? [...oldNode.points] : null;
+
+        return node;
+    }
+
+    /**
+     * Initializes the node with the provided data points.
+     * Handles setting points or splitting into children based on the MaxPoints threshold.
+     * @param data An array of points to initialize the node with.
+     */
+    private initializeNode(data: number[][]): void {
 
         if (data.length <= MaxPoints) {
-            if (data.some(point => point.length != this.dim)) throw new TypeError(`Jagged data passed to PointNode. All points should all be ${this.dim} dimensions.`)
-            this.points = data;
-
-            for (let index = 1; index < this.dim; index++) {
-                const values = data.filter(pt => !isNaN(pt[index])).map(pt => pt[index]);
-                this.minV[index - 1] = Math.min(...values);
-                this.maxV[index - 1] = Math.max(...values);
-                this.sum[index - 1] = values.reduce((sum, val) => sum + val, 0);
-            }
-            this.count = data.length;
-            return;
+            this.points = [...data];
+            this.children = null;
+        } else {
+            // Split into children 
+            this.children = PointNode.splitPoints(data);
         }
 
-        const nLevel = Math.floor((Math.log((data.length) / Math.log(MaxPoints)))) - 1;
-        const blockSize = nLevel * MaxPoints;
+        this.RecalculateStats();
+    }
+
+    /**
+     * Adds one set of points to the tree.
+     * 
+     * @param newPoints points to add, one array of size dim
+     */
+    public AddPoints(newPoints: number[]): void {
+        if (newPoints.length === 0) throw new Error('No point to add');
+        if (newPoints.length !== this.dim) throw new TypeError(`Jagged data passed to PointNode.Add(). Points should be ${this.dim} dimension.`);
+        if (this.TryAddPoints(newPoints)) return
+
+        const copiedNode = PointNode.CreateCopy(this);
+        this.children = [copiedNode, PointNode.createNodeWithDesiredTreeSize(newPoints, this.GetTreeSize())]
+        this.points = null;
+
+        this.RecalculateStats();
+    }
+
+    /**
+     * Adds one set of points to the tree.
+     * 
+     * @param newPoints points to add, one array of size dim
+     * @returns Success of add operation
+     */
+    private TryAddPoints(newPoints: number[]): boolean {
+        //Step 1 find tree size
+        const treeSize = this.GetTreeSize();
+
+        // Step 2: If TreeSize > 1, find the right-most child and call TryAddPoints recursively
+        if (treeSize > 1) {
+            if (this.children !== null) {
+                const rightMostChild = this.children[this.children.length - 1];
+                const result = rightMostChild.TryAddPoints(newPoints);
+
+                // Step 2a: If adding to the right-most child failed, check for node space and create a new child if possible
+                if (!result && this.children.length < MaxPoints) {
+                    const newChild = PointNode.createNodeWithDesiredTreeSize([...newPoints], treeSize - 1)
+                    this.children.push(newChild);
+                    this.IncrementStatsForNewChild(newChild);
+                    return true;
+                }
+
+                //return result of adding to the right-most child
+                if (result) this.RecalculateStats();
+
+                return result;
+            }
+        }
+
+        //Step 3: If treesize === 1, check for point space in this node
+        if (this.points!.length < MaxPoints) {
+            this.points!.push(newPoints);
+            this.IncrementStatsForNewPoint(newPoints);
+            return true
+        }
+
+        //Step 5: return results
+        return false;
+        }
+
+    /**
+     * Splits the given data points into child nodes based on the MaxPoints threshold.
+     * @param data An array of sorted points to split into child nodes.
+     */
+    private static splitPoints(data: number[][]): PointNode[] {
+        let nLevel = 1;
+
+        while (Math.pow(MaxPoints, nLevel) < data.length) {
+            nLevel++;
+        }
+
+        const childBlockSize = Math.pow(MaxPoints, nLevel - 1);
+        const children: PointNode[] = [];
 
         let index = 0;
-        this.children = [];
         while (index < data.length) {
-            this.children.push(new PointNode(data.slice(index, index + blockSize)));
-            index = index + blockSize;
+            children.push(new PointNode(data.slice(index, index + childBlockSize)));
+            index = index + childBlockSize;
         }
+
+        return children;
+    }
+
+    /**
+     * Updates the statistical properties of the node based on its current points or children.
+     */
+    private RecalculateStats(): void {
+        if (this.points !== null) {
+            this.CalculatePointStats();
+        } else if (this.children !== null) {
+            this.AggregateChildStats();
+        }
+    }
+
+    /**
+     * Updates statistics based on the current points.
+     */
+    private CalculatePointStats(): void {
+        if (this.points === null || this.points.length === 0) return;
+
+        this.count = this.points.length;
+        this.minT = this.points[0][0];
+        this.maxT = this.points[this.points.length - 1][0];
+        this.dim = this.points[0].length;
+
+        for (let index = 1; index < this.dim; index++) {
+            const values = this.points.map(pt => pt[index]);
+            this.minV[index - 1] = Math.min(...values);
+            this.maxV[index - 1] = Math.max(...values);
+            this.sum[index - 1] = values.reduce((acc, val) => acc + val, 0);
+        }
+    }
+
+    /**
+     * Updates statistics based on the current children.
+     */
+    private AggregateChildStats(): void {
+        if (this.children === null || this.children.length === 0) return;
+
+        this.minT = Math.min(...this.children.map(node => node.minT));
+        this.maxT = Math.max(...this.children.map(node => node.maxT));
 
         for (let index = 0; index < this.dim - 1; index++) {
             this.minV[index] = Math.min(...this.children.map(node => node.minV[index]));
             this.maxV[index] = Math.max(...this.children.map(node => node.maxV[index]));
             this.sum[index] = this.children.reduce((s, node) => s + node.sum[index], 0);
         }
-        this.count = this.children.reduce((s, node) => s + node.count, 0);
+        this.count = this.children.reduce((acc, node) => acc + node.count, 0);
     }
 
-    public GetData(Tstart: number, Tend: number, IncludeEdges?: boolean): [...number[]][] {
+    /**
+     * Updates aggregated statistics for this node to include a newly added child node.
+     * 
+     * @param {PointNode} newChild - The new child node whose statistics will be merged into this node.
+     */
+    private IncrementStatsForNewChild(newChild: PointNode): void {
+        // Update the time range
+        this.minT = Math.min(this.minT, newChild.minT);
+        this.maxT = Math.max(this.maxT, newChild.maxT);
+
+        // Update value ranges and sums
+        for (let i = 0; i < this.dim - 1; i++) {
+            this.minV[i] = Math.min(this.minV[i], newChild.minV[i]);
+            this.maxV[i] = Math.max(this.maxV[i], newChild.maxV[i]);
+            this.sum[i] += newChild.sum[i];
+        }
+
+        this.count += newChild.count;
+    }
+
+    /**
+     * Updates aggregated statistics for this node to include a newly added point.
+     * 
+     * @param {number[]} newPt - The new point
+     */
+    private IncrementStatsForNewPoint(newPt: number[]): void {
+        this.count += 1;
+        this.minT = Math.min(this.minT, newPt[0]);
+        this.maxT = Math.max(this.maxT, newPt[0]);
+
+        for (let i = 1; i < this.dim; i++) {
+            const val = newPt[i];
+
+            if (this.points !== null && this.points.length === 1) {
+                this.minV[i - 1] = val;
+                this.maxV[i - 1] = val;
+                this.sum[i - 1] += val;
+            } else {
+                this.minV[i - 1] = Math.min(this.minV[i - 1], val);
+                this.maxV[i - 1] = Math.max(this.maxV[i - 1], val);
+                this.sum[i - 1] += val;
+            }
+        }
+    }
+
+    /**
+     * Retrieves data points within a specified time range.
+     * @param Tstart Start time of the timerange to be looked at.
+     * @param Tend End time of the timerange to be looked at.
+     * @param IncludeEdges Optional parameter to include edge points.
+     * @returns An array of points within the specified time range.
+     */
+    public GetData(Tstart: number, Tend: number, IncludeEdges?: boolean): number[][] {
         if (this.points != null && Tstart <= this.minT && Tend >= this.maxT)
             return this.points;
         if (this.points != null && IncludeEdges !== undefined && IncludeEdges)
