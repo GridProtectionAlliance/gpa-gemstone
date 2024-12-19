@@ -344,7 +344,7 @@ export class PointNode {
                 return this.count;
 
             // Include edges if specified
-            if (IncludeEdges)
+            if (IncludeEdges ?? false)
                 return this.points.filter((pt, i) => (pt[0] >= Tstart && pt[0] <= Tend) || (i < (this.points!.length - 1) && this.points![i + 1][0] >= Tstart) || (i > 0 && this.points![i - 1][0] <= Tend)).length;
 
             // Standard range filtering
