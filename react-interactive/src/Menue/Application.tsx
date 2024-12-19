@@ -263,7 +263,7 @@ export default React.forwardRef<IApplicationRefs, React.PropsWithChildren<IProps
 
 const SideBarContent: React.FC<ISideBarProps> = (props) => {
     return <>
-        {props.HideSide ? null : <SidebarNav className={"bg-light"} collapsed={props.Collapsed}>
+        {props.HideSide ? null : <SidebarNav className={"bg-light navbar-light navbar"} collapsed={props.Collapsed}>
             <SidebarDiv>
                 <ul className="navbar-nav px-3">
                     {React.Children.map(props.children, (e) => {
@@ -295,10 +295,10 @@ const SideBarContent: React.FC<ISideBarProps> = (props) => {
 const HeaderContent = React.forwardRef<HTMLDivElement, IHeaderProps>((props, ref) => {
     return <>
         <nav className="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow" ref={ref}>
-            {props.ShowOpen ? <a style={{ color: '#f8f9fa', marginLeft: 15 }} onClick={() => props.SetCollapsed(false)} >
+            {props.ShowOpen ? <a style={{ color: 'var(--light)', marginLeft: 15 }} onClick={() => props.SetCollapsed(false)} >
                 <ReactIcons.ArrowForward/>
             </a> : null}
-            {props.ShowClose ? <a style={{ color: '#f8f9fa', marginLeft: 15 }} onClick={() => props.SetCollapsed(true)}>
+            {props.ShowClose ? <a style={{ color: 'var(--light)', marginLeft: 15 }} onClick={() => props.SetCollapsed(true)}>
                 <ReactIcons.ArrowBackward/>
             </a> : null}
             {props.Logo !== undefined ?

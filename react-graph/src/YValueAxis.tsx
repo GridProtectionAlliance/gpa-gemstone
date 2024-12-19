@@ -203,15 +203,15 @@ function ValueAxis(props: IProps) {
     }, [props.axis]);
 
     return (<g>
-      <path stroke='black' style={{ strokeWidth: 1, transition: 'd 0.5s' }} d={`M ${leftPosition} ${props.height - props.offsetBottom + 8} V ${props.offsetTop}`} />
-      <path stroke='black' style={{ strokeWidth: 1, transition: 'd 0.5s' }} d={`M ${leftPosition} ${props.offsetTop} h ${tickDirection * 8}`} />
+      <path stroke='currentColor' style={{ strokeWidth: 1, transition: 'd 0.5s' }} d={`M ${leftPosition} ${props.height - props.offsetBottom + 8} V ${props.offsetTop}`} />
+      <path stroke='currentColor' style={{ strokeWidth: 1, transition: 'd 0.5s' }} d={`M ${leftPosition} ${props.offsetTop} h ${tickDirection * 8}`} />
       {tick.map((l, i) => <path key={i} stroke={((props.axis === undefined || props.axis === 'left') ? 'lightgrey' : 'darkgrey')} strokeOpacity={(props.showGrid ?? false) ? '0.8':'0.0'} style={{ strokeWidth: 1, transition: 'd 0.5s' }} d={`M ${props.offsetLeft} ${context.YTransformation(l, AxisMap.get(props.axis))} h ${props.width - props.offsetLeft - props.offsetRight}`} />)}
-      {tick.map((l, i) => <path key={i} stroke='black' style={{ strokeWidth: 1, transition: 'd 1s' }} d={`M ${leftPosition} ${context.YTransformation(l, AxisMap.get(props.axis))} h ${tickDirection * 6}`} />)}
-      {tick.map((l, i) => <text fill={'black'} key={i} style={{ fontSize: '1em', textAnchor: (props.axis === undefined || props.axis === 'left') ? 'end' : 'start', transition: 'x 0.5s, y 0.5s' }} dominantBaseline={'middle'} x={leftPosition + tickDirection * 8} y={context.YTransformation(l, AxisMap.get(props.axis))}>{(l * factor).toFixed(nDigits)}</text>)}
+      {tick.map((l, i) => <path key={i} stroke='currentColor' style={{ strokeWidth: 1, transition: 'd 1s' }} d={`M ${leftPosition} ${context.YTransformation(l, AxisMap.get(props.axis))} h ${tickDirection * 6}`} />)}
+      {tick.map((l, i) => <text fill={'currentColor'} key={i} style={{ fontSize: '1em', textAnchor: (props.axis === undefined || props.axis === 'left') ? 'end' : 'start', transition: 'x 0.5s, y 0.5s' }} dominantBaseline={'middle'} x={leftPosition + tickDirection * 8} y={context.YTransformation(l, AxisMap.get(props.axis))}>{(l * factor).toFixed(nDigits)}</text>)}
 
-      {props.label !== undefined ? <text fill={'black'} style={{ fontSize: ftSizeLabel + 'em', textAnchor: 'middle'}} dominantBaseline={'text-bottom'}
+      {props.label !== undefined ? <text fill={'currentColor'} style={{ fontSize: ftSizeLabel + 'em', textAnchor: 'middle'}} dominantBaseline={'text-bottom'}
       transform={`rotate(${tickDirection*90},${leftPosition + tickDirection*(hAxis + 4)},${(props.offsetTop  - props.offsetBottom + props.height)/ 2.0})`} x={leftPosition + tickDirection*(hAxis + 4)} y={(props.offsetTop  - props.offsetBottom + props.height)/ 2.0}>{props.label}</text> : null}
-      {factor !== 1 ? <text fill={'black'} style={{ fontSize: '1em' }} x={leftPosition} y={props.offsetTop - 5}>x{1/factor}</text> : null}
+      {factor !== 1 ? <text fill={'currentColor'} style={{ fontSize: '1em' }} x={leftPosition} y={props.offsetTop - 5}>x{1/factor}</text> : null}
     </g>)
 }
 

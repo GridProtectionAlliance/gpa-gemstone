@@ -140,7 +140,7 @@ export function ContextlessCircle(props: IContextlessProps) {
                 stroke={props.circleProps.borderColor} strokeWidth={props.circleProps.borderThickness}
             />
 
-            {props.circleProps.text !== undefined? <text fill={'black'}
+            {props.circleProps.text !== undefined? <text fill={'currentColor'}
                 style={{ fontSize: textSize + 'em', textAnchor: 'middle', dominantBaseline: 'middle' }} 
                 y={props.context.YTransformation(props.circleProps.data[1], AxisMap.get(props.circleProps.axis))} 
                 x={props.context.XTransformation(props.circleProps.data[0])}
