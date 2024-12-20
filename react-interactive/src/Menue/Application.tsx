@@ -24,7 +24,7 @@
 import { Context, IContext } from "./Context";
 import * as React from 'react';
 import { BrowserRouter as Router, Navigate, Route, Routes } from 'react-router-dom';
-import Page from "./Page";
+import Page, {IProps as IPageProps} from "./Page";
 import Section from './Section';
 import LoadingScreen from '../LoadingScreen';
 import ServerErrorIcon from '../ServerErrorIcon';
@@ -164,7 +164,7 @@ const Applications: React.ForwardRefRenderFunction<IApplicationRefs, React.Props
         } as IContext
     }
 
-    function CreateRoute(element: React.ReactElement): JSX.Element[] {
+    function CreateRoute(element: React.ReactElement<React.PropsWithChildren<IPageProps>>): JSX.Element[] {
         const routes: JSX.Element[] = [];
 
         // Generate a route for the Name prop
@@ -210,14 +210,14 @@ const Applications: React.ForwardRefRenderFunction<IApplicationRefs, React.Props
                                     {React.Children.map(props.children, (element) => {
                                         if (!React.isValidElement(element))
                                             return null;
-                                        if ((element as React.ReactElement<any>).type === Page && React.Children.count(element.props.children) > 0)
-                                            return CreateRoute(element)
+                                        if ((element as React.ReactElement).type === Page && React.Children.count(element.props.children) > 0)
+                                            return CreateRoute(element as React.ReactElement<React.PropsWithChildren<IPageProps>>)
                                         if ((element as React.ReactElement<any>).type === Section)
                                             return React.Children.map(element.props.children, (e) => {
                                                 if (!React.isValidElement(e))
                                                     return null;
                                                 if ((e as React.ReactElement<any>).type === Page && React.Children.count((e.props as any).children) > 0)
-                                                    return CreateRoute(e)
+                                                    return CreateRoute(e as React.ReactElement<React.PropsWithChildren<IPageProps>>)
                                                 return null;
                                             })
                                         return null;
@@ -263,7 +263,7 @@ export default React.forwardRef<IApplicationRefs, React.PropsWithChildren<IProps
 
 const SideBarContent: React.FC<ISideBarProps> = (props) => {
     return <>
-        {props.HideSide ? null : <SidebarNav className={"bg-light"} collapsed={props.Collapsed}>
+        {props.HideSide ? null : <SidebarNav className={"bg-light navbar-light navbar"} collapsed={props.Collapsed}>
             <SidebarDiv>
                 <ul className="navbar-nav px-3">
                     {React.Children.map(props.children, (e) => {
@@ -295,10 +295,10 @@ const SideBarContent: React.FC<ISideBarProps> = (props) => {
 const HeaderContent = React.forwardRef<HTMLDivElement, IHeaderProps>((props, ref) => {
     return <>
         <nav className="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow" ref={ref}>
-            {props.ShowOpen ? <a style={{ color: '#f8f9fa', marginLeft: 15 }} onClick={() => props.SetCollapsed(false)} >
+            {props.ShowOpen ? <a style={{ color: 'var(--light)', marginLeft: 15 }} onClick={() => props.SetCollapsed(false)} >
                 <ReactIcons.ArrowForward/>
             </a> : null}
-            {props.ShowClose ? <a style={{ color: '#f8f9fa', marginLeft: 15 }} onClick={() => props.SetCollapsed(true)}>
+            {props.ShowClose ? <a style={{ color: 'var(--light)', marginLeft: 15 }} onClick={() => props.SetCollapsed(true)}>
                 <ReactIcons.ArrowBackward/>
             </a> : null}
             {props.Logo !== undefined ?

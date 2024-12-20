@@ -88,7 +88,7 @@ const LayoutGrid: React.FC<React.PropsWithChildren<IProps>> = (props) => {
         for(let i = 0; i < currentRow.NumOfCols; ++i) {
             const padding = i === 0 ? 'pl-1 pr-1' : 'pr-1 pl-0';
             const ItemDiv =
-                <div className={'col ' + padding} style={{ height:'100%', width: `${100 / currentRow.NumOfCols}%` }}>
+                <div key={i} className={'col ' + padding} style={{ height:'100%', width: `${100 / currentRow.NumOfCols}%` }}>
                     { React.Children.toArray(props.children)[currentRow.StartIndex + i] }
                 </div>
             ItemDivs.push(ItemDiv);
