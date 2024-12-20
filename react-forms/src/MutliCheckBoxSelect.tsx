@@ -27,6 +27,7 @@ import HelperMessage from './HelperMessage';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 import { Portal } from 'react-portal';
 import * as _ from 'lodash';
+import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 
 interface IProps {
   /**
@@ -137,15 +138,12 @@ const MultiSelect = (props: IProps) => {
     <div className="form-group">
       {/* Rendering label and help icon */}
       {showLabel || showHelpIcon ?
-        <label>{showLabel ?
-          (props.Label === undefined ? 'Select' : props.Label)
-          : ''}
+        <label className='d-flex align-items-center'>{showLabel ?
+          (props.Label === undefined ? 'Select' : props.Label) : ''}
           {showHelpIcon ?
-            <div
-              style={{ width: 20, height: 20, borderRadius: '50%', display: 'inline-block', background: '#0D6EFD', marginLeft: 10, textAlign: 'center', fontWeight: 'bold' }}
-              onMouseEnter={() => setShowHelp(true)}
-              onMouseLeave={() => setShowHelp(false)}> ?
-            </div>
+            <button className='btn btn mb-1 pt-0 pb-0' onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)}>
+            <ReactIcons.QuestionMark Color='var(--info)' Size={20}/>
+          </button>
             : null}
         </label> : null
       }
@@ -156,7 +154,7 @@ const MultiSelect = (props: IProps) => {
         </HelperMessage>
         : null}
       {(props.ItemTooltip ?? 'no-tip') !== 'no-tip' ?
-        <HelperMessage Show={showItems} Target={guid} Background={props.ItemTooltip === 'dark' ? "#222" : '#fff'} Color={props.ItemTooltip === 'dark' ? "#fff" : '#222'}>
+        <HelperMessage Show={showItems} Target={guid}>
           <p>Selected Options:</p>
           {selectedOptions.slice(0, 10).map(opt => <p>{opt.Text}</p>)}
           {selectedOptions.length > 10 ? <p>{`and ${selectedOptions.length - 10} other(s)`}</p> : null}
@@ -168,44 +166,39 @@ const MultiSelect = (props: IProps) => {
         <button
           data-help={guid}
           type="button"
-          style={{ border: '1px solid #ced4da', padding: '.375rem .75rem', fontSize: '1rem', borderRadius: '.25rem' }}
-          className="btn form-control dropdown-toggle"
+          style={{padding: '.375rem .75rem', fontSize: '1rem', color: 'currentColor', backgroundColor: 'inherit' }}
+          className="btn border form-control dropdown-toggle"
           onClick={HandleShow}
           onMouseEnter={() => setShowItems(true)}
           onMouseLeave={() => setShowItems(false)}
         >
-          {props.Options.filter((x) => x.Selected).length !== props.Options.length
-            ? props.Options.filter((x) => x.Selected).length
-            : 'All '}{' '}
-          Selected
+          {props.Options.filter((x) => x.Selected).length !== props.Options.length ? props.Options.filter((x) => x.Selected).length : 'All '}{' '} Selected
         </button>
         {/* Dropdown menu */}
         <Portal>
-          <div ref={tableContainer}
+          <div ref={tableContainer} className='popover'
             style={{
               maxHeight: window.innerHeight - position.Top,
               overflowY: 'auto',
               padding: '10 5',
               display: show ? 'block' : 'none',
               position: 'absolute',
-              backgroundColor: '#fff',
-              color: 'black',
-              boxShadow: '0px 8px 16px 0px rgba(0,0,0,0.2)',
+              color: 'currentColor',
               zIndex: 9999,
               top: `${position.Top}px`,
               left: `${position.Left}px`,
-              width: `${position.Width}px`
+              width: `${position.Width}px`,
+              maxWidth: '100%'
             }}
           >
             {/* Table for checkboxes and options */}
-            <table className="table" style={{ margin: 0 }} ref={selectTable}>
+            <table className="table table-hover" style={{ margin: 0 }} ref={selectTable}>
               <tbody>
                 {/* Checkbox for selecting/deselecting all options */}
                 <tr
                   onClick={(evt) => {
                     evt.preventDefault();
-                    props.OnChange(
-                      evt,
+                    props.OnChange(evt,
                       props.Options.filter(
                         (x) => x.Selected === (props.Options.filter((o) => o.Selected).length === props.Options.length),
                       ),
@@ -213,11 +206,7 @@ const MultiSelect = (props: IProps) => {
                   }}
                 >
                   <td>
-                    <input
-                      type="checkbox"
-                      checked={props.Options.filter((x) => x.Selected).length === props.Options.length}
-                      onChange={() => null}
-                    />
+                    <input type="checkbox" checked={props.Options.filter((x) => x.Selected).length === props.Options.length} onChange={() => null}/>
                   </td>
                   <td>All</td>
                 </tr>

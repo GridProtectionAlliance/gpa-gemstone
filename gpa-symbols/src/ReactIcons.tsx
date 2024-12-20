@@ -379,4 +379,11 @@ export namespace ReactIcons {
         <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24, }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-chevron-up">
             <polyline points="18 15 12 9 6 15"></polyline>
         </svg>
+
+    export const QuestionMark: React.FC<IProps> = (props) =>
+        <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24, }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-help-circle">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
 }

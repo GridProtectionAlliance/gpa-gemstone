@@ -24,7 +24,7 @@
 import { Application } from '@gpa-gemstone/application-typings';
 import ToolTip from '../ToolTip';
 import * as React from 'react';
-import { NavLink, useLocation, matchPath } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import { Context } from './Context';
 
 export interface IProps {
@@ -44,46 +44,47 @@ export interface IProps {
 
 const Page: React.FunctionComponent<IProps> = (props) => {
     const [hover, setHover] = React.useState<boolean>(false);
-    const context = React.useContext(Context)
+    const context = React.useContext(Context);
     const location = useLocation();
 
     const isPathActive = () => {
         // Use Name as the base check and see if the current path starts with this base.
-        return location.pathname.startsWith(`${context.homePath}${props.Name}`)
-            || isOtherPathActive();
+        return location.pathname.startsWith(`${context.homePath}${props.Name}`) || isOtherPathActive();
     }
 
     const isOtherPathActive = () => {
-        if (props.OtherActivePages == undefined) return false;
+        if (props.OtherActivePages == undefined)
+            return false;
+
         for (const path of props.OtherActivePages!) {
-            if (location.pathname.includes(path)) return true;
+            if (location.pathname.includes(path))
+                return true;
         }
-        return false;
     }
 
     if (props.RequiredRoles !== undefined && props.RequiredRoles.filter(r => context.userRoles.findIndex(i => i === r) > -1).length === 0)
         return null;
 
-    const linkStyle = {
-        color: isPathActive() ? '#007bff' : '#78828d'
-    }
-
     if (props.Label !== undefined || props.Icon !== undefined) {
         return (
             <>
                 <li className="nav-item" style={{ position: 'relative' }}>
-                    <NavLink 
-                        data-tooltip={props.Name} 
-                        className="nav-link" 
-                        to={`${context.homePath}${props.Name}`} 
-                        style={linkStyle}
-                        onMouseEnter={() => setHover(true)} 
-                        onMouseLeave={() => setHover(false)}>
+                    <NavLink
+                        data-tooltip={props.Name}
+                        className={`nav-link ${isPathActive() ? 'active' : ''}`}
+                        to={`${context.homePath}${props.Name}`}
+                        onMouseEnter={() => setHover(true)}
+                        onMouseLeave={() => setHover(false)}
+                    >
                         {props.Icon !== undefined ? props.Icon : null}
                         {!context.collapsed ? <span>{props.Label}</span> : null}
                     </NavLink>
                 </li>
-                {context.collapsed ? <ToolTip Target={props.Name} Show={hover} Position={'right'}> {props.Label}</ToolTip> : null}
+                {context.collapsed ?
+                    <ToolTip Target={props.Name} Show={hover} Position={'right'}>
+                        {props.Label}
+                    </ToolTip>
+                    : null}
             </>
         )
     }

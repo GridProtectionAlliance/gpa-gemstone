@@ -46,18 +46,6 @@ interface IProps {
     * @type {number}
    */
     Zindex?: number,
-    /**
-    * Text color for the helper message
-    * @type {string}
-    * @optional
-   */
-    Color?: string,
-    /**
-    * Background color for the helper message
-    * @type {string}
-    * @optional
-    */
-    Background?: string
 }
 
 // Interface for the properties of the WrapperDiv component
@@ -66,8 +54,6 @@ interface IWrapperProps {
   Top: number,
   Left: number,
   Zindex: number,
-  Color?: string,
-  Background?: string,
   TargetLeft: number,
   TargetWidth: number,
   Width: number
@@ -85,8 +71,6 @@ const WrapperDiv = styled.div<IWrapperProps>`
     transition: opacity 0.3s ease-out;
     z-index: ${(props: IWrapperProps) => props.Zindex};
     opacity: ${(props: IWrapperProps) => props.Show ? "1.0" : "0"};
-    color: ${(props: IWrapperProps) => props.Color ?? '#000'};;
-    background: ${(props: IWrapperProps) => props.Background ?? '#0DCAF0'};
     top: ${(props: IWrapperProps) => `${props.Top}px`};
     left: ${(props: IWrapperProps) => `${props.Left}px`};
     width: ${(props: IWrapperProps) => `${props.Width}px`};
@@ -96,7 +80,7 @@ const WrapperDiv = styled.div<IWrapperProps>`
     &::before {
      border-left: 8px solid transparent;
      border-right: 8px solid transparent;
-     border-bottom: 8px solid ${props.Background ?? '#0DCAF0'};
+     border-bottom: 8px solid var(--info);
      left: ${props.TargetLeft - props.Left + props.TargetWidth / 2}px;
      top: -6px;
      margin-left: -8px;
@@ -149,7 +133,7 @@ const WrapperDiv = styled.div<IWrapperProps>`
 
   return (
     <Portal>
-      <WrapperDiv Show={props.Show} Top={top} Left={left} ref={helpMessage} Zindex={zIndex} Color={props.Color} Background={props.Background} TargetLeft={targetPosition.Left} TargetWidth={targetPosition.Width} Width={targetPosition.Width}>
+      <WrapperDiv className='bg-info' Show={props.Show} Top={top} Left={left} ref={helpMessage} Zindex={zIndex} TargetLeft={targetPosition.Left} TargetWidth={targetPosition.Width} Width={targetPosition.Width}>
         {props.children}
       </WrapperDiv>
     </Portal>

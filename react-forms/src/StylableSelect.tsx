@@ -28,6 +28,7 @@ import { isEqual } from 'lodash';
 import { Portal } from 'react-portal';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 import * as _ from 'lodash';
+import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 
 export interface IOption {
   Value: any;
@@ -107,42 +108,42 @@ export default function StylableSelect<T>(props: IProps<T>) {
         setPosition({ Top: rect.bottom, Left: rect.left, Width: rect.width, Height: rect.height });
       }
     }, 200);
-  
-    const handleScroll = (event: Event) => {
-      if(tableContainer.current == null) return
 
-      if (event.type === 'scroll' && !tableContainer.current.contains(event.target as Node)) 
-          setShow(false);
-        updatePosition()
+    const handleScroll = (event: Event) => {
+      if (tableContainer.current == null) return
+
+      if (event.type === 'scroll' && !tableContainer.current.contains(event.target as Node))
+        setShow(false);
+      updatePosition()
     };
 
     if (show) {
       updatePosition();
-  
+
       window.addEventListener('scroll', handleScroll, true);
       window.addEventListener('resize', updatePosition);
-  
+
       return () => {
         window.removeEventListener('scroll', handleScroll, true);
         window.removeEventListener('resize', updatePosition);
         updatePosition.cancel();
       };
     }
-  
+
   }, [show]);
 
   // Handle showing and hiding of the dropdown.
-  function HandleShow(evt: React.MouseEvent<HTMLButtonElement, MouseEvent> | MouseEvent) {
+  const HandleShow = React.useCallback((evt: React.MouseEvent<HTMLButtonElement, MouseEvent> | MouseEvent) => {
     // Ignore if disabled or not a mousedown event
-    if ((props.Disabled === undefined ? false : props.Disabled) || evt.type !== 'mousedown' || stylableSelect.current == null ) return;
+    if ((props.Disabled === undefined ? false : props.Disabled) || evt.type !== 'mousedown' || stylableSelect.current == null) return;
 
     //ignore the click if it was inside the table or table container
-    if((selectTable.current != null && selectTable.current.contains(evt.target as Node)) || (tableContainer.current != null && tableContainer.current.contains(evt.target as Node)))
-      return 
-    
+    if ((selectTable.current != null && selectTable.current.contains(evt.target as Node)) || (tableContainer.current != null && tableContainer.current.contains(evt.target as Node)))
+      return
+
     if (!stylableSelect.current.contains(evt.target as Node)) setShow(false);
     else setShow(!show);
-  }
+}, [props.Disabled, show])
 
 
   // Update the parent component's state with the selected option.
@@ -162,7 +163,7 @@ export default function StylableSelect<T>(props: IProps<T>) {
     return () => {
       document.removeEventListener('mousedown', HandleShow, false);
     };
-  }, []);
+  }, [HandleShow]);
 
   // Effect to handle changes to the record's field value.
   React.useEffect(() => {
@@ -179,8 +180,12 @@ export default function StylableSelect<T>(props: IProps<T>) {
     <div ref={stylableSelect} style={{ position: 'relative', display: 'inline-block', width: 'inherit' }}>
       {/* Label and help icon rendering */}
       {(props.Label !== "") ?
-        <label>{props.Label === undefined ? props.Field : props.Label}
-          {props.Help !== undefined ? <div style={{ width: 20, height: 20, borderRadius: '50%', display: 'inline-block', background: '#0D6EFD', marginLeft: 10, textAlign: 'center', fontWeight: 'bold' }} onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)}> ? </div> : null}
+        <label className='d-flex align-items-center'>{props.Label === undefined ? props.Field : props.Label}
+          {props.Help !== undefined ?
+            <button className='btn mb-1 pt-0 pb-0' onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)}>
+              <ReactIcons.QuestionMark Color='var(--info)' Size={20} />
+            </button>
+            : null}
         </label> : null}
 
       {props.Help !== undefined ?
@@ -205,22 +210,21 @@ export default function StylableSelect<T>(props: IProps<T>) {
 
       {/* Dropdown menu with options */}
       <Portal>
-        <div ref={tableContainer}
+        <div ref={tableContainer} className='popover'
           style={{
             maxHeight: window.innerHeight - position.Top,
             overflowY: 'auto',
             padding: '10 5',
             display: show ? 'block' : 'none',
             position: 'absolute',
-            backgroundColor: '#fff',
-            boxShadow: '0px 8px 16px 0px rgba(0,0,0,0.2)',
             zIndex: 9999,
             top: `${position.Top}px`,
             left: `${position.Left}px`,
             width: `${position.Width}px`,
+            maxWidth: '100%'
           }}
         >
-          <table className="table" style={{ margin: 0 }} ref={selectTable}>
+          <table className="table table-hover" style={{ margin: 0 }} ref={selectTable}>
             <tbody>
               {props.Options.map((f, i) => (
                 f.Value === props.Record[props.Field] ? null :

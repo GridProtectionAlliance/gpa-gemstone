@@ -94,29 +94,29 @@ function XValueAxis(props: IProps) {
 
     return (
         <g>
-            <path stroke="black" style={{ strokeWidth: 1 }} d={`M ${props.offsetLeft - (props.showLeftMostTick ?? true ? 0 : 8)} ${props.height - props.offsetBottom} H ${props.width - props.offsetRight + (props.showRightMostTick ?? true ? 0 : 8)}`} />
+            <path stroke="currentColor" style={{ strokeWidth: 1 }} d={`M ${props.offsetLeft - (props.showLeftMostTick ?? true ? 0 : 8)} ${props.height - props.offsetBottom} H ${props.width - props.offsetRight + (props.showRightMostTick ?? true ? 0 : 8)}`} />
 
             {props.showLeftMostTick ?? true ? (
-                <path stroke="black" style={{ strokeWidth: 1 }} d={`M ${props.offsetLeft} ${props.height - props.offsetBottom} v 8`} />
+                <path stroke="currentColor" style={{ strokeWidth: 1 }} d={`M ${props.offsetLeft} ${props.height - props.offsetBottom} v 8`} />
             ) : null}
 
             {props.showRightMostTick ?? true ? (
-                <path stroke="black" style={{ strokeWidth: 1 }} d={`M ${props.width - props.offsetRight} ${props.height - props.offsetBottom} v 8`} />
+                <path stroke="currentColor" style={{ strokeWidth: 1 }} d={`M ${props.width - props.offsetRight} ${props.height - props.offsetBottom} v 8`} />
             ) : null}
             {(
                 <>
                     {tick.map((l, i) => (
-                        <path key={i} stroke="black" style={{ strokeWidth: 1, transition: 'd 0.5s' }} d={`M ${context.XTransformation(l)} ${props.height - props.offsetBottom + 6} v -6`} />
+                        <path key={i} stroke="currentColor" style={{ strokeWidth: 1, transition: 'd 0.5s' }} d={`M ${context.XTransformation(l)} ${props.height - props.offsetBottom + 6} v -6`} />
                     ))}
                     {tick.map((l, i) => (
-                        <text fill="black" key={i} style={{ fontSize: '1em', textAnchor: 'middle', dominantBaseline: 'hanging', transition: 'x 0.5s, y 0.5s', }} y={props.height - props.offsetBottom + 8} x={context.XTransformation(l)} >
+                        <text fill="currentColor" key={i} style={{ fontSize: '1em', textAnchor: 'middle', dominantBaseline: 'hanging', transition: 'x 0.5s, y 0.5s', }} y={props.height - props.offsetBottom + 8} x={context.XTransformation(l)} >
                             {formatNumber(l, decimalPlaces)}
                         </text>
                     ))}
                 </>
             )}
             {title != null ? (
-                <text fill="black" style={{ fontSize: '1em', textAnchor: 'middle', dominantBaseline: 'middle' }} x={props.offsetLeft + (props.width - props.offsetLeft - props.offsetRight) / 2} y={props.height - props.offsetBottom + hAxis}>
+                <text fill="currentColor" style={{ fontSize: '1em', textAnchor: 'middle', dominantBaseline: 'middle' }} x={props.offsetLeft + (props.width - props.offsetLeft - props.offsetRight) / 2} y={props.height - props.offsetBottom + hAxis}>
                     {title}
                 </text>
             ) : null}
