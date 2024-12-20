@@ -24,7 +24,7 @@
 import { Context, IContext } from "./Context";
 import * as React from 'react';
 import { BrowserRouter as Router, Navigate, Route, Routes } from 'react-router-dom';
-import Page from "./Page";
+import Page, {IProps as IPageProps} from "./Page";
 import Section from './Section';
 import LoadingScreen from '../LoadingScreen';
 import ServerErrorIcon from '../ServerErrorIcon';
@@ -164,7 +164,7 @@ const Applications: React.ForwardRefRenderFunction<IApplicationRefs, React.Props
         } as IContext
     }
 
-    function CreateRoute(element: React.ReactElement): JSX.Element[] {
+    function CreateRoute(element: React.ReactElement<React.PropsWithChildren<IPageProps>>): JSX.Element[] {
         const routes: JSX.Element[] = [];
 
         // Generate a route for the Name prop
@@ -210,14 +210,14 @@ const Applications: React.ForwardRefRenderFunction<IApplicationRefs, React.Props
                                     {React.Children.map(props.children, (element) => {
                                         if (!React.isValidElement(element))
                                             return null;
-                                        if ((element as React.ReactElement<any>).type === Page && React.Children.count(element.props.children) > 0)
-                                            return CreateRoute(element)
+                                        if ((element as React.ReactElement).type === Page && React.Children.count(element.props.children) > 0)
+                                            return CreateRoute(element as React.ReactElement<React.PropsWithChildren<IPageProps>>)
                                         if ((element as React.ReactElement<any>).type === Section)
                                             return React.Children.map(element.props.children, (e) => {
                                                 if (!React.isValidElement(e))
                                                     return null;
                                                 if ((e as React.ReactElement<any>).type === Page && React.Children.count((e.props as any).children) > 0)
-                                                    return CreateRoute(e)
+                                                    return CreateRoute(e as React.ReactElement<React.PropsWithChildren<IPageProps>>)
                                                 return null;
                                             })
                                         return null;
