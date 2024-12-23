@@ -49,6 +49,7 @@ import LayoutGrid from './LayoutGrid';
 import { useCSVPipeline } from './Pipelines/CSVPipeline';
 import BulkUpload from './BulkUpload'
 import Alert from './Alert'
+import Breadcrumb from './Breadcrumb';
 
 const ConfigTable = {
   Table: ConfigurableTable,
@@ -82,5 +83,6 @@ export {
   LayoutGrid,
   useCSVPipeline,
   BulkUpload,
-  Alert
+  Alert,
+  Breadcrumb
 };

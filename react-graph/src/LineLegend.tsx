@@ -24,7 +24,7 @@
 
 import * as React from 'react';
 import { LineStyle } from './GraphContext';
-import { GetTextWidth, GetTextHeight,  CreateGuid } from '@gpa-gemstone/helper-functions';
+import { GetTextHeight,  CreateGuid } from '@gpa-gemstone/helper-functions';
 import { Warning } from '@gpa-gemstone/gpa-symbols';
 import { ILegendRequiredProps, LegendContext } from './LegendContext';
 
@@ -35,8 +35,9 @@ export interface IProps extends ILegendRequiredProps {
     setEnabled: (arg: boolean) => void,
     hasNoData: boolean
 }
-const fontFamily = `-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol"`
-const nonTextualWidth = 45;
+
+const fontFamily = window.getComputedStyle(document.body).fontFamily;
+const nonTextualWidth = 25;
 const cssStyle = `margin: auto auto auto 0px; display: inline-block; font-weight: 400; font-family: ${fontFamily};`
 
 function LineLegend(props: IProps) {
@@ -69,15 +70,16 @@ function LineLegend(props: IProps) {
         context.RequestLegendWidth(textWidth + nonTextualWidth, guid);
 
         while (fontSize > 0.4 && (textWidth > legendWidth - nonTextualWidth || textHeight > legendHeight)) {
-            fontSize = fontSize - 0.05;
-            textWidth = GetTextWidth(fontFamily, `${fontSize}em`, label, `${cssStyle}`, `${textHeight}px`, `${useML ? 'normal' : undefined}`);
+            fontSize -= 0.05;
+            
+            textWidth = GetTextWidth(fontFamily, `${fontSize}em`, label, `${cssStyle}`, `${legendHeight}px`, `${useML ? 'normal' : undefined}`, `${legendWidth - nonTextualWidth}px`);
             textHeight = GetTextHeight(fontFamily, `${fontSize}em`, label, `${cssStyle}`, `${legendWidth - nonTextualWidth}px`, `${useML ? 'normal' : undefined}`);
             useML = false;
             // Consider special case when width is limiting but height is available
-            if (textWidth > (legendWidth - nonTextualWidth) && textHeight < legendHeight) {
+            if (textWidth >= (legendWidth - nonTextualWidth) && textHeight < legendHeight) {
                 useML = true;
                 textHeight = GetTextHeight(fontFamily, `${fontSize}em`, label, `${cssStyle}`, `${legendWidth - nonTextualWidth}px`, `${useML ? 'normal' : undefined}`);
-                textWidth = legendWidth - nonTextualWidth;
+                textWidth = GetTextWidth(fontFamily, `${fontSize}em`, label, `${cssStyle}`, `${legendHeight}px`, `${useML ? 'normal' : undefined}`, `${legendWidth - nonTextualWidth}px`);
             }
         }
         setTextSize(fontSize);
@@ -95,6 +97,42 @@ function LineLegend(props: IProps) {
             </div>
         </div>
     );
+}
+
+function GetTextWidth(font: string, fontSize: string, word: string, cssStyle?: string, height?: string, whiteSpace?: string, containerWidth?: string): number {
+    const text = document.createElement("span");
+
+    if (cssStyle !== undefined)
+        text.style.cssText = cssStyle;
+
+    // Set font properties
+    text.style.font = font;
+    text.style.fontSize = fontSize;
+    text.style.height = height ?? 'auto';
+    text.style.width = 'auto';
+    text.style.whiteSpace = whiteSpace ?? 'nowrap';
+    text.innerHTML = word;
+
+    // Create a container
+    const container = document.createElement('div');
+    container.style.position = 'absolute';
+    container.style.visibility = 'hidden';
+    container.style.overflow = 'visible'; // So overflowed text is measured
+    container.style.height = height ?? 'auto';
+    container.style.width = containerWidth ?? 'auto';
+    container.style.whiteSpace = whiteSpace ?? 'nowrap';
+
+    // Append text to the container
+    container.appendChild(text);
+    document.body.appendChild(container);
+
+    // Measure the width
+    const width = text.offsetWidth;
+
+    // Clean up
+    document.body.removeChild(container);
+
+    return Math.ceil(width);
 }
 
 export default LineLegend;

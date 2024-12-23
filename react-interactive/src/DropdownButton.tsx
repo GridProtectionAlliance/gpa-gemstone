@@ -93,7 +93,7 @@ const BtnDropdown = (props: IProps) => {
                     </React.Fragment>)}
             </div>
             <ToolTip Show={hover && (props.ShowToolTip ?? false)} 
-                Position={props.TooltipLocation ?? 'top'} Theme={'dark'} Target={guid.current}>
+                Position={props.TooltipLocation ?? 'top'} Target={guid.current}>
                 {props.TooltipContent}
             </ToolTip>
     </div>)
@@ -123,7 +123,7 @@ const DropDownOption = (props: DropDownProps) => {
                 {props.Label}
         </a>
         <ToolTip Show={dropDownHover && (props.ShowToolTip ?? false)}
-            Position={props.ToolTipLocation ?? 'top'} Theme={'dark'} Target={guid.current}>
+            Position={props.ToolTipLocation ?? 'top'}  Target={guid.current}>
             {props.ToolTipContent}
         </ToolTip>
     </>)

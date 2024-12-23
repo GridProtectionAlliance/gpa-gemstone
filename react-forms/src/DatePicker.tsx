@@ -27,6 +27,7 @@ import DateTimePopup from './DateTimeUI/DateTimePopup';
 import { CreateGuid, GetNodeSize } from '@gpa-gemstone/helper-functions';
 import HelperMessage from './HelperMessage';
 import { Accuracy } from './DateTimeUI/Clock'
+import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 
 export type TimeUnit = ('datetime-local' | 'date' | 'time');
 
@@ -228,20 +229,10 @@ export default function DateTimePicker<T>(props: IProps<T>) {
         <div className="form-group" ref={divRef}>
             {/* Label and help icon */}
             {showHelpIcon || showLabel ?
-                <label>{showLabel ? label : ''}
-                    {showHelpIcon ? <div
-                        style={{
-                            width: 20,
-                            height: 20,
-                            borderRadius: '50%',
-                            display: 'inline-block',
-                            background: '#0D6EFD',
-                            marginLeft: 10,
-                            textAlign: 'center',
-                            fontWeight: 'bold'
-                        }}
-                        onMouseEnter={() => setShowHelp(true)}
-                        onMouseLeave={() => setShowHelp(false)}> ? </div> : null}
+                <label className='d-flex align-items-center'>{showLabel ? label : ''}
+                    {showHelpIcon ? <button className='btn mb-1 pt-0 pb-0' onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)}>
+                        <ReactIcons.QuestionMark Color='var(--info)' Size={20} />
+                    </button> : null}
                 </label> : null}
             {showHelpIcon ?
                 <HelperMessage Show={showHelp} Target={guid}>

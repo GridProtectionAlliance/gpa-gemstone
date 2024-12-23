@@ -223,13 +223,13 @@ function Note(props: IProps)  {
                             
                             <div className="btn-group mr-2">
                             <button className={"btn btn-primary" + (note.Note === null ||note.Note.length === 0 ? ' disabled' : '')} onClick={() => { if (note.Note !== null && note.Note.length > 0) handleAdd(note); }} data-tooltip={"Add"} style={{ cursor: note.Note === null || note.Note.length === 0 ? 'not-allowed' : 'pointer' }} onMouseOver={() => setHover('add')} onMouseOut={() => setHover('none')}>Add Note</button>
-                            <ToolTip Show={hover === 'add' && ( note.Note === null || note.Note.length === 0 )} Position={'top'} Theme={'dark'} Target={"Add"}>
+                            <ToolTip Show={hover === 'add' && ( note.Note === null || note.Note.length === 0 )} Position={'top'} Target={"Add"}>
                                 <p>{CrossMark} A note needs to be entered. </p>
                             </ToolTip>
                         </div>
                         <div className="btn-group mr-2">
                             <button className={"btn btn-default" + (note.Note === null || note.Note.length === 0  ? ' disabled' : '')} onClick={() => setNote((n) => ({...n, Note: ''}))} style={{ cursor: note.Note === null || note.Note.length === 0 ? 'not-allowed' : 'pointer' }} data-tooltip={"Remove"} onMouseOver={() => setHover('clear')} onMouseOut={() => setHover('none')} >Clear</button>
-                            <ToolTip Show={hover === 'clear' && (note.Note === null || note.Note.length === 0)} Position={'top'} Theme={'dark'} Target={"Remove"}>
+                            <ToolTip Show={hover === 'clear' && (note.Note === null || note.Note.length === 0)} Position={'top'} Target={"Remove"}>
                                 <p>{CrossMark} The note field is already empty. </p>
                             </ToolTip>
                         </div>
@@ -287,13 +287,13 @@ function Note(props: IProps)  {
                                 <div className={"card-footer"} >
                                 <div className="btn-group mr-2">
                     <button className={"btn btn-primary" + (note.Note === null ||note.Note.length === 0 ? ' disabled' : '')} onClick={() => { if (note.Note !== null && note.Note.length > 0) handleAdd(note); }} data-tooltip={"Add"} style={{ cursor: note.Note === null || note.Note.length === 0 ? 'not-allowed' : 'pointer' }} onMouseOver={() => setHover('add')} onMouseOut={() => setHover('none')}>Add Note</button>
-                    <ToolTip Show={hover === 'add' && ( note.Note === null || note.Note.length === 0 )} Position={'top'} Theme={'dark'} Target={"Add"}>
+                    <ToolTip Show={hover === 'add' && ( note.Note === null || note.Note.length === 0 )} Position={'top'} Target={"Add"}>
                         <p>{CrossMark} A note needs to be entered. </p>
                     </ToolTip>
                 </div>
                 <div className="btn-group mr-2">
                     <button className={"btn btn-default" + (note.Note === null || note.Note.length === 0  ? ' disabled' : '')} onClick={() => setNote((n) => ({...n, Note: ''}))} style={{ cursor: note.Note === null || note.Note.length === 0 ? 'not-allowed' : 'pointer' }} data-tooltip={"Remove"} onMouseOver={() => setHover('clear')} onMouseOut={() => setHover('none')} >Clear</button>
-                    <ToolTip Show={hover === 'clear' && (note.Note === null || note.Note.length === 0)} Position={'top'} Theme={'dark'} Target={"Remove"}>
+                    <ToolTip Show={hover === 'clear' && (note.Note === null || note.Note.length === 0)} Position={'top'} Target={"Remove"}>
                         <p>{CrossMark} The note field is already empty. </p>
                     </ToolTip>
                 </div>

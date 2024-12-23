@@ -26,6 +26,7 @@
 import * as React from 'react';
 import HelperMessage from './HelperMessage';
 import { CreateGuid, IsInteger, IsNumber } from '@gpa-gemstone/helper-functions'
+import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 
 interface IProps<T> {
   /**
@@ -176,8 +177,12 @@ export default function Input<T>(props: IProps<T>) {
     <div className={"form-group " + (props.Size === 'large' ? 'form-group-lg' : '') + (props.Size === 'small' ? 'form-group-sm' : '')} style={props.Style}>
       {/* Rendering label and help icon */}
       {showHelpIcon || showLabel ?
-        <label>{showLabel ? label : ''}
-          {showHelpIcon ? <div style={{ width: 20, height: 20, borderRadius: '50%', display: 'inline-block', background: '#0D6EFD', marginLeft: 10, textAlign: 'center', fontWeight: 'bold' }} onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)}> ? </div> : null}
+        <label className='d-flex align-items-center'>{showLabel ? label : ''}
+          {showHelpIcon ?
+            <button className='btn mb-1 pt-0 pb-0' onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)}>
+              <ReactIcons.QuestionMark Color='var(--info)' Size={20} />
+            </button>
+            : null}
         </label> : null}
 
       {showHelpIcon ?

@@ -835,7 +835,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
                   onWheel={handleMouseWheel} onMouseMove={handleMouseMove} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} onMouseLeave={handleMouseOut} onMouseEnter={handleMouseIn} >
                   <svg ref={SVGref} width={svgWidth < 0? 0 : svgWidth} height={svgHeight < 0 ? 0 : svgHeight}
                    style={SvgStyle} viewBox={`0 0 ${svgWidth < 0? 0 : svgWidth} ${svgHeight < 0 ? 0 : svgHeight}`}>
-                      { props.showBorder !== undefined && props.showBorder ? < path stroke='black' d={`M ${offsetLeft} ${offsetTop} H ${svgWidth- offsetRight} V ${svgHeight - offsetBottom} H ${offsetLeft} Z`} /> : null}
+                      { props.showBorder !== undefined && props.showBorder ? < path stroke='currentColor' d={`M ${offsetLeft} ${offsetTop} H ${svgWidth- offsetRight} V ${svgHeight - offsetBottom} H ${offsetLeft} Z`} /> : null}
                       { props.XAxisType === 'time' || props.XAxisType === undefined ?
                       <TimeAxis label={props.Tlabel} offsetBottom={offsetBottom} offsetLeft={offsetLeft} offsetRight={offsetRight} width={svgWidth} height={svgHeight} setHeight={setHeightXLabel} 
                         heightAxis={heightXLabel} showLeftMostTick={!yHasData[0]}  showRightMostTick={!yHasData[1]} showDate={props.showDateOnTimeAxis} /> :
@@ -902,13 +902,13 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
                                    return null;
                                })}
                          {!photoReady && (props.showMouse === undefined || (props.showMouse !== 'none' && props.showMouse !== false)) ?
-                              <path stroke='black' style={{ strokeWidth: 2, opacity: mouseIn? 0.8: 0.0 }} d={(props.showMouse !== 'horizontal' ? 
+                              <path stroke='currentColor' style={{ strokeWidth: 2, opacity: mouseIn? 0.8: 0.0 }} d={(props.showMouse !== 'horizontal' ? 
                                 `M ${mousePosition[0]} ${offsetTop} V ${svgHeight - offsetBottom}` :
                                 `M ${offsetLeft} ${mousePosition[1]} H ${svgWidth - offsetRight}`)
                               } />
                               : null}
                           {(props.zoom === undefined || props.zoom) && mouseMode.includes('zoom') ?
-                              <rect fillOpacity={0.8} fill={'black'}
+                              <rect fillOpacity={0.8} fill={'currentColor'}
                                x={mouseMode !== 'zoom-horizontal' ? Math.min(mouseClick[0], mousePosition[0]) : offsetLeft}
                                y={mouseMode !== 'zoom-vertical' ? Math.min(mouseClick[1], mousePosition[1]) : offsetTop} 
                                width={mouseMode !== 'zoom-horizontal' ? Math.abs(mouseClick[0] - mousePosition[0]) : (svgWidth - offsetLeft - offsetRight)}

@@ -71,14 +71,14 @@ interface IProps {
                                             }} hidden={record.ID === 0} data-tooltip={'Update'}
                         onMouseEnter={() => setHover('Update')} onMouseLeave={() => setHover('None')}>Update</button>
                     </div>
-                                    <ToolTip Show={hover === 'Clear' && (errors.length > 0)} Position={'top'} Theme={'dark'} Target={"Update"}>
+                                    <ToolTip Show={hover === 'Clear' && (errors.length > 0)} Position={'top'} Target={"Update"}>
                     {errors.map((t, i) => <p key={i}>{CrossMark} {t}</p>)}
                   </ToolTip>
                     <div className="btn-group mr-2">
                         <button className="btn btn-default" onClick={() => setRecord(props.Record)} disabled={warnings.length === 0} data-tooltip={'Clr'}
                         onMouseEnter={() => setHover('Clear')} onMouseLeave={() => setHover('None')}>Reset</button>
                     </div>
-                                    <ToolTip Show={hover === 'Clear' && (warnings.length > 0)} Position={'top'} Theme={'dark'} Target={"Clr"}>
+                                    <ToolTip Show={hover === 'Clear' && (warnings.length > 0)} Position={'top'} Target={"Clr"}>
                     {warnings.map((t, i) => <p key={i}>{Warning} {t}</p>)}
                   </ToolTip>
                 </div>

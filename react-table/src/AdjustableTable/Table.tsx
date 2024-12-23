@@ -490,7 +490,7 @@ function Rows<T>(props: React.PropsWithChildren<IRowProps<T>>) {
             if (style.cursor === undefined && (props.OnClick !== undefined || props.DragStart !== undefined))
                 style.cursor = 'pointer';
             
-            if (props.Selected !== undefined && props.Selected(d, i)) style.backgroundColor = 'yellow';
+            if (props.Selected !== undefined && props.Selected(d, i)) style.backgroundColor = 'var(--warning)';
             
             const key = props.KeySelector(d, i);
             return (

@@ -24,6 +24,7 @@
 import * as React from 'react';
 import { CreateGuid } from '@gpa-gemstone/helper-functions'
 import HelperMessage from './HelperMessage';
+import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 
 interface IProps<T> {
   /**
@@ -68,41 +69,41 @@ interface IProps<T> {
 }
 
 export default function ToggleSwitch<T>(props: IProps<T>) {
-    const helpID = React.useRef<string>(CreateGuid());
-    const switchID = React.useRef<string>(CreateGuid());
-    const [showHelp, setShowHelp] = React.useState<boolean>(false);
+  const helpID = React.useRef<string>(CreateGuid());
+  const switchID = React.useRef<string>(CreateGuid());
+  const [showHelp, setShowHelp] = React.useState<boolean>(false);
 
-    const showHelpIcon = props.Help !== undefined;
+  const showHelpIcon = props.Help !== undefined;
 
-    return (
-        <div className="custom-control custom-switch" data-help={helpID.current} style={props.Style}>
-            <input
-                type="checkbox"
-                className="custom-control-input"
-                onChange={(evt) => {
-                    const record: T = { ...props.Record };
-                    record[props.Field] = evt.target.checked as any;
-                    props.Setter(record);
-                }}
-                value={(props.Record[props.Field] as unknown as boolean) ? 'on' : 'off'}
-                checked={(props.Record[props.Field] as unknown as boolean)}
-                disabled={props.Disabled == null ? false : props.Disabled}
-                id={switchID.current}
-            />
-            <label className="custom-control-label" htmlFor={switchID.current}>{props.Label == null ? props.Field : props.Label}</label>
-            {showHelpIcon ?
-                <>
-                    <div style={{ width: 20, height: 20, borderRadius: '50%', display: 'inline-block', background: '#0D6EFD', marginLeft: 10, textAlign: 'center', fontWeight: 'bold' }}
-                     onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)}>
-                        ?
-                    </div>
-                    <HelperMessage Show={showHelp} Target={helpID.current} Zindex={9999}>
-                        {props.Help}
-                    </HelperMessage>
-                </>
-                : null}
-
-        </div>
-    );
+  return (
+    <div className="custom-control custom-switch" data-help={helpID.current} style={props.Style}>
+      <input
+        type="checkbox"
+        className="custom-control-input"
+        onChange={(evt) => {
+          const record: T = { ...props.Record };
+          record[props.Field] = evt.target.checked as any;
+          props.Setter(record);
+        }}
+        value={(props.Record[props.Field] as unknown as boolean) ? 'on' : 'off'}
+        checked={(props.Record[props.Field] as unknown as boolean)}
+        disabled={props.Disabled == null ? false : props.Disabled}
+        id={switchID.current}
+      />
+      <label className="custom-control-label" htmlFor={switchID.current}>
+        {props.Label == null ? props.Field : props.Label}
+        {showHelpIcon ?
+          <>
+            <button className='btn mb-1 pt-0 pb-0' onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)}>
+              <ReactIcons.QuestionMark Color='var(--info)' Size={20} />
+            </button>
+            <HelperMessage Show={showHelp} Target={helpID.current} Zindex={9999}>
+              {props.Help}
+            </HelperMessage>
+          </>
+          : null}
+      </label>
+    </div>
+  );
 
 }
