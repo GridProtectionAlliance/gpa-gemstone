@@ -31,7 +31,6 @@ import ConfigurableTable from '../ConfigurableTable/ConfigurableTable';
 import Alert from '../Alert';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 import { CsvStringToArray } from '@gpa-gemstone/helper-functions';
-import * as _ from 'lodash';
 
 interface IAdditionalProps<T> {
     Fields: Gemstone.TSX.Interfaces.ICSVField<T>[],
