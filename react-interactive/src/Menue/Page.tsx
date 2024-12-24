@@ -56,10 +56,12 @@ const Page: React.FunctionComponent<IProps> = (props) => {
         if (props.OtherActivePages == undefined)
             return false;
 
-        for (const path of props.OtherActivePages!) {
+        for (const path of props.OtherActivePages) {
             if (location.pathname.includes(path))
                 return true;
         }
+
+        return false;
     }
 
     if (props.RequiredRoles !== undefined && props.RequiredRoles.filter(r => context.userRoles.findIndex(i => i === r) > -1).length === 0)
