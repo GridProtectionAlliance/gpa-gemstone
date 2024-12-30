@@ -80,7 +80,7 @@ const defaultDataCellStyle: React.CSSProperties = {
 
 const IsColumnProps = (props: any) => (props?.['Key'] != null);
 
-export function AdjustableTable<T>(props: React.PropsWithChildren<ReactTableProps.ITable<T>>) {
+export function Table<T>(props: React.PropsWithChildren<ReactTableProps.ITable<T>>) {
     const bodyRef = React.useRef<HTMLTableSectionElement | null>(null);
     const colWidthsRef = React.useRef<Map<string, width>>(new Map<string, width>());
     const oldWidthRef = React.useRef<number>(0);

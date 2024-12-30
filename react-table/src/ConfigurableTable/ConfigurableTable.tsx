@@ -21,8 +21,8 @@
 // ******************************************************************************************************
 
 import * as React from 'react';
-import * as ReactTableProps from '../AdjustableTable/Types';
-import { AdjustableTable } from '../AdjustableTable/Table';
+import * as ReactTableProps from '../Table/Types';
+import { Table } from '../Table/Table';
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import { Modal, ToolTip, Alert } from '@gpa-gemstone/react-interactive';
 import { Portal } from 'react-portal';
@@ -146,7 +146,7 @@ export default function ConfigurableTable<T>(props: React.PropsWithChildren<ITab
 
     return (
         <>
-            <AdjustableTable
+            <Table
                 {...props}
                 LastColumn={
                     <div
@@ -167,7 +167,7 @@ export default function ConfigurableTable<T>(props: React.PropsWithChildren<ITab
                         return columns.get(element.props.Key)?.Enabled ?? false ? element.props.children : null;
                     return element;
                 })}
-            </AdjustableTable>
+            </Table>
             <ToolTip Show={hover} Position={'bottom'} Target={guid + '-tooltip'} Zindex={99999}>
                 <p>Change Columns</p>
             </ToolTip>

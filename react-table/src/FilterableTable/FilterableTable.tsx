@@ -21,9 +21,9 @@
 // ******************************************************************************************************
 
 import * as React from 'react';
-import * as ReactTableProps from '../AdjustableTable/Types';
-import { AdjustableTable } from '../AdjustableTable/Table';
-import { Column } from '../AdjustableTable/Column';
+import * as ReactTableProps from '../Table/Types';
+import { Table } from '../Table/Table';
+import { Column } from '../Table/Column';
 import { Search } from '@gpa-gemstone/react-interactive';
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import { BooleanFilter } from './BooleanFilter';
@@ -60,7 +60,7 @@ export default function FilterableTable<T>(props: React.PropsWithChildren<IProps
     React.useEffect(() => { props.SetFilter(filters); }, [filters]);
 
     return (
-        <AdjustableTable<T>
+        <Table<T>
             {...props}
         >
             {React.Children.map(props.children, (element) => {
@@ -84,7 +84,7 @@ export default function FilterableTable<T>(props: React.PropsWithChildren<IProps
                     </Column>
                 );
             })}
-        </AdjustableTable>
+        </Table>
     );
 
 }

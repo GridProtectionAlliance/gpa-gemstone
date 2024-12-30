@@ -20,7 +20,7 @@
 //       Generated original version of source code.
 // ******************************************************************************************************
 
-import { ReactTable } from "@gpa-gemstone/react-table";
+import { Table, Column, AdjustableColumn } from "@gpa-gemstone/react-table";
 import * as React from 'react';
 import { useDispatch, useSelector } from "react-redux";
 import { GenericSlice, Modal } from "@gpa-gemstone/react-interactive";
@@ -88,8 +88,8 @@ export default function SelectPopup<T extends U>(props: IProps<T>) {
                             </li>: null}
                         {React.Children.map(props.children, (e) => {
                             if (React.isValidElement(e)) {
-                                if (((e as React.ReactElement<any>).type === ReactTable.AdjustableColumn) || 
-                                    ((e as React.ReactElement<any>).type === ReactTable.Column)) return null;
+                                if (((e as React.ReactElement<any>).type === AdjustableColumn) || 
+                                    ((e as React.ReactElement<any>).type === Column)) return null;
                                 return e;
                             }
                             return null;
@@ -99,7 +99,7 @@ export default function SelectPopup<T extends U>(props: IProps<T>) {
             </div>
             <div className="row">
                 <div className="col" style={{ width: (props.Type === undefined || props.Type === 'single' ? '100%' : '60%') } }>
-                    <ReactTable.Table<T>
+                    <Table<T>
                         TableClass="table table-hover"
                         Data={data}
                         SortKey={sortField as string}
@@ -123,13 +123,13 @@ export default function SelectPopup<T extends U>(props: IProps<T>) {
                         KeySelector={item => item.ID}
                     >
                         {props.children}
-                    </ReactTable.Table>
+                    </Table>
                 </div>
                 {props.Type === 'multiple' ? <div className="col" style={{ width: '40%' }}>
                     <div style={{ width: '100%' }}>
                         <h3> Current Selection </h3>
                     </div>
-                    <ReactTable.Table<T>
+                    <Table<T>
                         TableClass="table table-hover"
                         Data={selectedData}
                         SortKey={sortKeySelected}
@@ -152,7 +152,7 @@ export default function SelectPopup<T extends U>(props: IProps<T>) {
                         KeySelector={item => item.ID}
                     >
                         {props.children}
-                    </ReactTable.Table>
+                    </Table>
                 </div> : null}
             </div>
         </Modal>

@@ -22,7 +22,7 @@
 
 import * as React from 'react';
 import { Select, TextArea } from '@gpa-gemstone/react-forms';
-import { ReactTable } from '@gpa-gemstone/react-table';
+import { Table, Column } from '@gpa-gemstone/react-table';
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import { Modal, ToolTip, ServerErrorIcon, LoadingScreen } from '@gpa-gemstone/react-interactive';
 import { Application, OpenXDA } from '@gpa-gemstone/application-typings';
@@ -196,7 +196,7 @@ function Note(props: React.PropsWithChildren<IProps>)  {
                     </> 
                 : null }
             <div>
-                <ReactTable.Table<OpenXDA.Types.Note>
+                <Table<OpenXDA.Types.Note>
                     TableClass="table table-hover"
                     Data={notes}
                     SortKey={sortField}
@@ -214,30 +214,30 @@ function Note(props: React.PropsWithChildren<IProps>)  {
                     Selected={() => false}
                     KeySelector={(d) => d.ID}
                 >
-                    <ReactTable.Column<OpenXDA.Types.Note>
+                    <Column<OpenXDA.Types.Note>
                         Key="Note" Field="Note" HeaderStyle={{width:'50%'}} RowStyle={{width:'50%'}}
-                    >Note</ReactTable.Column>
-                    <ReactTable.Column<OpenXDA.Types.Note>
+                    >Note</Column>
+                    <Column<OpenXDA.Types.Note>
                         Key="Timestamp" Field="Timestamp" HeaderStyle={{width:'auto'}} RowStyle={{width:'auto'}}
                         Content={(row) => moment.utc(row.item.Timestamp).format("MM/DD/YYYY HH:mm")}
-                    >Time</ReactTable.Column>
-                    <ReactTable.Column<OpenXDA.Types.Note>
+                    >Time</Column>
+                    <Column<OpenXDA.Types.Note>
                         Key="UserAccount" Field="UserAccount" HeaderStyle={{width:'auto'}} RowStyle={{width:'auto'}}
-                    >User</ReactTable.Column>
+                    >User</Column>
                     {props.children}
                     {props.NoteTags.length > 1 ?
-                        <ReactTable.Column<OpenXDA.Types.Note>
+                        <Column<OpenXDA.Types.Note>
                             Key="NoteTagID" Field="NoteTagID" HeaderStyle={{width:'auto'}} RowStyle={{width:'auto'}}
                             Content={(row) => props.NoteTags.find(t => t.ID === row.item.NoteTagID)?.Name}
-                        >Type</ReactTable.Column>
+                        >Type</Column>
                     : <></>}
                     {props.NoteApplications.length > 1 ?
-                        <ReactTable.Column<OpenXDA.Types.Note>
+                        <Column<OpenXDA.Types.Note>
                             Key="NoteApplicationID" Field="NoteApplicationID" HeaderStyle={{width:'auto'}} RowStyle={{width:'auto'}}
                             Content={(row) => props.NoteApplications.find(t => t.ID === row.item.NoteApplicationID)?.Name}
-                        >Application</ReactTable.Column>
+                        >Application</Column>
                     : <></>}
-                    <ReactTable.Column<OpenXDA.Types.Note>
+                    <Column<OpenXDA.Types.Note>
                         Key="buttons" HeaderStyle={{width:'auto'}} RowStyle={{width:'auto'}}
                         Content={(row) => 
                             <>
@@ -253,8 +253,8 @@ function Note(props: React.PropsWithChildren<IProps>)  {
                                 : null }
                             </>
                         }
-                    >&nbsp;</ReactTable.Column>
-                </ReactTable.Table>
+                    >&nbsp;</Column>
+                </Table>
             </div>
             {allowAdd && showCard?
                 <NoteOptions 

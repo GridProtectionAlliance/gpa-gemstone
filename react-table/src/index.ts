@@ -24,29 +24,18 @@
 //  ******************************************************************************************************
 
 import Paging from './Paging';
-import * as ReactTableProps from './AdjustableTable/Types';
-import { AdjustableTable } from './AdjustableTable/Table';
-import { Column, AdjustableColumn } from './AdjustableTable/Column';
+import * as ReactTableProps from './Table/Types';
+import { Table } from './Table/Table';
+import { Column, AdjustableColumn } from './Table/Column';
 import FilterableTable from './FilterableTable/FilterableTable';
 import FilterableColumn from './FilterableTable/FilterableColumn';
 import ConfigurableTable from './ConfigurableTable/ConfigurableTable';
 import ConfigurableColumn from './ConfigurableTable/ConfigurableColumn';
 
-const ReactTable = {
-	Table: AdjustableTable,
-	Column: Column,
-	AdjustableColumn: AdjustableColumn,
-}
-
-const ConfigTable = {
-  Table: ConfigurableTable,
-  Configurable: ConfigurableColumn,
-}
-
 export {
-	ReactTable,
 	ReactTableProps,
-	ConfigTable,
+	Table, Column, AdjustableColumn,
+	ConfigurableTable, ConfigurableColumn,
 	FilterableTable, FilterableColumn,
 	Paging
 }

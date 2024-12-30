@@ -20,7 +20,7 @@
 //       Generated original version of source code.
 // ******************************************************************************************************
 
-import * as ReactTableProps from '../AdjustableTable/Types';
+import * as ReactTableProps from '../Table/Types';
 import * as React from 'react';
 import { Search } from '@gpa-gemstone/react-interactive';
 import { IUnit } from './NumberFilter';
