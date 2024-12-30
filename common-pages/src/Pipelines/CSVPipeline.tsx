@@ -22,15 +22,13 @@
 // ******************************************************************************************************
 
 import * as React from 'react';
+import { Gemstone } from '@gpa-gemstone/application-typings';
+import { CsvStringToArray } from '@gpa-gemstone/helper-functions';
+import { Alert, ConfigTable } from '@gpa-gemstone/react-interactive';
 import { CheckBox, Select } from '@gpa-gemstone/react-forms';
 import { ReactTable } from '@gpa-gemstone/react-table';
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import { Paging } from '@gpa-gemstone/react-table';
-import ConfigurableColumn from '../ConfigurableTable/ConfigurableColumn'
-import ConfigurableTable from '../ConfigurableTable/ConfigurableTable';
-import Alert from '../Alert';
-import { Gemstone } from '@gpa-gemstone/application-typings';
-import { CsvStringToArray } from '@gpa-gemstone/helper-functions';
 
 interface IAdditionalProps<T> {
     Fields: Gemstone.TSX.Interfaces.ICSVField<T>[],
@@ -252,7 +250,7 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
                                 ) : null}
                                 <div className='row flex-grow-1' style={{overflowY: 'hidden'}}>
                                     <div className='col-12 h-100'>
-                                        <ConfigurableTable<string[]>
+                                        <ConfigTable.Table<string[]>
                                             Data={pagedData}
                                             SortKey=''
                                             Ascending={false}
@@ -266,7 +264,7 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
                                             ModalZIndex={9995}
                                         >
                                             {headers.map((header, i) =>
-                                                <ConfigurableColumn Key={header} Label={header} Default={true}>
+                                                <ConfigTable.Configurable Key={header} Label={header} Default={true}>
                                                     <ReactTable.Column<string[]>
                                                         Key={header}
                                                         Field={i + 1}
@@ -303,7 +301,7 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
                                                         {getHeader(header)}
                                                         {getFieldSelect(header)}
                                                     </ReactTable.Column>
-                                                </ConfigurableColumn>
+                                                </ConfigTable.Configurable>
                                             )}
                                             <ReactTable.Column<string[]>
                                                 Key={'delete'}
@@ -320,7 +318,7 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
                                             >
                                                 {''}
                                             </ReactTable.Column>
-                                        </ConfigurableTable>
+                                        </ConfigTable.Table>
                                     </div>
                                 </div>
                                 <div className='row'>

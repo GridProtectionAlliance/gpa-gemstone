@@ -30,6 +30,7 @@ import TimeFilter from './TimeFilter/TimeFilter';
 import EventTypeFilter from './EventTypeFilter';
 import EventCharacteristicFilter from './EventCharacteristicFilter';
 import NavBarFilterButton from './NavBarFilterButton';
+import { useCSVPipeline } from './Pipelines/CSVPipeline';
 import * as TimeWindowUtils from './TimeFilter/TimeWindowUtils'
 
 export {
@@ -42,5 +43,6 @@ export {
   DefaultSearch,
   SelectPopup,
   DefaultSelects,
-  ErrorBoundary
+  ErrorBoundary,
+  useCSVPipeline
 };
