@@ -31,30 +31,21 @@ import ToolTip from './ToolTip';
 import TabSelector from './TabSelector';
 import ServerErrorIcon from './ServerErrorIcon';
 import GenericSlice from './GenericSlice';
-import ConfigurableTable from './ConfigurableTable/ConfigurableTable';
 import { IState as IGenericSliceState } from './GenericSlice';
 import Application from './Menue/Application';
 import Page from './Menue/Page';
 import Section from './Menue/Section';
-import FilterableTable from './FilterableTable/FilterableTable';
-import FilterableColumn from './FilterableTable/FilterableColumn'
 import SplitSection from './Layout/SplitSection';
 import VerticalSplit from './Layout/VerticalSplit';
 import SplitDrawer from './Layout/SplitDrawer';
 import OverlayDrawer from './Layout/OverlayDrawer';
 import ProgressBar from './ProgressBar';
 import BtnDropdown from './DropdownButton';
-import ConfigurableColumn from './ConfigurableTable/ConfigurableColumn';
 import GenericController from './GenericController';
 import LayoutGrid from './LayoutGrid';
 import BulkUpload from './BulkUpload'
 import Alert from './Alert'
 import Breadcrumb from './Breadcrumb';
-
-const ConfigTable = {
-  Table: ConfigurableTable,
-  Configurable: ConfigurableColumn,
-}
 
 export {
   Modal,
@@ -68,11 +59,9 @@ export {
   ServerErrorIcon,
   GenericSlice,
   IGenericSliceState,
-  ConfigTable,
   Application,
   Page,
   Section,
-  FilterableTable, FilterableColumn,
   SplitSection,
   VerticalSplit,
   SplitDrawer,

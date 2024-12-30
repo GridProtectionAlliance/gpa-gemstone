@@ -21,16 +21,15 @@
 // ******************************************************************************************************
 
 import * as React from 'react';
-import Modal from '../Modal';
-import { ReactTable, ReactTableProps } from '@gpa-gemstone/react-table';
+import * as ReactTableProps from '../AdjustableTable/Types';
+import { AdjustableTable } from '../AdjustableTable/Table';
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
+import { Modal, ToolTip, Alert } from '@gpa-gemstone/react-interactive';
 import { Portal } from 'react-portal';
-import ToolTip from '../ToolTip';
 import { CreateGuid } from '@gpa-gemstone/helper-functions';
 import { CheckBox } from '@gpa-gemstone/react-forms';
 import * as _ from 'lodash';
 import ConfigurableColumn from './ConfigurableColumn';
-import Alert from '../Alert';
 
 interface ITableProps<T> extends ReactTableProps.ITable<T> {
     /**
@@ -147,7 +146,7 @@ export default function ConfigurableTable<T>(props: React.PropsWithChildren<ITab
 
     return (
         <>
-            <ReactTable.Table
+            <AdjustableTable
                 {...props}
                 LastColumn={
                     <div
@@ -168,7 +167,7 @@ export default function ConfigurableTable<T>(props: React.PropsWithChildren<ITab
                         return columns.get(element.props.Key)?.Enabled ?? false ? element.props.children : null;
                     return element;
                 })}
-            </ReactTable.Table>
+            </AdjustableTable>
             <ToolTip Show={hover} Position={'bottom'} Target={guid + '-tooltip'} Zindex={99999}>
                 <p>Change Columns</p>
             </ToolTip>

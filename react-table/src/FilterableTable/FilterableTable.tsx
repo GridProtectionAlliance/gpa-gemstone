@@ -21,8 +21,10 @@
 // ******************************************************************************************************
 
 import * as React from 'react';
-import { ReactTable, ReactTableProps } from '@gpa-gemstone/react-table';
-import { Search } from '../SearchBar';
+import * as ReactTableProps from '../AdjustableTable/Types';
+import { AdjustableTable } from '../AdjustableTable/Table';
+import { Column } from '../AdjustableTable/Column';
+import { Search } from '@gpa-gemstone/react-interactive';
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import { BooleanFilter } from './BooleanFilter';
 import { TextFilter } from './TextFilter';
@@ -58,14 +60,14 @@ export default function FilterableTable<T>(props: React.PropsWithChildren<IProps
     React.useEffect(() => { props.SetFilter(filters); }, [filters]);
 
     return (
-        <ReactTable.Table<T>
+        <AdjustableTable<T>
             {...props}
         >
             {React.Children.map(props.children, (element) => {
                 if (!React.isValidElement(element)) return null;
                 if (!IsFilterableColumnProps(element.props)) return null;
                 return (
-                    <ReactTable.Column<T>
+                    <Column<T>
                         {...element.props}
                     >
                         <Header
@@ -79,10 +81,10 @@ export default function FilterableTable<T>(props: React.PropsWithChildren<IProps
                             Guid={guid}
                             Unit={element.props?.Unit}
                         />
-                    </ReactTable.Column>
+                    </Column>
                 );
             })}
-        </ReactTable.Table>
+        </AdjustableTable>
     );
 
 }
