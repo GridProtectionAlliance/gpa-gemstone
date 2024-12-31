@@ -21,6 +21,9 @@
 //
 // ******************************************************************************************************
 
+import { Search } from "@gpa-gemstone/react-interactive";
+import { IUnit } from "../Filters/NumberFilter";
+
 export interface ITable<T> {
     /**
     * List of T objects used to generate rows
@@ -127,6 +130,15 @@ export interface ITable<T> {
     * @param disabled takes in string of disabled keys
     */
     ReduceWidthCallback?: (disabled: string[]) => void;
+    /**
+    * Callback to set filters for data. Required if using filterable columns.
+    * @param filters sets the set of filters
+    */
+    SetFilters?: (filters: Search.IFilter<T>[]) => void;
+    /**
+    * Filters currently filtering the data, required if using filterable columns.
+    */
+    Filters?: Search.IFilter<T>[];
 }
 
 export interface IColumn<T> {
@@ -160,4 +172,25 @@ export interface IColumn<T> {
      * Determines if a column's width is adjustable, undefined is read as false.
      */
     Adjustable?: boolean
+}
+
+export interface IOptions { Value: string | number, Label: string }
+
+export interface IFilterableCollumn<T> extends IColumn<T> {
+    /**
+     * Type of field, determines filter entry UI of header.
+     */
+    Type?: Search.FieldType, 
+    /**
+     * Enumeration for field, required for 'enum' type fields (has no effect otherwise)
+     */
+    Enum?: IOptions[],
+    /**
+     * Definition for a different label on hover of header.
+     */
+    ExpandedLabel?: string,
+    /**
+     * Definition for units on a number filter (has no effect if field type is not 'number')
+     */
+    Unit?: IUnit[]
 }

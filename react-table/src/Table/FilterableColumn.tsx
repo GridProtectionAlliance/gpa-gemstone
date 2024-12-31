@@ -1,7 +1,7 @@
 // ******************************************************************************************************
-//  FilterableTable.tsx - Gbtc
+//  FilterableColumn.tsx - Gbtc
 //
-//  Copyright © 2022, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2023, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -16,93 +16,41 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  03/02/2022 - C. Lackner
+//  12/05/2024 - G. Santos
 //       Generated original version of source code.
 // ******************************************************************************************************
 
+import * as ReactTableProps from './Types';
 import * as React from 'react';
-import * as ReactTableProps from '../Table/Types';
-import { Table } from '../Table/Table';
-import { Column } from '../Table/Column';
-import { Search } from '@gpa-gemstone/react-interactive';
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
-import { BooleanFilter } from './BooleanFilter';
-import { TextFilter } from './TextFilter';
-import { EnumFilter } from './EnumFilter';
-import { NumberFilter, IUnit } from './NumberFilter';
-import { DateFilter, DateTimeFilter, TimeFilter } from './DateTimeFilters';
-import { CreateGuid} from '@gpa-gemstone/helper-functions';
-import { IsFilterableColumnProps } from './FilterableColumn';
-
-interface IOptions { Value: string | number, Label: string }
-
-interface IProps<T> extends ReactTableProps.ITable<T> {
-    SetFilter: (filters: Search.IFilter<T>[]) => void,
-    DefaultFilter?: Search.IFilter<T>[]
-}
-
-// ToDo: This whole structure is kinda gross, this should live in react-table so we don't have to map FilterableColumn -> Column -> HeaderWrapper
+import { Search } from '@gpa-gemstone/react-interactive';
+import { BooleanFilter } from '../Filters/BooleanFilter';
+import { TextFilter } from '../Filters/TextFilter';
+import { EnumFilter } from '../Filters/EnumFilter';
+import { NumberFilter, IUnit } from '../Filters/NumberFilter';
+import { DateFilter, DateTimeFilter, TimeFilter } from '../Filters/DateTimeFilters';
 
 /**
- * Table with Filters in the column headers
+ * Wrapper to make any column configurable
  */
-export default function FilterableTable<T>(props: React.PropsWithChildren<IProps<T>>) {
-    const [filters, setFilters] = React.useState<Search.IFilter<T>[]>((props.DefaultFilter === undefined ? [] : props.DefaultFilter));
-    const [guid] = React.useState<string>(CreateGuid());
-
-    function updateFilters(flts: Search.IFilter<T>[], fld: string | number | symbol| undefined) {
-        setFilters((fls) => {
-            const otherFilters = fls.filter(item => item.FieldName !== fld);
-            return otherFilters.concat(flts);
-        })
-    }
-
-    React.useEffect(() => { props.SetFilter(filters); }, [filters]);
-
-    return (
-        <Table<T>
-            {...props}
-        >
-            {React.Children.map(props.children, (element) => {
-                if (!React.isValidElement(element)) return null;
-                if (!IsFilterableColumnProps(element.props)) return null;
-                return (
-                    <Column<T>
-                        {...element.props}
-                    >
-                        <Header
-                            Label={element.props?.children}
-                            Filter={filters.filter(f => f.FieldName === element.props?.Field?.toString())}
-                            SetFilter={(f) => updateFilters(f, element.props?.Field)}
-                            Field={element.props?.Field}
-                            Type={element.props?.Type}
-                            Options={element.props?.Enum}
-                            ExpandedLabel={element.props?.ExpandedLabel}
-                            Guid={guid}
-                            Unit={element.props?.Unit}
-                        />
-                    </Column>
-                );
-            })}
-        </Table>
-    );
-
+export default function FilterableColumn<T>(props: React.PropsWithChildren<ReactTableProps.IFilterableCollumn<T>>) {
+    return <>{props.children}</>
 }
 
-interface IHeaderProps<T> {
+export interface IHeaderProps<T> {
     Label: string | React.ReactNode,
     Type?: Search.FieldType,
     Unit?: IUnit[],
     Filter: Search.IFilter<T>[],
     SetFilter: (flt: Search.IFilter<T>[]) => void,
     Field: string | number | symbol | undefined,
-    Options?: IOptions[],
+    Options?: ReactTableProps.IOptions[],
     ExpandedLabel?: string,
     Guid: string,
 }
 
 // Table column header details
-function Header<T>(props: IHeaderProps<T>) {
+export function FilterableColumnHeader<T>(props: IHeaderProps<T>) {
     const [show, setShow] = React.useState<boolean>(false);
 
     return <>

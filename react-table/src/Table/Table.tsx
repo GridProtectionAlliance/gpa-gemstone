@@ -28,6 +28,9 @@ import * as React from 'react';
 import * as _ from 'lodash';
 import * as ReactTableProps from './Types';
 import { Column, ColumnDataWrapper, ColumnHeaderWrapper } from './Column';
+import { CreateGuid } from '@gpa-gemstone/helper-functions';
+import { Search } from '@gpa-gemstone/react-interactive';
+import FilterableColumn, { FilterableColumnHeader } from './FilterableColumn';
 
 type width = {
     width: number,
@@ -436,6 +439,8 @@ interface IHeaderProps<T> {
     TriggerRerender: ()=>void;
     Trigger: number;
     LastColumn?: string | React.ReactNode;
+    SetFilters?: (filters: Search.IFilter<T>[]) => void;
+    Filters?: Search.IFilter<T>[];
 }
 
 function Header<T>(props: React.PropsWithChildren<IHeaderProps<T>>) {
@@ -446,6 +451,10 @@ function Header<T>(props: React.PropsWithChildren<IHeaderProps<T>>) {
     const [currentKeys, setCurrentKeys] = React.useState<[string, string] | undefined>(undefined);
     const [deltaW, setDeltaW] = React.useState<number>(0);
     const [tentativeLimits, setTentativeLimits] = React.useState<{min: number, max: number}>({min: -Infinity, max: Infinity});
+
+    // Consts for filterable columns
+    const [filters, setFilters] = React.useState<Search.IFilter<T>[]>((props.Filters ?? []));
+    const [guid] = React.useState<string>(CreateGuid());
 
     const getLeftKey = React.useCallback((key: string, colWidthsRef: React.MutableRefObject<Map<string, width>>) => {
         // Filtering down to shown adjustables only
@@ -524,6 +533,18 @@ function Header<T>(props: React.PropsWithChildren<IHeaderProps<T>>) {
         const w = e.screenX - mouseDown;
         setDeltaW(w);
     }, [mouseDown, currentKeys]);
+
+    const updateFilters = React.useCallback((flts: Search.IFilter<T>[], fld: string | number | symbol| undefined) => {
+        setFilters((fls) => {
+            const newFilters = fls.filter(item => item.FieldName !== fld).concat(flts);
+            if (props.SetFilters == null)
+                console.error("Attempted to set filters from column when no set filter arguement to table was provided. Data has not been filtered!");
+            else props.SetFilters(newFilters);
+            return newFilters;
+        });
+    }, [props.SetFilters]);
+
+    React.useEffect(() => setFilters(props.Filters ?? []), [props.Filters]);
     
     return (
         <thead
@@ -601,7 +622,22 @@ function Header<T>(props: React.PropsWithChildren<IHeaderProps<T>>) {
                         style={style}
                     >
                         {' '}
-                        {element.props.children ?? element.props.Key}{' '}
+                        {
+                            ((element as React.ReactElement<any>).type === FilterableColumn) ?
+                                <FilterableColumnHeader
+                                    Label={element.props?.children}
+                                    Filter={filters.filter(f => f.FieldName === element.props?.Field?.toString())}
+                                    SetFilter={(f) => updateFilters(f, element.props?.Field)}
+                                    Field={element.props?.Field}
+                                    Type={element.props?.Type}
+                                    Options={element.props?.Enum}
+                                    ExpandedLabel={element.props?.ExpandedLabel}
+                                    Guid={guid}
+                                    Unit={element.props?.Unit}
+                                /> :
+                                (element.props.children ?? element.props.Key)
+                        }
+                        {' '}
                     </ColumnHeaderWrapper>
                 );
             })}
