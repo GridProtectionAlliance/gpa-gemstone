@@ -25,29 +25,9 @@ import * as React from 'react';
 import { CreateGuid } from '@gpa-gemstone/helper-functions'
 import HelperMessage from './HelperMessage';
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
+import { Gemstone } from '@gpa-gemstone/application-typings';
 
-interface IProps<T> {
-    /**
-        * Record to be used in form
-        * @type {T}
-    */
-    Record: T;
-    /**
-        * Field of the record to be edited
-        * @type {keyof T}
-    */
-    Field: keyof T;
-    /**
-      * Setter function to update the Record
-      * @param record - Updated Record
-    */
-    Setter: (record: T) => void;
-    /**
-        * Help message or element to display
-        * @type {string | JSX.Element}
-        * @optional
-    */
-    Help?: string | JSX.Element;
+interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
     /**
         * Position to display radion buttons in
         * @type {'vertical' | 'horizontal'}
@@ -63,12 +43,6 @@ interface IProps<T> {
         Label: string,
         Disabled?: boolean
     }[];
-    /**
-        * Label to display for the form, defaults to the Field prop
-        * @type {string}
-        * @optional
-    */
-    Label?: string
 }
 
 export default function RadioButtons<T>(props: IProps<T>) {

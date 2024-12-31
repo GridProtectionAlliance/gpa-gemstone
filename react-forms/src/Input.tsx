@@ -27,23 +27,9 @@ import * as React from 'react';
 import HelperMessage from './HelperMessage';
 import { CreateGuid, IsInteger, IsNumber } from '@gpa-gemstone/helper-functions'
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
+import { Gemstone } from '@gpa-gemstone/application-typings';
 
-interface IProps<T> {
-  /**
-    * Record to be used in form
-    * @type {T}
-  */
-  Record: T;
-  /**
-    * Field of the record to be edited
-    * @type {keyof T}
-  */
-  Field: keyof T;
-  /**
-    * Setter function to update the Record
-    * @param record - Updated Record
-  */
-  Setter: (record: T) => void;
+interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
   /**
     * Function to determine the validity of a field
     * @param field - Field of the record to check
@@ -51,35 +37,17 @@ interface IProps<T> {
   */
   Valid: (field: keyof T) => boolean;
   /**
-    * Label to display for the form, defaults to the Field prop
-    * @type {string}
-    * @optional
-  */
-  Label?: string;
-  /**
     * Feedback message to show when input is invalid
     * @type {string}
     * @optional
   */
   Feedback?: string;
   /**
-    * Flag to disable the input field
-    * @type {boolean}
-    * @optional
-  */
-  Disabled?: boolean;
-  /**
     * Type of the input field
     * @type {'number' | 'text' | 'password' | 'email' | 'color' | 'integer'}
     * @optional
   */
   Type?: 'number' | 'text' | 'password' | 'email' | 'color' | 'integer';
-  /**
-    * Help message or element to display
-    * @type {string | JSX.Element}
-    * @optional
-  */
-  Help?: string | JSX.Element;
   /**
     * CSS styles to apply to the form group
     * @type {React.CSSProperties}
