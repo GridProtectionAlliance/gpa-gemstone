@@ -35,45 +35,12 @@ export interface IOption {
   Element: React.ReactElement<any>
 }
 
-interface IProps<T> {
-  /**
-    * Record to be used in form
-    * @type {T}
-  */
-  Record: T;
-  /**
-    * Field of the record to be edited
-    * @type {keyof T}
-  */
-  Field: keyof T;
-  /**
-    * Setter function to update the Record
-    * @param record - Updated Record
-  */
-  Setter: (record: T) => void;
+interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
   /**
   * Options for the select dropdown
   * @type {{  Value: any, Element: React.ReactElement<any> }[]}
 */
   Options: IOption[];
-  /**
-    * Label to display for the form, defaults to the Field prop
-    * @type {string}
-    * @optional
-  */
-  Label?: string;
-  /**
-    * Flag to disable the input field
-    * @type {boolean}
-    * @optional
-  */
-  Disabled?: boolean;
-  /**
-    * Help message or element to display
-    * @type {string | JSX.Element}
-    * @optional
-  */
-  Help?: string | JSX.Element;
   /**
     * CSS styles to apply to the selected value
     * @type {React.CSSProperties}
