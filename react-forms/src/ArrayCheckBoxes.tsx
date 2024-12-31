@@ -23,34 +23,14 @@
 
 import * as React from 'react';
 import {CreateGuid} from '@gpa-gemstone/helper-functions';
+import { Gemstone } from '@gpa-gemstone/application-typings';
 
-interface IProps<T> {
-  /**
-    * Record to be used in form
-    * @type {T}
-  */
-  Record: T;
-  /**
-    * Field of the record to be edited
-    * @type {keyof T}
-  */
-  Field: keyof T;
-  /**
-    * Setter function to update the Record
-    * @param record - Updated Record
-  */
-  Setter: (record: T) => void;
+interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
   /**
     * Array of checkboxes with their IDs and labels
     * @type {{ ID: string; Label: string }[]}
   */
   Checkboxes: { ID: string; Label: string }[];
-    /**
-    * Label to display for the form, defaults to the Field prop
-    * @type {string}
-    * @optional
-  */
-  Label?: string;
 }
 
 export default function ArrayCheckBoxes<T>(props: IProps<T>) {

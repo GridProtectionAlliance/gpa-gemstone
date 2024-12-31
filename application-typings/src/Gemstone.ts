@@ -28,6 +28,41 @@ namespace Gemstone {
             export type BulkUploadStep = ('Upload' | 'Process' | 'Review' | 'Complete')
         }
         export namespace Interfaces {
+            export interface IBaseFormProps<T> {
+                /**
+                  * Record to be used in form
+                  * @type {T}
+                */
+                Record: T,
+                /**
+                    * Field of the record to be edited
+                    * @type {keyof T}
+                */
+                Field: keyof T;
+                /**
+                    * Label to display for the form, defaults to the Field prop
+                    * @type {string}
+                    * @optional
+                */
+                Label?: string;
+                /**
+                    * Setter function to update the Record
+                    * @param record - Updated Record
+                */
+                Setter: (record: T) => void;
+                /**
+                  * Help message or element to display
+                  * @type {string | JSX.Element}
+                  * @optional
+                */
+                Help?: string | JSX.Element,
+                /**
+                  * Flag to disable the input field
+                  * @type {boolean}
+                  * @optional
+                */
+                Disabled?: boolean;
+            }
             export interface IElementPosition {
                 Top: number,
                 Left: number,

@@ -24,25 +24,11 @@
 import * as React from 'react';
 import StylableSelect, { IOption as IStylableOption } from './StylableSelect';
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
+import { Gemstone } from '@gpa-gemstone/application-typings';
 
 interface IOption { Value: string; Label: string }
 
-interface IProps<T> {
-    /**
-      * Record to be used in form
-      * @type {T}
-    */
-    Record: T;
-    /**
-      * Field of the record to be edited
-      * @type {keyof T}
-    */
-    Field: keyof T;
-    /**
-    * Setter function to update the Record
-    * @param record - Updated Record
-    */
-    Setter: (record: T) => void;
+interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
     /**
     * Flag to allow custom input values
     * @type {boolean}
@@ -55,24 +41,6 @@ interface IProps<T> {
     * @returns {[promise: Promise<IOption[]>, callback?: () => void]}
     */
     Search: (search: string) => [promise: Promise<IOption[]>, callback?: () => void];
-    /**
-    * Label to display for the form, defaults to the Field prop
-    * @type {string}
-    * @optional
-   */
-    Label?: string;
-    /**
-    * Flag to disable the input field
-    * @type {boolean}
-    * @optional
-    */
-    Disabled?: boolean;
-    /**
-    * Help message or element to display
-    * @type {string | JSX.Element}
-    * @optional
-    */
-    Help?: string | JSX.Element;
     /**
     * CSS styles to apply to the form group
     * @type {React.CSSProperties}

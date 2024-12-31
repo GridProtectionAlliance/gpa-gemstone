@@ -28,21 +28,15 @@ import { CreateGuid, GetNodeSize } from '@gpa-gemstone/helper-functions';
 import HelperMessage from './HelperMessage';
 import { Accuracy } from './DateTimeUI/Clock'
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
+import { Gemstone } from '@gpa-gemstone/application-typings';
 
 export type TimeUnit = ('datetime-local' | 'date' | 'time');
 
-// Interface for the DateTimePicker component props. 
-interface IProps<T> {
-    Record: T;
-    Field: keyof T;
-    Setter: (record: T) => void;
+interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
     Valid: (field: keyof T) => boolean;
-    Label?: string;
-    Disabled?: boolean;
     Feedback?: string;
     Format?: string;
     Type?: TimeUnit; // Default to date
-    Help?: string | JSX.Element;
     AllowEmpty?: boolean,
     Accuracy?: Accuracy, //Default to second
     MinDate?: moment.Moment // Default to 01/01/1753 (SQL Database limit)

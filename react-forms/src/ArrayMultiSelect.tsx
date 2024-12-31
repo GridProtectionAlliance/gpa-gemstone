@@ -22,40 +22,14 @@
 // ******************************************************************************************************
 
 import * as React from 'react';
+import { Gemstone } from '@gpa-gemstone/application-typings';
 
-interface IProps<T> {
-  /**
-      * Record to be used in form
-      * @type {T}
-    */
-  Record: T;
-  /**
-    * Field of the record to be edited
-    * @type {keyof T}
-  */
-  Field: keyof T;
+interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
   /**
     * Options for the select dropdown
     * @type {{ Value: string; Label: string }[]}
   */
   Options: { Value: string; Label: string }[];
-  /**
-    * Setter function to update the Record
-    * @param record - Updated Record
-  */
-  Setter: (record: T) => void;
-  /**
-    * Label to display for the form, defaults to the Field prop
-    * @type {string}
-    * @optional
-  */
-  Label?: string;
-  /**
-    * Flag to disable the input field
-    * @type {boolean}
-    * @optional
-  */
-  Disabled?: boolean;
   /**
     * CSS styles to apply to the select element
     * @type {React.CSSProperties}

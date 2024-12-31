@@ -23,13 +23,9 @@
 
 import * as React from 'react';
 import * as moment from 'moment';
+import { Gemstone } from '@gpa-gemstone/application-typings';
 
-interface IProps<T> {
-  /**
-    * Record to be used in form
-    * @type {T}
-  */
-  Record: T;
+interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
   /**
     * Field representing the start date in the record
     * @type {keyof T}
@@ -41,14 +37,8 @@ interface IProps<T> {
   */
   ToField: keyof T;
   /**
-    * Setter function to update the Record
-    * @param record - Updated Record
-  */
-  Setter: (record: T) => void;
-  /**
-    * Label to display for the form, defaults to the Field prop
+    * Label to display for the form
     * @type {string}
-    * @optional
   */
   Label: string;
   /**
@@ -57,12 +47,6 @@ interface IProps<T> {
     * @returns {boolean}
   */
   Valid: (fieldFrom: keyof T, fieldTo: keyof T) => boolean;
-  /**
-    * Flag to disable the input field
-    * @type {boolean}
-    * @optional
-  */
-  Disabled?: boolean;
   /**
     * Feedback message to show when input is invalid
     * @type {string}
