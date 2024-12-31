@@ -156,4 +156,8 @@ export interface IColumn<T> {
      * @returns the content displayed
      */
     Content?: (d: { item: T, key: string, field: keyof T | undefined, index: number, style?: React.CSSProperties }) => React.ReactNode;
+    /**
+     * Determines if a column's width is adjustable, undefined is read as false.
+     */
+    Adjustable?: boolean
 }

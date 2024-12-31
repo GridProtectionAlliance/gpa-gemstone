@@ -29,10 +29,6 @@ import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import * as React from 'react';
 import * as ReactTableProps from './Types';
 
-export function AdjustableColumn<T>(props: React.PropsWithChildren<ReactTableProps.IColumn<T>>) {
-    return <>{props.children}</>
-}
-
 export function Column<T>(props: React.PropsWithChildren<ReactTableProps.IColumn<T>>) {
     return <>{props.children}</>
 }

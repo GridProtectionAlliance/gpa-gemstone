@@ -27,7 +27,7 @@
 import * as React from 'react';
 import * as _ from 'lodash';
 import * as ReactTableProps from './Types';
-import { AdjustableColumn, ColumnDataWrapper, ColumnHeaderWrapper } from './Column';
+import { Column, ColumnDataWrapper, ColumnHeaderWrapper } from './Column';
 
 type width = {
     width: number,
@@ -79,6 +79,11 @@ const defaultDataCellStyle: React.CSSProperties = {
 };
 
 const IsColumnProps = (props: any) => (props?.['Key'] != null);
+const IsColumnAdjustable = (props: any) => {
+    const propValue = props?.['Adjustable'];
+    if (propValue === false || propValue === true) return propValue as boolean;
+    return false;
+}
 
 export function Table<T>(props: React.PropsWithChildren<ReactTableProps.ITable<T>>) {
     const bodyRef = React.useRef<HTMLTableSectionElement | null>(null);
@@ -445,16 +450,13 @@ function Header<T>(props: React.PropsWithChildren<IHeaderProps<T>>) {
     const getLeftKey = React.useCallback((key: string, colWidthsRef: React.MutableRefObject<Map<string, width>>) => {
         // Filtering down to shown adjustables only
         const keys = React.Children.map(props.children ?? [], (element) => {
-            if (!React.isValidElement(element)) {
+            if (!React.isValidElement(element))
                 return null;
-            }
             const keyWidth = colWidthsRef.current.get(key)?.width;
-            if (keyWidth == null || keyWidth <= 0) {
+            if (keyWidth == null || keyWidth <= 0)
                 return null;
-            }
-            if ((element as React.ReactElement<any>).type === AdjustableColumn) {
+            if (IsColumnProps(element.props) && IsColumnAdjustable(element.props))
                 return (element.props as ReactTableProps.IColumn<T>).Key;
-            }
             return null;
         }).filter((item) => item !== null);
 
@@ -570,7 +572,7 @@ function Header<T>(props: React.PropsWithChildren<IHeaderProps<T>>) {
                 cursor: cursor
             };
             let startAdjustment: React.MouseEventHandler<HTMLDivElement> | undefined;
-            if ((element as React.ReactElement<any>).type === AdjustableColumn)
+            if (IsColumnAdjustable(element.props))
                 startAdjustment = (e) => {
                     const leftKey = getLeftKey(element.props.Key, props.ColWidths);
                     if (leftKey != null) {

@@ -26,7 +26,7 @@
 import Paging from './Paging';
 import * as ReactTableProps from './Table/Types';
 import { Table } from './Table/Table';
-import { Column, AdjustableColumn } from './Table/Column';
+import { Column } from './Table/Column';
 import FilterableTable from './FilterableTable/FilterableTable';
 import FilterableColumn from './FilterableTable/FilterableColumn';
 import ConfigurableTable from './ConfigurableTable/ConfigurableTable';
@@ -34,7 +34,7 @@ import ConfigurableColumn from './ConfigurableTable/ConfigurableColumn';
 
 export {
 	ReactTableProps,
-	Table, Column, AdjustableColumn,
+	Table, Column,
 	ConfigurableTable, ConfigurableColumn,
 	FilterableTable, FilterableColumn,
 	Paging
