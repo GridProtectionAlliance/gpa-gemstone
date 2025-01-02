@@ -43,7 +43,6 @@ import ProgressBar from './ProgressBar';
 import BtnDropdown from './DropdownButton';
 import GenericController from './GenericController';
 import LayoutGrid from './LayoutGrid';
-import BulkUpload from './BulkUpload'
 import Alert from './Alert'
 import Breadcrumb from './Breadcrumb';
 
@@ -70,7 +69,6 @@ export {
   BtnDropdown,
   GenericController,
   LayoutGrid,
-  BulkUpload,
   Alert,
   Breadcrumb
 };

@@ -31,7 +31,12 @@ import EventTypeFilter from './EventTypeFilter';
 import EventCharacteristicFilter from './EventCharacteristicFilter';
 import NavBarFilterButton from './NavBarFilterButton';
 import { useCSVPipeline } from './Pipelines/CSVPipeline';
-import * as TimeWindowUtils from './TimeFilter/TimeWindowUtils'
+import * as TimeWindowUtils from './TimeFilter/TimeWindowUtils';
+import BulkUpload from './BulkUpload';
+
+const Pipelines = {
+  CSV: useCSVPipeline
+}
 
 export {
   TimeFilter,
@@ -44,5 +49,6 @@ export {
   SelectPopup,
   DefaultSelects,
   ErrorBoundary,
-  useCSVPipeline
+  Pipelines,
+  BulkUpload
 };
