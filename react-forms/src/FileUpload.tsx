@@ -23,7 +23,6 @@
 
 import * as React from 'react';
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
-import * as moment from 'moment';
 
 interface IProps {
     /**
@@ -32,9 +31,18 @@ interface IProps {
       * @optional
     */
     Feedback?: string;
-
+    /** 
+        * Callback function that will be called when a file is uploaded
+    * */
     OnLoadHandler: (result: File) => void
+    /** 
+        * Callback function that will be called when clear button is clicked
+    * */
     OnClearHandler: () => void,
+    /** 
+        * Attribute used to control what type of files are filtered by default in file explorer
+        * @type {string}
+    * */
     FileTypeAttribute: string
 }
 
@@ -52,7 +60,7 @@ const FileUpload = (props: IProps) => {
     }
 
     const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
-        e.preventDefault(); // Prevent default browser behavior
+        e.preventDefault();
         e.stopPropagation();
 
         if (e.dataTransfer == null || e.dataTransfer.files == null || e.dataTransfer.files.length === 0)
