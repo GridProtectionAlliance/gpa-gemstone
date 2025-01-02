@@ -91,10 +91,10 @@ export class PointNode {
 
         node.minT = oldNode.minT;
         node.maxT = oldNode.maxT;
-        node.minV = oldNode.minV
-        node.maxV = oldNode.maxV
+        node.minV = [...oldNode.minV]
+        node.maxV = [...oldNode.maxV]
 
-        node.sum = oldNode.sum;
+        node.sum = [...oldNode.sum];
         node.count = oldNode.count;
         node.children = oldNode.children != null ? [...oldNode.children] : null;
         node.points = oldNode.points != null ? [...oldNode.points] : null;
@@ -333,19 +333,14 @@ export class PointNode {
      * Retrieves the count of data points within a specified time range.
      * @param Tstart Start time of the timerange to be looked at.
      * @param Tend End time of the timerange to be looked at.
-     * @param IncludeEdges Optional parameter to include edge points in the count.
      * @returns The number of points within the specified time range.
      */
-    public GetCount(Tstart: number, Tend: number, IncludeEdges?: boolean): number {
+    public GetCount(Tstart: number, Tend: number): number {
         // Case 1: Leaf Node with points
         if (this.points !== null) {
             // Entire node is within the range
             if (Tstart <= this.minT && Tend >= this.maxT)
                 return this.count;
-
-            // Include edges if specified
-            if (IncludeEdges ?? false)
-                return this.points.filter((pt, i) => (pt[0] >= Tstart && pt[0] <= Tend) || (i < (this.points!.length - 1) && this.points![i + 1][0] >= Tstart) || (i > 0 && this.points![i - 1][0] <= Tend)).length;
 
             // Standard range filtering
             return this.points.filter(pt => pt[0] >= Tstart && pt[0] <= Tend).length;
@@ -357,7 +352,7 @@ export class PointNode {
             const relevantChildren = this.children.filter(node => node.minT <= Tend && node.maxT >= Tstart);
 
             // Aggregate counts from relevant children
-            return relevantChildren.reduce((acc, node) => acc + node.GetCount(Tstart, Tend, IncludeEdges), 0);
+            return relevantChildren.reduce((acc, node) => acc + node.GetCount(Tstart, Tend), 0);
         }
 
         // Case 3: No points or children match
