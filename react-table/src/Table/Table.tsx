@@ -83,7 +83,7 @@ const defaultDataCellStyle: React.CSSProperties = {
 
 const IsColumnProps = (props: unknown) => ((props as ReactTableProps.IColumn<unknown>)?.['Key'] != null);
 const IsColumnAdjustable = (props: unknown) => {
-    const propValue = ((props as ReactTableProps.IColumn<unknown>)?.['Adjustable'] != null);
+    const propValue = (props as ReactTableProps.IColumn<unknown>)?.['Adjustable'];
     if (propValue === false || propValue === true) return propValue as boolean;
     return false;
 }
