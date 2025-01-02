@@ -20,7 +20,7 @@
 //       Generated original version of source code.
 // ******************************************************************************************************
 
-import { Table, Column, AdjustableColumn } from "@gpa-gemstone/react-table";
+import { Table, Column, FilterableColumn, ConfigurableColumn } from "@gpa-gemstone/react-table";
 import * as React from 'react';
 import { useDispatch, useSelector } from "react-redux";
 import { GenericSlice, Modal } from "@gpa-gemstone/react-interactive";
@@ -88,8 +88,10 @@ export default function SelectPopup<T extends U>(props: IProps<T>) {
                             </li>: null}
                         {React.Children.map(props.children, (e) => {
                             if (React.isValidElement(e)) {
-                                if (((e as React.ReactElement<any>).type === AdjustableColumn) || 
-                                    ((e as React.ReactElement<any>).type === Column)) return null;
+                                if (((e as React.ReactElement<any>).type === FilterableColumn) || 
+                                    ((e as React.ReactElement<any>).type === Column) ||
+                                    ((e as React.ReactElement<any>).type === ConfigurableColumn)
+                                ) return null;
                                 return e;
                             }
                             return null;
