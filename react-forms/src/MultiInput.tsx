@@ -35,10 +35,34 @@ interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> { //annota
       * @returns {boolean}
     */
     Valid: (field: keyof T) => boolean;
-    Type?: 'text' | 'number',
+    /**
+      * Type of the input field
+      * @type {'number' | 'text' | 'password' | 'email' | 'color' | 'integer'}
+      * @optional
+    */
+    Type?: 'number' | 'text' | 'password' | 'email' | 'color' | 'integer';
+    /**
+    * CSS styles to apply to the Input component
+    * @type {React.CSSProperties}
+    * @optional
+    */
     Style?: React.CSSProperties,
-    DefaultValue: number | string, //used to add new elements and whenever value is set to null in input..
+    /**
+      * Default value to use when adding an item and when value is null
+      * @type {number}
+    */
+    DefaultValue: number | string,
+    /**
+        * Flag to allow null values
+        * @type {boolean}
+        * @optional
+    */
     AllowNull?: boolean,
+    /**
+      * Feedback message to show when input is invalid
+      * @type {string}
+      * @optional
+    */
     Feedback?: string,
 }
 
