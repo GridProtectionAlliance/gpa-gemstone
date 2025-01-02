@@ -88,9 +88,9 @@ export default function SelectPopup<T extends U>(props: IProps<T>) {
                             </li>: null}
                         {React.Children.map(props.children, (e) => {
                             if (React.isValidElement(e)) {
-                                if (((e as React.ReactElement<any>).type === FilterableColumn) || 
-                                    ((e as React.ReactElement<any>).type === Column) ||
-                                    ((e as React.ReactElement<any>).type === ConfigurableColumn)
+                                if (((e as React.ReactElement).type === FilterableColumn) || 
+                                    ((e as React.ReactElement).type === Column) ||
+                                    ((e as React.ReactElement).type === ConfigurableColumn)
                                 ) return null;
                                 return e;
                             }
@@ -138,12 +138,12 @@ export default function SelectPopup<T extends U>(props: IProps<T>) {
                         Ascending={ascendingSelected}
                         OnSort={(d) => {
                             if (d.colKey === sortKeySelected) {
-                                const ordered = _.orderBy<T[]>(selectedData, [d.colKey], [(!ascendingSelected ? "asc" : "desc")]) as any;
+                                const ordered = _.orderBy<T[]>(selectedData, [d.colKey], [(!ascendingSelected ? "asc" : "desc")]) as T[];
                                 setAscendingSelected(!ascendingSelected);
                                 setSelectedData(ordered);
                             }
                             else {
-                                const ordered = _.orderBy(selectedData, [d.colKey], ["asc"]) as any;
+                                const ordered = _.orderBy(selectedData, [d.colKey], ["asc"]) as T[];
                                 setAscendingSelected(!ascendingSelected);
                                 setSelectedData(ordered);
                                 setSortKeySelected(d.colKey);

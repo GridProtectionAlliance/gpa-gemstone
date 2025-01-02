@@ -27,7 +27,7 @@
 import * as React from 'react';
 import * as _ from 'lodash';
 import * as ReactTableProps from './Types';
-import { Column, ColumnDataWrapper, ColumnHeaderWrapper } from './Column';
+import { ColumnDataWrapper, ColumnHeaderWrapper } from './Column';
 import { CreateGuid } from '@gpa-gemstone/helper-functions';
 import { Search } from '@gpa-gemstone/react-interactive';
 import FilterableColumn, { FilterableColumnHeader } from './FilterableColumn';
@@ -81,9 +81,9 @@ const defaultDataCellStyle: React.CSSProperties = {
     width: 'auto'
 };
 
-const IsColumnProps = (props: any) => (props?.['Key'] != null);
-const IsColumnAdjustable = (props: any) => {
-    const propValue = props?.['Adjustable'];
+const IsColumnProps = (props: unknown) => ((props as ReactTableProps.IColumn<unknown>)?.['Key'] != null);
+const IsColumnAdjustable = (props: unknown) => {
+    const propValue = ((props as ReactTableProps.IColumn<unknown>)?.['Adjustable'] != null);
     if (propValue === false || propValue === true) return propValue as boolean;
     return false;
 }
@@ -366,7 +366,9 @@ function Rows<T>(props: React.PropsWithChildren<IRowProps<T>>) {
                         if (colWidth == null || colWidth.width === 0) return null;
                         let cursor = undefined;
                         if (element.props?.RowStyle?.cursor != null) cursor = element.props.RowStyle.cursor
-                        else if (props?.OnClick != null) cursor = 'pointer';
+                        else if (props?.OnClick != null) {
+                            cursor = 'pointer';
+                        }
                         else if (props?.DragStart != null) cursor = 'grab';
                         const style = {
                             ...defaultDataCellStyle,
@@ -378,30 +380,34 @@ function Rows<T>(props: React.PropsWithChildren<IRowProps<T>>) {
                             <ColumnDataWrapper
                                 key={element.key}
                                 onClick={
-                                    (props.OnClick != null) ? (e) =>
-                                    props.OnClick!(
-                                        {
-                                            colKey: element.props.Key,
-                                            colField: element.props?.Field,
-                                            row: d,
-                                            data: d[element.props?.Field as keyof T],
-                                            index: i,
-                                        },
-                                        e,
-                                    ) : undefined
+                                    (e) => {
+                                        if (props.OnClick == null) return;
+                                        return props.OnClick(
+                                            {
+                                                colKey: element.props.Key,
+                                                colField: element.props?.Field,
+                                                row: d,
+                                                data: d[element.props?.Field as keyof T],
+                                                index: i,
+                                            },
+                                            e,
+                                        )
+                                    }
                                 }
                                 dragStart={
-                                    (props.DragStart != null) ? (e) =>
-                                    props.DragStart!(
-                                        {
-                                            colKey: element.props.Key,
-                                            colField: element.props?.Field,
-                                            row: d,
-                                            data: d[element.props?.Field as keyof T],
-                                            index: i,
-                                        },
-                                        e,
-                                    ) : undefined
+                                    (e) => {
+                                        if (props.DragStart == null) return;
+                                        return props.DragStart(
+                                            {
+                                                colKey: element.props.Key,
+                                                colField: element.props?.Field,
+                                                row: d,
+                                                data: d[element.props?.Field as keyof T],
+                                                index: i,
+                                            },
+                                            e,
+                                        )
+                                    }
                                 }
                                 style={style}
                                 >
@@ -623,7 +629,7 @@ function Header<T>(props: React.PropsWithChildren<IHeaderProps<T>>) {
                     >
                         {' '}
                         {
-                            ((element as React.ReactElement<any>).type === FilterableColumn) ?
+                            ((element as React.ReactElement).type === FilterableColumn) ?
                                 <FilterableColumnHeader
                                     Label={element.props?.children}
                                     Filter={filters.filter(f => f.FieldName === element.props?.Field?.toString())}

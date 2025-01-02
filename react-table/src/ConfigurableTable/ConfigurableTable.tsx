@@ -64,7 +64,7 @@ export default function ConfigurableTable<T>(props: React.PropsWithChildren<ITab
         const u = new Map<string, IColDesc>();
         React.Children.forEach(props.children, (element) => {
             if (!React.isValidElement(element)) return;
-            if ((element as React.ReactElement<any>).type === ConfigurableColumn) {
+            if ((element as React.ReactElement).type === ConfigurableColumn) {
                 const c = {
                     Default: element.props.Default ?? false,
                     Label: element.props.Label ?? element.props.Key,
@@ -119,7 +119,10 @@ export default function ConfigurableTable<T>(props: React.PropsWithChildren<ITab
     function changeColumns(key: string) {
         setColumns((d) => {
             const u = _.cloneDeep(d);
-            u.get(key)!.Enabled = !(u.get(key)?.Enabled ?? false);
+            const mapRef = u.get(key);
+            if (mapRef == null) {
+                console.error("Could not find reference for column " + key);
+            } else mapRef.Enabled = !(u.get(key)?.Enabled ?? false);
             return u;
         });
     }
@@ -163,7 +166,7 @@ export default function ConfigurableTable<T>(props: React.PropsWithChildren<ITab
             >
                 {React.Children.map(props.children, (element) => {
                     if (!React.isValidElement(element)) return null;
-                    if ((element as React.ReactElement<any>).type === ConfigurableColumn)
+                    if ((element as React.ReactElement).type === ConfigurableColumn)
                         return columns.get(element.props.Key)?.Enabled ?? false ? element.props.children : null;
                     return element;
                 })}
@@ -183,7 +186,9 @@ export default function ConfigurableTable<T>(props: React.PropsWithChildren<ITab
                             setColumns((d) => {
                                 const u = _.cloneDeep(d);
                                 Array.from(d.keys()).forEach((k) => {
-                                    u.get(k)!.Enabled = isEnabled(u.get(k), true) ?? true;
+                                    const ref = u.get(k);
+                                    if (ref != null)
+                                        ref.Enabled = isEnabled(u.get(k), true) ?? true;
                                 });
                                 return u;
                             });
@@ -230,7 +235,9 @@ export default function ConfigurableTable<T>(props: React.PropsWithChildren<ITab
                                     setColumns((d) => {
                                         const u = _.cloneDeep(d);
                                         Array.from(d.keys()).forEach((k) => {
-                                            u.get(k)!.Enabled = isEnabled(u.get(k), true) ?? true;
+                                            const ref = u.get(k);
+                                            if (ref != null)
+                                                ref.Enabled = isEnabled(u.get(k), true) ?? true;
                                         });
                                         return u;
                                     });
