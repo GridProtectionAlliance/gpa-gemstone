@@ -126,9 +126,9 @@ export class PointNode {
      * @param newPoints points to add, one array of size dim
      */
     public AddPoints(newPoints: number[]): void {
-        if(Number.isNaN(this.dim))
+        if (Number.isNaN(this.dim))
             this.dim = newPoints.length
-        
+
         if (newPoints.length === 0) throw new Error('No point to add');
         if (newPoints.length !== this.dim) throw new TypeError(`Jagged data passed to PointNode.Add(). Points should be ${this.dim} dimension.`);
         if (this.TryAddPoints(newPoints)) return
@@ -343,17 +343,12 @@ export class PointNode {
                 return this.count;
 
             // Standard range filtering
-            return this.points.filter(pt => pt[0] >= Tstart && pt[0] <= Tend).length;
+            return this.points.reduce((acc, pt) => acc + (pt[0] >= Tstart && pt[0] <= Tend ? 1 : 0), 0)
         }
 
         // Case 2: Internal Node with children
-        if (this.children !== null) {
-            // Relevant children
-            const relevantChildren = this.children.filter(node => node.minT <= Tend && node.maxT >= Tstart);
-
-            // Aggregate counts from relevant children
-            return relevantChildren.reduce((acc, node) => acc + node.GetCount(Tstart, Tend), 0);
-        }
+        if (this.children !== null)
+            return this.children.reduce((acc, node) => acc + (node.minT <= Tend && node.maxT >= Tstart ? node.GetCount(Tstart, Tend) : 0), 0);
 
         // Case 3: No points or children match
         return 0;
@@ -431,7 +426,7 @@ export class PointNode {
         // round tVal back to whole integer 
 
         if (this.points !== null) {
-            if(this.points.length === 0) return [[NaN]] //points should only ever be empty when an empty array is passed into constructor
+            if (this.points.length === 0) return [[NaN]] //points should only ever be empty when an empty array is passed into constructor
 
             // if the tVal is less than the minimum value of the subsection, return the first point
             if (tVal < this.minT) {

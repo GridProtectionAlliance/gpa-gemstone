@@ -52,7 +52,7 @@ export const InternalLine = React.forwardRef<PointNode | null, IInteralProps>((p
     const [enabled, setEnabled] = React.useState<boolean>(true);
     const [data, setData] = React.useState<PointNode | null>(null);
     const context = React.useContext(GraphContext);
-    const showPoints = React.useMemo(() => (props.showPoints ?? false) || ((props.autoShowPoints ?? true) && (data?.GetCount(context.XDomain[0], context.XDomain[1], true) ?? 1000)  <= 100),
+    const showPoints = React.useMemo(() => (props.showPoints ?? false) || ((props.autoShowPoints ?? true) && (data?.GetCount(context.XDomain[0], context.XDomain[1]) ?? 1000) <= 100),
         [props.showPoints, props.autoShowPoints, data, context.XDomain]);
 
     const points = data?.GetData(context.XDomain[0], context.XDomain[1], true) ?? [];
@@ -123,9 +123,10 @@ export const InternalLine = React.forwardRef<PointNode | null, IInteralProps>((p
     }, []);
 
     const generateData = React.useCallback((pointsToDraw: number[][]) => {
-        let result = "M ";
-        if (data == null)
+        if (pointsToDraw.length === 0)
             return ""
+
+        let result = "M ";
 
         result = result + pointsToDraw.map((pt, _) => {
             const x = context.XTransformation(pt[0]);
@@ -134,7 +135,7 @@ export const InternalLine = React.forwardRef<PointNode | null, IInteralProps>((p
         }).join(" L ")
 
         return result
-    }, [context.XTransformation, context.YTransformation])
+    }, [context.XTransformation, context.YTransformation, props.axis])
 
     return (
         enabled ?
