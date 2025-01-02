@@ -1,0 +1,114 @@
+//******************************************************************************************************
+//  MultiInput.tsx - Gbtc
+//
+//  Copyright © 2024, Grid Protection Alliance.  All Rights Reserved.
+//
+//  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
+//  the NOTICE file distributed with this work for additional information regarding copyright ownership.
+//  The GPA may license this file to you under the MIT License (MIT), the "License"; you may not use this
+//  file except in compliance with the License. You may obtain a copy of the License at:
+//
+//      http://opensource.org/licenses/MIT
+//
+//  Unless agreed to in writing, the subject software distributed under the License is distributed on an
+//  "AS-IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. Refer to the
+//  License for the specific language governing permissions and limitations.
+//
+//  Code Modification History:
+//  ----------------------------------------------------------------------------------------------------
+//  12/05/2024 - Preston Crawford
+//       Generated original version of source code.
+//
+//******************************************************************************************************
+
+import * as React from 'react';
+import Input from './Input';
+import HelperMessage from './HelperMessage';
+import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
+import { CreateGuid } from '@gpa-gemstone/helper-functions';
+import { Gemstone } from '@gpa-gemstone/application-typings';
+
+interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> { //annotate these comments..
+    /**
+      * Function to determine the validity of a field
+      * @param field - Field of the record to check
+      * @returns {boolean}
+    */
+    Valid: (field: keyof T) => boolean;
+    Type?: 'text' | 'number',
+    Style?: React.CSSProperties,
+    DefaultValue: number | string, //used to add new elements and whenever value is set to null in input..
+    AllowNull?: boolean,
+    Feedback?: string,
+}
+
+//Only supporting string/number arrays for now
+function MultiInput<T>(props: IProps<T>) {
+    const guid = React.useRef<string>(CreateGuid());
+    const [showHelp, setShowHelp] = React.useState<boolean>(false);
+
+    const fieldArray = props.Record[props.Field as keyof T] as Array<string | number>
+
+    if (fieldArray?.constructor !== Array) {
+        console.warn(`MultiInput: ${props.Field.toString()} is not of type array.`)
+        return <></>
+    }
+
+    return (
+        <>
+            {fieldArray.length === 0 ?
+                <>
+                    <label className='d-flex align-items-center' data-help={guid.current}>
+                        {props.Label ?? props.Field}
+                        {props.Help != null ?
+                            <button className='btn mb-1 pt-0 pb-0' onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)}>
+                                <ReactIcons.QuestionMark Color='var(--info)' Size={20} />
+                            </button>
+                            : null}
+                        <button className='btn' onClick={() => props.Setter({ ...props.Record, [props.Field]: [props.DefaultValue] })}> <ReactIcons.CirclePlus /> </button>
+                    </label>
+                    <HelperMessage Show={showHelp && props.Help != null} Target={guid.current}>
+                        {props.Help}
+                    </HelperMessage>
+                </>
+                : null}
+
+            {fieldArray.map((r, index) => (
+                <div className='row align-items-center' key={index}>
+                    <div className='col'>
+                        <Input Record={fieldArray} Field={index} Label={index === 0 ? props.Label : ''} AllowNull={props.AllowNull} Type={props.Type} Help={index === 0 ? props.Help : undefined} Feedback={props.Feedback}
+                            Valid={() => props.Valid(props.Field)} Style={props.Style} Disabled={props.Disabled} Setter={(record) => {
+                                const newArray = [...fieldArray];
+                                if (!(props.AllowNull ?? true) && record[index] === null)
+                                    newArray[index] = props.DefaultValue;
+                                else
+                                    newArray[index] = record[index];
+
+                                props.Setter({ ...props.Record, [props.Field]: newArray });
+                            }} />
+                    </div>
+                    <div className='col-auto'>
+                        <button className='btn' style={(props.Disabled ?? false) ? { display: 'none' } : undefined} onClick={() => {
+                            const newRecords = [...fieldArray].filter((_, i) => i !== index);
+                            props.Setter({ ...props.Record, [props.Field]: newRecords });
+                        }}>
+                            <ReactIcons.TrashCan Color='red' />
+                        </button>
+                    </div>
+                    {index === [...fieldArray].length - 1 ?
+                        <div className='col-auto'>
+                            <button className='btn' style={(props.Disabled ?? false) ? { display: 'none' } : undefined} onClick={() => {
+                                const newRecords = [...[...fieldArray], props.DefaultValue];
+                                props.Setter({ ...props.Record, [props.Field]: newRecords });
+                            }}>
+                                <ReactIcons.CirclePlus />
+                            </button>
+                        </div>
+                        : null}
+                </div>
+            ))}
+        </>
+    )
+}
+
+export default MultiInput;
