@@ -20,7 +20,7 @@
 //       Generated original version of source code.
 // ******************************************************************************************************
 import * as React from 'react';
-import { Search } from '../SearchBar'
+import { Search } from '@gpa-gemstone/react-interactive';
 
 /**
 * Represents an option with a value and label.

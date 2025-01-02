@@ -21,109 +21,21 @@
 // ******************************************************************************************************
 
 import * as React from 'react';
-import Modal from '../Modal';
-import { ReactTable } from '@gpa-gemstone/react-table';
+import * as ReactTableProps from '../Table/Types';
+import { Table } from '../Table/Table';
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
+import { Modal, ToolTip, Alert } from '@gpa-gemstone/react-interactive';
 import { Portal } from 'react-portal';
-import ToolTip from '../ToolTip';
 import { CreateGuid } from '@gpa-gemstone/helper-functions';
 import { CheckBox } from '@gpa-gemstone/react-forms';
 import * as _ from 'lodash';
 import ConfigurableColumn from './ConfigurableColumn';
-import Alert from '../Alert';
 
-interface TableProps<T> {
-    /**
-    * List of T objects used to generate rows
-    */
-    Data: T[];
-    /**
-    * Callback when the user clicks on a data entry
-    * @param data contains the data including the columnKey
-    * @param event the onClick Event to allow propagation as needed
-    * @returns
-    */
-    OnClick?: (
-        data: { colKey?: string; colField?: keyof T; row: T; data: T[keyof T] | null; index: number },
-        event: React.MouseEvent<HTMLElement, MouseEvent>,
-    ) => void;
-    /**
-    * Key of the column to sort by
-    */
-    SortKey: string;
-    /**
-    * Boolean to indicate whether the sort is ascending or descending
-    */
-    Ascending: boolean;
-    /**
-    * Callback when the data should be sorted
-    * @param data the information of the collumn including the Key of the column
-    * @param event The onCLick event to allow Propagation as needed
-    */
-    OnSort(data: { colKey: string; colField?: keyof T; ascending: boolean }, event: React.MouseEvent<HTMLElement, MouseEvent>): void;
-    /**
-    * Class of the table component
-    */
-    TableClass?: string;
-    /**
-    * style of the table component
-    */
-    TableStyle?: React.CSSProperties;
-    /**
-    * style of the thead component
-    */
-    TheadStyle?: React.CSSProperties;
-    /**
-    * Class of the thead component
-    */
-    TheadClass?: string;
-    /**
-    * style of the tbody component
-    */
-    TbodyStyle?: React.CSSProperties;
-    /**
-    * Class of the tbody component
-    */
-    TbodyClass?: string;
-    /**
-    * determines if a row should be styled as selected
-    * @param data the item to be checked
-    * @returns true if the row should be styled as selected
-    */
-    Selected?: (data: T) => boolean;
-    /**
-    *
-    * @param data he information of the row including the item of the row
-    * @param e the event triggering this
-    * @returns
-    */
-    OnDragStart?: (
-        data: { colKey?: string; colField?: keyof T; row: T; data: T[keyof T] | null; index: number },
-        e: React.DragEvent<Element>,
-    ) => void;
-    /**
-    * The default style for the tr element
-    */
-    RowStyle?: React.CSSProperties;
-    /**
-    * a Function that retrieves a unique key used for React key properties
-    * @param data the item to be turned into a key
-    * @returns a unique Key
-    */
-    KeySelector: (data: T) => string | number;
-
-    /**
-    * Optional Element to display in the last row of the Table
-    * use this for displaying warnings when the Table content gets cut off
-    */
-    LastRow?: string | React.ReactNode;
+interface ITableProps<T> extends ReactTableProps.ITable<T> {
     /**
      * Optional ZIndex for the configurable column modal
      */
     ModalZIndex?: number
-}
-
-interface IProps<T> extends TableProps<T> {
     /**
     * ID of the Portal used for tunneling Collumn settings
     */
@@ -147,12 +59,12 @@ interface IColDesc {
 /**
 * Table with modal to show and hide columns
 */
-export default function ConfigurableTable<T>(props: React.PropsWithChildren<IProps<T>>) {
+export default function ConfigurableTable<T>(props: React.PropsWithChildren<ITableProps<T>>) {
     const getKeyMappings: () => Map<string, IColDesc> = () => {
         const u = new Map<string, IColDesc>();
         React.Children.forEach(props.children, (element) => {
             if (!React.isValidElement(element)) return;
-            if ((element as React.ReactElement<any>).type === ConfigurableColumn) {
+            if ((element as React.ReactElement).type === ConfigurableColumn) {
                 const c = {
                     Default: element.props.Default ?? false,
                     Label: element.props.Label ?? element.props.Key,
@@ -207,7 +119,10 @@ export default function ConfigurableTable<T>(props: React.PropsWithChildren<IPro
     function changeColumns(key: string) {
         setColumns((d) => {
             const u = _.cloneDeep(d);
-            u.get(key)!.Enabled = !(u.get(key)?.Enabled ?? false);
+            const mapRef = u.get(key);
+            if (mapRef == null) {
+                console.error("Could not find reference for column " + key);
+            } else mapRef.Enabled = !(u.get(key)?.Enabled ?? false);
             return u;
         });
     }
@@ -234,7 +149,7 @@ export default function ConfigurableTable<T>(props: React.PropsWithChildren<IPro
 
     return (
         <>
-            <ReactTable.Table
+            <Table
                 {...props}
                 LastColumn={
                     <div
@@ -251,11 +166,11 @@ export default function ConfigurableTable<T>(props: React.PropsWithChildren<IPro
             >
                 {React.Children.map(props.children, (element) => {
                     if (!React.isValidElement(element)) return null;
-                    if ((element as React.ReactElement<any>).type === ConfigurableColumn)
+                    if ((element as React.ReactElement).type === ConfigurableColumn)
                         return columns.get(element.props.Key)?.Enabled ?? false ? element.props.children : null;
                     return element;
                 })}
-            </ReactTable.Table>
+            </Table>
             <ToolTip Show={hover} Position={'bottom'} Target={guid + '-tooltip'} Zindex={99999}>
                 <p>Change Columns</p>
             </ToolTip>
@@ -271,7 +186,9 @@ export default function ConfigurableTable<T>(props: React.PropsWithChildren<IPro
                             setColumns((d) => {
                                 const u = _.cloneDeep(d);
                                 Array.from(d.keys()).forEach((k) => {
-                                    u.get(k)!.Enabled = isEnabled(u.get(k), true) ?? true;
+                                    const ref = u.get(k);
+                                    if (ref != null)
+                                        ref.Enabled = isEnabled(u.get(k), true) ?? true;
                                 });
                                 return u;
                             });
@@ -318,7 +235,9 @@ export default function ConfigurableTable<T>(props: React.PropsWithChildren<IPro
                                     setColumns((d) => {
                                         const u = _.cloneDeep(d);
                                         Array.from(d.keys()).forEach((k) => {
-                                            u.get(k)!.Enabled = isEnabled(u.get(k), true) ?? true;
+                                            const ref = u.get(k);
+                                            if (ref != null)
+                                                ref.Enabled = isEnabled(u.get(k), true) ?? true;
                                         });
                                         return u;
                                     });

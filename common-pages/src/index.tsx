@@ -21,12 +21,7 @@
 //
 // ******************************************************************************************************
 
-import Setting from './Setting';
 import Note from './Note';
-import ByValueList from './ValueList/ByValueList';
-import ValueList from './ValueList/Group';
-import ByUser from './user/ByUser';
-import User from './user/User';
 import { DefaultSearch } from './SearchBar';
 import SelectPopup from './StandardSelectPopup';
 import { DefaultSelects } from './SelectionPopup';
@@ -35,7 +30,13 @@ import TimeFilter from './TimeFilter/TimeFilter';
 import EventTypeFilter from './EventTypeFilter';
 import EventCharacteristicFilter from './EventCharacteristicFilter';
 import NavBarFilterButton from './NavBarFilterButton';
-import * as TimeWindowUtils from './TimeFilter/TimeWindowUtils'
+import { useCSVPipeline } from './Pipelines/CSVPipeline';
+import * as TimeWindowUtils from './TimeFilter/TimeWindowUtils';
+import BulkUpload from './BulkUpload';
+
+const Pipelines = {
+  CSV: useCSVPipeline
+}
 
 export {
   TimeFilter,
@@ -43,14 +44,11 @@ export {
   EventTypeFilter,
   EventCharacteristicFilter,
   NavBarFilterButton,
-  Setting,
   Note,
-  ValueList,
-  ByValueList,
-  User,
-  ByUser,
   DefaultSearch,
   SelectPopup,
   DefaultSelects,
-  ErrorBoundary
+  ErrorBoundary,
+  Pipelines,
+  BulkUpload
 };

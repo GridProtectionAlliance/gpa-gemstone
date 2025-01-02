@@ -20,7 +20,7 @@
 //       Generated original version of source code.
 // ******************************************************************************************************
 import * as React from 'react';
-import { Search } from '../SearchBar'
+import { Search } from '@gpa-gemstone/react-interactive';
 
 interface IProps<T> { 
     SetFilter: (evt: Search.IFilter<T>[]) => void,
