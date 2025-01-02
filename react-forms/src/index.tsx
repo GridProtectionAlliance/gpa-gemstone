@@ -39,7 +39,9 @@ import SearchableSelect from './SearchableSelect';
 import ToggleSwitch from './ToggleSwitch'; 
 import InputWithButton from './InputWithButton';
 import RadioButtons from './RadioButtons';
+import HelperMessage from './HelperMessage';
 import FileUpload from './FileUpload';
+import MultiInput from './MultiInput';
 
 export {
     CheckBox,
@@ -59,5 +61,8 @@ export {
     SearchableSelect,
     ToggleSwitch,
     InputWithButton,
-    FileUpload
+    RadioButtons,
+    HelperMessage,
+    FileUpload,
+    MultiInput
 };
