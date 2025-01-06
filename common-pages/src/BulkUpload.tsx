@@ -120,14 +120,16 @@ export default function BulkUpload<T>(props: IProps<T>) {
         const pipelineErrs = props.Step == 'Process' ? pipelineErrors : [];
         const errors: string[] = [...pipelineErrs];
 
-        if (fileName == null)
-            errors.push('A file must be uploaded to continue')
+        if (props.Step === 'Upload') {
+            if (fileName == null)
+                errors.push('A file must be uploaded to continue');
 
-        if (rawFileContent == null || rawFileContent == '')
-            errors.push('File content is empty')
+            if (rawFileContent == null || rawFileContent == '')
+                errors.push('File content is empty');
 
-        if (!isFileTypeValid)
-            errors.push(`File must be of type ${props.FileTypeAttribute}`)
+            if (!isFileTypeValid)
+                errors.push(`File must be of type ${props.FileTypeAttribute}`);
+        }
 
         props.SetErrors(errors);
     }, [rawFileContent, fileName, isFileTypeValid, pipelineErrors, props.Step]);
