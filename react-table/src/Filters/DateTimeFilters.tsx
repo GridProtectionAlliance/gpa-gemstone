@@ -21,7 +21,7 @@
 // ******************************************************************************************************
 
 import * as React from 'react';
-import { Search } from '../SearchBar'
+import { Search } from '@gpa-gemstone/react-interactive';
 import { DatePicker } from '@gpa-gemstone/react-forms';
 
 interface IProps<T> {

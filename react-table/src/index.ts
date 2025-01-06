@@ -23,24 +23,18 @@
 //
 //  ******************************************************************************************************
 
-import Table, {TableProps,Rows, Column} from './Table';
-import {SelectTable, ISelectTableProps} from './SelectTable';
-import { SearchableTable } from './SearchableTable';
-import { DynamicTableProps, DynamicTable } from './DynamicTable';
 import Paging from './Paging';
-import AdjustableTable from './AdjustableTable/Table';
-import UpdatedColumn from './AdjustableTable/Column';
-import AdjustableColumn from './AdjustableTable/AdjustableColumn';
-
-const ReactTable = {
-	Table: AdjustableTable,
-	Column: UpdatedColumn,
-	AdjustableColumn: AdjustableColumn,
-}
+import * as ReactTableProps from './Table/Types';
+import { Table } from './Table/Table';
+import { Column } from './Table/Column';
+import FilterableColumn from './Table/FilterableColumn';
+import ConfigurableTable from './ConfigurableTable/ConfigurableTable';
+import ConfigurableColumn from './ConfigurableTable/ConfigurableColumn';
 
 export {
-	ReactTable,
-	TableProps, SelectTable, ISelectTableProps, SearchableTable, DynamicTable, DynamicTableProps , Rows, Column, Paging
+	ReactTableProps,
+	Table, Column,
+	FilterableColumn,
+	ConfigurableTable, ConfigurableColumn,
+	Paging
 }
-
-export default Table;

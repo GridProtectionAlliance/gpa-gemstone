@@ -20,12 +20,12 @@
 //       Generated original version of source code.
 // ******************************************************************************************************
 
-import Table, { Column } from "@gpa-gemstone/react-table";
+import { Table, Column, FilterableColumn, ConfigurableColumn } from "@gpa-gemstone/react-table";
 import * as React from 'react';
 import { useDispatch, useSelector } from "react-redux";
 import { GenericSlice, Modal } from "@gpa-gemstone/react-interactive";
 import _ = require("lodash");
-import { CrossMark } from "@gpa-gemstone/gpa-symbols";
+import { ReactIcons } from "@gpa-gemstone/gpa-symbols";
 import { Dispatch } from "@reduxjs/toolkit";
 
 interface U { ID: number|string }
@@ -37,7 +37,6 @@ interface IProps<T extends U> {
     Show: boolean,
     Searchbar: (children: React.ReactNode) => React.ReactNode,
     Type?: 'single'|'multiple',
-    Columns: Column<T>[],
     Title: string,
     MinSelection?: number,
     children?: React.ReactNode
@@ -60,16 +59,15 @@ export default function SelectPopup<T extends U>(props: IProps<T>) {
     }, [props.Selection])
 
     function AddCurrentList() {
-        let updatedData: any[];
-        updatedData = (selectedData as any[]).concat(data);
-        setSelectedData(_.uniqBy((updatedData as T[]), (d) => d.ID));
+        const updatedData = selectedData.concat(data);
+        setSelectedData(_.uniqBy(updatedData, (d) => d.ID));
     }
 
     return (<>
         <Modal Show={props.Show} Title={props.Title} ShowX={true} Size={'xlg'} CallBack={(conf) => props.OnClose(selectedData, conf)} 
         DisableConfirm={props.MinSelection !== undefined && selectedData.length < props.MinSelection} 
         ConfirmShowToolTip={props.MinSelection !== undefined && selectedData.length < props.MinSelection}
-        ConfirmToolTipContent={<p>{CrossMark} At least {props.MinSelection} items must be selected. </p>}
+        ConfirmToolTipContent={<p><ReactIcons.CrossMark/> At least {props.MinSelection} items must be selected. </p>}
         >
             <div className="row">
                 <div className="col">
@@ -89,7 +87,13 @@ export default function SelectPopup<T extends U>(props: IProps<T>) {
                                 </fieldset>
                             </li>: null}
                         {React.Children.map(props.children, (e) => {
-                            if (React.isValidElement(e)) return e;
+                            if (React.isValidElement(e)) {
+                                if (((e as React.ReactElement).type === FilterableColumn) || 
+                                    ((e as React.ReactElement).type === Column) ||
+                                    ((e as React.ReactElement).type === ConfigurableColumn)
+                                ) return null;
+                                return e;
+                            }
                             return null;
                         })}
                     </>)}
@@ -98,62 +102,59 @@ export default function SelectPopup<T extends U>(props: IProps<T>) {
             <div className="row">
                 <div className="col" style={{ width: (props.Type === undefined || props.Type === 'single' ? '100%' : '60%') } }>
                     <Table<T>
-                        cols={props.Columns}
-                        tableClass="table table-hover"
-                        data={data}
-                        sortKey={sortField as string}
-                        ascending={ascending}
-                        onSort={(d) => {
+                        TableClass="table table-hover"
+                        Data={data}
+                        SortKey={sortField as string}
+                        Ascending={ascending}
+                        OnSort={(d) => {
                             if (d.colKey === "Scroll")
                                 return;
-
                             if (d.colKey === sortField)
                                 dispatch(props.Slice.Sort({SortField: sortField, Ascending: ascending}));
                             else {
                                 dispatch(props.Slice.Sort({SortField: d.colField as keyof T, Ascending: true}));
                             }
                         }}
-                        onClick={(d) => {
+                        OnClick={(d) => {
                             if (props.Type === undefined || props.Type === 'single')
                                 setSelectedData([d.row])
                             else
                                 setSelectedData((s) => [...s.filter(item => item.ID !== d.row.ID), d.row])
                         }}
-                        theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                        tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: '400px', width: '100%' }}
-                        rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                        selected={(item) => selectedData.findIndex(d => d.ID === item.ID) > -1 }
-                    />
+                        Selected={(item) => selectedData.findIndex(d => d.ID === item.ID) > -1 }
+                        KeySelector={item => item.ID}
+                    >
+                        {props.children}
+                    </Table>
                 </div>
                 {props.Type === 'multiple' ? <div className="col" style={{ width: '40%' }}>
                     <div style={{ width: '100%' }}>
                         <h3> Current Selection </h3>
                     </div>
-                    <Table
-                        cols={props.Columns}
-                        tableClass="table table-hover"
-                        data={selectedData}
-                        sortKey={sortKeySelected}
-                        ascending={ascendingSelected}
-                        onSort={(d) => {
+                    <Table<T>
+                        TableClass="table table-hover"
+                        Data={selectedData}
+                        SortKey={sortKeySelected}
+                        Ascending={ascendingSelected}
+                        OnSort={(d) => {
                             if (d.colKey === sortKeySelected) {
-                                const ordered = _.orderBy<T[]>(selectedData, [d.colKey], [(!ascendingSelected ? "asc" : "desc")]) as any;
+                                const ordered = _.orderBy<T[]>(selectedData, [d.colKey], [(!ascendingSelected ? "asc" : "desc")]) as T[];
                                 setAscendingSelected(!ascendingSelected);
                                 setSelectedData(ordered);
                             }
                             else {
-                                const ordered = _.orderBy(selectedData, [d.colKey], ["asc"]) as any;
+                                const ordered = _.orderBy(selectedData, [d.colKey], ["asc"]) as T[];
                                 setAscendingSelected(!ascendingSelected);
                                 setSelectedData(ordered);
                                 setSortKeySelected(d.colKey);
                             }
                         }}
-                        onClick={(d) => setSelectedData([...selectedData.filter(item => item.ID !== d.row.ID)])}
-                        theadStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                        tbodyStyle={{ display: 'block', overflowY: 'scroll', maxHeight: '400px', width: '100%' }}
-                        rowStyle={{ fontSize: 'smaller', display: 'table', tableLayout: 'fixed', width: '100%' }}
-                        selected={(item) => false}
-                    />
+                        OnClick={(d) => setSelectedData([...selectedData.filter(item => item.ID !== d.row.ID)])}
+                        Selected={() => false}
+                        KeySelector={item => item.ID}
+                    >
+                        {props.children}
+                    </Table>
                 </div> : null}
             </div>
         </Modal>

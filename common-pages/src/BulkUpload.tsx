@@ -22,7 +22,7 @@
 // ******************************************************************************************************
 
 import * as React from 'react';
-import ProgressBar from './ProgressBar';
+import { ProgressBar } from '@gpa-gemstone/react-interactive';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 
 interface IProps<T> {

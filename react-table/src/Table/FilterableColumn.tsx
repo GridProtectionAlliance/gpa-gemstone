@@ -1,7 +1,7 @@
 // ******************************************************************************************************
-//  FilterableTable.tsx - Gbtc
+//  FilterableColumn.tsx - Gbtc
 //
-//  Copyright © 2022, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2023, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -16,109 +16,41 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  03/02/2022 - C. Lackner
+//  12/05/2024 - G. Santos
 //       Generated original version of source code.
 // ******************************************************************************************************
 
+import * as ReactTableProps from './Types';
 import * as React from 'react';
-import Table, { TableProps, Column } from '@gpa-gemstone/react-table';
-import {Search} from '../SearchBar';
-import { SVGIcons } from '@gpa-gemstone/gpa-symbols';
-import { BooleanFilter } from './BooleanFilter';
-import { TextFilter } from './TextFilter';
-import { EnumFilter } from './EnumFilter';
-import { NumberFilter, IUnit } from './NumberFilter';
-import { DateFilter, DateTimeFilter, TimeFilter } from './DateTimeFilters';
-import { CreateGuid} from '@gpa-gemstone/helper-functions';
-
-interface IOptions { Value: string | number, Label: string }
-
-     
-interface IFilterableCollumn<T> extends Column<T> { 
-    Type?: Search.FieldType, 
-    Enum?: IOptions[],
-    ExpandedLabel?: string,
-    Unit?: IUnit[]
-}
-
-interface IProps<T> extends TableProps<T> {
-    SetFilter: (filters: Search.IFilter<T>[]) => void,
-    cols: IFilterableCollumn<T>[],
-    DefaultFilter?: Search.IFilter<T>[]
-}
+import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
+import { Search } from '@gpa-gemstone/react-interactive';
+import { BooleanFilter } from '../Filters/BooleanFilter';
+import { TextFilter } from '../Filters/TextFilter';
+import { EnumFilter } from '../Filters/EnumFilter';
+import { NumberFilter, IUnit } from '../Filters/NumberFilter';
+import { DateFilter, DateTimeFilter, TimeFilter } from '../Filters/DateTimeFilters';
 
 /**
- * Table with Filters in the column headers
+ * Wrapper to make any column configurable
  */
-export default function FilterableTable<T>(props: IProps<T>) {
-    const [filters, setFilters] = React.useState<Search.IFilter<T>[]>((props.DefaultFilter === undefined ? [] : props.DefaultFilter));
-    const [guid] = React.useState<string>(CreateGuid());
-
-    function updateFilters(flts: Search.IFilter<T>[], fld: string | number | symbol| undefined) {
-        setFilters((fls) => {
-            const otherFilters = fls.filter(item => item.FieldName !== fld);
-            return otherFilters.concat(flts);
-        })
-    }
-
-    React.useEffect(() => { props.SetFilter(filters); }, [filters]);
-
-    return (
-        <>
-            <Table
-                cols={props.cols.map(c => ({
-                    ...c, label: <Header
-                        Label={c.label}
-                        Filter={filters.filter(f => f.FieldName === c.field?.toString())}
-                        SetFilter={(f) => updateFilters(f, c.field)}
-                        Field={c.field}
-                        Type={c.Type}
-                        Options={c.Enum}
-                        ExpandedLabel={c.ExpandedLabel}
-                        Guid={guid}
-                        Unit={c.Unit}
-                    />
-                }))}
-                data={props.data}
-                onClick={props.onClick}
-                sortKey={props.sortKey}
-                ascending={props.ascending}
-                onSort={(d,evt) => {
-                    // make sure we do not sort when clicking on the filter
-                    const $div = evt.target.closest(`div[data-tableid="${guid}"]`);
-                    if ($div === null)
-                        props.onSort(d,evt);
-                }}
-                tableClass={props.tableClass}
-                tableStyle={props.tableStyle}
-                theadStyle={props.theadStyle}
-                theadClass={props.theadClass}
-                tbodyStyle={props.tbodyStyle}
-                tbodyClass={props.tbodyClass}
-                selected={props.selected}
-                rowStyle={props.rowStyle}
-                keySelector={props.keySelector}
-            />
-
-        </>
-    );
-
+export default function FilterableColumn<T>(props: React.PropsWithChildren<ReactTableProps.IFilterableCollumn<T>>) {
+    return <>{props.children}</>
 }
 
-interface IHeaderProps<T> {
+export interface IHeaderProps<T> {
     Label: string | React.ReactNode,
     Type?: Search.FieldType,
     Unit?: IUnit[],
     Filter: Search.IFilter<T>[],
     SetFilter: (flt: Search.IFilter<T>[]) => void,
     Field: string | number | symbol | undefined,
-    Options?: IOptions[],
+    Options?: ReactTableProps.IOptions[],
     ExpandedLabel?: string,
     Guid: string,
 }
 
 // Table column header details
-function Header<T>(props: IHeaderProps<T>) {
+export function FilterableColumnHeader<T>(props: IHeaderProps<T>) {
     const [show, setShow] = React.useState<boolean>(false);
 
     return <>
@@ -128,7 +60,7 @@ function Header<T>(props: IHeaderProps<T>) {
             </div>
             {props.Type !== undefined ? <>
                 <div style={{ width: 25, position: 'absolute', right: 12, top: 12 }}>
-                    {props.Filter.length > 0? SVGIcons.Filter : null}
+                    {props.Filter.length > 0? <ReactIcons.Filter/> : null}
                 </div>
                 <div
                     style={{
@@ -143,8 +75,8 @@ function Header<T>(props: IHeaderProps<T>) {
                         minWidth: 'calc(100% - 50px)',
                         marginLeft: -25
                     }} data-tableid={props.Guid}
+                    onClick={(evt) => { evt.preventDefault(); evt.stopPropagation(); }}
                 >
-                    {/*onClick={(evt) => { evt.preventDefault(); evt.stopPropagation(); }}*/}
                     <table style={{ margin: 0 }}>
                         <tbody>
                             {((props.ExpandedLabel !== null) && (props.ExpandedLabel !== "") && (props.ExpandedLabel !== undefined)) ? 
