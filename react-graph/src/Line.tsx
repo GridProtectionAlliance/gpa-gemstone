@@ -21,14 +21,15 @@
 //
 // ******************************************************************************************************
 
-
 import * as React from 'react';
-import {IDataSeries, GraphContext, LineStyle, AxisIdentifier, AxisMap, LineMap} from './GraphContext';
+import { IDataSeries, GraphContext, LineStyle, AxisIdentifier, AxisMap, LineMap } from './GraphContext';
 import * as moment from 'moment';
-import {PointNode} from './PointNode';
+import { PointNode } from './PointNode';
 import LineLegend from './LineLegend';
-import { CreateGuid } from '@gpa-gemstone/helper-functions';
 
+export interface IInteralProps extends IProps {
+    reRender?: number
+}
 
 export interface IProps {
     showPoints?: boolean,
@@ -42,33 +43,34 @@ export interface IProps {
     axis?: AxisIdentifier,
 }
 
-function Line(props: IProps) {
+export const InternalLine = React.forwardRef<PointNode | null, IInteralProps>((props, ref) => {
     /*
         Single Line with ability to turn off and on.
     */
     const [guid, setGuid] = React.useState<string>("");
-    const [dataGuid, setDataGuid] = React.useState<string>("");
-    const [highlight, setHighlight] = React.useState<[number, number]>([NaN,NaN]);
+    const [highlight, setHighlight] = React.useState<[number, number]>([NaN, NaN]);
     const [enabled, setEnabled] = React.useState<boolean>(true);
-    const [data, setData] = React.useState<PointNode|null>(null);
-    const [visibleData, setVisibleData] = React.useState<[...number[]][]>([]);
+    const [data, setData] = React.useState<PointNode | null>(null);
     const context = React.useContext(GraphContext);
-    const showPoints = React.useMemo(() => (props.showPoints !== undefined && props.showPoints) || 
-        ((props.autoShowPoints === undefined || props.autoShowPoints) && visibleData.length <= 100), 
-        [props.showPoints, props.autoShowPoints, visibleData]);
+    const showPoints = React.useMemo(() => (props.showPoints ?? false) || ((props.autoShowPoints ?? true) && (data?.GetCount(context.XDomain[0], context.XDomain[1]) ?? 1000) <= 100),
+        [props.showPoints, props.autoShowPoints, data, context.XDomain]);
+
+    const points = data?.GetData(context.XDomain[0], context.XDomain[1], true) ?? [];
+
+    React.useImperativeHandle<PointNode | null, PointNode | null>(ref, () => data, [data]);
 
     const createLegend = React.useCallback(() => {
         if (props.legend === undefined)
-        return undefined;
-    
+            return undefined;
+
         let txt = props.legend;
-    
+
         if ((props.highlightHover ?? false) && !isNaN(highlight[0]) && !isNaN(highlight[1]))
-        txt = txt + ` (${moment.utc(highlight[0]).format('MM/DD/YY hh:mm:ss')}: ${highlight[1].toPrecision(6)})`
-    
-        return <LineLegend 
-            size = 'sm' label={txt} color={props.color} lineStyle={props.lineStyle}
-            setEnabled={setEnabled} enabled={enabled} hasNoData={data == null}/>;
+            txt = txt + ` (${moment.utc(highlight[0]).format('MM/DD/YY hh:mm:ss')}: ${highlight[1].toPrecision(6)})`
+
+        return <LineLegend
+            size='sm' label={txt} color={props.color} lineStyle={props.lineStyle}
+            setEnabled={setEnabled} enabled={enabled} hasNoData={data == null} />;
     }, [props.color, props.lineStyle, enabled, data]);
 
     const createContextData = React.useCallback(() => {
@@ -76,11 +78,11 @@ function Line(props: IProps) {
             legend: createLegend(),
             axis: props.axis,
             enabled: enabled,
-            getMax: (t) => (data == null|| !enabled? -Infinity : data.GetLimits(t[0],t[1])[1]),
-            getMin: (t) => (data == null|| !enabled? Infinity : data.GetLimits(t[0],t[1])[0]),
-            getPoints: (t, n?) => (data == null|| !enabled? NaN : data.GetPoints(t, n ?? 1))
+            getMax: (t) => (data == null || !enabled ? -Infinity : data.GetLimits(t[0], t[1])[1]),
+            getMin: (t) => (data == null || !enabled ? Infinity : data.GetLimits(t[0], t[1])[0]),
+            getPoints: (t, n?) => (data == null || !enabled ? NaN : data.GetPoints(t, n ?? 1))
         } as IDataSeries;
-    }, [props.axis, enabled, dataGuid, createLegend]);
+    }, [props.axis, enabled, data, createLegend, props.reRender]);
 
     React.useEffect(() => {
         if (guid === "")
@@ -89,42 +91,30 @@ function Line(props: IProps) {
     }, [createContextData]);
 
     React.useEffect(() => {
-        setDataGuid(CreateGuid());
-    }, [data]);
-
-    React.useEffect(() => {
         if (data == null || props.data == null || props.data.length === 0 || isNaN(context.XHover))
             setHighlight([NaN, NaN]);
         else {
             try {
-            const point = data.GetPoint(context.XHover);
-            if(point != null)
-                setHighlight(point as [number,number]);
+                const point = data.GetPoint(context.XHover);
+                if (point != null)
+                    setHighlight(point as [number, number]);
             } catch {
-            setHighlight([NaN, NaN]);
+                setHighlight([NaN, NaN]);
             }
         }
-   }, [data, context.XHover])
+    }, [data, context.XHover])
 
     React.useEffect(() => {
-        if (props.data == null || props.data.length === 0) setData(null);
+        if (props.data == null) setData(null);
         else setData(new PointNode(props.data));
-    },[props.data]);
+    }, [props.data]);
 
-   React.useEffect(() => {
-       if (guid === "")
-           return;
-       context.SetLegend(guid, createLegend());
-
-   }, [highlight, enabled]);
-
-   React.useEffect(() => {
-        if (data == null) {
-            setVisibleData([]);
+    React.useEffect(() => {
+        if (guid === "")
             return;
-        }
-        setVisibleData(data.GetData(context.XDomain[0],context.XDomain[1],true));
-    },[data, context.XDomain[0], context.XDomain[1]])
+        context.SetLegend(guid, createLegend());
+
+    }, [highlight, enabled]);
 
     React.useEffect(() => {
         const id = context.AddData(createContextData());
@@ -132,29 +122,35 @@ function Line(props: IProps) {
         return () => { context.RemoveData(id) }
     }, []);
 
-   function generateData() {
-       let result = "M ";
-       if (data == null)
-        return ""
-     result = result + visibleData.map((pt, _) => {
-           const x = context.XTransformation(pt[0]);
-           const y = context.YTransformation(pt[1], AxisMap.get(props.axis));
-           return `${x},${y}`
-       }).join(" L ")
+    const generateData = React.useCallback((pointsToDraw: number[][]) => {
+        if (pointsToDraw.length === 0)
+            return ""
 
-       return result
-   }
+        let result = "M ";
 
+        result = result + pointsToDraw.map((pt, _) => {
+            const x = context.XTransformation(pt[0]);
+            const y = context.YTransformation(pt[1], AxisMap.get(props.axis));
+            return `${x},${y}`
+        }).join(" L ")
 
-   return (
-       enabled?
-       <g>
-           <path d={generateData()} style={{ fill: 'none', strokeWidth: props.width === undefined ? 3 : props.width, stroke: props.color }} strokeDasharray={LineMap.get(props.lineStyle)} />
-           {showPoints && data != null? visibleData.map((pt, i) => <circle key={i} r={3} cx={context.XTransformation(pt[0])} cy={context.YTransformation(pt[1], AxisMap.get(props.axis))} fill={props.color} stroke={'currentColor'} style={{ opacity: 0.8/*, transition: 'cx 0.5s,cy 0.5s'*/ }} />) : null}
-           {(props.highlightHover ?? false) && !isNaN(highlight[0]) && !isNaN(highlight[1])? 
-            <circle r={5} cx={context.XTransformation(highlight[0])} cy={context.YTransformation(highlight[1], AxisMap.get(props.axis))} fill={props.color} stroke={'currentColor'} style={{ opacity: 0.8/*, transition: 'cx 0.5s,cy 0.5s'*/ }} /> : null}
-       </g > : null
-   );
-}
+        return result
+    }, [context.XTransformation, context.YTransformation, props.axis])
 
+    return (
+        enabled ?
+            <g>
+                <path d={generateData(points)} style={{ fill: 'none', strokeWidth: props.width === undefined ? 3 : props.width, stroke: props.color }} strokeDasharray={LineMap.get(props.lineStyle)} />
+
+                {showPoints && data != null ? points.map((pt, i) => <circle key={i} r={3} cx={context.XTransformation(pt[0])} cy={context.YTransformation(pt[1], AxisMap.get(props.axis))} fill={props.color} stroke={'currentColor'}
+                    style={{ opacity: 0.8/*, transition: 'cx 0.5s,cy 0.5s'*/ }} />) : null}
+
+                {(props.highlightHover ?? false) && !isNaN(highlight[0]) && !isNaN(highlight[1]) ?
+                    <circle r={5} cx={context.XTransformation(highlight[0])} cy={context.YTransformation(highlight[1], AxisMap.get(props.axis))} fill={props.color} stroke={'currentColor'} style={{ opacity: 0.8/*, transition: 'cx 0.5s,cy 0.5s'*/ }} />
+                    : null}
+            </g > : null
+    );
+});
+
+const Line = (props: IProps) => <InternalLine {...props} />;
 export default Line;
