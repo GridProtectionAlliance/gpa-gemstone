@@ -133,7 +133,7 @@ export function Table<T>(props: React.PropsWithChildren<ReactTableProps.ITable<T
         React.Children.forEach(props.children, (element) => {
             if (React.isValidElement(element) && IsColumnProps(element.props)) {
                 if (newMap.get(element.props.Key) != null) console.error("Multiple of the same key detected in table, this will cause issues.");
-                newMap.set(element.props.Key, {minWidth: 100, maxWidth: 1000, width: 100})
+                newMap.set(element.props.Key, {minWidth: 10, maxWidth: 1000, width: 100})
             }
         });
 
