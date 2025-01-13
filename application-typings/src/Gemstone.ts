@@ -134,6 +134,12 @@ namespace Gemstone {
                  * @type {boolean}
                  */
                 Unique: boolean;
+
+                /**
+                 * Flag indicating if the field values should be the same for all rows.
+                 * @type {boolean}
+                 */
+                SameValueForAllRows?: boolean
             }
             export interface ISearchFilter<T> {
                 FieldName: keyof T,
