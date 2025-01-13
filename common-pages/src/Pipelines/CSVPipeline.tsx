@@ -104,29 +104,49 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
             }
 
             const fieldIndex = headers.indexOf(matchedHeader);
+
+            let foundDuplicate = false;
+            let foundEmpty = false;
+            let foundInvalid = false;
             const uniqueValues = new Set<string>();
 
             //Need to also make sure that all the fields that have the Required flag got mapped to a header...
             data.forEach(row => {
                 const value = row[fieldIndex + 1]; //+1 for row index value
 
-                // Check uniqueness
+                // Unique check
                 if (field.Unique) {
                     if (uniqueValues.has(value))
-                        errors.push(`All ${field.Label} values must be unique.`);
+                        foundDuplicate = true;
                     else
                         uniqueValues.add(value);
                 }
 
-                // Check allowed emptiness
-                if (!field.AllowEmpty && (value == null || (value ?? '').trim() === ""))
-                    errors.push(`All ${field.Label} cannot be empty.`);
+                // Allowed emptiness
+                if (!field.AllowEmpty && (value == null || (value.trim() === '')))
+                    foundEmpty = true;
 
-                //Check validity
+                // Validate
                 if (!field.Validate(value))
-                    errors.push(`All ${field.Label} must contain valid values.`)
-
+                    foundInvalid = true;
             });
+
+            if (field.Unique && foundDuplicate)
+                errors.push(`All ${field.Label} values must be unique.`);
+
+            if (foundEmpty)
+                errors.push(`All ${field.Label} cannot be empty.`);
+
+            if (foundInvalid)
+                errors.push(`All ${field.Label} must contain valid values.`);
+
+            //Check for SameValueForAllRows 
+            if (field.SameValueForAllRows ?? false) {
+                const allValues = data.map(row => row[fieldIndex + 1] ?? '');
+                if (new Set(allValues).size > 1)
+                    errors.push(`All rows for ${field.Label} must contain the same value.`);
+            }
+
         });
 
         props.SetErrors(errors);
@@ -248,7 +268,7 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
                                         </div>
                                     </div>
                                 ) : null}
-                                <div className='row flex-grow-1' style={{overflowY: 'hidden'}}>
+                                <div className='row flex-grow-1' style={{ overflowY: 'hidden' }}>
                                     <div className='col-12 h-100'>
                                         <ConfigurableTable<string[]>
                                             Data={pagedData}
@@ -365,7 +385,7 @@ const parseCSV = (csvContent: string, hasHeaders: boolean, numOfRequiredFields: 
             }
         }
         // Fix headers so no duplicates
-        for (let headerIndex = 0; headerIndex < headers.length; headerIndex ++) {
+        for (let headerIndex = 0; headerIndex < headers.length; headerIndex++) {
             let count = 1;
             for (let index = 0; index < headerIndex; index++) {
                 if (headers[headerIndex] === headers[index]) {
