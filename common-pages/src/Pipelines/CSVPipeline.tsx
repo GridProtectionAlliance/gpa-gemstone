@@ -173,6 +173,36 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
     }, [props.RawFileData, props.AdditionalProps]);
 
     React.useEffect(() => {
+        if (props.AdditionalProps?.Fields == null || props.AdditionalProps?.Fields.length === 0 || data.length === 0) return;
+
+        const requiredCount = props.AdditionalProps.Fields.filter(f => f.Required).length;
+
+        // If we already have enough columns, do nothing
+        if (headers.length >= requiredCount)
+            return;
+
+        // Extend 'headers' array (e.g., "A", "B", "C"...)
+        const extendedHeaders = [...headers];
+        for (let i = headers.length; i < requiredCount; i++) {
+            extendedHeaders.push(String.fromCharCode(65 + i)); // 'A', 'B', 'C', ...
+        }
+
+        // Extend each row in 'data' with blank strings for the new columns
+        const extendedData = data.map(row => {
+            // row already has an index at row[0], plus (headers.length - 1) columns
+            const neededCols = requiredCount - (row.length - 1);
+            if (neededCols > 0) {
+                return [...row, ...Array(neededCols).fill('')];
+            }
+            return row;
+        });
+
+        setHeaders(extendedHeaders);
+        setData(extendedData);
+
+    }, [props.AdditionalProps?.Fields]);
+
+    React.useEffect(() => {
         if (props.AdditionalProps == null || props.Errors.length !== 0) return;
         const mappedData: T[] = [];
 
