@@ -29,6 +29,7 @@ import { CheckBox, Select } from '@gpa-gemstone/react-forms';
 import { Column, ConfigurableTable, ConfigurableColumn } from '@gpa-gemstone/react-table';
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import { Paging } from '@gpa-gemstone/react-table';
+import { isEqual } from 'lodash';
 
 interface IAdditionalProps<T> {
     Fields: Gemstone.TSX.Interfaces.ICSVField<T>[],
@@ -67,7 +68,7 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
 
     const [data, setData] = React.useState<string[][]>([]);
     const [pagedData, setPagedData] = React.useState<string[][]>([]);
-
+    
 
     const [isFileParseable, setIsFileParseable] = React.useState<boolean>(true);
     const [isCSVMissingHeaders, setIsCSVMissingHeaders] = React.useState<boolean>(false);
@@ -149,12 +150,16 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
 
         });
 
-        props.SetErrors(errors);
-    }, [data, headers, headerMap, isFileParseable]);
+        if (!isEqual(props.Errors.sort(), errors.sort()))
+            props.SetErrors(errors);
+
+    }, [data, headers, headerMap, isFileParseable, props.AdditionalProps?.Fields]);
 
     React.useEffect(() => {
         if (props.RawFileData == null || props.AdditionalProps == null || rawDataRef.current === props.RawFileData) return
+
         let parsedData: { Headers: string[], Data: string[][], AddedMissingHeaders: boolean, AddedMissingDataValues: boolean }
+
         try {
             parsedData = parseCSV(props.RawFileData, props.AdditionalProps.DataHasHeaders, props.AdditionalProps.Fields.filter(field => field.Required).length);
         }
@@ -162,14 +167,15 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
             setIsFileParseable(false)
             return
         }
+
         setIsFileParseable(true);
         setIsCSVMissingDataCells(parsedData.AddedMissingDataValues);
         setIsCSVMissingHeaders(parsedData.AddedMissingHeaders);
         setData(parsedData.Data);
         setHeaders(parsedData.Headers);
         setHeaderMap(autoMapHeaders(parsedData.Headers, props.AdditionalProps.Fields.map(field => field.Field)))
-        rawDataRef.current = props.RawFileData;
 
+        rawDataRef.current = props.RawFileData;
     }, [props.RawFileData, props.AdditionalProps]);
 
     React.useEffect(() => {
@@ -222,7 +228,7 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
 
             mappedData.push(record);
         });
-
+        
         props.SetData(mappedData);
     }, [data, headers, headerMap, props.AdditionalProps?.Fields, props.Errors]);
 
