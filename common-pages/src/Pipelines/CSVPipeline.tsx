@@ -272,6 +272,7 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
                                     <div className='col-12 h-100'>
                                         <ConfigurableTable<string[]>
                                             Data={pagedData}
+                                            key={headers.join(',')}
                                             SortKey=''
                                             Ascending={false}
                                             OnSort={() => {/*no sort*/ }}
