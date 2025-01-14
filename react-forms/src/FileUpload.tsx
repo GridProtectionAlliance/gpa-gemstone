@@ -25,12 +25,6 @@ import * as React from 'react';
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 
 interface IProps {
-    /**
-      * Feedback message to show when input is invalid
-      * @type {string}
-      * @optional
-    */
-    Feedback?: string;
     /** 
         * Callback function that will be called when a file is uploaded
     * */
