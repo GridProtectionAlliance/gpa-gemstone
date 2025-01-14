@@ -335,6 +335,7 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
                                                             const value = item[field as number];
                                                             const isValid = matchedField.Validate(value);
                                                             const feedback = matchedField.Feedback
+                                                            const selectOptions = matchedField.SelectOptions
 
                                                             const allValues: Partial<Record<keyof T, string>> = {};
                                                             headers.forEach((header, index) => {
@@ -351,6 +352,7 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
                                                                     Valid={isValid}
                                                                     Feedback={feedback}
                                                                     AllRecordValues={allValues}
+                                                                    SelectOptions={selectOptions}
                                                                 />
                                                             );
                                                         }}

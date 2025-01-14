@@ -69,7 +69,14 @@ namespace Gemstone {
                 Width: number,
                 Height: number
             }
-            export interface ICSVFieldEditProps<T> { Value: string, SetValue: (val: string) => void, Valid: boolean, Feedback?: string, AllRecordValues: Partial<Record<keyof T, string>> }
+            export interface ICSVFieldEditProps<T> {
+                Value: string,
+                SetValue: (val: string) => void,
+                Valid: boolean,
+                Feedback?: string,
+                AllRecordValues: Partial<Record<keyof T, string>>,
+                SelectOptions?: { Label: string, Value: string | number }[]
+            }
             export interface ICSVField<T> {
                 /**
                  * The field in the record this definition applies to.
@@ -139,7 +146,9 @@ namespace Gemstone {
                  * Flag indicating if the field values should be the same for all rows.
                  * @type {boolean}
                  */
-                SameValueForAllRows?: boolean
+                SameValueForAllRows?: boolean,
+                
+                SelectOptions?: { Label: string, Value: string | number }[]
             }
             export interface ISearchFilter<T> {
                 FieldName: keyof T,
