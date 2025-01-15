@@ -24,6 +24,7 @@
 import * as React from 'react';
 import { ProgressBar } from '@gpa-gemstone/react-interactive';
 import { Gemstone } from '@gpa-gemstone/application-typings';
+import { FileUpload } from '@gpa-gemstone/react-forms';
 
 interface IProps<T> {
     /** 
@@ -139,11 +140,7 @@ export default function BulkUpload<T>(props: IProps<T>) {
         props.OnComplete(data);
     }, [props.Step, data, props.OnComplete]);
 
-    const handleFileUpload = (evt: React.ChangeEvent<HTMLInputElement>) => {
-        if (evt.target == null || evt.target.files == null || evt.target.files.length === 0) return;
-
-        const file = evt.target.files[0];
-
+    const handleFileUpload = (file: File) => {
         const matchArray = file.name.match(fileExtRegex);
         const fileExtension = matchArray != null ? matchArray[0].substring(1) : ''
 
@@ -167,6 +164,13 @@ export default function BulkUpload<T>(props: IProps<T>) {
         };
     }
 
+    const handleFileOnClear = () => {
+        setIsFileTypeValid(true);
+        setCurrentPipelineIndex(null);
+        setFileName(null);
+        setRawFileContent(null);
+    }
+
     return (
         <div className="container-fluid d-flex flex-column p-0 h-100">
             <div className='row h-100'>
@@ -180,10 +184,7 @@ export default function BulkUpload<T>(props: IProps<T>) {
                         <>
                             <div className='row justify-content-center'>
                                 <div className='col-6'>
-                                    <div className="custom-file">
-                                        <input type="file" className="custom-file-input" id="inputGroupFile02" onChange={handleFileUpload} accept={props.FileTypeAttribute} style={{ cursor: 'pointer' }} />
-                                        <label className="custom-file-label" htmlFor="inputGroupFile02" aria-describedby="inputGroupFileAddon02">{fileName == null ? 'Upload File' : fileName}</label>
-                                    </div>
+                                    <FileUpload OnLoadHandler={handleFileUpload} OnClearHandler={handleFileOnClear} FileTypeAttribute={props.FileTypeAttribute} />
                                 </div>
                             </div>
                             <div className='row'>

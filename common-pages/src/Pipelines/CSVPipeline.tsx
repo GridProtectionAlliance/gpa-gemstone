@@ -29,6 +29,7 @@ import { CheckBox, Select } from '@gpa-gemstone/react-forms';
 import { Column, ConfigurableTable, ConfigurableColumn } from '@gpa-gemstone/react-table';
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import { Paging } from '@gpa-gemstone/react-table';
+import { isEqual } from 'lodash';
 
 interface IAdditionalProps<T> {
     Fields: Gemstone.TSX.Interfaces.ICSVField<T>[],
@@ -67,7 +68,7 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
 
     const [data, setData] = React.useState<string[][]>([]);
     const [pagedData, setPagedData] = React.useState<string[][]>([]);
-
+    
 
     const [isFileParseable, setIsFileParseable] = React.useState<boolean>(true);
     const [isCSVMissingHeaders, setIsCSVMissingHeaders] = React.useState<boolean>(false);
@@ -104,37 +105,61 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
             }
 
             const fieldIndex = headers.indexOf(matchedHeader);
+
+            let foundDuplicate = false;
+            let foundEmpty = false;
+            let foundInvalid = false;
             const uniqueValues = new Set<string>();
 
             //Need to also make sure that all the fields that have the Required flag got mapped to a header...
             data.forEach(row => {
                 const value = row[fieldIndex + 1]; //+1 for row index value
 
-                // Check uniqueness
+                // Unique check
                 if (field.Unique) {
                     if (uniqueValues.has(value))
-                        errors.push(`All ${field.Label} values must be unique.`);
+                        foundDuplicate = true;
                     else
                         uniqueValues.add(value);
                 }
 
-                // Check allowed emptiness
-                if (!field.AllowEmpty && (value == null || (value ?? '').trim() === ""))
-                    errors.push(`All ${field.Label} cannot be empty.`);
+                // Allowed emptiness
+                if (!field.AllowEmpty && (value == null || (value.trim() === '')))
+                    foundEmpty = true;
 
-                //Check validity
+                // Validate
                 if (!field.Validate(value))
-                    errors.push(`All ${field.Label} must contain valid values.`)
-
+                    foundInvalid = true;
             });
+
+            if (field.Unique && foundDuplicate)
+                errors.push(`All ${field.Label} values must be unique.`);
+
+            if (foundEmpty)
+                errors.push(`All ${field.Label} cannot be empty.`);
+
+            if (foundInvalid)
+                errors.push(`All ${field.Label} must contain valid values.`);
+
+            //Check for SameValueForAllRows 
+            if (field.SameValueForAllRows ?? false) {
+                const allValues = data.map(row => row[fieldIndex + 1] ?? '');
+                if (new Set(allValues).size > 1)
+                    errors.push(`All rows for ${field.Label} must contain the same value.`);
+            }
+
         });
 
-        props.SetErrors(errors);
-    }, [data, headers, headerMap, isFileParseable]);
+        if (!isEqual(props.Errors.sort(), errors.sort()))
+            props.SetErrors(errors);
+
+    }, [data, headers, headerMap, isFileParseable, props.AdditionalProps?.Fields]);
 
     React.useEffect(() => {
         if (props.RawFileData == null || props.AdditionalProps == null || rawDataRef.current === props.RawFileData) return
+
         let parsedData: { Headers: string[], Data: string[][], AddedMissingHeaders: boolean, AddedMissingDataValues: boolean }
+
         try {
             parsedData = parseCSV(props.RawFileData, props.AdditionalProps.DataHasHeaders, props.AdditionalProps.Fields.filter(field => field.Required).length);
         }
@@ -142,15 +167,46 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
             setIsFileParseable(false)
             return
         }
+
         setIsFileParseable(true);
         setIsCSVMissingDataCells(parsedData.AddedMissingDataValues);
         setIsCSVMissingHeaders(parsedData.AddedMissingHeaders);
         setData(parsedData.Data);
         setHeaders(parsedData.Headers);
         setHeaderMap(autoMapHeaders(parsedData.Headers, props.AdditionalProps.Fields.map(field => field.Field)))
-        rawDataRef.current = props.RawFileData;
 
+        rawDataRef.current = props.RawFileData;
     }, [props.RawFileData, props.AdditionalProps]);
+
+    React.useEffect(() => {
+        if (props.AdditionalProps?.Fields == null || props.AdditionalProps?.Fields.length === 0 || data.length === 0) return;
+
+        const requiredCount = props.AdditionalProps.Fields.filter(f => f.Required).length;
+
+        // If we already have enough columns, do nothing
+        if (headers.length >= requiredCount)
+            return;
+
+        // Extend 'headers' array (e.g., "A", "B", "C"...)
+        const extendedHeaders = [...headers];
+        for (let i = headers.length; i < requiredCount; i++) {
+            extendedHeaders.push(String.fromCharCode(65 + i)); // 'A', 'B', 'C', ...
+        }
+
+        // Extend each row in 'data' with blank strings for the new columns
+        const extendedData = data.map(row => {
+            // row already has an index at row[0], plus (headers.length - 1) columns
+            const neededCols = requiredCount - (row.length - 1);
+            if (neededCols > 0) {
+                return [...row, ...Array(neededCols).fill('')];
+            }
+            return row;
+        });
+
+        setHeaders(extendedHeaders);
+        setData(extendedData);
+
+    }, [props.AdditionalProps?.Fields]);
 
     React.useEffect(() => {
         if (props.AdditionalProps == null || props.Errors.length !== 0) return;
@@ -172,7 +228,7 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
 
             mappedData.push(record);
         });
-
+        
         props.SetData(mappedData);
     }, [data, headers, headerMap, props.AdditionalProps?.Fields, props.Errors]);
 
@@ -248,10 +304,11 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
                                         </div>
                                     </div>
                                 ) : null}
-                                <div className='row flex-grow-1' style={{overflowY: 'hidden'}}>
+                                <div className='row flex-grow-1' style={{ overflowY: 'hidden' }}>
                                     <div className='col-12 h-100'>
                                         <ConfigurableTable<string[]>
                                             Data={pagedData}
+                                            key={headers.join(',')}
                                             SortKey=''
                                             Ascending={false}
                                             OnSort={() => {/*no sort*/ }}
@@ -278,6 +335,7 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
                                                             const value = item[field as number];
                                                             const isValid = matchedField.Validate(value);
                                                             const feedback = matchedField.Feedback
+                                                            const selectOptions = matchedField.SelectOptions
 
                                                             const allValues: Partial<Record<keyof T, string>> = {};
                                                             headers.forEach((header, index) => {
@@ -294,6 +352,7 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
                                                                     Valid={isValid}
                                                                     Feedback={feedback}
                                                                     AllRecordValues={allValues}
+                                                                    SelectOptions={selectOptions}
                                                                 />
                                                             );
                                                         }}
@@ -365,7 +424,7 @@ const parseCSV = (csvContent: string, hasHeaders: boolean, numOfRequiredFields: 
             }
         }
         // Fix headers so no duplicates
-        for (let headerIndex = 0; headerIndex < headers.length; headerIndex ++) {
+        for (let headerIndex = 0; headerIndex < headers.length; headerIndex++) {
             let count = 1;
             for (let index = 0; index < headerIndex; index++) {
                 if (headers[headerIndex] === headers[index]) {
