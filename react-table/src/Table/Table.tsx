@@ -181,11 +181,12 @@ export function Table<T>(props: React.PropsWithChildren<ReactTableProps.ITable<T
             let autoSpace = currentTableWidth;
             measureKeys.forEach(key => {
                 const element = document.getElementById(key+"_measurement");
-                if (element != null) {
+                const elementWidth = element?.getBoundingClientRect().width;
+                if (elementWidth != null) {
                     const widthObj = newMap.get(key);
                     if (widthObj != null) {
-                        autoSpace -= element.clientWidth;
-                        widthObj[type as 'minWidth'|'width'|'maxWidth'] = element.clientWidth;
+                        autoSpace -= elementWidth;
+                        widthObj[type as 'minWidth'|'width'|'maxWidth'] = elementWidth;
                     }
                     else console.error("Could not find width object for Key: " + key);
                 }
@@ -195,7 +196,7 @@ export function Table<T>(props: React.PropsWithChildren<ReactTableProps.ITable<T
         
             // Handle Autos (width type only)
             if (type === 'width' && autoKeys.length > 0) {
-                const spacePerElement = Math.floor(autoSpace / autoKeys.length);
+                const spacePerElement = autoSpace / autoKeys.length;
                 autoKeys.forEach(key => {
                     const widthObj = newMap.get(key);
                     if (widthObj != null) widthObj[type] = spacePerElement;
@@ -234,12 +235,15 @@ export function Table<T>(props: React.PropsWithChildren<ReactTableProps.ITable<T
 
     const setTableWidth = React.useCallback(_.debounce(() => {
         if (bodyRef.current == null) return;
+
         // Note: certain body classes may break this check if they set overflow to scroll
         let newScroll = false;
+        const dims = bodyRef.current?.getBoundingClientRect(); //use getBoundClientRect() to get un rounded values
         if (props.TbodyStyle?.overflowY === 'scroll' || props.TbodyStyle?.overflow === 'scroll') newScroll = true;
-        else newScroll = bodyRef.current.clientHeight < bodyRef.current.scrollHeight;
+        else newScroll = dims?.height < bodyRef.current.scrollHeight
+        
         setScrolled(newScroll);
-        setCurrentTableWidth((bodyRef.current?.clientWidth ?? 17) - (newScroll ? 0 : 17));
+        setCurrentTableWidth((dims.width ?? 17) - (newScroll ? 0 : 17));
     }, 100), []);
     
     React.useEffect(() => {
