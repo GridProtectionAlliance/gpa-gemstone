@@ -26,9 +26,8 @@ import { Gemstone } from '@gpa-gemstone/application-typings';
 import { CsvStringToArray } from '@gpa-gemstone/helper-functions';
 import { Alert } from '@gpa-gemstone/react-interactive';
 import { CheckBox, Select } from '@gpa-gemstone/react-forms';
-import { Column, ConfigurableTable, ConfigurableColumn } from '@gpa-gemstone/react-table';
+import { Column, Table, Paging } from '@gpa-gemstone/react-table';
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
-import { Paging } from '@gpa-gemstone/react-table';
 import { isEqual } from 'lodash';
 
 interface IAdditionalProps<T> {
@@ -68,7 +67,7 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
 
     const [data, setData] = React.useState<string[][]>([]);
     const [pagedData, setPagedData] = React.useState<string[][]>([]);
-    
+
 
     const [isFileParseable, setIsFileParseable] = React.useState<boolean>(true);
     const [isCSVMissingHeaders, setIsCSVMissingHeaders] = React.useState<boolean>(false);
@@ -228,7 +227,7 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
 
             mappedData.push(record);
         });
-        
+
         props.SetData(mappedData);
     }, [data, headers, headerMap, props.AdditionalProps?.Fields, props.Errors]);
 
@@ -239,10 +238,10 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
 
         const updateMap = (head: string, val: keyof T | undefined) => setHeaderMap(new Map(headerMap).set(head, val));
         const matchedField: Gemstone.TSX.Interfaces.ICSVField<T> | undefined = props.AdditionalProps.Fields.find(f => f.Field === field);
-        const help = matchedField?.Help != null ? <p style={{ whiteSpace: 'nowrap' }}>={matchedField?.Help}</p> : undefined
+        const help = matchedField?.Help != null ? matchedField?.Help : undefined
 
-        return <Select<{ Header: string, Value: string | undefined }> Record={{ Header: header, Value: field as string }} EmptyOption={true} Options={props.AdditionalProps.Fields.map(field => ({ Value: field.Field as string, Label: field.Label }))} Field="Value"
-            Setter={(record) => updateMap(record.Header, record.Value as keyof T)} Label={' '} Help={help} />
+        return <Select<{ Header: string, Value: string | undefined }> Record={{ Header: header, Value: field as string }} EmptyOption={true} Label={' '} Help={help}
+            Options={props.AdditionalProps.Fields.map(field => ({ Value: field.Field as string, Label: field.Label }))} Field="Value" Setter={(record) => updateMap(record.Header, record.Value as keyof T)} />
 
     }, [props.AdditionalProps?.Fields, headerMap])
 
@@ -306,61 +305,55 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
                                 ) : null}
                                 <div className='row flex-grow-1' style={{ overflowY: 'hidden' }}>
                                     <div className='col-12 h-100'>
-                                        <ConfigurableTable<string[]>
+                                        <Table<string[]>
                                             Data={pagedData}
                                             key={headers.join(',')}
                                             SortKey=''
                                             Ascending={false}
                                             OnSort={() => {/*no sort*/ }}
                                             KeySelector={data => data[0]}
-                                            TheadStyle={{ width: '100%', display: 'table-header-group', }}
-                                            TbodyStyle={{ width: '100%', display: 'block', height: '100%' }}
-                                            RowStyle={{ display: 'table-row', width: '100%', height: 'auto' }}
-                                            TableStyle={{ width: '100%', height: '100%', tableLayout: 'fixed', marginBottom: 0, display: 'block' }}
                                             TableClass='table'
-                                            ModalZIndex={9995}
+                                            TableStyle={{ width: headers.length * 150 }}
                                         >
                                             {headers.map((header, i) =>
-                                                <ConfigurableColumn Key={header} Label={header} Default={true}>
-                                                    <Column<string[]>
-                                                        Key={header}
-                                                        Field={i + 1}
-                                                        AllowSort={false}
-                                                        Content={({ item, field }) => {
-                                                            if (props.AdditionalProps == null) return
+                                                <Column<string[]>
+                                                    Key={header}
+                                                    Field={i + 1}
+                                                    AllowSort={false}
+                                                    Content={({ item, field }) => {
+                                                        if (props.AdditionalProps == null) return
+                                                        const mappedField = headerMap.get(header);
+                                                        const matchedField = props.AdditionalProps.Fields.find(f => f.Field === mappedField);
+                                                        if (matchedField == null) return item[field as number];
+
+                                                        const value = item[field as number];
+                                                        const isValid = matchedField.Validate(value);
+                                                        const feedback = matchedField.Feedback
+                                                        const selectOptions = matchedField.SelectOptions
+
+                                                        const allValues: Partial<Record<keyof T, string>> = {};
+                                                        headers.forEach((header, index) => {
                                                             const mappedField = headerMap.get(header);
-                                                            const matchedField = props.AdditionalProps.Fields.find(f => f.Field === mappedField);
-                                                            if (matchedField == null) return item[field as number];
+                                                            if (mappedField != null) {
+                                                                allValues[mappedField] = item[index + 1];
+                                                            }
+                                                        });
 
-                                                            const value = item[field as number];
-                                                            const isValid = matchedField.Validate(value);
-                                                            const feedback = matchedField.Feedback
-                                                            const selectOptions = matchedField.SelectOptions
-
-                                                            const allValues: Partial<Record<keyof T, string>> = {};
-                                                            headers.forEach((header, index) => {
-                                                                const mappedField = headerMap.get(header);
-                                                                if (mappedField != null) {
-                                                                    allValues[mappedField] = item[index + 1];
-                                                                }
-                                                            });
-
-                                                            return (
-                                                                <matchedField.EditComponent
-                                                                    Value={value}
-                                                                    SetValue={(val: string) => handleValueChange(parseInt(item[0]), field as number, val)}
-                                                                    Valid={isValid}
-                                                                    Feedback={feedback}
-                                                                    AllRecordValues={allValues}
-                                                                    SelectOptions={selectOptions}
-                                                                />
-                                                            );
-                                                        }}
-                                                    >
-                                                        {getHeader(header)}
-                                                        {getFieldSelect(header)}
-                                                    </Column>
-                                                </ConfigurableColumn>
+                                                        return (
+                                                            <matchedField.EditComponent
+                                                                Value={value}
+                                                                SetValue={(val: string) => handleValueChange(parseInt(item[0]), field as number, val)}
+                                                                Valid={isValid}
+                                                                Feedback={feedback}
+                                                                AllRecordValues={allValues}
+                                                                SelectOptions={selectOptions}
+                                                            />
+                                                        );
+                                                    }}
+                                                >
+                                                    {getHeader(header)}
+                                                    {getFieldSelect(header)}
+                                                </Column>
                                             )}
                                             <Column<string[]>
                                                 Key={'delete'}
@@ -377,7 +370,7 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
                                             >
                                                 {''}
                                             </Column>
-                                        </ConfigurableTable>
+                                        </Table>
                                     </div>
                                 </div>
                                 <div className='row'>
