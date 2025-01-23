@@ -92,7 +92,7 @@ export default function BulkUpload<T>(props: IProps<T>) {
     const pipelineUI = React.useMemo(() => {
         if (props.Step === 'Upload' || props.Step === 'Complete' || currentPipelineIndex == null || currentPipelineIndex > props.Pipelines.length - 1 || props.CurrentPipelineStep > props.Pipelines?.[currentPipelineIndex]?.Steps?.length - 1) return <></>
         const pipeline = props.Pipelines[currentPipelineIndex].Steps[props.CurrentPipelineStep]
-        return <pipeline.UI AdditionalProps={props.Pipelines[currentPipelineIndex].Steps[props.CurrentPipelineStep]?.AdditionalProps} RawFileData={rawFileContent} SetData={setData}
+        return <pipeline.UI AdditionalProps={props.Pipelines[currentPipelineIndex].Steps[props.CurrentPipelineStep]?.AdditionalProps} RawFileData={rawFileContent} SetData={setData} Data={data}
             SetPipelineStep={props.SetCurrentPipelineStep} CurrentPipelineStep={props.CurrentPipelineStep} Errors={pipelineErrors} SetErrors={setPipelineErrors} />
     }, [props.Step, currentPipelineIndex, rawFileContent, props.CurrentPipelineStep, props.Pipelines])
 
