@@ -177,6 +177,48 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
         rawDataRef.current = props.RawFileData;
     }, [props.RawFileData, props.AdditionalProps]);
 
+    //Effect to add additional columns for required fields during mapping process
+    React.useEffect(() => {
+        if (props.AdditionalProps?.Fields == null || props.AdditionalProps?.Fields.length === 0 || data.length === 0)
+            return;
+
+        const requiredCount = props.AdditionalProps.Fields.filter(f => f.Required).length;
+        const optionalFields = props.AdditionalProps.Fields.filter(f => !f.Required).map(f => f.Field);
+        let mappedOptionalCount = 0;
+
+        Array.from(headerMap.values()).forEach(mappedField => {
+            if (mappedField != null && optionalFields.includes(mappedField))
+                mappedOptionalCount++;
+
+        });
+
+        const neededCols = requiredCount + mappedOptionalCount;
+
+        if (headers.length >= neededCols)
+            return;
+
+        // Extend headers (A, B, C, etc.) until we reach 'neededCols'
+        const extendedHeaders = [...headers];
+        for (let i = headers.length; i < neededCols; i++) {
+            extendedHeaders.push(String.fromCharCode(65 + i)); // 'A', 'B', ...
+        }
+
+        // Extend every row in 'data' accordingly
+        const extendedData = data.map(row => {
+            const currentCols = row.length - 1;  // minus the row index at row[0]
+            if (currentCols < neededCols)
+                return [...row, ...Array(neededCols - currentCols).fill('')];
+
+            return row;
+        });
+
+        setHeaders(extendedHeaders);
+        setData(extendedData);
+
+    }, [props.AdditionalProps?.Fields, data, headerMap]);
+
+
+    //Effect to add additionalFields that cant be determined at build time
     React.useEffect(() => {
         if (props.AdditionalProps?.Fields == null || props.AdditionalProps?.Fields.length === 0 || data.length === 0) return;
 
