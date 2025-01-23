@@ -33,6 +33,12 @@ import { isEqual } from 'lodash';
 interface IAdditionalProps<T> {
     Fields: Gemstone.TSX.Interfaces.ICSVField<T>[],
     DataHasHeaders: boolean,
+    Headers: string[],
+    SetHeaders: (headers: string[]) => void,
+    Data: string[][],
+    SetData: (d: string[][]) => void,
+    HeaderMap: Map<string, keyof T | undefined>,
+    SetHeaderMap: (map: Map<string, keyof T | undefined>) => void
 }
 
 interface IAdditionalUIProps {
@@ -50,11 +56,33 @@ const AdditionalUploadUI = (props: IAdditionalUIProps) => {
     )
 }
 
-export function useCSVPipeline<T = unknown>(csvFields: Gemstone.TSX.Interfaces.ICSVField<T>[]): Gemstone.TSX.Interfaces.IPipeline<T, IAdditionalProps<T>> {
+export function useCSVPipeline<T = unknown, U extends IAdditionalProps<T> = IAdditionalProps<T>>(csvFields: Gemstone.TSX.Interfaces.ICSVField<T>[], additionalSteps?: Gemstone.TSX.Interfaces.IPipelineSteps<T, U>[]): Gemstone.TSX.Interfaces.IPipeline<T, IAdditionalProps<T>> {
     const [hasHeaders, setHasHeaders] = React.useState<boolean>(false);
+
+    //Define 
+    const [headers, setHeaders] = React.useState<string[]>([]);
+    const [headerMap, setHeaderMap] = React.useState<Map<string, keyof T | undefined>>(new Map<string, keyof T | undefined>());
+    const [data, setData] = React.useState<string[][]>([]);
+
+    const baseStep: Gemstone.TSX.Interfaces.IPipelineSteps<T, IAdditionalProps<T>> = {
+        Label: 'Edit CSV',
+        UI: CsvPipelineEditStep,
+        AdditionalProps: {
+            Fields: csvFields,
+            DataHasHeaders: hasHeaders,
+            Headers: headers,
+            SetHeaders: setHeaders,
+            Data: data,
+            SetData: setData,
+            HeaderMap: headerMap,
+            SetHeaderMap: setHeaderMap
+        }
+    };
+    const steps = additionalSteps == null ? [baseStep] : [baseStep, ...additionalSteps];
+
     return {
         Select: (mimeType: string, fileExt: string) => mimeType.toLowerCase() === 'text/csv' || fileExt === 'csv',
-        Steps: [{ Label: 'Edit CSV', UI: CsvPipelineEditStep, AdditionalProps: { Fields: csvFields, DataHasHeaders: hasHeaders } }],
+        Steps: steps as Gemstone.TSX.Interfaces.IPipelineSteps<T, IAdditionalProps<T>>[],
         AdditionalUploadUI: <AdditionalUploadUI HasHeaders={hasHeaders} SetHasHeaders={setHasHeaders} />
     }
 }
@@ -62,12 +90,8 @@ export function useCSVPipeline<T = unknown>(csvFields: Gemstone.TSX.Interfaces.I
 function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProps<T, IAdditionalProps<T>>) {
     const rawDataRef = React.useRef<string>();
 
-    const [headers, setHeaders] = React.useState<string[]>([]);
-    const [headerMap, setHeaderMap] = React.useState<Map<string, keyof T | undefined>>(new Map<string, keyof T | undefined>());
 
-    const [data, setData] = React.useState<string[][]>([]);
     const [pagedData, setPagedData] = React.useState<string[][]>([]);
-
 
     const [isFileParseable, setIsFileParseable] = React.useState<boolean>(true);
     const [isCSVMissingHeaders, setIsCSVMissingHeaders] = React.useState<boolean>(false);
@@ -81,21 +105,22 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
     const [showDataOrHeaderAlert, setShowDataOrHeaderAlert] = React.useState<boolean>(true);
 
     React.useEffect(() => {
-        if (data.length === 0) return
+        if (props.AdditionalProps?.Data.length === 0) return
 
-        const pages = Math.ceil(data.length / 10);
+        const pages = Math.ceil((props.AdditionalProps?.Data.length ?? 0) / 10);
         setTotalPages(pages);
-        const Data = [...data]
+        const Data = [...(props.AdditionalProps?.Data ?? [])]
         setPagedData(Data.slice(page * 10, (page + 1) * 10));
 
-    }, [data, page]);
+    }, [props.AdditionalProps?.Data, page]);
 
     React.useEffect(() => {
         const errors: string[] = [];
         if (props.AdditionalProps == null) return
+        const headerMap = props.AdditionalProps?.HeaderMap as Map<string, keyof T | undefined>
 
         props.AdditionalProps.Fields.forEach(field => {
-            const matchedHeader = Array.from(headerMap.entries()).find(([, value]) => value === field.Field)?.[0];
+            const matchedHeader = Array.from(headerMap).find(([, value]) => value === field.Field)?.[0];
             if (matchedHeader == null) {
                 if (field.Required)
                     errors.push(`${field.Label} is required and must be mapped to a header.`);
@@ -103,7 +128,7 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
                 return; // return early if the field was never mapped to a header
             }
 
-            const fieldIndex = headers.indexOf(matchedHeader);
+            const fieldIndex: number = props.AdditionalProps?.Headers.indexOf(matchedHeader) as number;
 
             let foundDuplicate = false;
             let foundEmpty = false;
@@ -111,7 +136,7 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
             const uniqueValues = new Set<string>();
 
             //Need to also make sure that all the fields that have the Required flag got mapped to a header...
-            data.forEach(row => {
+            props.AdditionalProps?.Data.forEach(row => {
                 const value = row[fieldIndex + 1]; //+1 for row index value
 
                 // Unique check
@@ -135,16 +160,16 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
                 errors.push(`All ${field.Label} values must be unique.`);
 
             if (foundEmpty)
-                errors.push(`All ${field.Label} cannot be empty.`);
+                errors.push(`All ${field.Label} values cannot be empty.`);
 
             if (foundInvalid)
-                errors.push(`All ${field.Label} must contain valid values.`);
+                errors.push(`All ${field.Label} values must be valid.`);
 
             //Check for SameValueForAllRows 
             if (field.SameValueForAllRows ?? false) {
-                const allValues = data.map(row => row[fieldIndex + 1] ?? '');
+                const allValues = props.AdditionalProps?.Data.map(row => row[fieldIndex + 1] ?? '');
                 if (new Set(allValues).size > 1)
-                    errors.push(`All rows for ${field.Label} must contain the same value.`);
+                    errors.push(`All rows must contain the same value for ${field.Label}.`);
             }
 
         });
@@ -152,10 +177,11 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
         if (!isEqual(props.Errors.sort(), errors.sort()))
             props.SetErrors(errors);
 
-    }, [data, headers, headerMap, isFileParseable, props.AdditionalProps?.Fields]);
+    }, [props.AdditionalProps?.Data, props.AdditionalProps?.Headers, props.AdditionalProps?.HeaderMap, isFileParseable, props.AdditionalProps?.Fields]);
 
+    //Effect to parse rawfiledata initially
     React.useEffect(() => {
-        if (props.RawFileData == null || props.AdditionalProps == null || rawDataRef.current === props.RawFileData) return
+        if (props.RawFileData == null || props.AdditionalProps == null || rawDataRef.current === props.RawFileData || props.AdditionalProps.Data.length !== 0 || props.AdditionalProps.Headers.length !== 0) return
 
         let parsedData: { Headers: string[], Data: string[][], AddedMissingHeaders: boolean, AddedMissingDataValues: boolean }
 
@@ -170,23 +196,23 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
         setIsFileParseable(true);
         setIsCSVMissingDataCells(parsedData.AddedMissingDataValues);
         setIsCSVMissingHeaders(parsedData.AddedMissingHeaders);
-        setData(parsedData.Data);
-        setHeaders(parsedData.Headers);
-        setHeaderMap(autoMapHeaders(parsedData.Headers, props.AdditionalProps.Fields.map(field => field.Field)))
+        props.AdditionalProps?.SetData(parsedData.Data);
+        props.AdditionalProps.SetHeaders(parsedData.Headers);
+        props.AdditionalProps?.SetHeaderMap(autoMapHeaders(parsedData.Headers, props.AdditionalProps.Fields.map(field => field.Field)))
 
         rawDataRef.current = props.RawFileData;
     }, [props.RawFileData, props.AdditionalProps]);
 
     //Effect to add additional columns for required fields during mapping process
     React.useEffect(() => {
-        if (props.AdditionalProps?.Fields == null || props.AdditionalProps?.Fields.length === 0 || data.length === 0)
+        if (props.AdditionalProps?.Fields == null || props.AdditionalProps?.Fields.length === 0 || props.AdditionalProps?.Data.length === 0)
             return;
 
         const requiredCount = props.AdditionalProps.Fields.filter(f => f.Required).length;
         const optionalFields = props.AdditionalProps.Fields.filter(f => !f.Required).map(f => f.Field);
         let mappedOptionalCount = 0;
 
-        Array.from(headerMap.values()).forEach(mappedField => {
+        Array.from(props.AdditionalProps?.HeaderMap.values()).forEach(mappedField => {
             if (mappedField != null && optionalFields.includes(mappedField))
                 mappedOptionalCount++;
 
@@ -194,17 +220,17 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
 
         const neededCols = requiredCount + mappedOptionalCount;
 
-        if (headers.length >= neededCols)
+        if (props.AdditionalProps?.Headers.length >= neededCols)
             return;
 
         // Extend headers (A, B, C, etc.) until we reach 'neededCols'
-        const extendedHeaders = [...headers];
-        for (let i = headers.length; i < neededCols; i++) {
+        const extendedHeaders = [...props.AdditionalProps?.Headers];
+        for (let i = props.AdditionalProps?.Headers.length; i < neededCols; i++) {
             extendedHeaders.push(String.fromCharCode(65 + i)); // 'A', 'B', ...
         }
 
         // Extend every row in 'data' accordingly
-        const extendedData = data.map(row => {
+        const extendedData = props.AdditionalProps?.Data.map(row => {
             const currentCols = row.length - 1;  // minus the row index at row[0]
             if (currentCols < neededCols)
                 return [...row, ...Array(neededCols - currentCols).fill('')];
@@ -212,30 +238,30 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
             return row;
         });
 
-        setHeaders(extendedHeaders);
-        setData(extendedData);
+        props.AdditionalProps?.SetHeaders(extendedHeaders);
+        props.AdditionalProps.SetData(extendedData);
 
-    }, [props.AdditionalProps?.Fields, data, headerMap]);
+    }, [props.AdditionalProps?.Fields, props.AdditionalProps?.Headers, props.AdditionalProps?.Data, props.AdditionalProps?.HeaderMap]);
 
 
     //Effect to add additionalFields that cant be determined at build time
     React.useEffect(() => {
-        if (props.AdditionalProps?.Fields == null || props.AdditionalProps?.Fields.length === 0 || data.length === 0) return;
+        if (props.AdditionalProps?.Fields == null || props.AdditionalProps?.Fields.length === 0 || props.AdditionalProps?.Data.length === 0) return;
 
         const requiredCount = props.AdditionalProps.Fields.filter(f => f.Required).length;
 
         // If we already have enough columns, do nothing
-        if (headers.length >= requiredCount)
+        if (props.AdditionalProps?.Headers.length >= requiredCount)
             return;
 
         // Extend 'headers' array (e.g., "A", "B", "C"...)
-        const extendedHeaders = [...headers];
-        for (let i = headers.length; i < requiredCount; i++) {
+        const extendedHeaders = [...props.AdditionalProps?.Headers];
+        for (let i = props.AdditionalProps?.Headers.length; i < requiredCount; i++) {
             extendedHeaders.push(String.fromCharCode(65 + i)); // 'A', 'B', 'C', ...
         }
 
         // Extend each row in 'data' with blank strings for the new columns
-        const extendedData = data.map(row => {
+        const extendedData = props.AdditionalProps?.Data.map(row => {
             // row already has an index at row[0], plus (headers.length - 1) columns
             const neededCols = requiredCount - (row.length - 1);
             if (neededCols > 0) {
@@ -244,20 +270,20 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
             return row;
         });
 
-        setHeaders(extendedHeaders);
-        setData(extendedData);
+        props.AdditionalProps?.SetHeaders(extendedHeaders);
+        props.AdditionalProps?.SetData(extendedData);
 
-    }, [props.AdditionalProps?.Fields]);
+    }, [props.AdditionalProps?.Fields, props.AdditionalProps?.Headers, props.AdditionalProps?.Data]);
 
     React.useEffect(() => {
         if (props.AdditionalProps == null || props.Errors.length !== 0) return;
         const mappedData: T[] = [];
 
-        data.forEach((row) => {
+        props.AdditionalProps?.Data.forEach((row) => {
             let record: T = {} as T;
 
-            headers.forEach((header, index) => {
-                const mappedField = headerMap.get(header);
+            props.AdditionalProps?.Headers.forEach((header, index) => {
+                const mappedField = props.AdditionalProps?.HeaderMap.get(header);
                 if (mappedField == null) return;
 
                 const field = props.AdditionalProps?.Fields.find(f => f.Field === mappedField);
@@ -271,13 +297,13 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
         });
 
         props.SetData(mappedData);
-    }, [data, headers, headerMap, props.AdditionalProps?.Fields, props.Errors]);
+    }, [props.AdditionalProps?.Data, props.AdditionalProps?.Headers, props.AdditionalProps?.HeaderMap, props.AdditionalProps?.Fields, props.Errors]);
 
     const getFieldSelect = React.useCallback((header: string) => {
         if (props.AdditionalProps == null || props.AdditionalProps?.Fields.length === 0) return
 
-        const field = headerMap.get(header);
-        const usedFields = Array.from(headerMap.entries())
+        const field = props.AdditionalProps?.HeaderMap.get(header);
+        const usedFields = Array.from(props.AdditionalProps?.HeaderMap.entries())
             .filter(([mappedHeader, mappedField]) => mappedHeader !== header && mappedField != null)
             .map(([, mappedField]) => mappedField);
 
@@ -285,32 +311,30 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
             .filter(f => !usedFields.includes(f.Field) || f.Field === field)
             .map(f => ({ Value: f.Field as string, Label: f.Label }));
 
-        const updateMap = (head: string, val: keyof T | undefined) => setHeaderMap(new Map(headerMap).set(head, val));
+        const updateMap = (head: string, val: keyof T | undefined) => props.AdditionalProps?.SetHeaderMap(new Map(props.AdditionalProps?.HeaderMap).set(head, val));
         const matchedField: Gemstone.TSX.Interfaces.ICSVField<T> | undefined = props.AdditionalProps.Fields.find(f => f.Field === field);
         const help = matchedField?.Help != null ? matchedField?.Help : undefined
 
         return <Select<{ Header: string, Value: string | undefined }> Record={{ Header: header, Value: field as string }} EmptyOption={true} Label={' '} Help={help}
             Options={selectOptions} Field="Value" Setter={(record) => updateMap(record.Header, record.Value as keyof T)} />
 
-    }, [props.AdditionalProps?.Fields, headerMap])
+    }, [props.AdditionalProps?.Fields, props.AdditionalProps?.HeaderMap])
 
-    const handleValueChange = (rowIndex: number, colIndex: number, value: string) => {
-        setData(prevData => {
-            const newData = [...prevData];
-            newData[rowIndex][colIndex] = value;
-            return newData;
-        });
-    };
+    const handleValueChange = React.useCallback((rowIndex: number, colIndex: number, value: string) => {
+        const data = [...(props.AdditionalProps?.Data ?? [])]
+        data[rowIndex][colIndex] = value;
+        props.AdditionalProps?.SetData(data)
+    }, [props.AdditionalProps?.Data])
 
     const handleRowDelete = (rowIndex: number) => {
-        const newData = [...data]
+        const newData = [...(props.AdditionalProps?.Data ?? [])]
         newData.splice(rowIndex, 1)
-        setData(newData)
+        props.AdditionalProps?.SetData(newData)
     }
 
     const getHeader = (header: string) => {
         if (props.AdditionalProps == null) return
-        const mappedField = headerMap.get(header);
+        const mappedField = props.AdditionalProps?.HeaderMap.get(header);
 
         if (mappedField == null) return header
 
@@ -356,22 +380,22 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
                                     <div className='col-12 h-100'>
                                         <Table<string[]>
                                             Data={pagedData}
-                                            key={headers.join(',')}
+                                            key={props.AdditionalProps?.Headers.join(',')}
                                             SortKey=''
                                             Ascending={false}
                                             OnSort={() => {/*no sort*/ }}
                                             KeySelector={data => data[0]}
                                             TableClass='table'
-                                            TableStyle={{ width: headers.length * 150 }}
+                                            TableStyle={{ width: (props.AdditionalProps?.Headers.length ?? 0) * 150 }}
                                         >
-                                            {headers.map((header, i) =>
+                                            {props.AdditionalProps?.Headers.map((header, i) =>
                                                 <Column<string[]>
                                                     Key={header}
                                                     Field={i + 1}
                                                     AllowSort={false}
                                                     Content={({ item, field }) => {
                                                         if (props.AdditionalProps == null) return
-                                                        const mappedField = headerMap.get(header);
+                                                        const mappedField = props.AdditionalProps?.HeaderMap.get(header);
                                                         const matchedField = props.AdditionalProps.Fields.find(f => f.Field === mappedField);
                                                         if (matchedField == null) return item[field as number];
 
@@ -381,8 +405,8 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
                                                         const selectOptions = matchedField.SelectOptions
 
                                                         const allValues: Partial<Record<keyof T, string>> = {};
-                                                        headers.forEach((header, index) => {
-                                                            const mappedField = headerMap.get(header);
+                                                        props.AdditionalProps?.Headers.forEach((header, index) => {
+                                                            const mappedField = props.AdditionalProps?.HeaderMap.get(header);
                                                             if (mappedField != null) {
                                                                 allValues[mappedField] = item[index + 1];
                                                             }
