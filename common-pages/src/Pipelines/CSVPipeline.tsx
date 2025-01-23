@@ -277,13 +277,20 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
         if (props.AdditionalProps == null || props.AdditionalProps?.Fields.length === 0) return
 
         const field = headerMap.get(header);
+        const usedFields = Array.from(headerMap.entries())
+            .filter(([mappedHeader, mappedField]) => mappedHeader !== header && mappedField != null)
+            .map(([, mappedField]) => mappedField);
+
+        const selectOptions = props.AdditionalProps.Fields
+            .filter(f => !usedFields.includes(f.Field) || f.Field === field)
+            .map(f => ({ Value: f.Field as string, Label: f.Label }));
 
         const updateMap = (head: string, val: keyof T | undefined) => setHeaderMap(new Map(headerMap).set(head, val));
         const matchedField: Gemstone.TSX.Interfaces.ICSVField<T> | undefined = props.AdditionalProps.Fields.find(f => f.Field === field);
         const help = matchedField?.Help != null ? matchedField?.Help : undefined
 
         return <Select<{ Header: string, Value: string | undefined }> Record={{ Header: header, Value: field as string }} EmptyOption={true} Label={' '} Help={help}
-            Options={props.AdditionalProps.Fields.map(field => ({ Value: field.Field as string, Label: field.Label }))} Field="Value" Setter={(record) => updateMap(record.Header, record.Value as keyof T)} />
+            Options={selectOptions} Field="Value" Setter={(record) => updateMap(record.Header, record.Value as keyof T)} />
 
     }, [props.AdditionalProps?.Fields, headerMap])
 
