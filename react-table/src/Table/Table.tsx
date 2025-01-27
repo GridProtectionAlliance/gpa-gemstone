@@ -653,7 +653,9 @@ function Header<T>(props: React.PropsWithChildren<IHeaderProps<T>>) {
                     </ColumnHeaderWrapper>
                 );
             })}
+        {props.LastColumn !== undefined ?
         <th style={{ width: 17, padding: 0, maxWidth: 17 }}>{props.LastColumn}</th>
+        : null}
         </tr>
         </thead>
     );
