@@ -386,7 +386,7 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
                                             OnSort={() => {/*no sort*/ }}
                                             KeySelector={data => data[0]}
                                             TableClass='table'
-                                            TableStyle={{ width: (props.AdditionalProps?.Headers.length ?? 0) * 150 }}
+                                            TableStyle={{ height: '100%', width: (props.AdditionalProps?.Headers.length ?? 0) * 150 }}
                                         >
                                             {props.AdditionalProps?.Headers.map((header, i) =>
                                                 <Column<string[]>
