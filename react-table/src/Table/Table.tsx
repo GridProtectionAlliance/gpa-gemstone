@@ -336,7 +336,7 @@ interface IRowProps<T> {
 }
     
 function Rows<T>(props: React.PropsWithChildren<IRowProps<T>>) {
-    const bodyStyle = React.useMemo(() => ({ ...props.BodyStyle, paddingRight: (props.BodyScrolled ? scrollBarWidth : 0), display: "block" }), [props.BodyStyle, props.BodyScrolled]);
+    const bodyStyle = React.useMemo(() => ({ ...props.BodyStyle, display: "block" }), [props.BodyStyle]);
 
     const onClick = React.useCallback((e: React.MouseEvent<HTMLTableRowElement, MouseEvent>, item: T, index: number) => {
         if (props.OnClick !== undefined)
