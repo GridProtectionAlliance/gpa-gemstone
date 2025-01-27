@@ -245,7 +245,7 @@ export function Table<T>(props: React.PropsWithChildren<ReactTableProps.ITable<T
         else newScroll = dims?.height < bodyRef.current.scrollHeight
         
         setScrolled(newScroll);
-        setCurrentTableWidth((dims.width ?? 17) - (newScroll ? 0 : 17));
+        setCurrentTableWidth((dims.width ?? 17) - (newScroll ? scrollBarWidth : 0));
     }, 100), []);
     
     React.useEffect(() => {
@@ -336,7 +336,7 @@ interface IRowProps<T> {
 }
     
 function Rows<T>(props: React.PropsWithChildren<IRowProps<T>>) {
-    const bodyStyle = React.useMemo(() => ({ ...props.BodyStyle, paddingRight: (props.BodyScrolled ? 0 : 17), display: "block" }), [props.BodyStyle, props.BodyScrolled]);
+    const bodyStyle = React.useMemo(() => ({ ...props.BodyStyle, paddingRight: (props.BodyScrolled ? 0 : scrollBarWidth), display: "block" }), [props.BodyStyle, props.BodyScrolled]);
 
     const onClick = React.useCallback((e: React.MouseEvent<HTMLTableRowElement, MouseEvent>, item: T, index: number) => {
         if (props.OnClick !== undefined)
@@ -654,7 +654,7 @@ function Header<T>(props: React.PropsWithChildren<IHeaderProps<T>>) {
                 );
             })}
         {props.LastColumn !== undefined ?
-        <th style={{ width: 17, padding: 0, maxWidth: 17 }}>{props.LastColumn}</th>
+            <th style={{ width: 17, padding: 0, maxWidth: 17 }}>{props.LastColumn}</th> 
         : null}
         </tr>
         </thead>
