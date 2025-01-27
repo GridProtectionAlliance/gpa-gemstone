@@ -245,7 +245,7 @@ export function Table<T>(props: React.PropsWithChildren<ReactTableProps.ITable<T
         else newScroll = dims?.height < bodyRef.current.scrollHeight
         
         setScrolled(newScroll);
-        setCurrentTableWidth((dims.width ?? 17) - (newScroll ? scrollBarWidth : 0));
+        setCurrentTableWidth((dims.width ?? 17) - (newScroll ? scrollBarWidth : 0) - (props.LastColumn !== undefined ? 17 : 0));
     }, 100), []);
     
     React.useEffect(() => {
@@ -336,7 +336,7 @@ interface IRowProps<T> {
 }
     
 function Rows<T>(props: React.PropsWithChildren<IRowProps<T>>) {
-    const bodyStyle = React.useMemo(() => ({ ...props.BodyStyle, paddingRight: (props.BodyScrolled ? 0 : scrollBarWidth), display: "block" }), [props.BodyStyle, props.BodyScrolled]);
+    const bodyStyle = React.useMemo(() => ({ ...props.BodyStyle, paddingRight: (props.BodyScrolled ? scrollBarWidth : 0), display: "block" }), [props.BodyStyle, props.BodyScrolled]);
 
     const onClick = React.useCallback((e: React.MouseEvent<HTMLTableRowElement, MouseEvent>, item: T, index: number) => {
         if (props.OnClick !== undefined)
