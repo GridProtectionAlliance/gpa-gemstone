@@ -88,6 +88,8 @@ const IsColumnAdjustable = (props: unknown) => {
     return false;
 }
 
+const scrollBarWidth = getScrollbarWidth();
+
 export function Table<T>(props: React.PropsWithChildren<ReactTableProps.ITable<T>>) {
     const bodyRef = React.useRef<HTMLTableSectionElement | null>(null);
     const colWidthsRef = React.useRef<Map<string, width>>(new Map<string, width>());
@@ -655,4 +657,25 @@ function Header<T>(props: React.PropsWithChildren<IHeaderProps<T>>) {
         </tr>
         </thead>
     );
+}
+
+function getScrollbarWidth() {
+
+    // Creating invisible container
+    const outer = document.createElement('div');
+    outer.style.visibility = 'hidden';
+    outer.style.overflow = 'scroll'; // forcing scrollbar to appear
+    document.body.appendChild(outer);
+  
+    // Creating inner element and placing it in the container
+    const inner = document.createElement('div');
+    outer.appendChild(inner);
+    
+    // Calculating difference between container's full width and the child width
+    const scrollbarWidth = (outer.offsetWidth - inner.offsetWidth);
+  
+    // Removing temporary elements from the DOM
+    outer.parentNode!.removeChild(outer);
+  
+    return scrollbarWidth;
 }
