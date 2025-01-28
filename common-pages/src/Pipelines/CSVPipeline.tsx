@@ -205,7 +205,7 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
 
     //Effect to add additional columns for required fields during mapping process
     React.useEffect(() => {
-        if (props.AdditionalProps?.Fields == null || props.AdditionalProps?.Fields.length === 0 || props.AdditionalProps?.Data.length === 0)
+        if (props.AdditionalProps?.Fields == null || props.AdditionalProps?.Fields.length === 0 || props.AdditionalProps?.Data.length === 0 || props.AdditionalProps.Headers == null)
             return;
 
         const requiredCount = props.AdditionalProps.Fields.filter(f => f.Required).length;
@@ -220,11 +220,11 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
 
         const neededCols = requiredCount + mappedOptionalCount;
 
-        if (props.AdditionalProps?.Headers.length >= neededCols)
+        if (props.AdditionalProps.Headers.length >= neededCols)
             return;
 
         // Extend headers (A, B, C, etc.) until we reach 'neededCols'
-        const extendedHeaders = [...props.AdditionalProps?.Headers];
+        const extendedHeaders = [...props.AdditionalProps.Headers];
         for (let i = props.AdditionalProps?.Headers.length; i < neededCols; i++) {
             extendedHeaders.push(String.fromCharCode(65 + i)); // 'A', 'B', ...
         }
@@ -246,7 +246,7 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
 
     //Effect to add additionalFields that cant be determined at build time
     React.useEffect(() => {
-        if (props.AdditionalProps?.Fields == null || props.AdditionalProps?.Fields.length === 0 || props.AdditionalProps?.Data.length === 0) return;
+        if (props.AdditionalProps?.Fields == null || props.AdditionalProps?.Fields.length === 0 || props.AdditionalProps?.Data.length === 0 || props.AdditionalProps?.Headers == null) return;
 
         const requiredCount = props.AdditionalProps.Fields.filter(f => f.Required).length;
 
@@ -255,7 +255,7 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
             return;
 
         // Extend 'headers' array (e.g., "A", "B", "C"...)
-        const extendedHeaders = [...props.AdditionalProps?.Headers];
+        const extendedHeaders = [...props.AdditionalProps.Headers];
         for (let i = props.AdditionalProps?.Headers.length; i < requiredCount; i++) {
             extendedHeaders.push(String.fromCharCode(65 + i)); // 'A', 'B', 'C', ...
         }
