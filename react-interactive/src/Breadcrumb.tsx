@@ -41,7 +41,7 @@ const Breadcrumb = (props: IProps) => {
             <ol className='breadcrumb'>
                 {props.Steps.map((step, i) => (
                     <li key={`${step.ID}${i}`} className={`breadcrumb-item ${props.CurrentStep.ID === step.ID ? 'active' : ''}`}>
-                        {step.ID !== props.CurrentStep.ID && (step.IsNavigable ?? true) ? <a href="#" onClick={(e) => { e.preventDefault(); props.OnClick(step) }}>{step.Label}</a> : step.Label}
+                        {(step.ID !== props.CurrentStep.ID && (step.IsNavigable ?? true)) ? <a href="#" onClick={(e) => { e.preventDefault(); props.OnClick(step) }}>{step.Label}</a> : step.Label}
                     </li>
                 ))}
             </ol>
