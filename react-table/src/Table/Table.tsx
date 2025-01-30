@@ -89,6 +89,7 @@ const IsColumnAdjustable = (props: unknown) => {
 }
 
 const scrollBarWidth = getScrollbarWidth();
+const lastColumnWidth = 17;
 
 export function Table<T>(props: React.PropsWithChildren<ReactTableProps.ITable<T>>) {
     const bodyRef = React.useRef<HTMLTableSectionElement | null>(null);
@@ -245,7 +246,7 @@ export function Table<T>(props: React.PropsWithChildren<ReactTableProps.ITable<T
         else newScroll = dims?.height < bodyRef.current.scrollHeight
         
         setScrolled(newScroll);
-        setCurrentTableWidth((dims.width ?? 17) - (newScroll ? scrollBarWidth : 0) - (props.LastColumn !== undefined ? 17 : 0));
+        setCurrentTableWidth((dims.width ?? 17) - (newScroll ? scrollBarWidth : 0) - (props.LastColumn !== undefined ? lastColumnWidth : 0));
     }, 100), []);
     
     React.useEffect(() => {
@@ -654,7 +655,7 @@ function Header<T>(props: React.PropsWithChildren<IHeaderProps<T>>) {
                 );
             })}
         {props.LastColumn !== undefined ?
-            <th style={{ width: 17, padding: 0, maxWidth: 17 }}>{props.LastColumn}</th> 
+            <th style={{ width: lastColumnWidth, padding: 0, maxWidth: lastColumnWidth }}>{props.LastColumn}</th> 
         : null}
         </tr>
         </thead>
