@@ -246,7 +246,13 @@ export function Table<T>(props: React.PropsWithChildren<ReactTableProps.ITable<T
         else newScroll = dims?.height < bodyRef.current.scrollHeight
         
         setScrolled(newScroll);
-        setCurrentTableWidth((dims.width ?? 17) - (newScroll ? scrollBarWidth : 0) - (props.LastColumn !== undefined ? lastColumnWidth : 0));
+
+        // Pick whichever is larger so we dont double subtract
+        const scrollbar = newScroll ? scrollBarWidth : 0;
+        const last = props.LastColumn !== undefined ? lastColumnWidth : 0;
+        const spacer = Math.max(scrollbar, last);
+ 
+        setCurrentTableWidth((dims.width ?? 17) - spacer);
     }, 100), []);
     
     React.useEffect(() => {
