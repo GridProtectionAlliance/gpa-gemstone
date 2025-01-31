@@ -195,7 +195,7 @@ export default function StylableSelect<T>(props: IProps<T>) {
             <tbody>
               {props.Options.map((f, i) => (
                 f.Value === props.Record[props.Field] ? null :
-                  <tr key={i} onClick={(evt) => handleOptionClick(evt, f)}>
+                  <tr key={i} onMouseDown={(evt) => handleOptionClick(evt, f)}>
                     <td>
                       {f.Element}
                     </td>

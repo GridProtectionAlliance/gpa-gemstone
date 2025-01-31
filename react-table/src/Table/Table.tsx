@@ -88,6 +88,9 @@ const IsColumnAdjustable = (props: unknown) => {
     return false;
 }
 
+const scrollBarWidth = getScrollbarWidth();
+const lastColumnWidth = 17;
+
 export function Table<T>(props: React.PropsWithChildren<ReactTableProps.ITable<T>>) {
     const bodyRef = React.useRef<HTMLTableSectionElement | null>(null);
     const colWidthsRef = React.useRef<Map<string, width>>(new Map<string, width>());
@@ -181,11 +184,12 @@ export function Table<T>(props: React.PropsWithChildren<ReactTableProps.ITable<T
             let autoSpace = currentTableWidth;
             measureKeys.forEach(key => {
                 const element = document.getElementById(key+"_measurement");
-                if (element != null) {
+                const elementWidth = element?.getBoundingClientRect().width;
+                if (elementWidth != null) {
                     const widthObj = newMap.get(key);
                     if (widthObj != null) {
-                        autoSpace -= element.clientWidth;
-                        widthObj[type as 'minWidth'|'width'|'maxWidth'] = element.clientWidth;
+                        autoSpace -= elementWidth;
+                        widthObj[type as 'minWidth'|'width'|'maxWidth'] = elementWidth;
                     }
                     else console.error("Could not find width object for Key: " + key);
                 }
@@ -195,7 +199,7 @@ export function Table<T>(props: React.PropsWithChildren<ReactTableProps.ITable<T
         
             // Handle Autos (width type only)
             if (type === 'width' && autoKeys.length > 0) {
-                const spacePerElement = Math.floor(autoSpace / autoKeys.length);
+                const spacePerElement = autoSpace / autoKeys.length;
                 autoKeys.forEach(key => {
                     const widthObj = newMap.get(key);
                     if (widthObj != null) widthObj[type] = spacePerElement;
@@ -234,12 +238,21 @@ export function Table<T>(props: React.PropsWithChildren<ReactTableProps.ITable<T
 
     const setTableWidth = React.useCallback(_.debounce(() => {
         if (bodyRef.current == null) return;
+
         // Note: certain body classes may break this check if they set overflow to scroll
         let newScroll = false;
+        const dims = bodyRef.current?.getBoundingClientRect(); //use getBoundClientRect() to get un rounded values
         if (props.TbodyStyle?.overflowY === 'scroll' || props.TbodyStyle?.overflow === 'scroll') newScroll = true;
-        else newScroll = bodyRef.current.clientHeight < bodyRef.current.scrollHeight;
+        else newScroll = dims?.height < bodyRef.current.scrollHeight
+        
         setScrolled(newScroll);
-        setCurrentTableWidth((bodyRef.current?.clientWidth ?? 17) - (newScroll ? 0 : 17));
+
+        // Pick whichever is larger so we dont double subtract
+        const scrollbar = newScroll ? scrollBarWidth : 0;
+        const last = props.LastColumn !== undefined ? lastColumnWidth : 0;
+        const spacer = Math.max(scrollbar, last);
+ 
+        setCurrentTableWidth((dims.width ?? 17) - spacer);
     }, 100), []);
     
     React.useEffect(() => {
@@ -330,7 +343,7 @@ interface IRowProps<T> {
 }
     
 function Rows<T>(props: React.PropsWithChildren<IRowProps<T>>) {
-    const bodyStyle = React.useMemo(() => ({ ...props.BodyStyle, paddingRight: (props.BodyScrolled ? 0 : 17), display: "block" }), [props.BodyStyle, props.BodyScrolled]);
+    const bodyStyle = React.useMemo(() => ({ ...props.BodyStyle, display: "block" }), [props.BodyStyle]);
 
     const onClick = React.useCallback((e: React.MouseEvent<HTMLTableRowElement, MouseEvent>, item: T, index: number) => {
         if (props.OnClick !== undefined)
@@ -647,8 +660,31 @@ function Header<T>(props: React.PropsWithChildren<IHeaderProps<T>>) {
                     </ColumnHeaderWrapper>
                 );
             })}
-        <th style={{ width: 17, padding: 0, maxWidth: 17 }}>{props.LastColumn}</th>
+        {props.LastColumn !== undefined ?
+            <th style={{ width: lastColumnWidth, padding: 0, maxWidth: lastColumnWidth }}>{props.LastColumn}</th> 
+        : null}
         </tr>
         </thead>
     );
+}
+
+function getScrollbarWidth() {
+
+    // Creating invisible container
+    const outer = document.createElement('div');
+    outer.style.visibility = 'hidden';
+    outer.style.overflow = 'scroll'; // forcing scrollbar to appear
+    document.body.appendChild(outer);
+  
+    // Creating inner element and placing it in the container
+    const inner = document.createElement('div');
+    outer.appendChild(inner);
+    
+    // Calculating difference between container's full width and the child width
+    const scrollbarWidth = (outer.offsetWidth - inner.offsetWidth);
+  
+    // Removing temporary elements from the DOM
+    outer.parentNode!.removeChild(outer);
+  
+    return scrollbarWidth;
 }

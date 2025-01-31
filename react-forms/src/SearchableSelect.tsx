@@ -40,7 +40,7 @@ interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
     * @param search - Search string
     * @returns {[promise: Promise<IOption[]>, callback?: () => void]}
     */
-    Search: (search: string) => [promise: Promise<IOption[]>, callback?: () => void];
+    Search: (search: string) => [Promise<IOption[]>, () => void];
     /**
     * CSS styles to apply to the form group
     * @type {React.CSSProperties}
@@ -50,26 +50,30 @@ interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
     /**
     * CSS style to apply to the button holding the selected value
     * @type {React.CSSProperties}
-    * @optional
-    *    
+    * @optional    
     */
     BtnStyle?: React.CSSProperties
-    SearchLabel?: string //used instead of record[field] for options & to have a custom label for searches
+    /**
+    * Custom label to display instead of the default record[field] value. Useful when having a field like an ID.
+    * @type {string}
+    * @optional
+    */
+    SearchLabel?: string
 }
 
 export default function SearchableSelect<T>(props: IProps<T>) {
-    const [search, setSearch] = React.useState<string>((props.SearchLabel ?? props.Record[props.Field] as any)?.toString() ?? '');
+    const [search, setSearch] = React.useState<string>((props.SearchLabel ?? props.Record[props.Field] as any).toString());
     const [results, setResults] = React.useState<IStylableOption[]>([]);
     const [loading, setLoading] = React.useState<boolean>(false);
 
     React.useEffect(() => {
         setLoading(true);
-        const [h, c] = props.Search(search);
-        h.then((d: IOption[]) => {
+        const [handle, callback] = props.Search(search);
+        handle.then((d: IOption[]) => {
             setResults(d.map(o => ({ Value: o.Value, Element: <p>{o.Label}</p> })));
             setLoading(false);
         });
-        return c;
+        return callback;
     }, [search])
 
     React.useEffect(() => {
@@ -77,25 +81,32 @@ export default function SearchableSelect<T>(props: IProps<T>) {
         setSearch(props.SearchLabel)
     }, [props.SearchLabel])
 
+    const handleOnBlur = React.useCallback(() => {
+        if (props.AllowCustom ?? false)
+            props.Setter({ ...props.Record, [props.Field]: search })
+        else
+            setSearch((props.Record[props.Field] as any).toString());
+    }, [props.AllowCustom, props.Record, props.Field, search])
+
     const options = React.useMemo(() => {
         const ops = [] as IStylableOption[];
 
         ops.push({
-            Value: props.Record[props.Field], Element:
-                <div className='input-group'>
-                    <input
-                        type="text"
-                        className="form-control"
-                        value={search}
-                        onChange={(d) => setSearch(d.target.value)}
-                        onBlur={((props.AllowCustom ?? false) ? () => props.Setter({ ...props.Record, [props.Field]: search }) : () => setSearch(props.SearchLabel ?? (props.Record[props.Field] as any).toString()))}
-                    />
-                    {loading ?
-                        <div className="input-group-append">
-                            <span className="input-group-text"><ReactIcons.SpiningIcon /></span>
-                        </div>
-                        : null}
-                </div>
+            Value: props.Record[props.Field],
+            Element: <div className='input-group'>
+                <input
+                    type="text"
+                    className="form-control"
+                    value={search}
+                    onChange={(d) => setSearch(d.target.value)}
+                    onBlur={handleOnBlur}
+                />
+                {loading ?
+                    <div className="input-group-append">
+                        <span className="input-group-text"><ReactIcons.SpiningIcon /></span>
+                    </div>
+                    : null}
+            </div>
         })
 
         if (!(props.AllowCustom ?? false))
@@ -107,7 +118,7 @@ export default function SearchableSelect<T>(props: IProps<T>) {
         ops.push(...results.filter(f => f.Value !== search && f.Value !== props.Record[props.Field]));
 
         return ops;
-    }, [search, props.Record[props.Field], props.Disabled, loading, props.SearchLabel, results]);
+    }, [search, props.Record[props.Field], results, props.Disabled, loading, props.SearchLabel, props.AllowCustom]);
 
     const update = React.useCallback((record: T) => {
         if ((record[props.Field] as any).toString().startsWith('search-') as boolean) {

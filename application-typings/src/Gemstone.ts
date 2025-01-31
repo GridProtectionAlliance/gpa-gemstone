@@ -158,6 +158,7 @@ namespace Gemstone {
 
             export interface IPipelineStepProps<T, U = null> {
                 RawFileData: string | null,
+                Data: T[],
                 SetData: (data: T[]) => void,
                 CurrentPipelineStep: number,
                 SetPipelineStep: (step: number) => void,

@@ -278,21 +278,32 @@ export class PointNode {
      * @param {number[]} newPt - The new point
      */
     private IncrementStatsForNewPoint(newPt: number[]): void {
+        // Initialize stats if it's NaN
+        if (isNaN(this.count)) this.count = 0;
+        if (isNaN(this.minT))  this.minT = newPt[0];
+        if (isNaN(this.maxT)) this.maxT = newPt[0];
+        
         this.count += 1;
         this.minT = Math.min(this.minT, newPt[0]);
         this.maxT = Math.max(this.maxT, newPt[0]);
 
-        for (let i = 1; i < this.dim; i++) {
-            const val = newPt[i];
+        for (let i = 0; i < this.dim - 1; i++) {
+            // Initialize stats if they are NaN
+            if (isNaN(this.sum[i])) this.sum[i] = 0;
+            if (isNaN(this.minV[i])) this.minV[i] = newPt[i + 1];
+            if (isNaN(this.maxV[i])) this.maxV[i] = newPt[i + 1];
 
+            const val = newPt[i + 1];
+
+            // Update 'minV[i]', 'maxV[i]', and 'sum[i]' based on the condition
             if (this.points !== null && this.points.length === 1) {
-                this.minV[i - 1] = val;
-                this.maxV[i - 1] = val;
-                this.sum[i - 1] += val;
+                this.minV[i] = val;
+                this.maxV[i] = val;
+                this.sum[i] += val;
             } else {
-                this.minV[i - 1] = Math.min(this.minV[i - 1], val);
-                this.maxV[i - 1] = Math.max(this.maxV[i - 1], val);
-                this.sum[i - 1] += val;
+                this.minV[i] = Math.min(this.minV[i], val);
+                this.maxV[i] = Math.max(this.maxV[i], val);
+                this.sum[i] += val;
             }
         }
     }
