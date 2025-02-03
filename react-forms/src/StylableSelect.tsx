@@ -32,8 +32,7 @@ import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 
 export interface IOption {
   Value: any;
-  Element: React.ReactElement<any>,
-  Label?: string
+  Element: React.ReactElement<any> | string,
 }
 
 interface IProps<T> {
@@ -70,7 +69,7 @@ interface IProps<T> {
     * Setter function to update the Record
     * @param record - Updated Record
   */
-  Setter: (record: T, label?: string) => void
+  Setter: (record: T, option: IOption) => void
   /**
 * Options for the select dropdown
 * @type {{  Value: any, Element: React.ReactElement<any> }[]}
@@ -98,7 +97,7 @@ export default function StylableSelect<T>(props: IProps<T>) {
   const tableContainer = React.useRef<HTMLDivElement>(null);
 
   const [show, setShow] = React.useState<boolean>(false);
-  const [selected, setSelected] = React.useState<React.ReactElement<any>>(props.Options[0].Element);
+  const [selected, setSelected] = React.useState<React.ReactElement<any> | string>(props.Options[0].Element);
   const [guid, setGuid] = React.useState<string>("");
   const [showHelp, setShowHelp] = React.useState<boolean>(false);
   const [position, setPosition] = React.useState<Gemstone.TSX.Interfaces.IElementPosition>({ Top: 0, Left: 0, Width: 0, Height: 0 });
@@ -155,7 +154,7 @@ export default function StylableSelect<T>(props: IProps<T>) {
     if (selectedOption.Value !== '') record[props.Field] = selectedOption.Value as any;
     else record[props.Field] = null as any;
 
-    props.Setter(record, selectedOption?.Label);
+    props.Setter(record, selectedOption);
   }
 
   // Effect for initial setup and event listeners.
