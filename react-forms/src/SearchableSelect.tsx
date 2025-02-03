@@ -128,11 +128,12 @@ export default function SearchableSelect<T>(props: IProps<T>) {
     }, [search, props.Record[props.Field], results, props.Disabled, loading, label, props.AllowCustom, handleOnBlur]);
 
     const update = React.useCallback((record: T, lab?: string) => {
-        const newLabel = lab !== undefined ? lab : (props.Record[props.Field] as any).toString();
+        const stringVal: string = (record[props.Field] as any).toString()
+        const newLabel = lab !== undefined ? lab : stringVal;
         setLabel(newLabel);
 
-        if ((record[props.Field] as any).toString().startsWith('search-')) {
-            const value = (record[props.Field] as any).toString().replace('search-', '');
+        if (stringVal.startsWith('search-')) {
+            const value = stringVal.replace('search-', '');
             props.Setter({ ...record, [props.Field]: value });
             setSearch(newLabel ?? value);
             return;
