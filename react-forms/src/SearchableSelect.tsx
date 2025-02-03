@@ -85,7 +85,7 @@ export default function SearchableSelect<T>(props: IProps<T>) {
         setLoading(true);
         const [handle, callback] = props.Search(search);
         handle.then((d: IOption[]) => {
-            setResults(d.map(o => ({ Value: o.Value, Element: <p>{o.Label}</p>, Label: o.Label })));
+            setResults(d.map(o => ({ Value: o.Value, Element: o.Label, Label: o.Label })));
             setLoading(false);
         });
         return callback;
@@ -117,19 +117,23 @@ export default function SearchableSelect<T>(props: IProps<T>) {
         })
 
         if (!(props.AllowCustom ?? false))
-            ops.push({ Value: 'search-' + props.Record[props.Field], Element: <p>{label}</p>, Label: label });
+            ops.push({ Value: 'search-' + props.Record[props.Field], Element: label});
 
         if (props.AllowCustom ?? false)
-            ops.push({ Value: search, Element: <p>{search}</p>, Label: search });
+            ops.push({ Value: search, Element: search });
 
         ops.push(...results.filter(f => f.Value !== search && f.Value !== props.Record[props.Field]));
 
         return ops;
     }, [search, props.Record[props.Field], results, props.Disabled, loading, label, props.AllowCustom, handleOnBlur]);
 
-    const update = React.useCallback((record: T, lab?: string) => {
-        const stringVal: string = (record[props.Field] as any).toString()
-        const newLabel = lab !== undefined ? lab : stringVal;
+    const update = React.useCallback((record: T, selectedOption: IStylableOption) => {
+        const stringVal: string = (record[props.Field] as any).toString();
+        let newLabel = stringVal;
+
+        if(!React.isValidElement(selectedOption.Element))
+            newLabel = selectedOption.Element as string;
+            
         setLabel(newLabel);
 
         if (stringVal.startsWith('search-')) {
