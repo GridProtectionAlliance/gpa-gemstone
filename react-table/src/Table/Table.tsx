@@ -35,7 +35,7 @@ import FilterableColumn, { FilterableColumnHeader } from './FilterableColumn';
 type width = {
     width: number,
     minWidth: number,
-    maxWidth: number
+    maxWidth?: number
 }
 
 const defaultTableStyle: React.CSSProperties = {
@@ -136,7 +136,7 @@ export function Table<T>(props: React.PropsWithChildren<ReactTableProps.ITable<T
         React.Children.forEach(props.children, (element) => {
             if (React.isValidElement(element) && IsColumnProps(element.props)) {
                 if (newMap.get(element.props.Key) != null) console.error("Multiple of the same key detected in table, this will cause issues.");
-                newMap.set(element.props.Key, {minWidth: 10, maxWidth: 1000, width: 100})
+                newMap.set(element.props.Key, {minWidth: 10, maxWidth: undefined, width: 100})
             }
         });
 
@@ -214,8 +214,8 @@ export function Table<T>(props: React.PropsWithChildren<ReactTableProps.ITable<T
                     if (widthObj.minWidth <= remainingSpace) {
                         // This follows behavior consistent with MDN documentation on how these width types should behave
                         if (widthObj.minWidth > widthObj.width) widthObj.width = widthObj.minWidth;
-                        if (widthObj.minWidth > widthObj.maxWidth) widthObj.maxWidth = widthObj.minWidth;
-                        if (widthObj.width > widthObj.maxWidth) widthObj.width = widthObj.maxWidth;
+                        if (widthObj.maxWidth != null && widthObj.minWidth > widthObj.maxWidth) widthObj.maxWidth = widthObj.minWidth;
+                        if (widthObj.maxWidth != null && widthObj.width > widthObj.maxWidth) widthObj.width = widthObj.maxWidth;
                         // Constrain Width to remainingSpace
                         if (widthObj.width > remainingSpace) widthObj.width = remainingSpace;
                         remainingSpace -= widthObj.width;
@@ -503,9 +503,9 @@ function Header<T>(props: React.PropsWithChildren<IHeaderProps<T>>) {
         if (widthObjLeft == null || widthObjRight == null) return ({min: -Infinity, max: Infinity});
 
         const limitByShrinkLeft = widthObjLeft.width - widthObjLeft.minWidth;
-        const limitByGrowthLeft = widthObjLeft.maxWidth - widthObjLeft.width;
+        const limitByGrowthLeft = widthObjLeft.maxWidth == null ? Number.MAX_SAFE_INTEGER : (widthObjLeft.maxWidth - widthObjLeft.width);
         const limitByShrinkRight = widthObjRight.width - widthObjRight.minWidth;
-        const limitByGrowthRight = widthObjRight.maxWidth - widthObjRight.width;
+        const limitByGrowthRight = widthObjRight.maxWidth == null ? Number.MAX_SAFE_INTEGER : (widthObjRight.maxWidth - widthObjRight.width);
 
         // Recall that a left movement is a negative deltaW
         const minDeltaW = -(limitByShrinkLeft < limitByGrowthRight ? limitByShrinkLeft : limitByGrowthRight);
