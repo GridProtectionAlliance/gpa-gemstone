@@ -85,7 +85,7 @@ export default function SearchableSelect<T>(props: IProps<T>) {
         setLoading(true);
         const [handle, callback] = props.Search(search);
         handle.then((d: IOption[]) => {
-            setResults(d.map(o => ({ Value: o.Value, Element: o.Label, Label: o.Label })));
+            setResults(d.map(o => ({ Value: o.Value, Element: o.Label })));
             setLoading(false);
         });
         return callback;
@@ -117,9 +117,8 @@ export default function SearchableSelect<T>(props: IProps<T>) {
         })
 
         if (!(props.AllowCustom ?? false))
-            ops.push({ Value: 'search-' + props.Record[props.Field], Element: label});
-
-        if (props.AllowCustom ?? false)
+            ops.push({ Value: 'search-' + props.Record[props.Field], Element: label });
+        else
             ops.push({ Value: search, Element: search });
 
         ops.push(...results.filter(f => f.Value !== search && f.Value !== props.Record[props.Field]));
@@ -131,9 +130,9 @@ export default function SearchableSelect<T>(props: IProps<T>) {
         const stringVal: string = (record[props.Field] as any).toString();
         let newLabel = stringVal;
 
-        if(!React.isValidElement(selectedOption.Element))
+        if (!React.isValidElement(selectedOption.Element))
             newLabel = selectedOption.Element as string;
-            
+
         setLabel(newLabel);
 
         if (stringVal.startsWith('search-')) {
