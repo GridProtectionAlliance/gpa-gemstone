@@ -164,9 +164,9 @@ export default function SearchBar<T>(props: React.PropsWithChildren<IProps<T>>) 
                     <div style={{ position: 'relative', display: 'inline-block' }} className='col'>
                         <button className={"btn btn-" + (filters.length > 0 ? "warning" : "primary")} onClick={(evt) => { evt.preventDefault(); createFilter(); }} onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>Add Filter{filters.length > 0 ? ("(" + filters.length + ")") : ""}</button>
                         <div className="popover" style={{
-                            width: window.innerWidth / 3, display: hover ? 'block' : 'none', position: 'absolute', zIndex: 1,
+                            display: hover ? 'block' : 'none', maxWidth: 'unset',
                             right: (props.Direction === 'right' ? 0 : 'unset'), left: (props.Direction === 'left' ? 0 : 'unset'),
-                            top: 'unset', maxWidth: '100%'
+                            top: 'unset'
                         }} onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
                             <table className='table table-hover'>
                                 <thead>
