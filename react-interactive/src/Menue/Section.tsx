@@ -38,6 +38,12 @@ const Section: React.FunctionComponent<IProps> = (props) => {
     const context = React.useContext(Context);
     const [show, setShow] = React.useState<boolean>(true);
 
+    const chevron = React.useMemo(() => {
+        if (!context.allowSectionCollapse) return null;
+        if (show) return <ReactIcons.ChevronUp Style={{width:'1em', height: '1em'}} />;
+        return <ReactIcons.ChevronDown Style={{width:'1em', height: '1em'}} />;
+    }, [context.allowSectionCollapse, show]);
+
     React.useEffect(() => {
         if (!context.allowSectionCollapse) setShow(true);
     }, [context.allowSectionCollapse]);
@@ -59,7 +65,7 @@ const Section: React.FunctionComponent<IProps> = (props) => {
                 <>
                     <h6 className={"sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted"} 
                         onClick={onClick} style={{cursor: context.allowSectionCollapse ? "pointer" : undefined}}>
-                        <span>{props.Label} {show ? "" : <ReactIcons.ChevronDown Size={12} />}</span>
+                        <span>{props.Label} {chevron}</span>
                     </h6>
                 </> : null}
             {show ?
