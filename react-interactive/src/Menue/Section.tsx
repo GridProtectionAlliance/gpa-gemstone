@@ -1,4 +1,4 @@
-﻿// ******************************************************************************************************
+// ******************************************************************************************************
 //  Header.tsx - Gbtc
 //
 //  Copyright © 2020, Grid Protection Alliance.  All Rights Reserved.
@@ -26,6 +26,7 @@ import { Context } from './Context';
 
 export interface IProps {
     Label?: string,
+    Style?: React.CSSProperties
 }
 
 
@@ -40,7 +41,7 @@ const Section: React.FunctionComponent<IProps> = (props) => {
                     <span>{props.Label}</span>
                     </h6>
                 </> : null}
-            <ul className="navbar-nav px-3">
+            <ul className="navbar-nav px-3" style={props.Style}>
                 {props.children}
             </ul>
         </>)
