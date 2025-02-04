@@ -45,7 +45,8 @@ interface IProps {
     AllowCollapsed?: boolean
     NavBarContent?: React.ReactNode,
     HideSideBar?: boolean,
-    UseLegacyNavigation?: boolean
+    UseLegacyNavigation?: boolean,
+    UseSearchMatch?: boolean
 }
 
 interface IApplicationRefs {
@@ -113,7 +114,7 @@ const Applications: React.ForwardRefRenderFunction<IApplicationRefs, React.Props
     const mainDivRef = React.useRef<HTMLDivElement>(null);
     const { width } = useGetContainerPosition(mainDivRef);
 
-    const [ignored, forceUpdate] = React.useReducer((x: number) => x + 1, 0); // integer state for resize renders
+    const [_ignored, forceUpdate] = React.useReducer((x: number) => x + 1, 0); // integer state for resize renders
 
     const [navBarHeight, setNavBarHeight] = React.useState<number>(40);
 
@@ -162,7 +163,8 @@ const Applications: React.ForwardRefRenderFunction<IApplicationRefs, React.Props
         return {
             homePath: props.HomePath,
             userRoles: (props.UserRoles ?? ['Viewer']),
-            collapsed
+            collapsed,
+            useSearchMatch: props.UseSearchMatch ?? false
         } as IContext
     }
 

@@ -44,36 +44,41 @@ export interface IProps {
 
 const Page: React.FunctionComponent<IProps> = (props) => {
     const [hover, setHover] = React.useState<boolean>(false);
+    const [className, setClassName] = React.useState<string>("nav-link");
     const context = React.useContext(Context);
     const location = useLocation();
 
-    const isPathActive = () => {
+    React.useEffect(() => {
         // Use Name as the base check and see if the current path starts with this base.
-        return location.pathname.startsWith(`${context.homePath}${props.Name}`) || isOtherPathActive();
-    }
-
-    const isOtherPathActive = () => {
-        if (props.OtherActivePages == undefined)
+        // React v6 will try to set active or not themselves, we need to not let them to support search matching
+        let currentPage = location.pathname;
+        if (context.useSearchMatch) currentPage += location.search;
+        
+        const isOtherPathActive = () => {
+            if (props.OtherActivePages == null)
+                return false;
+    
+            for (const path of props.OtherActivePages) {
+                if (currentPage.includes(path))
+                    return true;
+            }
+    
             return false;
-
-        for (const path of props.OtherActivePages) {
-            if (location.pathname.includes(path))
-                return true;
         }
+        const isPathActive = currentPage.startsWith(`${context.homePath}${props.Name}`) || isOtherPathActive();
+        setClassName(`nav-link ${(isPathActive ? "active" : "")}`);
+    }, [location.pathname, (context.useSearchMatch ? location.search : null), props.OtherActivePages, props.Name]);
 
-        return false;
-    }
-
-    if (props.RequiredRoles !== undefined && props.RequiredRoles.filter(r => context.userRoles.findIndex(i => i === r) > -1).length === 0)
+    if (props.RequiredRoles != null && props.RequiredRoles.filter(r => context.userRoles.findIndex(i => i === r) > -1).length === 0)
         return null;
 
-    if (props.Label !== undefined || props.Icon !== undefined) {
+    if (props.Label != null || props.Icon != null) {
         return (
             <>
                 <li className="nav-item" style={{ position: 'relative' }}>
                     <NavLink
                         data-tooltip={props.Name}
-                        className={`nav-link ${isPathActive() ? 'active' : ''}`}
+                        className={() => className}
                         to={`${context.homePath}${props.Name}`}
                         onMouseEnter={() => setHover(true)}
                         onMouseLeave={() => setHover(false)}

@@ -1,4 +1,4 @@
-﻿// ******************************************************************************************************
+// ******************************************************************************************************
 //  CirclePlusSVG.tsx - Gbtc
 //
 //  Copyright © 2020, Grid Protection Alliance.  All Rights Reserved.
@@ -27,11 +27,13 @@ import * as React from 'react';
 export interface IContext {
     homePath: string,
     userRoles: Application.Types.SecurityRoleName[],
-    collapsed: boolean
+    collapsed: boolean,
+    useSearchMatch: boolean
 }
 
 export const Context = React.createContext({
     homePath: '',
     userRoles: ['Viewer'],
-    collapsed: false
+    collapsed: false,
+    useSearchMatch: false
 } as IContext);
