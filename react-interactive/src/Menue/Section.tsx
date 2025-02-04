@@ -1,4 +1,4 @@
-// ******************************************************************************************************
+﻿// ******************************************************************************************************
 //  Header.tsx - Gbtc
 //
 //  Copyright © 2020, Grid Protection Alliance.  All Rights Reserved.
@@ -24,6 +24,7 @@
 import * as React from 'react';
 import { Context } from './Context';
 import { Application } from '@gpa-gemstone/application-typings';
+import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 
 export interface IProps {
     Label?: string,
@@ -35,6 +36,18 @@ export interface IProps {
 
 const Section: React.FunctionComponent<IProps> = (props) => {
     const context = React.useContext(Context);
+    const [show, setShow] = React.useState<boolean>(true);
+
+    React.useEffect(() => {
+        if (!context.allowSectionCollapse) setShow(true);
+    }, [context.allowSectionCollapse]);
+
+    const onClick = React.useCallback((event: React.MouseEvent<HTMLHeadingElement, MouseEvent>) => {
+        if (!context.allowSectionCollapse) return;
+        setShow(s=>!s);
+        event.preventDefault();
+        event.stopPropagation();
+    }, [context.allowSectionCollapse]);
 
     if (props.RequiredRoles != null && props.RequiredRoles.filter(r => context.userRoles.findIndex(i => i === r) > -1).length === 0)
         return null;
@@ -44,15 +57,17 @@ const Section: React.FunctionComponent<IProps> = (props) => {
             <hr />
             {props.Label !== undefined && !context.collapsed ?
                 <>
-                    <h6 className={"sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted"}>
-                    <span>{props.Label}</span>
+                    <h6 className={"sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted"} 
+                        onClick={onClick} style={{cursor: context.allowSectionCollapse ? "pointer" : undefined}}>
+                        <span>{props.Label} {show ? "" : <ReactIcons.ChevronDown Size={12} />}</span>
                     </h6>
                 </> : null}
-            <ul className="navbar-nav px-3" style={props.Style}>
-                {props.children}
-            </ul>
-        </>)
-
+            {show ?
+                <ul className="navbar-nav px-3" style={props.Style}>
+                    {props.children}
+                </ul> : null}
+        </>
+    );
 }
 
 export default Section;

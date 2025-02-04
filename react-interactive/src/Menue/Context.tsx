@@ -1,4 +1,4 @@
-// ******************************************************************************************************
+﻿// ******************************************************************************************************
 //  CirclePlusSVG.tsx - Gbtc
 //
 //  Copyright © 2020, Grid Protection Alliance.  All Rights Reserved.
@@ -28,12 +28,14 @@ export interface IContext {
     homePath: string,
     userRoles: Application.Types.SecurityRoleName[],
     collapsed: boolean,
-    useSearchMatch: boolean
+    useSearchMatch: boolean,
+    allowSectionCollapse: boolean
 }
 
 export const Context = React.createContext({
     homePath: '',
     userRoles: ['Viewer'],
     collapsed: false,
-    useSearchMatch: false
+    useSearchMatch: false,
+    allowSectionCollapse: false
 } as IContext);
