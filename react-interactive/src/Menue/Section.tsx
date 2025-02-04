@@ -23,15 +23,22 @@
 
 import * as React from 'react';
 import { Context } from './Context';
+import { Application } from '@gpa-gemstone/application-typings';
 
 export interface IProps {
     Label?: string,
     Style?: React.CSSProperties
+    /** Needed to specify whether a user can access a section via roles. 
+     * Note: Individual pages will still need to be marked with roles as well for page access control if using non-legacy navigation. */
+    RequiredRoles?: Application.Types.SecurityRoleName[];
 }
 
-
 const Section: React.FunctionComponent<IProps> = (props) => {
-    const context = React.useContext(Context)
+    const context = React.useContext(Context);
+
+    if (props.RequiredRoles != null && props.RequiredRoles.filter(r => context.userRoles.findIndex(i => i === r) > -1).length === 0)
+        return null;
+
     return (
         <>
             <hr />
