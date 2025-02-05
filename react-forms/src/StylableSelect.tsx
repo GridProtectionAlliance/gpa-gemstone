@@ -32,13 +32,47 @@ import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 
 export interface IOption {
   Value: any;
-  Element: React.ReactElement<any>
+  Element: React.ReactElement<any> | string,
 }
 
-interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
+interface IProps<T> {
   /**
-  * Options for the select dropdown
-  * @type {{  Value: any, Element: React.ReactElement<any> }[]}
+    * Record to be used in form
+    * @type {T}
+  */
+  Record: T;
+  /**
+      * Field of the record to be edited
+      * @type {keyof T}
+  */
+  Field: keyof T;
+  /**
+      * Label to display for the form, defaults to the Field prop
+      * @type {string}
+      * @optional
+  */
+  Label?: string;
+
+  /**
+    * Help message or element to display
+    * @type {string | JSX.Element}
+    * @optional
+  */
+  Help?: string | JSX.Element;
+  /**
+    * Flag to disable the input field
+    * @type {boolean}
+    * @optional
+  */
+  Disabled?: boolean;
+  /**
+    * Setter function to update the Record
+    * @param record - Updated Record
+  */
+  Setter: (record: T, option: IOption) => void
+  /**
+* Options for the select dropdown
+* @type {{  Value: any, Element: React.ReactElement<any> }[]}
 */
   Options: IOption[];
   /**
@@ -63,7 +97,7 @@ export default function StylableSelect<T>(props: IProps<T>) {
   const tableContainer = React.useRef<HTMLDivElement>(null);
 
   const [show, setShow] = React.useState<boolean>(false);
-  const [selected, setSelected] = React.useState<React.ReactElement<any>>(props.Options[0].Element);
+  const [selected, setSelected] = React.useState<React.ReactElement<any> | string>(props.Options[0].Element);
   const [guid, setGuid] = React.useState<string>("");
   const [showHelp, setShowHelp] = React.useState<boolean>(false);
   const [position, setPosition] = React.useState<Gemstone.TSX.Interfaces.IElementPosition>({ Top: 0, Left: 0, Width: 0, Height: 0 });
@@ -110,7 +144,7 @@ export default function StylableSelect<T>(props: IProps<T>) {
 
     if (!stylableSelect.current.contains(evt.target as Node)) setShow(false);
     else setShow(!show);
-}, [props.Disabled, show])
+  }, [props.Disabled, show])
 
 
   // Update the parent component's state with the selected option.
@@ -120,7 +154,7 @@ export default function StylableSelect<T>(props: IProps<T>) {
     if (selectedOption.Value !== '') record[props.Field] = selectedOption.Value as any;
     else record[props.Field] = null as any;
 
-    props.Setter(record);
+    props.Setter(record, selectedOption);
   }
 
   // Effect for initial setup and event listeners.
