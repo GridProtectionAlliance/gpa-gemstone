@@ -28,14 +28,12 @@ export interface IContext {
     homePath: string,
     userRoles: Application.Types.SecurityRoleName[],
     collapsed: boolean,
-    useSearchMatch: boolean,
-    allowSectionCollapse: boolean
+    useSearchMatch: boolean
 }
 
 export const Context = React.createContext({
     homePath: '',
     userRoles: ['Viewer'],
     collapsed: false,
-    useSearchMatch: false,
-    allowSectionCollapse: false
+    useSearchMatch: false
 } as IContext);

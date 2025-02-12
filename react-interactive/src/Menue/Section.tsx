@@ -32,28 +32,32 @@ export interface IProps {
     /** Needed to specify whether a user can access a section via roles. 
      * Note: Individual pages will still need to be marked with roles as well for page access control if using non-legacy navigation. */
     RequiredRoles?: Application.Types.SecurityRoleName[];
+    // Allows section to be collapsable when navbar isn't, default true
+    AllowCollapse?: boolean
 }
 
 const Section: React.FunctionComponent<IProps> = (props) => {
     const context = React.useContext(Context);
     const [show, setShow] = React.useState<boolean>(true);
+    const [collapsable, setCollapsable] = React.useState<boolean>(true);
 
     const chevron = React.useMemo(() => {
-        if (!context.allowSectionCollapse) return null;
+        if (!collapsable) return null;
         if (show) return <ReactIcons.ChevronUp Style={{width:'1em', height: '1em'}} />;
         return <ReactIcons.ChevronDown Style={{width:'1em', height: '1em'}} />;
-    }, [context.allowSectionCollapse, show]);
+    }, [collapsable, show]);
 
     React.useEffect(() => {
-        if (!context.allowSectionCollapse) setShow(true);
-    }, [context.allowSectionCollapse]);
+        if (props.Label == null || context.collapsed) setCollapsable(false);
+        else setCollapsable(props.AllowCollapse ?? true);
+    }, [context.collapsed, props.Label, props.AllowCollapse]);
 
     const onClick = React.useCallback((event: React.MouseEvent<HTMLHeadingElement, MouseEvent>) => {
-        if (!context.allowSectionCollapse) return;
+        if (!collapsable) return;
         setShow(s=>!s);
         event.preventDefault();
         event.stopPropagation();
-    }, [context.allowSectionCollapse]);
+    }, [collapsable]);
 
     if (props.RequiredRoles != null && props.RequiredRoles.filter(r => context.userRoles.findIndex(i => i === r) > -1).length === 0)
         return null;
@@ -61,14 +65,14 @@ const Section: React.FunctionComponent<IProps> = (props) => {
     return (
         <>
             <hr />
-            {props.Label !== undefined && !context.collapsed ?
+            {(props.Label != null && !context.collapsed) ?
                 <>
                     <h6 className={"sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted"} 
-                        onClick={onClick} style={{cursor: context.allowSectionCollapse ? "pointer" : undefined}}>
+                        onClick={onClick} style={{cursor: collapsable ? "pointer" : undefined}}>
                         <span>{props.Label} {chevron}</span>
                     </h6>
                 </> : null}
-            {show ?
+            {(show || !collapsable) ?
                 <ul className="navbar-nav px-3" style={props.Style}>
                     {props.children}
                 </ul> : null}
