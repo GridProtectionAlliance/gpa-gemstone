@@ -25,7 +25,7 @@ import { Application } from '@gpa-gemstone/application-typings';
 import ToolTip from '../ToolTip';
 import * as React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { Context } from './Context';
+import { Context, SectionContext } from './Context';
 
 export interface IProps {
     /** Needed to specify whether a user can access a NavLink via Administrator role. */
@@ -46,6 +46,7 @@ const Page: React.FunctionComponent<IProps> = (props) => {
     const [hover, setHover] = React.useState<boolean>(false);
     const [className, setClassName] = React.useState<string>("nav-link");
     const context = React.useContext(Context);
+    const sectionGuid = React.useContext(SectionContext);
     const location = useLocation();
 
     React.useEffect(() => {
@@ -66,6 +67,7 @@ const Page: React.FunctionComponent<IProps> = (props) => {
             return false;
         }
         const isPathActive = currentPage.startsWith(`${context.homePath}${props.Name}`) || isOtherPathActive();
+        if (isPathActive) context.setActiveSection(sectionGuid);
         setClassName(`nav-link ${(isPathActive ? "active" : "")}`);
     }, [location.pathname, (context.useSearchMatch ? location.search : null), props.OtherActivePages, props.Name]);
 

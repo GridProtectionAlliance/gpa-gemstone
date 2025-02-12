@@ -117,6 +117,7 @@ const Applications: React.ForwardRefRenderFunction<IApplicationRefs, React.Props
 
     const [shouldRemoveSideNav, setShouldRemoveSideNav] = React.useState<boolean>(false);
     const [shouldAddCollapseOptions, setShouldAddCollapseOptions] = React.useState<boolean>(false);
+    const [activeSection, setActiveSection] = React.useState<string>('');
 
     const showOpen = (props.AllowCollapsed !== undefined && props.AllowCollapsed || shouldAddCollapseOptions) && collapsed;
     const showClose = (props.AllowCollapsed !== undefined && props.AllowCollapsed || shouldAddCollapseOptions) && !collapsed;
@@ -161,7 +162,9 @@ const Applications: React.ForwardRefRenderFunction<IApplicationRefs, React.Props
             homePath: props.HomePath,
             userRoles: (props.UserRoles ?? ['Viewer']),
             collapsed,
-            useSearchMatch: props.UseLegacyNavigation ?? false
+            useSearchMatch: props.UseLegacyNavigation ?? false,
+            activeSection,
+            setActiveSection
         } as IContext
     }
 

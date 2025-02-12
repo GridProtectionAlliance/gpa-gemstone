@@ -22,9 +22,10 @@
 // ******************************************************************************************************
 
 import * as React from 'react';
-import { Context } from './Context';
+import { Context, SectionContext } from './Context';
 import { Application } from '@gpa-gemstone/application-typings';
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
+import { CreateGuid } from '@gpa-gemstone/helper-functions';
 
 export interface IProps {
     Label?: string,
@@ -40,6 +41,7 @@ const Section: React.FunctionComponent<IProps> = (props) => {
     const context = React.useContext(Context);
     const [show, setShow] = React.useState<boolean>(true);
     const [collapsable, setCollapsable] = React.useState<boolean>(true);
+    const [guid, _setGuid] = React.useState<string>(CreateGuid());
 
     const chevron = React.useMemo(() => {
         if (!collapsable) return null;
@@ -48,9 +50,9 @@ const Section: React.FunctionComponent<IProps> = (props) => {
     }, [collapsable, show]);
 
     React.useEffect(() => {
-        if (props.Label == null || context.collapsed) setCollapsable(false);
+        if (props.Label == null || context.collapsed || guid === context.activeSection) setCollapsable(false);
         else setCollapsable(props.AllowCollapse ?? true);
-    }, [context.collapsed, props.Label, props.AllowCollapse]);
+    }, [context.collapsed, context.activeSection, props.Label, props.AllowCollapse]);
 
     const onClick = React.useCallback((event: React.MouseEvent<HTMLHeadingElement, MouseEvent>) => {
         if (!collapsable) return;
@@ -63,7 +65,7 @@ const Section: React.FunctionComponent<IProps> = (props) => {
         return null;
 
     return (
-        <>
+        <SectionContext.Provider value={guid}>
             <hr />
             {(props.Label != null && !context.collapsed) ?
                 <>
@@ -76,7 +78,7 @@ const Section: React.FunctionComponent<IProps> = (props) => {
                 <ul className="navbar-nav px-3" style={props.Style}>
                     {props.children}
                 </ul> : null}
-        </>
+        </SectionContext.Provider>
     );
 }
 
