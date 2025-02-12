@@ -38,7 +38,6 @@ interface IProps {
     HomePath: string,
     DefaultPath: string,
     Logo?: string,
-    LogoLink?: string,
     OnSignOut?: () => void,
     Version?: string,
     UserRoles?: Application.Types.SecurityRoleName[]
@@ -62,7 +61,6 @@ interface IHeaderProps {
     SetCollapsed: (c: boolean) => void,
     HomePath: string,
     Logo?: string,
-    LogoLink?: string,
     OnSignOut?: () => void,
     ShowOpen: boolean,
     ShowClose: boolean,
@@ -201,7 +199,6 @@ const Applications: React.ForwardRefRenderFunction<IApplicationRefs, React.Props
                         SetCollapsed={setCollapsed}
                         HomePath={props.HomePath}
                         Logo={props.Logo}
-                        LogoLink={props.LogoLink}
                         OnSignOut={props.OnSignOut}
                         ShowOpen={hideSide ? false : showOpen}
                         ShowClose={hideSide ? false : showClose}
@@ -240,7 +237,6 @@ const Applications: React.ForwardRefRenderFunction<IApplicationRefs, React.Props
                         SetCollapsed={setCollapsed}
                         HomePath={props.HomePath}
                         Logo={props.Logo}
-                        LogoLink={props.LogoLink}
                         OnSignOut={props.OnSignOut}
                         ShowOpen={showOpen}
                         ShowClose={showClose}
@@ -308,7 +304,7 @@ const HeaderContent = React.forwardRef<HTMLDivElement, IHeaderProps>((props, ref
                 <ReactIcons.ArrowBackward/>
             </a> : null}
             {props.Logo !== undefined ?
-                <a className="navbar-brand col-sm-2 col-md-1 mr-0 mr-auto" href={props.LogoLink ?? props.HomePath} ><img style={{ maxHeight: 35, margin: -5 }} src={props.Logo} /></a> : null}
+                < a className="navbar-brand col-sm-2 col-md-1 mr-0 mr-auto" href={props.HomePath} ><img style={{ maxHeight: 35, margin: -5 }} src={props.Logo} /></a> : null}
             <ul className="navbar-nav px-3 ml-auto">
                 <li className="nav-item text-nowrap">
                     {props.OnSignOut !== undefined ? <a className="nav-link" onClick={props.OnSignOut} >Sign out</a> : null}
