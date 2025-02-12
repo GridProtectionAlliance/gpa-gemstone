@@ -39,7 +39,7 @@ export const Context = React.createContext({
     collapsed: false,
     useSearchMatch: false,
     activeSection: '',
-    setActiveSection: () => {}
+    setActiveSection: () => {/*Do nothing*/}
 } as IContext);
 
 
