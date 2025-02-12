@@ -44,9 +44,7 @@ interface IProps {
     AllowCollapsed?: boolean
     NavBarContent?: React.ReactNode,
     HideSideBar?: boolean,
-    UseLegacyNavigation?: boolean,
-    UseSearchMatch?: boolean,
-    AllowSectionCollapse?: boolean
+    UseLegacyNavigation?: boolean
 }
 
 interface IApplicationRefs {
@@ -163,8 +161,7 @@ const Applications: React.ForwardRefRenderFunction<IApplicationRefs, React.Props
             homePath: props.HomePath,
             userRoles: (props.UserRoles ?? ['Viewer']),
             collapsed,
-            useSearchMatch: props.UseSearchMatch ?? false,
-            allowSectionCollapse: props.AllowSectionCollapse ?? false 
+            useSearchMatch: props.UseLegacyNavigation ?? false
         } as IContext
     }
 
