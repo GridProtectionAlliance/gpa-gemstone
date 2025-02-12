@@ -27,11 +27,20 @@ import * as React from 'react';
 export interface IContext {
     homePath: string,
     userRoles: Application.Types.SecurityRoleName[],
-    collapsed: boolean
+    collapsed: boolean,
+    useSearchMatch: boolean,
+    activeSection: string,
+    setActiveSection: (guid: string) => void
 }
 
 export const Context = React.createContext({
     homePath: '',
     userRoles: ['Viewer'],
-    collapsed: false
+    collapsed: false,
+    useSearchMatch: false,
+    activeSection: '',
+    setActiveSection: () => {/*Do nothing*/}
 } as IContext);
+
+
+export const SectionContext = React.createContext("");

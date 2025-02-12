@@ -111,12 +111,13 @@ const Applications: React.ForwardRefRenderFunction<IApplicationRefs, React.Props
     const mainDivRef = React.useRef<HTMLDivElement>(null);
     const { width } = useGetContainerPosition(mainDivRef);
 
-    const [ignored, forceUpdate] = React.useReducer((x: number) => x + 1, 0); // integer state for resize renders
+    const [_ignored, forceUpdate] = React.useReducer((x: number) => x + 1, 0); // integer state for resize renders
 
     const [navBarHeight, setNavBarHeight] = React.useState<number>(40);
 
     const [shouldRemoveSideNav, setShouldRemoveSideNav] = React.useState<boolean>(false);
     const [shouldAddCollapseOptions, setShouldAddCollapseOptions] = React.useState<boolean>(false);
+    const [activeSection, setActiveSection] = React.useState<string>('');
 
     const showOpen = (props.AllowCollapsed !== undefined && props.AllowCollapsed || shouldAddCollapseOptions) && collapsed;
     const showClose = (props.AllowCollapsed !== undefined && props.AllowCollapsed || shouldAddCollapseOptions) && !collapsed;
@@ -160,7 +161,10 @@ const Applications: React.ForwardRefRenderFunction<IApplicationRefs, React.Props
         return {
             homePath: props.HomePath,
             userRoles: (props.UserRoles ?? ['Viewer']),
-            collapsed
+            collapsed,
+            useSearchMatch: props.UseLegacyNavigation ?? false,
+            activeSection,
+            setActiveSection
         } as IContext
     }
 
@@ -239,20 +243,18 @@ const Applications: React.ForwardRefRenderFunction<IApplicationRefs, React.Props
                         NavBarContent={props.NavBarContent}
                         ref={navBarRef}
                     />
-                    <React.Suspense fallback={<LoadingScreen Show={true} />}>
-                        <SideBarContent Collapsed={collapsed} HideSide={hideSide} Version={props.Version}>{props.children}</SideBarContent>
-                        <MainDiv left={hideSide ? 0 : (collapsed ? 50 : 200)} top={navBarHeight}>
-                            {React.Children.map(props.children, (element) => {
-                                if (!React.isValidElement(element))
-                                    return null;
-                                if ((element as React.ReactElement<any>).type === Page && React.Children.count(element.props.children) > 0)
-                                    return element.props.children;
-                                if ((element as React.ReactElement<any>).type === Section)
-                                    return null;
-                                return element;
-                            })}
-                        </MainDiv>
-                    </React.Suspense>
+                    <SideBarContent Collapsed={collapsed} HideSide={hideSide} Version={props.Version}>{props.children}</SideBarContent>
+                    <MainDiv left={hideSide ? 0 : (collapsed ? 50 : 200)} top={navBarHeight}>
+                        {React.Children.map(props.children, (element) => {
+                            if (!React.isValidElement(element))
+                                return null;
+                            if ((element as React.ReactElement<any>).type === Page && React.Children.count(element.props.children) > 0)
+                                return element.props.children;
+                            if ((element as React.ReactElement<any>).type === Section)
+                                return null;
+                            return element;
+                        })}
+                    </MainDiv>
                 </div>}
         </Context.Provider>
     </>
