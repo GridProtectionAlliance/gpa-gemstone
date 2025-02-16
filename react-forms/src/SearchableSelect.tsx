@@ -60,15 +60,15 @@ interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
 }
 
 export default function SearchableSelect<T>(props: IProps<T>) {
-    const [search, setSearch] = React.useState<string>((props.Record[props.Field] as any).toString());
-    const [label, setLabel] = React.useState<string>((props.Record[props.Field] as any).toString());
+    const [search, setSearch] = React.useState<string>((props.Record[props.Field] as any)?.toString() ?? '');
+    const [label, setLabel] = React.useState<string>((props.Record[props.Field] as any)?.toString() ?? '');
 
     const [results, setResults] = React.useState<IStylableOption[]>([]);
     const [loading, setLoading] = React.useState<boolean>(false);
 
     React.useEffect(() => {
         if (props.GetLabel === undefined)
-            setLabel((props.Record[props.Field] as any).toString())
+            setLabel((props.Record[props.Field] as any)?.toString() ?? '')
         else {
             setLoading(true);
             const [handle, callback] = props.GetLabel();
@@ -127,7 +127,7 @@ export default function SearchableSelect<T>(props: IProps<T>) {
     }, [search, props.Record[props.Field], results, props.Disabled, loading, label, props.AllowCustom, handleOnBlur]);
 
     const update = React.useCallback((record: T, selectedOption: IStylableOption) => {
-        const stringVal: string = (record[props.Field] as any).toString();
+        const stringVal: string = (record[props.Field] as any)?.toString() ?? '';
         let newLabel = stringVal;
 
         if (!React.isValidElement(selectedOption.Element))
