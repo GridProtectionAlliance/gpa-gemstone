@@ -43,7 +43,7 @@ const RoleAccessErrorPage: React.FunctionComponent<IProps> = (props) =>
             </div>
             <div className="row" style={{ alignItems: "top", justifyContent: "center", width: "100%", height: `50%` }}>
                 <ServerErrorIcon Show={true} Size={100} 
-                    Label={'Your role does not have permission to view this page.\nPlease contact your Administrator if you believe this to be in error.'}
+                    Label={'You do not have permission to view this page.\n Please contact your Administrator if you believe this to be in error.'}
                 />
             </div>
         </div>
