@@ -89,13 +89,13 @@ const FileUpload = (props: IProps) => {
     return (
         <>
             <div className='row'>
-                <div className='col-auto mt-2'>
+                <div className='col-auto mt-2 pl-0'>
                     <label style={{ cursor: 'pointer' }}>
                         <ReactIcons.ShareArrow Color='var(--info)' />
                         <input type="file" onChange={handleFileUpload} accept={props.FileTypeAttribute} style={{ display: 'none' }} />
                     </label>
                 </div>
-                <div className='col-auto'>
+                <div className='col-auto pl-0'>
                     <button className='btn' onClick={handleOnClear}>
                         <ReactIcons.CircledX Color='red' />
                     </button>

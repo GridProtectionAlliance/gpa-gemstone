@@ -107,6 +107,7 @@ export default function SearchableSelect<T>(props: IProps<T>) {
                     value={search}
                     onChange={(d) => setSearch(d.target.value)}
                     onBlur={handleOnBlur}
+                    disabled={props.Disabled ?? false}
                 />
                 {loading ?
                     <div className="input-group-append">

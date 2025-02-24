@@ -25,6 +25,7 @@ import styled from "styled-components";
 import { GetNodeSize } from '@gpa-gemstone/helper-functions'
 import { Portal } from 'react-portal';
 import { isEqual } from 'lodash';
+import { Gemstone } from '@gpa-gemstone/application-typings';
 
 interface IProps {
   Show: boolean,
@@ -38,17 +39,7 @@ interface IWrapperProps {
   Show: boolean,
   Top: number,
   Left: number,
-  Location: ('top' | 'bottom' | 'left' | 'right'),
   Zindex: number,
-  TargetLeft: number,
-  TargetWidth: number
-}
-
-type IElementPosition = {
-  Top: number,
-  Left: number,
-  Width: number,
-  Height: number
 }
 
 // The styled tooltip wrapper component.
@@ -76,7 +67,7 @@ const ToolTip: React.FunctionComponent<IProps> = (props) => {
   const [left, setLeft] = React.useState<number>(0);
   const [arrowPositionPercent, setArrowPositionPercent] = React.useState<number>(50);
 
-  const [targetPosition, setTargetPosition] = React.useState<IElementPosition>(defaultTargetPosition)
+  const [targetPosition, setTargetPosition] = React.useState<Gemstone.TSX.Interfaces.IElementPosition>(defaultTargetPosition)
 
   React.useEffect(() => {
     const target = document.querySelectorAll(`[data-tooltip${props.Target === undefined ? '' : `="${props.Target}"`}]`)
@@ -102,7 +93,7 @@ const ToolTip: React.FunctionComponent<IProps> = (props) => {
 
   return (
     <Portal>
-      <WrapperDiv className={`popover bs-popover-${props.Position ?? 'top'} border`} Show={props.Show} Top={top} Left={left} ref={toolTip} Location={props.Position === undefined ? 'top' : props.Position} Zindex={zIndex} TargetLeft={targetPosition.Left} TargetWidth={targetPosition.Width}>
+      <WrapperDiv className={`popover bs-popover-${props.Position ?? 'top'} border`} Show={props.Show} Top={top} Left={left} ref={toolTip} Zindex={zIndex}>
         <div className='arrow' style={props.Position === 'left' || props.Position === 'right' ? { top: `calc(${arrowPositionPercent}% - 1em)` } : { left: `calc(${arrowPositionPercent}% - 1em)` }} />
         <div className='popover-body'>
           {props.children}
@@ -113,7 +104,7 @@ const ToolTip: React.FunctionComponent<IProps> = (props) => {
 }
 
 //Helper function
-const getPosition = (toolTip: React.MutableRefObject<HTMLDivElement | null>, targetPosition: IElementPosition, position: ('top' | 'bottom' | 'left' | 'right')) => {
+const getPosition = (toolTip: React.MutableRefObject<HTMLDivElement | null>, targetPosition: Gemstone.TSX.Interfaces.IElementPosition, position: ('top' | 'bottom' | 'left' | 'right')) => {
   if (toolTip.current === null)
     return [-999, -999];
 

@@ -43,7 +43,7 @@ interface IProps<T> {
     * */
     ReviewUI: (props: { Data: T[] }) => JSX.Element
     /** 
-    * React Component to be used in the Review Step
+    * React Component to be used in the Complete Step
     * @type {React.FC<IReviewProps<T>>}
     * */
     CompleteUI?: JSX.Element
@@ -72,6 +72,16 @@ interface IProps<T> {
      * @param {string[]} errors - Array of error messages.
      */
     SetErrors: (errors: string[]) => void;
+    /**
+     * Optional Progress Bar component to replace internal Progress Bar. 
+     * @type {JSX.Element} 
+     */
+    ProgressBar?: JSX.Element,
+    /**
+     * Optional flag to call OnComplete handler when the review step is hit.
+     * @type {boolean}
+     */
+    CompleteOnReview?: boolean
 }
 const steps = [{ short: 'Upload', long: 'Upload', id: 'Upload' }, { short: 'Process', long: 'Process', id: 'Process' }, { short: "Review", id: 'Review', long: 'Review' }, { short: 'Complete', long: 'Complete', id: 'Complete' }]
 const fileExtRegex = /(\.[^.]+)$/;
@@ -97,6 +107,7 @@ export default function BulkUpload<T>(props: IProps<T>) {
     }, [props.Step, currentPipelineIndex, rawFileContent, props.CurrentPipelineStep, props.Pipelines])
 
     const progressSteps = React.useMemo(() => {
+        if(props.ProgressBar != null) return []
         if (currentPipelineIndex == null || currentPipelineIndex > props.Pipelines.length - 1 || props.CurrentPipelineStep > props.Pipelines?.[currentPipelineIndex]?.Steps?.length - 1) return steps
 
         const pipelineSteps = props.Pipelines[currentPipelineIndex].Steps.map((step, i) => ({ short: step.Label, long: step.Label, id: i }))
@@ -136,7 +147,7 @@ export default function BulkUpload<T>(props: IProps<T>) {
     }, [rawFileContent, fileName, isFileTypeValid, pipelineErrors, props.Step]);
 
     React.useEffect(() => {
-        if (props.Step !== 'Complete') return;
+        if (props.Step !== 'Complete' || (props.CompleteOnReview ?? false)) return;
         props.OnComplete(data);
     }, [props.Step, data, props.OnComplete]);
 
@@ -177,7 +188,9 @@ export default function BulkUpload<T>(props: IProps<T>) {
                 <div className='col-12 d-flex flex-column h-100'>
                     <div className='row'>
                         <div className='col-12'>
-                            <ProgressBar steps={progressSteps} activeStep={activeProgressStep} />
+                            {props.ProgressBar != null ? props.ProgressBar :
+                                <ProgressBar steps={progressSteps} activeStep={activeProgressStep} />
+                            }
                         </div>
                     </div>
                     {props.Step === 'Upload' ?

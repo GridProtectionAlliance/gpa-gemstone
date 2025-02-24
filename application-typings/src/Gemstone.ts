@@ -120,9 +120,10 @@ namespace Gemstone {
                  * Function to process the field value and update the record.
                  * @param {string} val - The value to process.
                  * @param {T} record - The record to update.
+                 * @param {keyof T} field - The field of the record to update.
                  * @returns {T}
                  */
-                Process: (val: string, record: T) => T;
+                Process: (val: string, record: T, field: keyof T) => T;
 
                 /**
                  * Flag indicating if the field is required.

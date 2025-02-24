@@ -184,10 +184,10 @@ export default function SearchBar<T>(props: React.PropsWithChildren<IProps<T>>) 
         </>)
 
     return (
-        <div style={{ width: '100%' }}>
+        <div className='w-100'>
             <nav className="navbar navbar-expand">
-                <div style={{ width: '100%' }}>
-                    <ul className="navbar-nav mr-auto" style={{ width: '100%' }}>
+                <div className='w-100'>
+                    <ul className="navbar-nav mr-auto d-flex align-items-center w-100">
                         {props.Direction === 'right' ? props.children : null}
                         {props.Label !== undefined ?
                             <li className="nav-item" style={{ minWidth: (props.Width === undefined ? '150px' : undefined), width: props.Width, paddingRight: 10 }}>
