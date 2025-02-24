@@ -48,7 +48,7 @@ interface IAdditionalUIProps {
 
 const AdditionalUploadUI = (props: IAdditionalUIProps) => {
     return (
-        <div className='row justify-content-center m-0'>
+        <div className='row justify-content-center'>
             <div className='col-6 p-0'>
                 <CheckBox Record={{ HasHeaders: props.HasHeaders }} Field="HasHeaders" Setter={(record) => props.SetHasHeaders(record.HasHeaders)} Label='My Data Has Headers' />
             </div>
@@ -290,7 +290,7 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
                 if (field == null) return;
 
                 const value = row[index + 1];
-                record = field.Process(value, record);
+                record = field.Process(value, record, field.Field);
             });
 
             mappedData.push(record);
