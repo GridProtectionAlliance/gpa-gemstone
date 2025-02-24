@@ -24,12 +24,12 @@
 import { Context, IContext } from "./Context";
 import * as React from 'react';
 import { BrowserRouter as Router, Navigate, Route, Routes } from 'react-router-dom';
-import Page, {IProps as IPageProps} from "./Page";
+import Page, { IProps as IPageProps } from "./Page";
 import Section from './Section';
 import LoadingScreen from '../LoadingScreen';
 import ServerErrorIcon from '../ServerErrorIcon';
 import styled from "styled-components";
-import { ReactIcons } from "@gpa-gemstone/gpa-symbols"; 
+import { ReactIcons } from "@gpa-gemstone/gpa-symbols";
 import { Application } from '@gpa-gemstone/application-typings';
 import Content from "./Content";
 import { useGetContainerPosition } from '@gpa-gemstone/helper-functions';
@@ -128,7 +128,7 @@ const Applications: React.ForwardRefRenderFunction<IApplicationRefs, React.Props
     });
 
     React.useEffect(() => {
-        if(width === 0) return;
+        if (width === 0) return;
 
         if (width <= 200)
             setShouldRemoveSideNav(true);
@@ -194,7 +194,7 @@ const Applications: React.ForwardRefRenderFunction<IApplicationRefs, React.Props
     return <>
         <Context.Provider value={GetContext()}>
             {props.UseLegacyNavigation === undefined || !props.UseLegacyNavigation ? <Router>
-                <div ref={mainDivRef} style={{ width: window.innerWidth, height: window.innerHeight, position: "absolute" }}>
+                <div ref={mainDivRef} style={{ width: '100%', height: '100%' ,position: "absolute" }}>
                     <HeaderContent
                         SetCollapsed={setCollapsed}
                         HomePath={props.HomePath}
@@ -232,7 +232,7 @@ const Applications: React.ForwardRefRenderFunction<IApplicationRefs, React.Props
                     </React.Suspense>
                 </div>
             </Router> :
-                <div ref={mainDivRef} style={{ width: window.innerWidth, height: window.innerHeight, position: "absolute" }}>
+                <div ref={mainDivRef} style={{ width: '100%', height: '100%' ,position: "absolute" }}>
                     <HeaderContent
                         SetCollapsed={setCollapsed}
                         HomePath={props.HomePath}
@@ -298,10 +298,10 @@ const HeaderContent = React.forwardRef<HTMLDivElement, IHeaderProps>((props, ref
     return <>
         <nav className="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow" ref={ref}>
             {props.ShowOpen ? <a style={{ color: 'var(--light)', marginLeft: 15 }} onClick={() => props.SetCollapsed(false)} >
-                <ReactIcons.ArrowForward/>
+                <ReactIcons.ArrowForward />
             </a> : null}
             {props.ShowClose ? <a style={{ color: 'var(--light)', marginLeft: 15 }} onClick={() => props.SetCollapsed(true)}>
-                <ReactIcons.ArrowBackward/>
+                <ReactIcons.ArrowBackward />
             </a> : null}
             {props.Logo !== undefined ?
                 < a className="navbar-brand col-sm-2 col-md-1 mr-0 mr-auto" href={props.HomePath} ><img style={{ maxHeight: 35, margin: -5 }} src={props.Logo} /></a> : null}
