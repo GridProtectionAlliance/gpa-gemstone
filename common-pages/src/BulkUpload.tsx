@@ -107,7 +107,7 @@ export default function BulkUpload<T>(props: IProps<T>) {
     }, [props.Step, currentPipelineIndex, rawFileContent, props.CurrentPipelineStep, props.Pipelines])
 
     const progressSteps = React.useMemo(() => {
-        if(props.ProgressBar != null) return []
+        if (props.ProgressBar != null) return []
         if (currentPipelineIndex == null || currentPipelineIndex > props.Pipelines.length - 1 || props.CurrentPipelineStep > props.Pipelines?.[currentPipelineIndex]?.Steps?.length - 1) return steps
 
         const pipelineSteps = props.Pipelines[currentPipelineIndex].Steps.map((step, i) => ({ short: step.Label, long: step.Label, id: i }))
@@ -147,9 +147,9 @@ export default function BulkUpload<T>(props: IProps<T>) {
     }, [rawFileContent, fileName, isFileTypeValid, pipelineErrors, props.Step]);
 
     React.useEffect(() => {
-        if (props.Step !== 'Complete' || (props.CompleteOnReview ?? false)) return;
-        props.OnComplete(data);
-    }, [props.Step, data, props.OnComplete]);
+        if ((props.Step === 'Review' && (props.CompleteOnReview ?? false)) || props.Step === 'Complete')
+            props.OnComplete(data);
+    }, [props.Step, props.CompleteOnReview, data]);
 
     const handleFileUpload = (file: File) => {
         const matchArray = file.name.match(fileExtRegex);
