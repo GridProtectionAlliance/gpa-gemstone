@@ -77,6 +77,11 @@ interface IProps<T> {
      * @type {JSX.Element} 
      */
     ProgressBar?: JSX.Element,
+    /**
+     * Optional flag to call OnComplete handler when the review step is hit.
+     * @type {boolean}
+     */
+    CompleteOnReview?: boolean
 }
 const steps = [{ short: 'Upload', long: 'Upload', id: 'Upload' }, { short: 'Process', long: 'Process', id: 'Process' }, { short: "Review", id: 'Review', long: 'Review' }, { short: 'Complete', long: 'Complete', id: 'Complete' }]
 const fileExtRegex = /(\.[^.]+)$/;
@@ -142,7 +147,7 @@ export default function BulkUpload<T>(props: IProps<T>) {
     }, [rawFileContent, fileName, isFileTypeValid, pipelineErrors, props.Step]);
 
     React.useEffect(() => {
-        if (props.Step !== 'Complete') return;
+        if (props.Step !== 'Complete' || (props.CompleteOnReview ?? false)) return;
         props.OnComplete(data);
     }, [props.Step, data, props.OnComplete]);
 
@@ -184,7 +189,7 @@ export default function BulkUpload<T>(props: IProps<T>) {
                     <div className='row'>
                         <div className='col-12'>
                             {props.ProgressBar != null ? props.ProgressBar :
-                            <ProgressBar steps={progressSteps} activeStep={activeProgressStep} />
+                                <ProgressBar steps={progressSteps} activeStep={activeProgressStep} />
                             }
                         </div>
                     </div>
