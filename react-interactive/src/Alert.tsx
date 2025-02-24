@@ -26,17 +26,18 @@ interface IProps {
     AlertColor?: 'alert-primary' | 'alert-secondary' | 'alert-success' | 'alert-danger' | 'alert-warning' | 'alert-info' | 'alert-light'
     Style?: React.CSSProperties,
     Show: boolean,
-    SetShow: (show: boolean) => void
+    SetShow?: (show: boolean) => void
 }
 
-const DismissibleAlert = (props: React.PropsWithChildren<IProps>) => {
-
+const Alert = (props: React.PropsWithChildren<IProps>) => {
     return (
         <div className={`alert ${props.AlertColor ?? 'alert-dark'} alert-dismissible fade ${props.Show ? 'show' : 'd-none'}`} style={props.Style}>
             {props.children}
-            <button type="button" className="close" onClick={() => props.SetShow(false)}> <span aria-hidden="true">&times;</span> </button>
+            {props.SetShow !== undefined ?
+                <button type="button" className="close" onClick={() => props.SetShow!(false)}> <span aria-hidden="true">&times;</span> </button>
+                : null}
         </div>
     )
 }
 
-export default DismissibleAlert;
+export default Alert;
