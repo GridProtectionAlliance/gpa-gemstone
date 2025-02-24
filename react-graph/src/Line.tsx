@@ -71,7 +71,7 @@ export const InternalLine = React.forwardRef<PointNode | null, IInteralProps>((p
         return <LineLegend
             size='sm' label={txt} color={props.color} lineStyle={props.lineStyle}
             setEnabled={setEnabled} enabled={enabled} hasNoData={data == null} />;
-    }, [props.color, props.lineStyle, enabled, data]);
+    }, [props.color, props.lineStyle, enabled, data, props.legend]);
 
     const createContextData = React.useCallback(() => {
         return {
