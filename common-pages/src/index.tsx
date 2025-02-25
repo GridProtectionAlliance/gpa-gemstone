@@ -33,6 +33,7 @@ import NavBarFilterButton from './NavBarFilterButton';
 import { useCSVPipeline } from './Pipelines/CSVPipeline';
 import * as TimeWindowUtils from './TimeFilter/TimeWindowUtils';
 import BulkUpload from './BulkUpload';
+import RoleAccessErrorPage from './RoleAcessErrorPage';
 
 const Pipelines = {
   CSV: useCSVPipeline
@@ -50,5 +51,6 @@ export {
   DefaultSelects,
   ErrorBoundary,
   Pipelines,
-  BulkUpload
+  BulkUpload,
+  RoleAccessErrorPage
 };

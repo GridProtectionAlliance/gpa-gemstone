@@ -66,16 +66,26 @@ export default function SearchBar<T>(props: React.PropsWithChildren<IProps<T>>) 
     // Handling filter storage between sessions if a storageID exists
     React.useEffect(() => {
         if (props.StorageID !== undefined) {
-            const storedFilters = JSON.parse(localStorage.getItem(props.StorageID) as string) ?? [];
+            // Get Button Filters
+            const storedFilters = JSON.parse(localStorage.getItem(`${props.StorageID}.Filters`) as string) ?? [];
             setFilters(storedFilters);
-            props.SetFilter(storedFilters);
+            // Get Bar Search
+            const storedSearch = localStorage.getItem(`${props.StorageID}.Search`) ?? "";
+            setSearch(storedSearch);
+            // If storedsearch is empty, then react won't trigger use effects for it, thus we have to search here
+            if (storedSearch === "") props.SetFilter(storedFilters);
         }
     }, []);
 
     React.useEffect(() => {
-        if (props.StorageID !== undefined)
-            localStorage.setItem(props.StorageID, JSON.stringify(filters));
+        if (props.StorageID != null)
+            localStorage.setItem(`${props.StorageID}.Filters`, JSON.stringify(filters));
     }, [filters]);
+
+    React.useEffect(() => {
+        if (props.StorageID != null)
+            localStorage.setItem(`${props.StorageID}.Search`, search);
+    }, [search]);
 
     // Update SearchFilter if there are any Character and only do it every 500ms to avoid hammering the server while typing
     React.useEffect(() => {
@@ -93,10 +103,13 @@ export default function SearchBar<T>(props: React.PropsWithChildren<IProps<T>>) 
     }, [search]);
 
     React.useEffect(() => {
-        if (searchFilter !== null)
-            props.SetFilter([...filters, searchFilter]);
-        if (searchFilter === null && !(isFirstRender.current && props.StorageID !== undefined)) // We need to skip the first render call or we will get a race condition with the props.setFilter in the blank useEffect
-            props.SetFilter(filters);
+        // We need to skip the first render call or we will get a race condition with the props.setFilter in the blank useEffect
+        if (!isFirstRender.current || props.StorageID == null) {
+            if (searchFilter != null)
+                props.SetFilter([...filters, searchFilter]);
+            else
+                props.SetFilter(filters);
+        }
         isFirstRender.current = false;
     }, [searchFilter])
 
@@ -156,7 +169,7 @@ export default function SearchBar<T>(props: React.PropsWithChildren<IProps<T>>) 
                     {props.defaultCollumn !== undefined ?
                         <div className="col">
                             <div className="input-group">
-                                <input className="form-control mr-sm-2" type="search" placeholder={"Search " + props.defaultCollumn.label} onChange={(event) => setSearch(event.target.value as string)} />
+                                <input className="form-control mr-sm-2" type="search" placeholder={"Search " + props.defaultCollumn.label} onChange={(event) => setSearch(event.target.value as string)} value={search} />
                                 {props.ShowLoading !== undefined && props.ShowLoading ? <div className="input-group-append"> <LoadingIcon Show={true} /> </div> : null}
                             </div>
                             <p style={{ marginTop: 2, marginBottom: 2 }}>{props.ResultNote}</p>
