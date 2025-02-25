@@ -97,18 +97,18 @@ export default function DateTimePicker<T>(props: IProps<T>) {
     //Effect to set top and left on a scroll event
     React.useEffect(() => {
         function updatePosition() {
-            if (divRef.current) {
+            if (divRef.current != null) {
                 const node = GetNodeSize(divRef.current);
                 setLeft(node.left + 0.5 * node.width);
                 setTop(node.top + node.height + 10);
             }
         }
-    
+
         document.addEventListener('scroll', updatePosition, true);
         window.addEventListener('resize', updatePosition);
-    
+
         updatePosition(); // Initial update
-    
+ 
         return () => {
             document.removeEventListener('scroll', updatePosition, true);
             window.removeEventListener('resize', updatePosition);
