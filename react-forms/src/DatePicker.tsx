@@ -56,7 +56,7 @@ export default function DateTimePicker<T>(props: IProps<T>) {
     // State and ref declarations.
     const divRef = React.useRef<any | null>(null);
 
-    const [guid, setGuid] = React.useState<string>("");
+    const [guid] = React.useState<string>(CreateGuid());
     const [showHelp, setShowHelp] = React.useState<boolean>(false);
 
     // Adds a buffer between the outside props and what the box is reading to prevent box overwriting every render with a keystroke
@@ -71,10 +71,6 @@ export default function DateTimePicker<T>(props: IProps<T>) {
     const [left, setLeft] = React.useState<number>(0);
 
     const allowNull = React.useMemo(() => props.AllowEmpty ?? false, [props.AllowEmpty]);
-
-    React.useEffect(() => {
-        setGuid(CreateGuid());
-    }, []);
 
     React.useEffect(() => {
         if (props.Record[props.Field] as any !== null) {
@@ -98,6 +94,28 @@ export default function DateTimePicker<T>(props: IProps<T>) {
         setTop(node.top + node.height + 10);
     })
 
+    //Effect to set top and left on a scroll event
+    React.useEffect(() => {
+        function updatePosition() {
+            if (divRef.current) {
+                const node = GetNodeSize(divRef.current);
+                setLeft(node.left + 0.5 * node.width);
+                setTop(node.top + node.height + 10);
+            }
+        }
+    
+        document.addEventListener('scroll', updatePosition, true);
+        window.addEventListener('resize', updatePosition);
+    
+        updatePosition(); // Initial update
+    
+        return () => {
+            document.removeEventListener('scroll', updatePosition, true);
+            window.removeEventListener('resize', updatePosition);
+        };
+    }, []);
+
+    //Effect to handle click events on the window
     React.useEffect(() => {
         if (showOverlay) {
             window.addEventListener('click', onWindowClick);
@@ -111,7 +129,7 @@ export default function DateTimePicker<T>(props: IProps<T>) {
         if (allowNull && arg === undefined && props.Record[props.Field] !== null)
             props.Setter({ ...props.Record, [props.Field]: null });
         else if (
-            (arg != undefined && validateDate(arg)) && 
+            (arg != undefined && validateDate(arg)) &&
             (props.Record[props.Field] as any).toString() !== arg.format(recordFormat)
         ) props.Setter({ ...props.Record, [props.Field]: arg.format(recordFormat) });
     }
@@ -169,7 +187,7 @@ export default function DateTimePicker<T>(props: IProps<T>) {
     function validateDate(date?: moment.Moment) {
         const minStartDate = props.MinDate != null ? props.MinDate.startOf('day') : moment("1753-01-01", "YYYY-MM-DD").startOf('day');
 
-        if (allowNull && date == null){
+        if (allowNull && date == null) {
             setFeedbackMessage("");
             return true;
         }
@@ -257,7 +275,8 @@ export default function DateTimePicker<T>(props: IProps<T>) {
                 Show={showOverlay}
                 DateTime={pickerRecord}
                 Valid={props.Valid(props.Field)}
-                Top={top} Center={left}
+                Top={top}
+                Center={left}
                 Type={props.Type === undefined ? 'date' : props.Type}
                 Accuracy={props.Accuracy}
             />
