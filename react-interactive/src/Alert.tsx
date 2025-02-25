@@ -23,18 +23,35 @@
 import * as React from 'react';
 
 interface IProps {
-    AlertColor?: 'alert-primary' | 'alert-secondary' | 'alert-success' | 'alert-danger' | 'alert-warning' | 'alert-info' | 'alert-light'
+    Color?: 'alert-primary' | 'alert-secondary' | 'alert-success' | 'alert-danger' | 'alert-warning' | 'alert-info' | 'alert-light'
     Style?: React.CSSProperties,
-    Show: boolean,
-    SetShow?: (show: boolean) => void
+    ShowX?: boolean,
+    ReTrigger?: unknown
+    OnClick?: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void
 }
 
 const Alert = (props: React.PropsWithChildren<IProps>) => {
+    const [show, setShow] = React.useState<boolean>(true);
+
+    const handleOnClick = React.useCallback((e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        setShow(false);
+        if (props.OnClick != null)
+            props.OnClick(e);
+    }, [props.OnClick])
+
+    //Effect to retrigger initial state
+    React.useEffect(() => {
+        setShow(true);
+    }, [props.ReTrigger])
+
     return (
-        <div className={`alert ${props.AlertColor ?? 'alert-dark'} alert-dismissible fade ${props.Show ? 'show' : 'd-none'}`} style={props.Style}>
+        <div className={`alert ${props.Color ?? 'alert-dark'} alert-dismissible fade ${show ? 'show' : 'd-none'}`} style={props.Style}>
             {props.children}
-            {props.SetShow !== undefined ?
-                <button type="button" className="close" onClick={() => props.SetShow!(false)}> <span aria-hidden="true">&times;</span> </button>
+
+            {(props.ShowX ?? true) ?
+                <button type="button" className="close" onClick={handleOnClick}>
+                    <span aria-hidden="true">&times;</span>
+                </button>
                 : null}
         </div>
     )

@@ -94,9 +94,8 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
     const [pagedData, setPagedData] = React.useState<string[][]>([]);
 
     const [isFileParseable, setIsFileParseable] = React.useState<boolean>(true);
-    const [isCSVMissingHeaders, setIsCSVMissingHeaders] = React.useState<boolean>(false);
-    const [isCSVMissingDataCells, setIsCSVMissingDataCells] = React.useState<boolean>(false);
-
+    const [isCSVMissingHeadersCount, setIsCSVMissingHeadersCount] = React.useState<number>(0);
+    const [isCSVMissingDataCellsCount, setIsCSVMissingDataCellsCount] = React.useState<number>(0);
 
     const [page, setPage] = React.useState<number>(0);
     const [totalPages, setTotalPages] = React.useState<number>(1);
@@ -194,8 +193,12 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
         }
 
         setIsFileParseable(true);
-        setIsCSVMissingDataCells(parsedData.AddedMissingDataValues);
-        setIsCSVMissingHeaders(parsedData.AddedMissingHeaders);
+
+        if (parsedData.AddedMissingDataValues)
+            setIsCSVMissingDataCellsCount(p => p + 1);
+        if (parsedData.AddedMissingHeaders)
+            setIsCSVMissingHeadersCount(p => p + 1);
+
         props.AdditionalProps?.SetData(parsedData.Data);
         props.AdditionalProps.SetHeaders(parsedData.Headers);
         props.AdditionalProps?.SetHeaderMap(autoMapHeaders(parsedData.Headers, props.AdditionalProps.Fields.map(field => field.Field)))
@@ -350,10 +353,10 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
                     <div className='col-12 d-flex flex-column h-100'>
                         {pagedData.length !== 0 ?
                             <>
-                                {isCSVMissingDataCells && isCSVMissingHeaders ? (
+                                {isCSVMissingDataCellsCount > 0 && isCSVMissingHeadersCount > 0 ? (
                                     <div className='row'>
                                         <div className='col-12'>
-                                            <Alert AlertColor='alert-info' Show={showDataHeaderAlert} SetShow={setShowDataHeaderAlert}>
+                                            <Alert Color='alert-info' ReTrigger={isCSVMissingDataCellsCount + isCSVMissingHeadersCount}>
                                                 <p style={{ whiteSpace: 'nowrap' }}>
                                                     Missing data cells were added to meet the number of required fields.
                                                 </p>
@@ -365,12 +368,12 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
                                         </div>
                                     </div>
 
-                                ) : isCSVMissingDataCells || isCSVMissingHeaders ? (
+                                ) : isCSVMissingDataCellsCount > 0 || isCSVMissingHeadersCount > 0 ? (
                                     <div className='row'>
                                         <div className='col-12'>
-                                            <Alert AlertColor='alert-info' Show={showDataOrHeaderAlert} SetShow={setShowDataOrHeaderAlert}>
+                                            <Alert Color='alert-info' ReTrigger={isCSVMissingDataCellsCount > 0 ? isCSVMissingDataCellsCount : isCSVMissingHeadersCount}>
                                                 <p style={{ whiteSpace: 'nowrap' }}>
-                                                    {isCSVMissingDataCells ? 'Missing data cells were added to meet the number of required fields.' : 'Missing headers were added to meet the number of required fields.'}
+                                                    {isCSVMissingDataCellsCount > 0 ? 'Missing data cells were added to meet the number of required fields.' : 'Missing headers were added to meet the number of required fields.'}
                                                 </p>
                                             </Alert>
                                         </div>

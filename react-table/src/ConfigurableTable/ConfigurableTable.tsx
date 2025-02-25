@@ -48,10 +48,6 @@ interface ITableProps<T> extends ReactTableProps.ITable<T> {
     * The key used to store columns in local storage
     */
     LocalStorageKey?: string;
-    /**
-     * Optional flag to show helper alert for configuring table columns 
-    */
-    ShowColumnHelper?: boolean
 }
 
 interface IColDesc {
@@ -86,7 +82,6 @@ export default function ConfigurableTable<T>(props: React.PropsWithChildren<ITab
     const [hover, setHover] = React.useState<boolean>(false);
     const [guid] = React.useState<string>(CreateGuid());
     const [widthDisabledAdd, setWidthDisabledAdd] = React.useState<boolean>(false);
-    const [showHelperAlert, setShowHelperAlert] = React.useState<boolean>(true);
 
     const handleReduceWidthCallback = React.useCallback((hiddenKeys: string[]) => {
         if (hiddenKeys.length !== 0) {
@@ -154,7 +149,6 @@ export default function ConfigurableTable<T>(props: React.PropsWithChildren<ITab
 
     return (
         <>
-            {(props.ShowColumnHelper ?? false) ? <Alert AlertColor="alert-info" Show={showHelperAlert} SetShow={setShowHelperAlert}>Use the gear at the far right of the header row to choose columns to show or hide.</Alert> : null}
             <Table
                 {...props}
                 LastColumn={
@@ -329,9 +323,9 @@ function ColumnSelection(props: IColSelectionProps) {
                     )}
                 </div>
             </div>
-            {props.disableAdd ? (
-                <Alert AlertColor='alert-primary' Style={{ marginBottom: 0, marginTop: '0.5em' }} Show={showAlert} SetShow={setShowAlert}>Additional columns disabled due to table size.</Alert>
-            ) : null}
+            {props.disableAdd ? 
+                <Alert Color='alert-primary' Style={{ marginBottom: 0, marginTop: '0.5em' }}>Additional columns disabled due to table size.</Alert>
+             : null}
         </>
     );
 }
