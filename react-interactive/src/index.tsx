@@ -45,6 +45,7 @@ import GenericController from './GenericController';
 import LayoutGrid from './LayoutGrid';
 import Alert from './Alert'
 import Breadcrumb from './Breadcrumb';
+import { Gemstone } from './HelperAlerts/HelperAlerts';
 
 export {
   Modal,
@@ -70,5 +71,6 @@ export {
   GenericController,
   LayoutGrid,
   Alert,
-  Breadcrumb
+  Breadcrumb,
+  Gemstone
 };
