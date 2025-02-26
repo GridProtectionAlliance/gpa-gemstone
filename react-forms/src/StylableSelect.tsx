@@ -221,6 +221,7 @@ export default function StylableSelect<T>(props: IProps<T>) {
             zIndex: 9999,
             top: `${position.Top}px`,
             left: `${position.Left}px`,
+            minWidth: `${position.Width}px`,
             maxWidth: '100%'
           }}
         >
