@@ -116,7 +116,7 @@ const ToolTip: React.FunctionComponent<IProps> = (props) => {
         ColorVar={props.Color}
         Position={props.Position}
         />
-        <div className='popover-body'>
+        <div className={`${props.Color != null ? `text-${getTextColor(props.Color)} ` : ''}popover-body`}>
           {props.children}
         </div>
       </WrapperDiv>
@@ -179,6 +179,14 @@ const getPosition = (toolTip: React.MutableRefObject<HTMLDivElement | null>, tar
   }
 
   return [top, left, arrowPositionPercent];
+}
+
+const getTextColor = (color?: string) => {
+  switch(color) {
+    case 'none': case undefined: return undefined;
+    case 'warning': case 'light': case 'white': return 'dark';
+    default: return 'white';
+  }
 }
 
 export default ToolTip;
