@@ -108,7 +108,7 @@ const ToolTip: React.FunctionComponent<IProps> = (props) => {
     setArrowPositionPercent(arrowLeft);
   }, [targetPosition, props?.children, props.Position]);
 
-  const zIndex = (props.Zindex === undefined ? 2000 : props.Zindex);
+  const zIndex = (props.Zindex === undefined ? 9999 : props.Zindex);
 
   return (
     <Portal>
