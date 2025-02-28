@@ -24,7 +24,7 @@ import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import { CreateGuid } from '@gpa-gemstone/helper-functions';
 import _ = require('lodash');
 import * as React from 'react';
-import ToolTip from '../ToolTip';
+import { ToolTip } from '@gpa-gemstone/react-forms';
 import SplitDrawer from './SplitDrawer';
 import SplitSection from './SplitSection';
 
