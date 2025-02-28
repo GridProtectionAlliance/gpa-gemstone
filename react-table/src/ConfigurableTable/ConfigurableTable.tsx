@@ -24,10 +24,10 @@ import * as React from 'react';
 import * as ReactTableProps from '../Table/Types';
 import { Table } from '../Table/Table';
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
-import { Modal, ToolTip, Alert } from '@gpa-gemstone/react-interactive';
+import { Modal, Alert } from '@gpa-gemstone/react-interactive';
 import { Portal } from 'react-portal';
 import { CreateGuid } from '@gpa-gemstone/helper-functions';
-import { CheckBox } from '@gpa-gemstone/react-forms';
+import { CheckBox, ToolTip } from '@gpa-gemstone/react-forms';
 import * as _ from 'lodash';
 import ConfigurableColumn from './ConfigurableColumn';
 
