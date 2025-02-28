@@ -85,6 +85,9 @@ const ToolTip: React.FunctionComponent<IProps> = (props) => {
 
   const [targetPosition, setTargetPosition] = React.useState<Gemstone.TSX.Interfaces.IElementPosition>(defaultTargetPosition)
 
+  const useBootStrapColor = React.useMemo(() => (props.Color != null && props.Color != 'none'), [props.Color]);
+  const textColor = React.useMemo(() => getTextColor(props.Color), [props.Color]);
+
   React.useEffect(() => {
     const target = document.querySelectorAll(`[data-tooltip${props.Target === undefined ? '' : `="${props.Target}"`}]`)
     if (target.length === 0) {
@@ -109,14 +112,14 @@ const ToolTip: React.FunctionComponent<IProps> = (props) => {
 
   return (
     <Portal>
-      <WrapperDiv className={`${props.Color != null ? `bg-${props.Color} border-${props.Color} ` : ''}popover border bs-popover-${props.Position ?? 'top'}`} Show={props.Show} Top={top} Left={left} ref={toolTip} Zindex={zIndex}>
+      <WrapperDiv className={`${useBootStrapColor ? `bg-${props.Color} border-${props.Color} ` : ''}popover border bs-popover-${props.Position ?? 'top'}`} Show={props.Show} Top={top} Left={left} ref={toolTip} Zindex={zIndex}>
         <WrapperArrow
         className='arrow' 
         style={props.Position === 'left' || props.Position === 'right' ? { top: `calc(${arrowPositionPercent}% - 1em)` } : { left: `calc(${arrowPositionPercent}% - 1em)` }}
         ColorVar={props.Color}
         Position={props.Position}
         />
-        <div className={`${props.Color != null ? `text-${getTextColor(props.Color)} ` : ''}popover-body`}>
+        <div className={`${useBootStrapColor ? `text-${textColor} ` : ''}popover-body`}>
           {props.children}
         </div>
       </WrapperDiv>
