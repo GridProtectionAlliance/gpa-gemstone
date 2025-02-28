@@ -22,7 +22,7 @@
 // ******************************************************************************************************
 
 import { Application } from '@gpa-gemstone/application-typings';
-import ToolTip from '../ToolTip';
+import { ToolTip } from '@gpa-gemstone/react-forms';
 import * as React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { Context, SectionContext } from './Context';

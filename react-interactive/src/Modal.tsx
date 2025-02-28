@@ -21,7 +21,7 @@
 // ******************************************************************************************************
 
 import * as React from 'react';
-import ToolTip from './ToolTip';
+import { ToolTip } from '@gpa-gemstone/react-forms';
 import {CreateGuid} from '@gpa-gemstone/helper-functions';
 import { Portal } from 'react-portal';
 
