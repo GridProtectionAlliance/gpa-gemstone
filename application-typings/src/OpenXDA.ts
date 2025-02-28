@@ -121,6 +121,8 @@ namespace OpenXDA {
             ProcessingState: number
         }
 
+        export interface DataOperationFailure { ID: number, DataOperationID: number, DataOperationTypeName: string, FileGroupID: number, Log: string, StackTrace: string, TimeOfFailure: string }
+
         export interface CompanyType { ID: number, Name: string, Description: string }
         export interface CustomerAccess { ID: number, CustomerID: number, PQViewSiteID: number }
 

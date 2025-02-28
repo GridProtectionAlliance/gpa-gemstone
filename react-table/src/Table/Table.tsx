@@ -289,6 +289,8 @@ export function Table<T>(props: React.PropsWithChildren<ReactTableProps.ITable<T
                 LastColumn={props.LastColumn}
                 OnSort={handleSort}
                 ColWidths={colWidthsRef}
+                SetFilters={props.SetFilters}
+                Filters={props.Filters}
                 Trigger={trigger}
                 TriggerRerender={() => setTrigger(c => c+1)}>
                 {props.children}
