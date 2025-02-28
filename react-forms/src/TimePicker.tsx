@@ -57,12 +57,12 @@ export default function DatePicker<T>(props: IProps<T>) {
       {(props.Help != null || props.Label !== "") ?
         <label className='d-flex align-items-center'>{props.Label ?? props.Field}
           {props.Help != null ?
-            <button className='btn mb-1 pt-0 pb-0' onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)} data-help={guid.current}>
+            <button className='btn mb-1 pt-0 pb-0' onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)} data-tooltip={guid.current}>
               <ReactIcons.QuestionMark Color='var(--info)' Size={20} />
             </button> : <></>}
         </label>
         : <></>}
-      <ToolTip Show={showHelp} Target={guid.current} Color="info">
+      <ToolTip Show={showHelp} Target={guid.current} Color="info" Position="bottom">
         {props.Help}
       </ToolTip>
       <input

@@ -142,7 +142,7 @@ const MultiSelect = (props: IProps) => {
         <label className='d-flex align-items-center'>{showLabel ?
           (props.Label === undefined ? 'Select' : props.Label) : ''}
           {showHelpIcon ?
-            <button className='btn btn mb-1 pt-0 pb-0' onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)} data-help={helperGuid}>
+            <button className='btn btn mb-1 pt-0 pb-0' onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)} data-tooltip={helperGuid}>
             <ReactIcons.QuestionMark Color='var(--info)' Size={20}/>
           </button>
             : null}
@@ -150,12 +150,12 @@ const MultiSelect = (props: IProps) => {
       }
 
       {showHelpIcon ?
-        <ToolTip Show={showHelp} Target={helperGuid} Color="info">
+        <ToolTip Show={showHelp} Target={helperGuid} Color="info" Position="bottom">
           {props.Help}
         </ToolTip>
         : null}
       {(props.ItemTooltip ?? 'no-tip') !== 'no-tip' ?
-        <ToolTip Show={showItems} Target={guid}>
+        <ToolTip Show={showItems} Target={guid} Position="bottom">
           <p>Selected Options:</p>
           {selectedOptions.slice(0, 10).map(opt => <p>{opt.Text}</p>)}
           {selectedOptions.length > 10 ? <p>{`and ${selectedOptions.length - 10} other(s)`}</p> : null}
@@ -165,7 +165,7 @@ const MultiSelect = (props: IProps) => {
       {/* Rendering the dropdown */}
       <div ref={multiSelect} style={{ position: 'relative', display: 'block', width: 'inherit' }}>
         <button
-          data-help={guid}
+          data-tooltip={guid}
           type="button"
           style={{padding: '.375rem .75rem', fontSize: '1rem', color: 'currentColor', backgroundColor: 'inherit' }}
           className="btn border form-control dropdown-toggle"

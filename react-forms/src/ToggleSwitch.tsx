@@ -62,10 +62,10 @@ export default function ToggleSwitch<T>(props: IProps<T>) {
         {props.Label == null ? props.Field : props.Label}
         {showHelpIcon ?
           <>
-            <button className='btn mb-1 pt-0 pb-0' onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)} data-help={helpID.current}>
+            <button className='btn mb-1 pt-0 pb-0' onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)} data-tooltip={helpID.current}>
               <ReactIcons.QuestionMark Color='var(--info)' Size={20} />
             </button>
-            <ToolTip Show={showHelp} Target={helpID.current} Zindex={9999} Color="info">
+            <ToolTip Show={showHelp} Target={helpID.current} Zindex={9999} Color="info" Position="bottom">
               {props.Help}
             </ToolTip>
           </>

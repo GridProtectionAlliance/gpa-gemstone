@@ -183,14 +183,14 @@ export default function StylableSelect<T>(props: IProps<T>) {
       {(props.Label !== "") ?
         <label className='d-flex align-items-center'>{props.Label === undefined ? props.Field : props.Label}
           {props.Help !== undefined ?
-            <button className='btn mb-1 pt-0 pb-0' onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)} data-help={guid}>
+            <button className='btn mb-1 pt-0 pb-0' onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)} data-tooltip={guid}>
               <ReactIcons.QuestionMark Color='var(--info)' Size={20} />
             </button>
             : null}
         </label> : null}
 
       {props.Help !== undefined ?
-        <ToolTip Show={showHelp} Target={guid} Color="info">
+        <ToolTip Show={showHelp} Target={guid} Color="info" Position="bottom">
           {props.Help}
         </ToolTip>
         : null}
