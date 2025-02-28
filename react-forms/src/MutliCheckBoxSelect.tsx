@@ -23,7 +23,7 @@
 
 import { CreateGuid } from '@gpa-gemstone/helper-functions';
 import * as React from 'react';
-import HelperMessage from './HelperMessage';
+import ToolTip from './ToolTip';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 import { Portal } from 'react-portal';
 import * as _ from 'lodash';
@@ -72,6 +72,7 @@ const MultiSelect = (props: IProps) => {
   const [showHelp, setShowHelp] = React.useState<boolean>(false);
   const [showItems, setShowItems] = React.useState<boolean>(false);
   const [guid, setGuid] = React.useState<string>("");
+  const [helperGuid] = React.useState<string>("");
   const showLabel = React.useMemo(() => props.Label !== "", [props.Label]);
   const showHelpIcon = React.useMemo(() => props.Help !== undefined, [props.Help]);
   const selectedOptions = React.useMemo(() => props.Options.filter(opt => opt.Selected), [props.Options]);
@@ -141,7 +142,7 @@ const MultiSelect = (props: IProps) => {
         <label className='d-flex align-items-center'>{showLabel ?
           (props.Label === undefined ? 'Select' : props.Label) : ''}
           {showHelpIcon ?
-            <button className='btn btn mb-1 pt-0 pb-0' onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)}>
+            <button className='btn btn mb-1 pt-0 pb-0' onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)} data-help={helperGuid}>
             <ReactIcons.QuestionMark Color='var(--info)' Size={20}/>
           </button>
             : null}
@@ -149,16 +150,16 @@ const MultiSelect = (props: IProps) => {
       }
 
       {showHelpIcon ?
-        <HelperMessage Show={showHelp} Target={guid}>
+        <ToolTip Show={showHelp} Target={helperGuid} Color="info">
           {props.Help}
-        </HelperMessage>
+        </ToolTip>
         : null}
       {(props.ItemTooltip ?? 'no-tip') !== 'no-tip' ?
-        <HelperMessage Show={showItems} Target={guid}>
+        <ToolTip Show={showItems} Target={guid}>
           <p>Selected Options:</p>
           {selectedOptions.slice(0, 10).map(opt => <p>{opt.Text}</p>)}
           {selectedOptions.length > 10 ? <p>{`and ${selectedOptions.length - 10} other(s)`}</p> : null}
-        </HelperMessage>
+        </ToolTip>
         : null}
 
       {/* Rendering the dropdown */}

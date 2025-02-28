@@ -25,7 +25,7 @@ import * as React from 'react';
 import * as moment from 'moment';
 import DateTimePopup from './DateTimeUI/DateTimePopup';
 import { CreateGuid, GetNodeSize } from '@gpa-gemstone/helper-functions';
-import HelperMessage from './HelperMessage';
+import ToolTip from './ToolTip';
 import { Accuracy } from './DateTimeUI/Clock'
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import { Gemstone } from '@gpa-gemstone/application-typings';
@@ -242,17 +242,16 @@ export default function DateTimePicker<T>(props: IProps<T>) {
             {/* Label and help icon */}
             {showHelpIcon || showLabel ?
                 <label className='d-flex align-items-center'>{showLabel ? label : ''}
-                    {showHelpIcon ? <button className='btn mb-1 pt-0 pb-0' onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)}>
+                    {showHelpIcon ? <button className='btn mb-1 pt-0 pb-0' onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)} data-help={guid}>
                         <ReactIcons.QuestionMark Color='var(--info)' Size={20} />
                     </button> : null}
                 </label> : null}
             {showHelpIcon ?
-                <HelperMessage Show={showHelp} Target={guid}>
+                <ToolTip Show={showHelp} Target={guid} Color="info">
                     {props.Help}
-                </HelperMessage>
+                </ToolTip>
                 : null}
             <input
-                data-help={guid}
                 className={`gpa-gemstone-datetime form-control ${IsValid() ? '' : 'is-invalid'}`}
                 type={props.Type === undefined ? 'date' : props.Type}
                 onChange={(evt) => {
