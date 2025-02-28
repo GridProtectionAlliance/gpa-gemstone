@@ -22,7 +22,7 @@
 // ******************************************************************************************************
 
 import * as React from 'react';
-import HelperMessage from './HelperMessage';
+import ToolTip from './ToolTip';
 import { CreateGuid } from '@gpa-gemstone/helper-functions';
 import { isEqual } from 'lodash';
 import { Portal } from 'react-portal';
@@ -183,23 +183,22 @@ export default function StylableSelect<T>(props: IProps<T>) {
       {(props.Label !== "") ?
         <label className='d-flex align-items-center'>{props.Label === undefined ? props.Field : props.Label}
           {props.Help !== undefined ?
-            <button className='btn mb-1 pt-0 pb-0' onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)}>
+            <button className='btn mb-1 pt-0 pb-0' onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)} data-help={guid}>
               <ReactIcons.QuestionMark Color='var(--info)' Size={20} />
             </button>
             : null}
         </label> : null}
 
       {props.Help !== undefined ?
-        <HelperMessage Show={showHelp} Target={guid}>
+        <ToolTip Show={showHelp} Target={guid} Color="info">
           {props.Help}
-        </HelperMessage>
+        </ToolTip>
         : null}
 
       {/* Dropdown toggle button */}
       <button
         type="button"
         style={{ border: '1px solid #ced4da', padding: '.375rem .75rem', fontSize: '1rem', borderRadius: '.25rem', ...(props.BtnStyle ?? {}) }}
-        data-help={guid}
         className="btn form-control dropdown-toggle"
         onClick={HandleShow}
         disabled={props.Disabled === undefined ? false : props.Disabled}

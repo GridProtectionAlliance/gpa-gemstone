@@ -22,7 +22,7 @@
 // ******************************************************************************************************
 
 import * as React from 'react';
-import HelperMessage from './HelperMessage';
+import ToolTip from './ToolTip';
 import { CreateGuid, IsInteger, IsNumber } from '@gpa-gemstone/helper-functions'
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import { Gemstone } from '@gpa-gemstone/application-typings';
@@ -178,18 +178,17 @@ function InputWithButton<T>(props: IProps<T>) {
             {showHelpIcon || showLabel ?
                 <label className='d-flex align-items-center'>{showLabel ? label : ''}
                     {showHelpIcon ?
-                        <button className='btn mb-1 pt-0 pb-0' onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)}>
+                        <button className='btn mb-1 pt-0 pb-0' onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)} data-help={guid}>
                             <ReactIcons.QuestionMark Color='var(--info)' Size={20} />
                         </button> : null}
                 </label> : null}
             {showHelpIcon ?
-                <HelperMessage Show={showHelp} Target={guid}>
+                <ToolTip Show={showHelp} Target={guid} Color="info">
                     {props.Help}
-                </HelperMessage>
+                </ToolTip>
                 : null}
             <div className="input-group">
                 <input
-                    data-help={guid}
                     type={props.Type === undefined ? 'text' : props.Type}
                     className={props.Valid(props.Field) ? 'form-control' : 'form-control is-invalid'}
                     onChange={(evt) => valueChange(evt.target.value)}

@@ -24,7 +24,7 @@
 // ******************************************************************************************************
 import * as React from 'react';
 import { CreateGuid } from '@gpa-gemstone/helper-functions'
-import HelperMessage from './HelperMessage';
+import ToolTip from './ToolTip';
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 
@@ -84,12 +84,12 @@ export default function TextArea<T>(props: IProps<T>) {
   const label = props.Label === undefined ? props.Field : props.Label;
 
   return (
-    <div className="form-group" data-help={guid.current}>
+    <div className="form-group">
       {/* Rendering label and help icon */}
       {showHelpIcon || showLabel ?
         <label className='d-flex align-items-center'>{showLabel ? label : ''}
           {showHelpIcon ?
-            <button className='btn mb-1 pt-0 pb-0' onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)}>
+            <button className='btn mb-1 pt-0 pb-0' onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)} data-help={guid.current}>
               <ReactIcons.QuestionMark Color='var(--info)' Size={20} />
             </button>
             : null}
@@ -97,9 +97,9 @@ export default function TextArea<T>(props: IProps<T>) {
 
       {/* Help message component */}
       {showHelpIcon ?
-        <HelperMessage Show={showHelp} Target={guid.current}>
+        <ToolTip Show={showHelp} Target={guid.current} Color="info">
           {props.Help}
-        </HelperMessage>
+        </ToolTip>
         : null}
 
       {/* Textarea element */}

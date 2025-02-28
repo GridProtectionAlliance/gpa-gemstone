@@ -23,7 +23,7 @@
 
 import * as React from 'react';
 import Input from './Input';
-import HelperMessage from './HelperMessage';
+import ToolTip from './ToolTip';
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import { CreateGuid } from '@gpa-gemstone/helper-functions';
 import { Gemstone } from '@gpa-gemstone/application-typings';
@@ -82,18 +82,18 @@ function MultiInput<T>(props: IProps<T>) {
         <>
             {fieldArray.length === 0 ?
                 <>
-                    <label className='d-flex align-items-center' data-help={guid.current}>
+                    <label className='d-flex align-items-center'>
                         {props.Label ?? props.Field}
                         {props.Help != null ?
-                            <button className='btn mb-1 pt-0 pb-0' onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)}>
+                            <button className='btn mb-1 pt-0 pb-0' onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)} data-help={guid.current}>
                                 <ReactIcons.QuestionMark Color='var(--info)' Size={20} />
                             </button>
                             : null}
                         <button className='btn' onClick={() => props.Setter({ ...props.Record, [props.Field]: [props.DefaultValue] })}> <ReactIcons.CirclePlus /> </button>
                     </label>
-                    <HelperMessage Show={showHelp && props.Help != null} Target={guid.current}>
+                    <ToolTip Show={showHelp && props.Help != null} Target={guid.current} Color="info">
                         {props.Help}
-                    </HelperMessage>
+                    </ToolTip>
                 </>
                 : null}
 

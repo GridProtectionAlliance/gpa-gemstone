@@ -23,7 +23,7 @@
 
 import * as React from 'react';
 import { CreateGuid } from '@gpa-gemstone/helper-functions'
-import HelperMessage from './HelperMessage';
+import ToolTip from './ToolTip';
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 
@@ -44,7 +44,7 @@ export default function ToggleSwitch<T>(props: IProps<T>) {
   const showHelpIcon = props.Help !== undefined;
 
   return (
-    <div className="custom-control custom-switch" data-help={helpID.current} style={props.Style}>
+    <div className="custom-control custom-switch" style={props.Style}>
       <input
         type="checkbox"
         className="custom-control-input"
@@ -62,12 +62,12 @@ export default function ToggleSwitch<T>(props: IProps<T>) {
         {props.Label == null ? props.Field : props.Label}
         {showHelpIcon ?
           <>
-            <button className='btn mb-1 pt-0 pb-0' onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)}>
+            <button className='btn mb-1 pt-0 pb-0' onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)} data-help={helpID.current}>
               <ReactIcons.QuestionMark Color='var(--info)' Size={20} />
             </button>
-            <HelperMessage Show={showHelp} Target={helpID.current} Zindex={9999}>
+            <ToolTip Show={showHelp} Target={helpID.current} Zindex={9999} Color="info">
               {props.Help}
-            </HelperMessage>
+            </ToolTip>
           </>
           : null}
       </label>
