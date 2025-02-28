@@ -29,9 +29,11 @@ import { Gemstone } from '@gpa-gemstone/application-typings';
 
 interface IProps {
   Show: boolean,
-  Position?: ('top' | 'bottom' | 'left' | 'right'),
+  Position?: 'top' | 'bottom' | 'left' | 'right',
   Target?: string,
   Zindex?: number,
+  // These are bootstrap colors
+  Color?: 'none' | 'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' | 'light' | 'dark' | 'white'
 }
 
 // Props to style wrapper div around tooltip content.
@@ -57,6 +59,20 @@ const WrapperDiv = styled.div<IWrapperProps>`
     max-width: 100%;
   }
 `;
+
+interface IArrowProps {
+  ColorVar?: string,
+  Position?: string
+}
+
+const WrapperArrow = styled.div<IArrowProps>`
+  ${(props: IArrowProps) => `
+    &::after {
+      ${(props.ColorVar == null || props.ColorVar === 'none') ? '' :
+      `border-${props.Position ?? "top"}-color: var(--${props.ColorVar}) !important;`
+      }
+    }
+  `}`
 
 const defaultTargetPosition = { Top: -999, Left: -999, Width: 0, Height: 0 }
 
@@ -93,8 +109,13 @@ const ToolTip: React.FunctionComponent<IProps> = (props) => {
 
   return (
     <Portal>
-      <WrapperDiv className={`popover bs-popover-${props.Position ?? 'top'} border`} Show={props.Show} Top={top} Left={left} ref={toolTip} Zindex={zIndex}>
-        <div className='arrow' style={props.Position === 'left' || props.Position === 'right' ? { top: `calc(${arrowPositionPercent}% - 1em)` } : { left: `calc(${arrowPositionPercent}% - 1em)` }} />
+      <WrapperDiv className={`${props.Color != null ? `bg-${props.Color} border-${props.Color} ` : ''}popover border bs-popover-${props.Position ?? 'top'}`} Show={props.Show} Top={top} Left={left} ref={toolTip} Zindex={zIndex}>
+        <WrapperArrow
+        className='arrow' 
+        style={props.Position === 'left' || props.Position === 'right' ? { top: `calc(${arrowPositionPercent}% - 1em)` } : { left: `calc(${arrowPositionPercent}% - 1em)` }}
+        ColorVar={props.Color}
+        Position={props.Position}
+        />
         <div className='popover-body'>
           {props.children}
         </div>
