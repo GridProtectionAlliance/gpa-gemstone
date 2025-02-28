@@ -178,12 +178,12 @@ function InputWithButton<T>(props: IProps<T>) {
             {showHelpIcon || showLabel ?
                 <label className='d-flex align-items-center'>{showLabel ? label : ''}
                     {showHelpIcon ?
-                        <button className='btn mb-1 pt-0 pb-0' onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)} data-help={guid}>
+                        <button className='btn mb-1 pt-0 pb-0' onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)} data-tooltip={guid}>
                             <ReactIcons.QuestionMark Color='var(--info)' Size={20} />
                         </button> : null}
                 </label> : null}
             {showHelpIcon ?
-                <ToolTip Show={showHelp} Target={guid} Color="info">
+                <ToolTip Show={showHelp} Target={guid} Color="info" Position="bottom">
                     {props.Help}
                 </ToolTip>
                 : null}

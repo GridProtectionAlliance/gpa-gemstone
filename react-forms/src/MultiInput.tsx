@@ -85,13 +85,13 @@ function MultiInput<T>(props: IProps<T>) {
                     <label className='d-flex align-items-center'>
                         {props.Label ?? props.Field}
                         {props.Help != null ?
-                            <button className='btn mb-1 pt-0 pb-0' onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)} data-help={guid.current}>
+                            <button className='btn mb-1 pt-0 pb-0' onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)} data-tooltip={guid.current}>
                                 <ReactIcons.QuestionMark Color='var(--info)' Size={20} />
                             </button>
                             : null}
                         <button className='btn' onClick={() => props.Setter({ ...props.Record, [props.Field]: [props.DefaultValue] })}> <ReactIcons.CirclePlus /> </button>
                     </label>
-                    <ToolTip Show={showHelp && props.Help != null} Target={guid.current} Color="info">
+                    <ToolTip Show={showHelp && props.Help != null} Target={guid.current} Color="info" Position="bottom">
                         {props.Help}
                     </ToolTip>
                 </>
