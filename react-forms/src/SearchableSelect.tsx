@@ -83,11 +83,14 @@ export default function SearchableSelect<T>(props: IProps<T>) {
 
     React.useEffect(() => {
         setLoading(true);
+        
         const [handle, callback] = props.Search(search);
+
         handle.then((d: IOption[]) => {
             setResults(d.map(o => ({ Value: o.Value, Element: o.Label })));
             setLoading(false);
-        });
+        }).catch(() => setLoading(false));
+
         return callback;
     }, [search])
 
