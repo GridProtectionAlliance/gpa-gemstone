@@ -22,6 +22,7 @@
 // ******************************************************************************************************
 
 const MaxPoints = 20;
+const MaxTotalPoints = 2000;
 
 /**
  * 
@@ -131,13 +132,21 @@ export class PointNode {
 
         if (newPoints.length === 0) throw new Error('No point to add');
         if (newPoints.length !== this.dim) throw new TypeError(`Jagged data passed to PointNode.Add(). Points should be ${this.dim} dimension.`);
-        if (this.TryAddPoints(newPoints)) return
+
+        if (this.TryAddPoints(newPoints)) {
+            if (this.count > MaxTotalPoints)
+                this.trimTree();
+            return;
+        }
 
         const copiedNode = PointNode.CreateCopy(this);
         this.children = [copiedNode, PointNode.createNodeWithDesiredTreeSize(newPoints, this.GetTreeSize())]
         this.points = null;
 
         this.RecalculateStats();
+
+        if (this.count > MaxTotalPoints)
+            this.trimTree();
     }
 
     /**
@@ -203,6 +212,15 @@ export class PointNode {
         }
 
         return children;
+    }
+
+    private trimTree(): void {
+        const fullData = this.GetFullData();
+        if (fullData.length < MaxTotalPoints) return
+
+        const halfIndex = Math.floor(fullData.length / 2);
+        const trimmedData = fullData.slice(halfIndex);
+        this.initializeNode(trimmedData);
     }
 
     /**
@@ -280,9 +298,9 @@ export class PointNode {
     private IncrementStatsForNewPoint(newPt: number[]): void {
         // Initialize stats if it's NaN
         if (isNaN(this.count)) this.count = 0;
-        if (isNaN(this.minT))  this.minT = newPt[0];
+        if (isNaN(this.minT)) this.minT = newPt[0];
         if (isNaN(this.maxT)) this.maxT = newPt[0];
-        
+
         this.count += 1;
         this.minT = Math.min(this.minT, newPt[0]);
         this.maxT = Math.max(this.maxT, newPt[0]);
