@@ -283,3 +283,15 @@ test('GetData with empty data', () => {
   const points = node.GetData(0 ,10);
   expect(points.toString()).toBe([].toString());
 })
+
+test('trimTree fundamental test', () => {
+  const data: [number, number][] = Array.from({length: 2000}, (_, i) => [i, i]);
+  const node = new PointNode(data);
+  expect(node.count).toBe(2000);
+  
+  node.AddPoints([2000, 2000]);
+  
+  const fullData = node.GetFullData();
+  expect(fullData.length).toBeLessThanOrEqual(1001);
+
+});
