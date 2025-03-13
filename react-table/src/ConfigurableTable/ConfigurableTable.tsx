@@ -153,7 +153,7 @@ export default function ConfigurableTable<T>(props: React.PropsWithChildren<ITab
                 {...props}
                 LastColumn={
                     <div
-                        style={{ marginLeft: -5, marginBottom: 12 }}
+                        style={{ marginLeft: -5, marginBottom: 12, cursor: 'pointer' }}
                         onMouseEnter={() => setHover(true)}
                         onMouseLeave={() => setHover(false)}
                         id={guid + '-tooltip'}
@@ -323,9 +323,9 @@ function ColumnSelection(props: IColSelectionProps) {
                     )}
                 </div>
             </div>
-            {props.disableAdd ? 
+            {props.disableAdd ?
                 <Alert Color='alert-primary' Style={{ marginBottom: 0, marginTop: '0.5em' }}>Additional columns disabled due to table size.</Alert>
-             : null}
+                : null}
         </>
     );
 }
