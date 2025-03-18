@@ -90,18 +90,13 @@ export function useCSVPipeline<T = unknown, U extends IAdditionalProps<T> = IAdd
 function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProps<T, IAdditionalProps<T>>) {
     const rawDataRef = React.useRef<string>();
 
-
     const [pagedData, setPagedData] = React.useState<string[][]>([]);
+    const [page, setPage] = React.useState<number>(0);
+    const [totalPages, setTotalPages] = React.useState<number>(1);
 
     const [isFileParseable, setIsFileParseable] = React.useState<boolean>(true);
     const [isCSVMissingHeadersCount, setIsCSVMissingHeadersCount] = React.useState<number>(0);
     const [isCSVMissingDataCellsCount, setIsCSVMissingDataCellsCount] = React.useState<number>(0);
-
-    const [page, setPage] = React.useState<number>(0);
-    const [totalPages, setTotalPages] = React.useState<number>(1);
-
-    const [showDataHeaderAlert, setShowDataHeaderAlert] = React.useState<boolean>(true);
-    const [showDataOrHeaderAlert, setShowDataOrHeaderAlert] = React.useState<boolean>(true);
 
     React.useEffect(() => {
         if (props.AdditionalProps?.Data.length === 0) return
@@ -114,70 +109,70 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
     }, [props.AdditionalProps?.Data, page]);
 
     React.useEffect(() => {
-        const errors: string[] = [];
-        if (props.AdditionalProps == null) return
-        const headerMap = props.AdditionalProps?.HeaderMap as Map<string, keyof T | undefined>
-
-        props.AdditionalProps.Fields.forEach(field => {
-            const matchedHeader = Array.from(headerMap).find(([, value]) => value === field.Field)?.[0];
-            if (matchedHeader == null) {
-                if (field.Required)
-                    errors.push(`${field.Label} is required and must be mapped to a header.`);
-
-                return; // return early if the field was never mapped to a header
-            }
-
-            const fieldIndex: number = props.AdditionalProps?.Headers.indexOf(matchedHeader) as number;
-
-            let foundDuplicate = false;
-            let foundEmpty = false;
-            let foundInvalid = false;
-            const uniqueValues = new Set<string>();
-
-            //Need to also make sure that all the fields that have the Required flag got mapped to a header...
-            props.AdditionalProps?.Data.forEach(row => {
-                const value = row[fieldIndex + 1]; //+1 for row index value
-
-                // Unique check
-                if (field.Unique) {
-                    if (uniqueValues.has(value))
-                        foundDuplicate = true;
-                    else
-                        uniqueValues.add(value);
+        async function runValidation() {
+            const errors: string[] = [];
+            if (props.AdditionalProps == null) return;
+            const headerMap = props.AdditionalProps.HeaderMap as Map<string, keyof T | undefined>;
+    
+            for (const field of props.AdditionalProps.Fields) {
+                const matchedHeader = Array.from(headerMap).find(([, value]) => value === field.Field)?.[0];
+                if (matchedHeader == null) {
+                    if (field.Required)
+                        errors.push(`${field.Label} is required and must be mapped to a header.`);
+                    continue; // return early if the field was never mapped to a header
                 }
-
-                // Allowed emptiness
-                if (!field.AllowEmpty && (value == null || (value.trim() === '')))
-                    foundEmpty = true;
-
-                // Validate
-                if (!field.Validate(value))
-                    foundInvalid = true;
-            });
-
-            if (field.Unique && foundDuplicate)
-                errors.push(`All ${field.Label} values must be unique.`);
-
-            if (foundEmpty)
-                errors.push(`All ${field.Label} values cannot be empty.`);
-
-            if (foundInvalid)
-                errors.push(`All ${field.Label} values must be valid.`);
-
-            //Check for SameValueForAllRows 
-            if (field.SameValueForAllRows ?? false) {
-                const allValues = props.AdditionalProps?.Data.map(row => row[fieldIndex + 1] ?? '');
-                if (new Set(allValues).size > 1)
-                    errors.push(`All rows must contain the same value for ${field.Label}.`);
+    
+                const fieldIndex: number = props.AdditionalProps.Headers.indexOf(matchedHeader) as number;
+    
+                let foundDuplicate = false;
+                let foundEmpty = false;
+                let foundInvalid = false;
+                const uniqueValues = new Set<string>();
+    
+                for (const row of props.AdditionalProps.Data) {
+                    const value = row[fieldIndex + 1]; // +1 for row index value
+    
+                    // Unique check
+                    if (field.Unique) {
+                        if (uniqueValues.has(value))
+                            foundDuplicate = true;
+                        else
+                            uniqueValues.add(value);
+                    }
+    
+                    // Allowed emptiness
+                    if (!field.AllowEmpty && (value == null || (value.trim() === '')))
+                        foundEmpty = true;
+    
+                    const isValid = await Promise.resolve(field.Validate(value));
+                    if (!isValid) 
+                        foundInvalid = true;
+                    
+                }
+    
+                if (field.Unique && foundDuplicate)
+                    errors.push(`All ${field.Label} values must be unique.`);
+    
+                if (foundEmpty)
+                    errors.push(`All ${field.Label} values cannot be empty.`);
+    
+                if (foundInvalid)
+                    errors.push(`All ${field.Label} values must be valid.`);
+    
+                // Check for SameValueForAllRows 
+                if (field.SameValueForAllRows ?? false) {
+                    const allValues = props.AdditionalProps.Data.map(row => row[fieldIndex + 1] ?? '');
+                    if (new Set(allValues).size > 1)
+                        errors.push(`All rows must contain the same value for ${field.Label}.`);
+                }
             }
-
-        });
-
-        if (!isEqual(props.Errors.sort(), errors.sort()))
-            props.SetErrors(errors);
-
+    
+            if (!isEqual(props.Errors.sort(), errors.sort()))
+                props.SetErrors(errors);
+        }
+        runValidation();
     }, [props.AdditionalProps?.Data, props.AdditionalProps?.Headers, props.AdditionalProps?.HeaderMap, isFileParseable, props.AdditionalProps?.Fields]);
-
+    
     //Effect to parse rawfiledata initially
     React.useEffect(() => {
         if (props.RawFileData == null || props.AdditionalProps == null || rawDataRef.current === props.RawFileData || props.AdditionalProps.Data.length !== 0 || props.AdditionalProps.Headers.length !== 0) return
@@ -403,7 +398,6 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
                                                         if (matchedField == null) return item[field as number];
 
                                                         const value = item[field as number];
-                                                        const isValid = matchedField.Validate(value);
                                                         const feedback = matchedField.Feedback
                                                         const selectOptions = matchedField.SelectOptions
 
@@ -419,7 +413,7 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
                                                             <matchedField.EditComponent
                                                                 Value={value}
                                                                 SetValue={(val: string) => handleValueChange(parseInt(item[0]), field as number, val)}
-                                                                Valid={isValid}
+                                                                Validate={matchedField.Validate}
                                                                 Feedback={feedback}
                                                                 AllRecordValues={allValues}
                                                                 SelectOptions={selectOptions}
