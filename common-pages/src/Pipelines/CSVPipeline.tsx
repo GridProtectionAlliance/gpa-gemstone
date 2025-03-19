@@ -29,6 +29,7 @@ import { CheckBox, Select } from '@gpa-gemstone/react-forms';
 import { Column, Table, Paging } from '@gpa-gemstone/react-table';
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import { isEqual } from 'lodash';
+import ErrorBoundary from '../ErrorBoundary';
 
 interface IAdditionalProps<T> {
     Fields: Gemstone.TSX.Interfaces.ICSVField<T>[],
@@ -365,114 +366,116 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
     return (
         <>
             <div className="container-fluid d-flex flex-column p-0 h-100">
-                <div className='row h-100'>
-                    <div className='col-12 d-flex flex-column h-100'>
-                        {pagedData.length !== 0 ?
-                            <>
-                                {isCSVMissingDataCellsCount > 0 && isCSVMissingHeadersCount > 0 ? (
-                                    <div className='row'>
-                                        <div className='col-12'>
-                                            <Alert Color='alert-info' ReTrigger={isCSVMissingDataCellsCount + isCSVMissingHeadersCount}>
-                                                <p style={{ whiteSpace: 'nowrap' }}>
-                                                    Missing data cells were added to meet the number of required fields.
-                                                </p>
-                                                <hr />
-                                                <p style={{ whiteSpace: 'nowrap' }}>
-                                                    Missing headers were added to meet the number of required fields.
-                                                </p>
-                                            </Alert>
+                <ErrorBoundary Height={'100%'} Width={'100%'} BodyErrorMessage='Error loading page.' HeaderErrorMessage='Error'>
+                    <div className='row h-100'>
+                        <div className='col-12 d-flex flex-column h-100'>
+                            {pagedData.length !== 0 ?
+                                <>
+                                    {isCSVMissingDataCellsCount > 0 && isCSVMissingHeadersCount > 0 ? (
+                                        <div className='row'>
+                                            <div className='col-12'>
+                                                <Alert Color='alert-info' ReTrigger={isCSVMissingDataCellsCount + isCSVMissingHeadersCount}>
+                                                    <p style={{ whiteSpace: 'nowrap' }}>
+                                                        Missing data cells were added to meet the number of required fields.
+                                                    </p>
+                                                    <hr />
+                                                    <p style={{ whiteSpace: 'nowrap' }}>
+                                                        Missing headers were added to meet the number of required fields.
+                                                    </p>
+                                                </Alert>
+                                            </div>
                                         </div>
-                                    </div>
 
-                                ) : isCSVMissingDataCellsCount > 0 || isCSVMissingHeadersCount > 0 ? (
-                                    <div className='row'>
-                                        <div className='col-12'>
-                                            <Alert Color='alert-info' ReTrigger={isCSVMissingDataCellsCount > 0 ? isCSVMissingDataCellsCount : isCSVMissingHeadersCount}>
-                                                <p style={{ whiteSpace: 'nowrap' }}>
-                                                    {isCSVMissingDataCellsCount > 0 ? 'Missing data cells were added to meet the number of required fields.' : 'Missing headers were added to meet the number of required fields.'}
-                                                </p>
-                                            </Alert>
+                                    ) : isCSVMissingDataCellsCount > 0 || isCSVMissingHeadersCount > 0 ? (
+                                        <div className='row'>
+                                            <div className='col-12'>
+                                                <Alert Color='alert-info' ReTrigger={isCSVMissingDataCellsCount > 0 ? isCSVMissingDataCellsCount : isCSVMissingHeadersCount}>
+                                                    <p style={{ whiteSpace: 'nowrap' }}>
+                                                        {isCSVMissingDataCellsCount > 0 ? 'Missing data cells were added to meet the number of required fields.' : 'Missing headers were added to meet the number of required fields.'}
+                                                    </p>
+                                                </Alert>
+                                            </div>
                                         </div>
-                                    </div>
-                                ) : null}
-                                <div className='row flex-grow-1' style={{ overflowY: 'hidden' }}>
-                                    <div className='col-12 h-100'>
-                                        <Table<string[]>
-                                            Data={pagedData}
-                                            key={props.AdditionalProps?.Headers.join(',')}
-                                            SortKey=''
-                                            Ascending={false}
-                                            OnSort={() => {/*no sort*/ }}
-                                            KeySelector={data => data[0]}
-                                            TableClass='table'
-                                            TableStyle={{ height: '100%', width: (props.AdditionalProps?.Headers.length ?? 0) * 150 }}
-                                        >
-                                            {props.AdditionalProps?.Headers.map((header, i) =>
-                                                <Column<string[]>
-                                                    Key={header}
-                                                    Field={i + 1}
-                                                    AllowSort={false}
-                                                    Content={({ item, field }) => {
-                                                        if (props.AdditionalProps == null) return
-                                                        const mappedField = props.AdditionalProps?.HeaderMap.get(header);
-                                                        const matchedField = props.AdditionalProps.Fields.find(f => f.Field === mappedField);
-                                                        if (matchedField == null) return item[field as number];
-
-                                                        const value = item[field as number];
-                                                        const feedback = matchedField.Feedback
-                                                        const selectOptions = matchedField.SelectOptions
-
-                                                        const allValues: Partial<Record<keyof T, string>> = {};
-                                                        props.AdditionalProps?.Headers.forEach((header, index) => {
+                                    ) : null}
+                                    <div className='row flex-grow-1' style={{ overflowY: 'hidden' }}>
+                                        <div className='col-12 h-100'>
+                                            <Table<string[]>
+                                                Data={pagedData}
+                                                key={props.AdditionalProps?.Headers.join(',')}
+                                                SortKey=''
+                                                Ascending={false}
+                                                OnSort={() => {/*no sort*/ }}
+                                                KeySelector={data => data[0]}
+                                                TableClass='table'
+                                                TableStyle={{ height: '100%', width: (props.AdditionalProps?.Headers.length ?? 0) * 150 }}
+                                            >
+                                                {props.AdditionalProps?.Headers.map((header, i) =>
+                                                    <Column<string[]>
+                                                        Key={header}
+                                                        Field={i + 1}
+                                                        AllowSort={false}
+                                                        Content={({ item, field }) => {
+                                                            if (props.AdditionalProps == null) return
                                                             const mappedField = props.AdditionalProps?.HeaderMap.get(header);
-                                                            if (mappedField != null) {
-                                                                allValues[mappedField] = item[index + 1];
-                                                            }
-                                                        });
+                                                            const matchedField = props.AdditionalProps.Fields.find(f => f.Field === mappedField);
+                                                            if (matchedField == null) return item[field as number];
 
+                                                            const value = item[field as number];
+                                                            const feedback = matchedField.Feedback
+                                                            const selectOptions = matchedField.SelectOptions
+
+                                                            const allValues: Partial<Record<keyof T, string>> = {};
+                                                            props.AdditionalProps?.Headers.forEach((header, index) => {
+                                                                const mappedField = props.AdditionalProps?.HeaderMap.get(header);
+                                                                if (mappedField != null) {
+                                                                    allValues[mappedField] = item[index + 1];
+                                                                }
+                                                            });
+
+                                                            return (
+                                                                <matchedField.EditComponent
+                                                                    Value={value}
+                                                                    SetValue={(val: string) => handleValueChange(parseInt(item[0]), field as number, val)}
+                                                                    Validate={matchedField.Validate}
+                                                                    Feedback={feedback}
+                                                                    AllRecordValues={allValues}
+                                                                    SelectOptions={selectOptions}
+                                                                />
+                                                            );
+                                                        }}
+                                                    >
+                                                        {getHeader(header)}
+                                                        {getFieldSelect(header)}
+                                                    </Column>
+                                                )}
+                                                <Column<string[]>
+                                                    Key={'delete'}
+                                                    Field={0}
+                                                    AllowSort={false}
+                                                    RowStyle={{ textAlign: 'right' }}
+                                                    Content={({ item }) => {
                                                         return (
-                                                            <matchedField.EditComponent
-                                                                Value={value}
-                                                                SetValue={(val: string) => handleValueChange(parseInt(item[0]), field as number, val)}
-                                                                Validate={matchedField.Validate}
-                                                                Feedback={feedback}
-                                                                AllRecordValues={allValues}
-                                                                SelectOptions={selectOptions}
-                                                            />
-                                                        );
+                                                            <button className='btn' onClick={() => handleRowDelete(parseInt(item[0]))}>
+                                                                <ReactIcons.TrashCan Color="red" />
+                                                            </button>
+                                                        )
                                                     }}
                                                 >
-                                                    {getHeader(header)}
-                                                    {getFieldSelect(header)}
+                                                    {''}
                                                 </Column>
-                                            )}
-                                            <Column<string[]>
-                                                Key={'delete'}
-                                                Field={0}
-                                                AllowSort={false}
-                                                RowStyle={{ textAlign: 'right' }}
-                                                Content={({ item }) => {
-                                                    return (
-                                                        <button className='btn' onClick={() => handleRowDelete(parseInt(item[0]))}>
-                                                            <ReactIcons.TrashCan Color="red" />
-                                                        </button>
-                                                    )
-                                                }}
-                                            >
-                                                {''}
-                                            </Column>
-                                        </Table>
+                                            </Table>
+                                        </div>
                                     </div>
-                                </div>
-                                <div className='row'>
-                                    <div className='col-12'>
-                                        <Paging Current={page + 1} Total={totalPages} SetPage={(p) => setPage(p - 1)} />
+                                    <div className='row'>
+                                        <div className='col-12'>
+                                            <Paging Current={page + 1} Total={totalPages} SetPage={(p) => setPage(p - 1)} />
+                                        </div>
                                     </div>
-                                </div>
-                            </>
-                            : null}
+                                </>
+                                : null}
+                        </div>
                     </div>
-                </div>
+                </ErrorBoundary>
             </div>
         </>
     );
