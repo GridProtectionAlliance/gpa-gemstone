@@ -72,7 +72,7 @@ namespace Gemstone {
             export interface ICSVFieldEditProps<T> {
                 Value: string,
                 SetValue: (val: string) => void,
-                Validate: ((value: string) => boolean) | ((value: string) => Promise<boolean>);
+                Validate: ((value: string) => boolean) | ((value: string) => Promise<[boolean, () => void]>);
                 Feedback?: string,
                 AllRecordValues: Partial<Record<keyof T, string>>,
                 SelectOptions?: { Label: string, Value: string | number }[]
@@ -93,9 +93,9 @@ namespace Gemstone {
                 /**
                  * Function to validate the field value.
                  * @param {string} value - The value to validate.
-                 * @returns {boolean}
+                 * @returns {boolean | Promise<[boolean, () => void]>}
                  */
-                Validate: ((value: string) => boolean) | ((value: string) => Promise<boolean>);
+                Validate: ((value: string) => boolean) | ((value: string) => Promise<[boolean, () => void]>);
 
                 /**
                  * Component for editing the field value.
