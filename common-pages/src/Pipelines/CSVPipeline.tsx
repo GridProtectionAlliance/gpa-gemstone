@@ -109,11 +109,13 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
     }, [props.AdditionalProps?.Data, page]);
 
     React.useEffect(() => {
+        let callback: () => void | undefined;
+
         async function runValidation() {
             const errors: string[] = [];
             if (props.AdditionalProps == null) return;
             const headerMap = props.AdditionalProps.HeaderMap as Map<string, keyof T | undefined>;
-    
+
             for (const field of props.AdditionalProps.Fields) {
                 const matchedHeader = Array.from(headerMap).find(([, value]) => value === field.Field)?.[0];
                 if (matchedHeader == null) {
@@ -121,17 +123,17 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
                         errors.push(`${field.Label} is required and must be mapped to a header.`);
                     continue; // return early if the field was never mapped to a header
                 }
-    
+
                 const fieldIndex: number = props.AdditionalProps.Headers.indexOf(matchedHeader) as number;
-    
+
                 let foundDuplicate = false;
                 let foundEmpty = false;
                 let foundInvalid = false;
                 const uniqueValues = new Set<string>();
-    
+
                 for (const row of props.AdditionalProps.Data) {
                     const value = row[fieldIndex + 1]; // +1 for row index value
-    
+
                     // Unique check
                     if (field.Unique) {
                         if (uniqueValues.has(value))
@@ -139,26 +141,38 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
                         else
                             uniqueValues.add(value);
                     }
-    
+
                     // Allowed emptiness
                     if (!field.AllowEmpty && (value == null || (value.trim() === '')))
                         foundEmpty = true;
-    
-                    const isValid = await Promise.resolve(field.Validate(value));
-                    if (!isValid) 
+
+                    const result = await Promise.resolve(field.Validate(value));
+                    let isValid: boolean;
+                    if (Array.isArray(result)) {
+                        //[boolean, abortCallback]
+                        [isValid] = result;
+                        const abortCallback = result[1];
+                        if (typeof abortCallback === 'function')
+                            callback = abortCallback;
+
+                    } else
+                        isValid = result;
+
+                    if (!isValid) {
                         foundInvalid = true;
-                    
+                    }
+
                 }
-    
+
                 if (field.Unique && foundDuplicate)
                     errors.push(`All ${field.Label} values must be unique.`);
-    
+
                 if (foundEmpty)
                     errors.push(`All ${field.Label} values cannot be empty.`);
-    
+
                 if (foundInvalid)
                     errors.push(`All ${field.Label} values must be valid.`);
-    
+
                 // Check for SameValueForAllRows 
                 if (field.SameValueForAllRows ?? false) {
                     const allValues = props.AdditionalProps.Data.map(row => row[fieldIndex + 1] ?? '');
@@ -166,13 +180,20 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
                         errors.push(`All rows must contain the same value for ${field.Label}.`);
                 }
             }
-    
+
             if (!isEqual(props.Errors.sort(), errors.sort()))
                 props.SetErrors(errors);
         }
+
         runValidation();
+
+        return () => {
+            if (callback != null)
+                callback();
+        }
+
     }, [props.AdditionalProps?.Data, props.AdditionalProps?.Headers, props.AdditionalProps?.HeaderMap, isFileParseable, props.AdditionalProps?.Fields]);
-    
+
     //Effect to parse rawfiledata initially
     React.useEffect(() => {
         if (props.RawFileData == null || props.AdditionalProps == null || rawDataRef.current === props.RawFileData || props.AdditionalProps.Data.length !== 0 || props.AdditionalProps.Headers.length !== 0) return
