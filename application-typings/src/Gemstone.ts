@@ -44,7 +44,7 @@ namespace Gemstone {
                     * @type {string}
                     * @optional
                 */
-                Label?: string;
+                Label?: string | JSX.Element;
                 /**
                     * Setter function to update the Record
                     * @param record - Updated Record
