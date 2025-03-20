@@ -22,7 +22,7 @@
 // ******************************************************************************************************
 
 const MaxPoints = 20;
-const MaxTotalPoints = 2000;
+const DefaultMaxTotalPoints = 2000;
 
 /**
  * 
@@ -37,11 +37,12 @@ export class PointNode {
     count: number;
     // Count of all dimensions (including time)
     dim: number;
+    maxCount: number;
 
     private children: PointNode[] | null;
     private points: number[][] | null;
 
-    constructor(data?: number[][]) {
+    constructor(data?: number[][], maxTotalPoints?: number) {
         // The minimum/maximum time stamp that fits in this node
         this.minT = NaN;
         this.maxT = NaN;
@@ -55,6 +56,13 @@ export class PointNode {
         this.points = null;
         this.dim = NaN;
 
+        if(maxTotalPoints == null){
+            console.warn('Max Total Points was not provided in PointNode constructor, defaulting to 2000 max points.')
+            this.maxCount = DefaultMaxTotalPoints;
+        }
+        else
+            this.maxCount = maxTotalPoints;
+        
         if (data === undefined) return;
 
         this.dim = data.length === 0 ? NaN : data[0].length;
@@ -134,8 +142,8 @@ export class PointNode {
         if (newPoints.length !== this.dim) throw new TypeError(`Jagged data passed to PointNode.Add(). Points should be ${this.dim} dimension.`);
 
         if (this.TryAddPoints(newPoints)) {
-            if (this.count > MaxTotalPoints)
-                this.trimTree();
+            if (this.count > this.maxCount)
+                this.removeLeftMostPoint();
             return;
         }
 
@@ -145,8 +153,8 @@ export class PointNode {
 
         this.RecalculateStats();
 
-        if (this.count > MaxTotalPoints)
-            this.trimTree();
+        if (this.count > this.maxCount)
+            this.removeLeftMostPoint();
     }
 
     /**
@@ -214,13 +222,28 @@ export class PointNode {
         return children;
     }
 
-    private trimTree(): void {
-        const fullData = this.GetFullData();
-        if (fullData.length < MaxTotalPoints) return
+    private removeLeftMostPoint(): boolean {
+        // If this is a leaf node, remove the first point 
+        if (this.points !== null) {
+            if (this.points.length > 0) {
+                this.points.shift();
+                this.RecalculateStats();
+                return true;
+            }
+            return false;
+        }
+        // If this is an internal node, recurse into the first child.
+        if (this.children !== null && this.children.length > 0) {
+            const wasRemoved = this.children[0].removeLeftMostPoint();
 
-        const halfIndex = Math.floor(fullData.length / 2);
-        const trimmedData = fullData.slice(halfIndex);
-        this.initializeNode(trimmedData);
+            // If the first child is now empty, remove it from the children array.
+            if (this.children[0].GetFullData().length === 0) 
+                this.children.shift();
+            
+            this.RecalculateStats();
+            return wasRemoved;
+        }
+        return false;
     }
 
     /**

@@ -291,7 +291,6 @@ test('trimTree fundamental test', () => {
   
   node.AddPoints([2000, 2000]);
   
-  const fullData = node.GetFullData();
-  expect(fullData.length).toBeLessThanOrEqual(1001);
+  expect(node.count).toEqual(2000);
 
 });
