@@ -51,7 +51,7 @@ interface IProps<T> {
       * @type {string}
       * @optional
   */
-  Label?: string;
+  Label?: string | JSX.Element;
 
   /**
     * Help message or element to display
