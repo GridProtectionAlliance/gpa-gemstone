@@ -60,7 +60,41 @@ interface IColDesc {
 * Table with modal to show and hide columns
 */
 export default function ConfigurableTable<T>(props: React.PropsWithChildren<ITableProps<T>>) {
-    const getKeyMappings: () => Map<string, IColDesc> = () => {
+    const [showSettings, setShowSettings] = React.useState<boolean>(false);
+    const [hover, setHover] = React.useState<boolean>(false);
+    const [guid] = React.useState<string>(CreateGuid());
+    const [widthDisabledAdd, setWidthDisabledAdd] = React.useState<boolean>(false);
+    const [columns, setColumns] = React.useState<Map<string, IColDesc>>(getKeyMappings());
+
+    const handleReduceWidthCallback = React.useCallback((hiddenKeys: string[]) => {
+        hiddenKeys.length !== 0
+        ? setWidthDisabledAdd(true)
+        : setWidthDisabledAdd(false);
+    }, []);
+
+    React.useEffect(() => {
+        if (props.OnSettingsChange !== undefined) props.OnSettingsChange(showSettings);
+    }, [showSettings]);
+
+    React.useEffect(() => {
+        const keyMap = getKeyMappings();
+        setColumns(keyMap);
+    }, [props.children])
+
+    React.useEffect(() => {
+        if (props.LocalStorageKey === undefined) return;
+        const currentState = localStorage.getItem(props.LocalStorageKey);
+        let currentKeys: string[] = [];
+        if (currentState !== null) currentKeys = currentState.split(',');
+
+        const allKeys = Array.from(columns.keys());
+        currentKeys = currentKeys.filter((k) => !allKeys.includes(k));
+        const enabled = Array.from(columns.keys()).filter((k) => columns.get(k)?.Enabled);
+        currentKeys.push(...enabled);
+        localStorage.setItem(props.LocalStorageKey, currentKeys.join(','));
+    }, [columns]);
+
+    function getKeyMappings(): Map<string, IColDesc> {
         const u = new Map<string, IColDesc>();
         React.Children.forEach(props.children, (element) => {
             if (!React.isValidElement(element)) return;
@@ -77,44 +111,6 @@ export default function ConfigurableTable<T>(props: React.PropsWithChildren<ITab
         });
         return u;
     };
-    const [showSettings, setShowSettings] = React.useState<boolean>(false);
-    const [columns, setColumns] = React.useState<Map<string, IColDesc>>(getKeyMappings());
-    const [hover, setHover] = React.useState<boolean>(false);
-    const [guid] = React.useState<string>(CreateGuid());
-    const [widthDisabledAdd, setWidthDisabledAdd] = React.useState<boolean>(false);
-
-    const handleReduceWidthCallback = React.useCallback((hiddenKeys: string[]) => {
-        if (hiddenKeys.length !== 0) {
-            setWidthDisabledAdd(true);
-        } else {
-            setWidthDisabledAdd(false);
-        }
-    }, []);
-
-    React.useEffect(() => {
-        if (props.OnSettingsChange !== undefined) props.OnSettingsChange(showSettings);
-    }, [showSettings]);
-
-    React.useEffect(() => {
-        saveLocal();
-    }, [columns]);
-
-    /**
-    *
-    * @returns
-    */
-    function saveLocal() {
-        if (props.LocalStorageKey === undefined) return;
-        const currentState = localStorage.getItem(props.LocalStorageKey);
-        let currentKeys: string[] = [];
-        if (currentState !== null) currentKeys = currentState.split(',');
-
-        const allKeys = Array.from(columns.keys());
-        currentKeys = currentKeys.filter((k) => !allKeys.includes(k));
-        const enabled = Array.from(columns.keys()).filter((k) => columns.get(k)?.Enabled);
-        currentKeys.push(...enabled);
-        localStorage.setItem(props.LocalStorageKey, currentKeys.join(','));
-    }
 
     function changeColumns(key: string) {
         setColumns((d) => {
@@ -168,7 +164,7 @@ export default function ConfigurableTable<T>(props: React.PropsWithChildren<ITab
                     if (!React.isValidElement(element)) return null;
                     if ((element as React.ReactElement).type === ConfigurableColumn)
                         return columns.get(element.props.Key)?.Enabled ?? false ? element.props.children : null;
-                    return element;
+                    return element as React.ReactElement;
                 })}
             </Table>
             <ToolTip Show={hover} Position={'bottom'} Target={guid + '-tooltip'} Zindex={99999}>
