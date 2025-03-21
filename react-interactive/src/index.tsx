@@ -50,12 +50,7 @@ import { Gemstone } from './HelperAlerts/HelperAlerts';
 /**
  * @deprecated use tooltip from react-forms istead
  */
-const ToolTip = (props: React.PropsWithChildren<{
-  Show: boolean;
-  Position?: 'top' | 'bottom' | 'left' | 'right';
-  Target?: string;
-  Zindex?: number;
-}>) => FormsToolTip(props);
+const ToolTip = FormsToolTip;
 
 export {
   Modal,
