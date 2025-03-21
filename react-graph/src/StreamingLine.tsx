@@ -28,20 +28,28 @@ import { IProps as ILineProps } from './Line';
 
 interface IProps extends ILineProps {
     Interval: number // interval to rerender line
+    RerenderCallback?: () => boolean //determines if we should rerender internal line after interval timer completes
 }
 
-const StreamingLine = React.forwardRef<PointNode | null , IProps>((props, ref) => {
+const StreamingLine = React.forwardRef<PointNode | null, IProps>((props, ref) => {
     const [rerender, setRerender] = React.useState<number>(0);
 
     React.useEffect(() => {
         const intervalId = setInterval(() => {
-            setRerender(prev => prev + 1);
-        }, props.Interval * 1000); // Convert seconds to milliseconds
-    
-        return () => clearInterval(intervalId);
-    }, [props.Interval]);
+            if (props.RerenderCallback == null) {
+                setRerender(prev => prev + 1);
+                return
+            }
 
-    return <InternalLine {...props} ref={ref} reRender={rerender}/>   
+            if (props.RerenderCallback())
+                setRerender(prev => prev + 1)
+
+        }, props.Interval * 1000); // Convert seconds to milliseconds
+
+        return () => clearInterval(intervalId);
+    }, [props.Interval, props.RerenderCallback]);
+
+    return <InternalLine {...props} ref={ref} reRender={rerender} />
 });
 
 export default StreamingLine;
