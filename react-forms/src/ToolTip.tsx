@@ -109,7 +109,7 @@ export const Tooltip: React.FunctionComponent<IProps> = (props) => {
   const [backgroundColor, setBackgroundColor] = React.useState<string>('green');
   const [color, setColor] = React.useState<string>('red');
 
-  const alarmClass = React.useMemo(() => props.Class != null ? `alert-${props.Class} d-none` : 'popover', [props.Class])
+  const alarmClass = React.useMemo(() => props.Class != null ? `alert-${props.Class} d-none` : 'popover d-none', [props.Class])
 
   React.useLayoutEffect(() => {
     if (alertRef.current == null) return;
