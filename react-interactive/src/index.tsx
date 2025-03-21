@@ -27,7 +27,7 @@ import SearchBar from './SearchBar';
 import { Search } from './SearchBar';
 import LoadingScreen from './LoadingScreen';
 import LoadingIcon from './LoadingIcon';
-import { ToolTip as FormsToolTip } from '@gpa-gemstone/react-forms';
+import { ToolTip } from '@gpa-gemstone/react-forms';
 import TabSelector from './TabSelector';
 import ServerErrorIcon from './ServerErrorIcon';
 import GenericSlice from './GenericSlice';
@@ -47,11 +47,6 @@ import Alert from './Alert'
 import Breadcrumb from './Breadcrumb';
 import { Gemstone } from './HelperAlerts/HelperAlerts';
 
-/**
- * @deprecated use tooltip from react-forms istead
- */
-const ToolTip = FormsToolTip;
-
 export {
   Modal,
   Warning,
@@ -59,6 +54,9 @@ export {
   Search,
   LoadingScreen,
   LoadingIcon,
+  /**
+ * @deprecated use tooltip from react-forms istead
+ */
   ToolTip,
   TabSelector,
   ServerErrorIcon,
