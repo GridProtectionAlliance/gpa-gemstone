@@ -62,7 +62,7 @@ export default function DatePicker<T>(props: IProps<T>) {
             </button> : <></>}
         </label>
         : <></>}
-      <ToolTip Show={showHelp} Target={guid.current} Color="info" Position="bottom">
+      <ToolTip Show={showHelp} Target={guid.current} Class="info" Position="bottom">
         {props.Help}
       </ToolTip>
       <input

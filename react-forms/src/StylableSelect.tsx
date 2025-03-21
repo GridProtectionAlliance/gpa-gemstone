@@ -190,7 +190,7 @@ export default function StylableSelect<T>(props: IProps<T>) {
         </label> : null}
 
       {props.Help !== undefined ?
-        <ToolTip Show={showHelp} Target={guid} Color="info" Position="bottom">
+        <ToolTip Show={showHelp} Target={guid} Class="info" Position="bottom">
           {props.Help}
         </ToolTip>
         : null}

@@ -60,7 +60,7 @@ export default function RadioButtons<T>(props: IProps<T>) {
                         <button className='btn mb-1 pt-0 pb-0' onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)} data-tooltip={guid.current}>
                             <ReactIcons.QuestionMark Color='var(--info)' Size={20} />
                         </button>
-                        <ToolTip Show={showHelp} Target={guid.current} Color="info" Position="bottom">
+                        <ToolTip Show={showHelp} Target={guid.current} Class="info" Position="bottom">
                             {props.Help}
                         </ToolTip>
                     </>

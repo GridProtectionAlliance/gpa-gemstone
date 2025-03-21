@@ -150,7 +150,7 @@ const MultiSelect = (props: IProps) => {
       }
 
       {showHelpIcon ?
-        <ToolTip Show={showHelp} Target={helperGuid} Color="info" Position="bottom">
+        <ToolTip Show={showHelp} Target={helperGuid} Class="info" Position="bottom">
           {props.Help}
         </ToolTip>
         : null}

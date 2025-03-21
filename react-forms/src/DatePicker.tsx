@@ -247,7 +247,7 @@ export default function DateTimePicker<T>(props: IProps<T>) {
                     </button> : null}
                 </label> : null}
             {showHelpIcon ?
-                <ToolTip Show={showHelp} Target={guid} Color="info" Position="bottom">
+                <ToolTip Show={showHelp} Target={guid} Class="info" Position="bottom">
                     {props.Help}
                 </ToolTip>
                 : null}

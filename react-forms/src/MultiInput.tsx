@@ -91,7 +91,7 @@ function MultiInput<T>(props: IProps<T>) {
                             : null}
                         <button className='btn' onClick={() => props.Setter({ ...props.Record, [props.Field]: [props.DefaultValue] })}> <ReactIcons.CirclePlus /> </button>
                     </label>
-                    <ToolTip Show={showHelp && props.Help != null} Target={guid.current} Color="info" Position="bottom">
+                    <ToolTip Show={showHelp && props.Help != null} Target={guid.current} Class="info" Position="bottom">
                         {props.Help}
                     </ToolTip>
                 </>
