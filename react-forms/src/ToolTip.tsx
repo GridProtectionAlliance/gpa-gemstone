@@ -22,7 +22,7 @@
 
 import * as React from 'react';
 import styled from "styled-components";
-import { GetNodeSize } from '@gpa-gemstone/helper-functions'
+import { GetNodeSize } from '@gpa-gemstone/helper-functions';
 import { Portal } from 'react-portal';
 import { isEqual } from 'lodash';
 import { Gemstone } from '@gpa-gemstone/application-typings';
@@ -32,18 +32,21 @@ interface IProps {
   Position?: ('top' | 'bottom' | 'left' | 'right'),
   Target?: string,
   Zindex?: number,
+  Class?: 'primary' | 'secondary' | 'success' | 'danger' | 'info' 
 }
 
 // Props to style wrapper div around tooltip content.
-interface IWrapperProps {
+interface IPopoverProps {
   Show: boolean,
   Top: number,
   Left: number,
   Zindex: number,
+  BgColor: string,
+  Color: string
 }
 
 // The styled tooltip wrapper component.
-const WrapperDiv = styled.div<IWrapperProps>`
+const PopoverDiv = styled.div<IPopoverProps>`
   & {
     display: inline-block;
     font-size: 13px;
@@ -55,19 +58,66 @@ const WrapperDiv = styled.div<IWrapperProps>`
     top: ${props => `${props.Top}px`};
     left: ${props => `${props.Left}px`};
     max-width: 100%;
+    background-color: ${props => props.BgColor};
+    color: ${props => props.Color};
+    border: ${props => `1px solid ${props.Color}`};
+    padding: 0.1em;
+  }
+`;
+
+interface IArrowProps {
+  BackgroundColor: string,
+  Color: string
+  Position: 'top' | 'bottom' | 'left' | 'right',
+  ArrowPositionPercent: number
+}
+
+//Arrow needs to be a styled div as the arrow class has pseduo elements
+const Arrow = styled.div<IArrowProps>`
+  &.arrow {
+    ${props => (props.Position === 'left' || props.Position === 'right')
+    ? `top: calc(${props.ArrowPositionPercent}% - 1em);`
+    : `left: calc(${props.ArrowPositionPercent}% - 1em);`
+  }
+    &::after {
+      content: '';
+      position: absolute;
+      ${props => props.Position === 'top' && `border-top-color: ${props.BackgroundColor};`}
+      ${props => props.Position === 'bottom' && `border-bottom-color:  ${props.BackgroundColor};`}
+      ${props => props.Position === 'left' && `border-left-color: ${props.BackgroundColor};`}
+      ${props => props.Position === 'right' && `border-right-color: ${props.BackgroundColor};`}
+    }
   }
 `;
 
 const defaultTargetPosition = { Top: -999, Left: -999, Width: 0, Height: 0 }
 
 // The other element needs to have data-tooltip attribute equal the target prop used for positioning
-const ToolTip: React.FunctionComponent<IProps> = (props) => {
+export const Tooltip: React.FunctionComponent<IProps> = (props) => {
+  const position = props.Position ?? 'top'
+
   const toolTip = React.useRef<HTMLDivElement | null>(null);
+
   const [top, setTop] = React.useState<number>(0);
   const [left, setLeft] = React.useState<number>(0);
-  const [arrowPositionPercent, setArrowPositionPercent] = React.useState<number>(50);
 
+  const [arrowPositionPercent, setArrowPositionPercent] = React.useState<number>(50);
   const [targetPosition, setTargetPosition] = React.useState<Gemstone.TSX.Interfaces.IElementPosition>(defaultTargetPosition)
+
+  const alertRef = React.useRef<HTMLDivElement | null>(null);
+
+  const [backgroundColor, setBackgroundColor] = React.useState<string>('green');
+  const [color, setColor] = React.useState<string>('red');
+
+  const alarmClass = React.useMemo(() => props.Class != null ? `alert-${props.Class} d-none` : 'popover d-none', [props.Class])
+
+  React.useLayoutEffect(() => {
+    if (alertRef.current == null) return;
+
+    const style = getComputedStyle(alertRef.current);
+    setBackgroundColor(style.backgroundColor);
+    setColor(style.color);
+  });
 
   React.useEffect(() => {
     const target = document.querySelectorAll(`[data-tooltip${props.Target === undefined ? '' : `="${props.Target}"`}]`)
@@ -83,23 +133,41 @@ const ToolTip: React.FunctionComponent<IProps> = (props) => {
   }, [props.Show, props.Target, targetPosition]);
 
   React.useLayoutEffect(() => {
-    const [t, l, arrowLeft] = getPosition(toolTip, targetPosition, props.Position ?? 'top');
+    const [t, l, arrowLeft] = getPosition(toolTip, targetPosition, position);
     setTop(t);
     setLeft(l);
     setArrowPositionPercent(arrowLeft);
-  }, [targetPosition, props?.children, props.Position]);
+  }, [targetPosition, props?.children, position]);
 
-  const zIndex = (props.Zindex === undefined ? 2000 : props.Zindex);
+  const zIndex = (props.Zindex === undefined ? 9999 : props.Zindex);
 
   return (
-    <Portal>
-      <WrapperDiv className={`popover bs-popover-${props.Position ?? 'top'} border`} Show={props.Show} Top={top} Left={left} ref={toolTip} Zindex={zIndex}>
-        <div className='arrow' style={props.Position === 'left' || props.Position === 'right' ? { top: `calc(${arrowPositionPercent}% - 1em)` } : { left: `calc(${arrowPositionPercent}% - 1em)` }} />
-        <div className='popover-body'>
-          {props.children}
-        </div>
-      </WrapperDiv>
-    </Portal>
+    <>
+      <div className={alarmClass} ref={alertRef} />
+      <Portal>
+        <PopoverDiv
+          className={`popover bs-popover-${position}`}
+          Show={props.Show}
+          Top={top}
+          Left={left}
+          ref={toolTip}
+          Zindex={zIndex}
+          BgColor={backgroundColor}
+          Color={color}
+        >
+          <Arrow
+            className='arrow'
+            Position={position}
+            ArrowPositionPercent={arrowPositionPercent}
+            BackgroundColor={backgroundColor}
+            Color={color}
+          />
+          <div className='popover-body' style={{ backgroundColor, color }}>
+            {props.children}
+          </div>
+        </PopoverDiv>
+      </Portal>
+    </>
   )
 }
 
@@ -160,4 +228,4 @@ const getPosition = (toolTip: React.MutableRefObject<HTMLDivElement | null>, tar
   return [top, left, arrowPositionPercent];
 }
 
-export default ToolTip;
+export default Tooltip;

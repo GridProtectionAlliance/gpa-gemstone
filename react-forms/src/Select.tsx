@@ -24,7 +24,7 @@
 // ******************************************************************************************************
 
 import * as React from 'react';
-import HelperMessage from './HelperMessage';
+import ToolTip from './ToolTip';
 import { CreateGuid } from '@gpa-gemstone/helper-functions'
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import { Gemstone } from '@gpa-gemstone/application-typings';
@@ -101,21 +101,20 @@ export default function Select<T>(props: IProps<T>) {
       {showHelpIcon || showLabel ?
         <label className='d-flex align-items-center'>{showLabel ? label : ''}
           {showHelpIcon ?
-            <button className='btn mb-1 pt-0 pb-0' onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)}>
+            <button className='btn mb-1 pt-0 pb-0' onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)} data-tooltip={guid}>
               <ReactIcons.QuestionMark Color='var(--info)' Size={20} />
             </button>
             : null}
         </label> : null}
 
       {showHelpIcon ?
-        <HelperMessage Show={showHelp} Target={guid}>
+        <ToolTip Show={showHelp} Target={guid} Class="info" Position="bottom">
           {props.Help}
-        </HelperMessage>
+        </ToolTip>
         : null}
 
       {/* Rendering the select input */}
       <select
-        data-help={guid}
         className="form-control"
         onChange={(evt) => SetRecord(evt.target.value)}
         value={GetRecordValue() as string | number}

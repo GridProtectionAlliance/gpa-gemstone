@@ -23,7 +23,7 @@
 
 import * as React from 'react';
 import { CreateGuid } from '@gpa-gemstone/helper-functions'
-import HelperMessage from './HelperMessage';
+import ToolTip from './ToolTip';
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 
@@ -41,7 +41,7 @@ export default function CheckBox<T>(props: Gemstone.TSX.Interfaces.IBaseFormProp
   const label = props.Label === undefined ? props.Field : props.Label;
 
   return (
-    <div className="form-check" data-help={guid}>
+    <div className="form-check">
       <input
         type="checkbox"
         className="form-check-input"
@@ -58,16 +58,16 @@ export default function CheckBox<T>(props: Gemstone.TSX.Interfaces.IBaseFormProp
       {showHelpIcon || showLabel ?
         <label className='form-check-label'>{showLabel ? label : ''}
           {showHelpIcon ?
-            <button className='btn mb-1 pt-0 pb-0' onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)}>
+            <button className='btn mb-1 pt-0 pb-0' onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)} data-tooltip={guid}>
               <ReactIcons.QuestionMark Color='var(--info)' Size={20} />
             </button>
             : null}
         </label> : null}
 
       {showHelpIcon ?
-        <HelperMessage Show={showHelp} Target={guid}>
+        <ToolTip Show={showHelp} Target={guid} Class="info" Position="bottom">
           {props.Help}
-        </HelperMessage>
+        </ToolTip>
         : null}
     </div>
   );

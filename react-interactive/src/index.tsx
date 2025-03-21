@@ -27,7 +27,7 @@ import SearchBar from './SearchBar';
 import { Search } from './SearchBar';
 import LoadingScreen from './LoadingScreen';
 import LoadingIcon from './LoadingIcon';
-import ToolTip from './ToolTip';
+import { ToolTip } from '@gpa-gemstone/react-forms';
 import TabSelector from './TabSelector';
 import ServerErrorIcon from './ServerErrorIcon';
 import GenericSlice from './GenericSlice';
@@ -54,6 +54,9 @@ export {
   Search,
   LoadingScreen,
   LoadingIcon,
+  /**
+ * @deprecated use tooltip from react-forms istead
+ */
   ToolTip,
   TabSelector,
   ServerErrorIcon,

@@ -21,8 +21,8 @@
 //
 // ******************************************************************************************************
 import * as React from 'react';
-import { CreateGuid } from '@gpa-gemstone/helper-functions'
-import ToolTip from './ToolTip';
+import { CreateGuid } from '@gpa-gemstone/helper-functions';
+import { ToolTip } from '@gpa-gemstone/react-forms';
 
 /**
  * Represents the structure of a button used within the application.

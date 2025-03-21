@@ -22,7 +22,7 @@
 // ******************************************************************************************************
 
 import * as React from 'react';
-import HelperMessage from './HelperMessage';
+import ToolTip from './ToolTip';
 import { CreateGuid } from '@gpa-gemstone/helper-functions';
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import { Gemstone } from '@gpa-gemstone/application-typings';
@@ -57,14 +57,14 @@ export default function DatePicker<T>(props: IProps<T>) {
       {(props.Help != null || props.Label !== "") ?
         <label className='d-flex align-items-center'>{props.Label ?? props.Field}
           {props.Help != null ?
-            <button className='btn mb-1 pt-0 pb-0' onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)}>
+            <button className='btn mb-1 pt-0 pb-0' onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)} data-tooltip={guid.current}>
               <ReactIcons.QuestionMark Color='var(--info)' Size={20} />
             </button> : <></>}
         </label>
         : <></>}
-      <HelperMessage Show={showHelp} Target={guid.current}>
+      <ToolTip Show={showHelp} Target={guid.current} Class="info" Position="bottom">
         {props.Help}
-      </HelperMessage>
+      </ToolTip>
       <input
         className={'form-control' + (props.Valid(props.Field) ? '' : ' is-invalid')}
         type="time"

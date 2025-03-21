@@ -23,7 +23,7 @@
 
 import * as React from 'react';
 import { CreateGuid } from '@gpa-gemstone/helper-functions'
-import HelperMessage from './HelperMessage';
+import ToolTip from './ToolTip';
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 
@@ -52,17 +52,17 @@ export default function RadioButtons<T>(props: IProps<T>) {
     const showHelpIcon = props.Help !== undefined;
 
     return (
-        <div className="form-group" data-help={guid.current}>
+        <div className="form-group">
             <label className="form-check-label w-100 d-flex align-items-center">
                 {props.Label ?? props.Field}
                 {showHelpIcon ?
                     <>
-                        <button className='btn mb-1 pt-0 pb-0' onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)}>
+                        <button className='btn mb-1 pt-0 pb-0' onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)} data-tooltip={guid.current}>
                             <ReactIcons.QuestionMark Color='var(--info)' Size={20} />
                         </button>
-                        <HelperMessage Show={showHelp} Target={guid.current}>
+                        <ToolTip Show={showHelp} Target={guid.current} Class="info" Position="bottom">
                             {props.Help}
-                        </HelperMessage>
+                        </ToolTip>
                     </>
                     : null}
             </label>

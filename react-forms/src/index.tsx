@@ -41,6 +41,7 @@ import InputWithButton from './InputWithButton';
 import RadioButtons from './RadioButtons';
 import FileUpload from './FileUpload';
 import MultiInput from './MultiInput';
+import ToolTip from './ToolTip';
 
 export {
     CheckBox,
@@ -62,5 +63,6 @@ export {
     InputWithButton,
     RadioButtons,
     FileUpload,
-    MultiInput
+    MultiInput,
+    ToolTip
 };
