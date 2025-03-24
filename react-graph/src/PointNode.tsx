@@ -55,15 +55,12 @@ export class PointNode {
         this.children = null;
         this.points = null;
         this.dim = NaN;
+        this.maxCount = maxTotalPoints ?? DefaultMaxTotalPoints;
 
-        if(maxTotalPoints == null){
-            console.warn('Max Total Points was not provided in PointNode constructor, defaulting to 2000 max points.')
-            this.maxCount = DefaultMaxTotalPoints;
-        }
-        else
-            this.maxCount = maxTotalPoints;
-        
         if (data === undefined) return;
+
+        if (data.length > this.maxCount)
+            console.warn(`Data passed into PointNode exceeds MaxCount (${this.maxCount}). This could lead to unexpected behavior when adding a point.`);
 
         this.dim = data.length === 0 ? NaN : data[0].length;
 
@@ -134,7 +131,7 @@ export class PointNode {
      * 
      * @param newPoints points to add, one array of size dim
      */
-    public AddPoints(newPoints: number[]): void {
+    public AddPoint(newPoints: number[]): void {
         if (Number.isNaN(this.dim))
             this.dim = newPoints.length
 
@@ -142,8 +139,7 @@ export class PointNode {
         if (newPoints.length !== this.dim) throw new TypeError(`Jagged data passed to PointNode.Add(). Points should be ${this.dim} dimension.`);
 
         if (this.TryAddPoints(newPoints)) {
-            if (this.count > this.maxCount)
-                this.removeLeftMostPoint();
+            this.trimToMaxCount();
             return;
         }
 
@@ -154,7 +150,7 @@ export class PointNode {
         this.RecalculateStats();
 
         if (this.count > this.maxCount)
-            this.removeLeftMostPoint();
+            this.trimToMaxCount();
     }
 
     /**
@@ -222,28 +218,36 @@ export class PointNode {
         return children;
     }
 
-    private removeLeftMostPoint(): boolean {
-        // If this is a leaf node, remove the first point 
-        if (this.points !== null) {
-            if (this.points.length > 0) {
-                this.points.shift();
-                this.RecalculateStats();
-                return true;
-            }
-            return false;
-        }
-        // If this is an internal node, recurse into the first child.
-        if (this.children !== null && this.children.length > 0) {
-            const wasRemoved = this.children[0].removeLeftMostPoint();
+    private trimToMaxCount(): void {
+        if (this.count <= this.maxCount) return
 
-            // If the first child is now empty, remove it from the children array.
-            if (this.children[0].GetFullData().length === 0) 
+        if (this.count - this.maxCount > 2) {
+            // If too many extra points, reinitialize with only the last maxCount points.
+            const allPoints = this.GetFullData();
+            const recentPoints = allPoints.slice(allPoints.length - this.maxCount);
+            this.initializeNode(recentPoints);
+        } else
+            this.removeLeftMostPoint();
+
+    }
+
+    private removeLeftMostPoint(): void {
+        // If this is a leaf node, remove the first point
+        if (this.points !== null) {
+            if (this.points.length > 0)
+                this.points.shift();
+
+        } else if (this.children !== null && this.children.length > 0) {
+            // remove the leftmost point from the first child
+            this.children[0].removeLeftMostPoint();
+
+            // If the first child is empty, remove it 
+            if (this.children[0].count === 0)
                 this.children.shift();
-            
-            this.RecalculateStats();
-            return wasRemoved;
+
         }
-        return false;
+
+        this.RecalculateStats();
     }
 
     /**
@@ -261,7 +265,19 @@ export class PointNode {
      * Updates statistics based on the current points.
      */
     private CalculatePointStats(): void {
-        if (this.points === null || this.points.length === 0) return;
+        if (this.points === null) return;
+
+        if (this.points.length === 0) {
+            // Set stats to indicate an empty node
+            this.count = 0;
+            this.minT = NaN;
+            this.maxT = NaN;
+            this.dim = NaN;
+            this.minV = [];
+            this.maxV = [];
+            this.sum = [];
+            return;
+        }
 
         this.count = this.points.length;
         this.minT = this.points?.[0]?.[0] ?? NaN;

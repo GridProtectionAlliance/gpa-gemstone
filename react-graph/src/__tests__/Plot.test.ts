@@ -168,7 +168,7 @@ test('Initialize with desiredTreeSize = 5', () => {
 test('Add Point', () => {
   const data = [... new Array(19)].map((_, i) => [i, i]);
   const node = new PointNode(data);
-  node.AddPoints([19,19])
+  node.AddPoint([19,19])
 
   expect(node.GetTreeSize()).toBe(1);
   expect(node.count).toBe(20);
@@ -184,7 +184,7 @@ test('Add Point', () => {
 
 test('Add Point to large node', () => {
   const data = [... new Array(398)].map((_, i) => [i, i]);  const node = new PointNode(data);
-  node.AddPoints([398,398])
+  node.AddPoint([398,398])
 
   expect(node.GetTreeSize()).toBe(2);
   expect(node.count).toBe(399);
@@ -201,7 +201,7 @@ test('Add Point to large node', () => {
 test('Add Point to full node', () => {
   const data = [... new Array(20)].map((_, i) => [i, i]);
   const node = new PointNode(data);
-  node.AddPoints([20,20])
+  node.AddPoint([20,20])
 
   expect(node.GetTreeSize()).toBe(2);
   expect(node.count).toBe(21);
@@ -221,14 +221,14 @@ test('Add point with incorrect dimensionality throws TypeError', () => {
 
   // Attempt to add a point with different dimensions
   const invalidPoint = [10];
-  expect(() => node.AddPoints(invalidPoint as any)).toThrow(TypeError);
+  expect(() => node.AddPoint(invalidPoint as any)).toThrow(TypeError);
 });
 
 test('Add empty point array throws Error', () => {
   const data = [... new Array(10)].map((_, i) => [i, i]);
   const node = new PointNode(data);
 
-  expect(() => node.AddPoints([])).toThrow(Error);
+  expect(() => node.AddPoint([])).toThrow(Error);
 });
 
 test('Fundamental GetCount', () => {
@@ -284,12 +284,23 @@ test('GetData with empty data', () => {
   expect(points.toString()).toBe([].toString());
 })
 
-test('trimTree fundamental test', () => {
+test('RemoveLeftMostPoint fundamental test', () => {
   const data: [number, number][] = Array.from({length: 2000}, (_, i) => [i, i]);
   const node = new PointNode(data);
   expect(node.count).toBe(2000);
   
-  node.AddPoints([2000, 2000]);
+  node.AddPoint([2000, 2000]);
+  
+  expect(node.count).toEqual(2000);
+
+});
+
+test('TrimToMaxCount fundamental test', () => {
+  const data: [number, number][] = Array.from({length: 5000}, (_, i) => [i, i]);
+  const node = new PointNode(data);
+  expect(node.count).toBe(5000);
+  
+  node.AddPoint([5000, 5000]);
   
   expect(node.count).toEqual(2000);
 
