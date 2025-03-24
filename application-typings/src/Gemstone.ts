@@ -41,10 +41,10 @@ namespace Gemstone {
                 Field: keyof T;
                 /**
                     * Label to display for the form, defaults to the Field prop
-                    * @type {string}
+                    * @type {string | JSX.Element}
                     * @optional
                 */
-                Label?: string;
+                Label?: string | JSX.Element;
                 /**
                     * Setter function to update the Record
                     * @param record - Updated Record
@@ -72,7 +72,7 @@ namespace Gemstone {
             export interface ICSVFieldEditProps<T> {
                 Value: string,
                 SetValue: (val: string) => void,
-                Valid: boolean,
+                Validate: ((value: string) => boolean) | ((value: string) => Promise<[boolean, () => void]>);
                 Feedback?: string,
                 AllRecordValues: Partial<Record<keyof T, string>>,
                 SelectOptions?: { Label: string, Value: string | number }[]
@@ -93,9 +93,9 @@ namespace Gemstone {
                 /**
                  * Function to validate the field value.
                  * @param {string} value - The value to validate.
-                 * @returns {boolean}
+                 * @returns {boolean | Promise<[boolean, () => void]>}
                  */
-                Validate: (value: string) => boolean;
+                Validate: ((value: string) => boolean) | ((value: string) => Promise<[boolean, () => void]>);
 
                 /**
                  * Component for editing the field value.
@@ -148,7 +148,7 @@ namespace Gemstone {
                  * @type {boolean}
                  */
                 SameValueForAllRows?: boolean,
-                
+
                 SelectOptions?: { Label: string, Value: string | number }[]
             }
             export interface ISearchFilter<T> {

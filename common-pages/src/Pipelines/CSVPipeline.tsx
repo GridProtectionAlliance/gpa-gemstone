@@ -29,6 +29,7 @@ import { CheckBox, Select } from '@gpa-gemstone/react-forms';
 import { Column, Table, Paging } from '@gpa-gemstone/react-table';
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import { isEqual } from 'lodash';
+import ErrorBoundary from '../ErrorBoundary';
 
 interface IAdditionalProps<T> {
     Fields: Gemstone.TSX.Interfaces.ICSVField<T>[],
@@ -90,18 +91,13 @@ export function useCSVPipeline<T = unknown, U extends IAdditionalProps<T> = IAdd
 function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProps<T, IAdditionalProps<T>>) {
     const rawDataRef = React.useRef<string>();
 
-
     const [pagedData, setPagedData] = React.useState<string[][]>([]);
+    const [page, setPage] = React.useState<number>(0);
+    const [totalPages, setTotalPages] = React.useState<number>(1);
 
     const [isFileParseable, setIsFileParseable] = React.useState<boolean>(true);
     const [isCSVMissingHeadersCount, setIsCSVMissingHeadersCount] = React.useState<number>(0);
     const [isCSVMissingDataCellsCount, setIsCSVMissingDataCellsCount] = React.useState<number>(0);
-
-    const [page, setPage] = React.useState<number>(0);
-    const [totalPages, setTotalPages] = React.useState<number>(1);
-
-    const [showDataHeaderAlert, setShowDataHeaderAlert] = React.useState<boolean>(true);
-    const [showDataOrHeaderAlert, setShowDataOrHeaderAlert] = React.useState<boolean>(true);
 
     React.useEffect(() => {
         if (props.AdditionalProps?.Data.length === 0) return
@@ -114,67 +110,88 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
     }, [props.AdditionalProps?.Data, page]);
 
     React.useEffect(() => {
-        const errors: string[] = [];
-        if (props.AdditionalProps == null) return
-        const headerMap = props.AdditionalProps?.HeaderMap as Map<string, keyof T | undefined>
+        let callback: () => void | undefined;
 
-        props.AdditionalProps.Fields.forEach(field => {
-            const matchedHeader = Array.from(headerMap).find(([, value]) => value === field.Field)?.[0];
-            if (matchedHeader == null) {
-                if (field.Required)
-                    errors.push(`${field.Label} is required and must be mapped to a header.`);
+        async function runValidation() {
+            const errors: string[] = [];
+            if (props.AdditionalProps == null) return;
+            const headerMap = props.AdditionalProps.HeaderMap as Map<string, keyof T | undefined>;
 
-                return; // return early if the field was never mapped to a header
-            }
-
-            const fieldIndex: number = props.AdditionalProps?.Headers.indexOf(matchedHeader) as number;
-
-            let foundDuplicate = false;
-            let foundEmpty = false;
-            let foundInvalid = false;
-            const uniqueValues = new Set<string>();
-
-            //Need to also make sure that all the fields that have the Required flag got mapped to a header...
-            props.AdditionalProps?.Data.forEach(row => {
-                const value = row[fieldIndex + 1]; //+1 for row index value
-
-                // Unique check
-                if (field.Unique) {
-                    if (uniqueValues.has(value))
-                        foundDuplicate = true;
-                    else
-                        uniqueValues.add(value);
+            for (const field of props.AdditionalProps.Fields) {
+                const matchedHeader = Array.from(headerMap).find(([, value]) => value === field.Field)?.[0];
+                if (matchedHeader == null) {
+                    if (field.Required)
+                        errors.push(`${field.Label} is required and must be mapped to a header.`);
+                    continue; // return early if the field was never mapped to a header
                 }
 
-                // Allowed emptiness
-                if (!field.AllowEmpty && (value == null || (value.trim() === '')))
-                    foundEmpty = true;
+                const fieldIndex: number = props.AdditionalProps.Headers.indexOf(matchedHeader) as number;
 
-                // Validate
-                if (!field.Validate(value))
-                    foundInvalid = true;
-            });
+                let foundDuplicate = false;
+                let foundEmpty = false;
+                let foundInvalid = false;
+                const uniqueValues = new Set<string>();
 
-            if (field.Unique && foundDuplicate)
-                errors.push(`All ${field.Label} values must be unique.`);
+                for (const row of props.AdditionalProps.Data) {
+                    const value = row[fieldIndex + 1]; // +1 for row index value
 
-            if (foundEmpty)
-                errors.push(`All ${field.Label} values cannot be empty.`);
+                    // Unique check
+                    if (field.Unique) {
+                        if (uniqueValues.has(value))
+                            foundDuplicate = true;
+                        else
+                            uniqueValues.add(value);
+                    }
 
-            if (foundInvalid)
-                errors.push(`All ${field.Label} values must be valid.`);
+                    // Allowed emptiness
+                    if (!field.AllowEmpty && (value == null || (value.trim() === '')))
+                        foundEmpty = true;
 
-            //Check for SameValueForAllRows 
-            if (field.SameValueForAllRows ?? false) {
-                const allValues = props.AdditionalProps?.Data.map(row => row[fieldIndex + 1] ?? '');
-                if (new Set(allValues).size > 1)
-                    errors.push(`All rows must contain the same value for ${field.Label}.`);
+                    const result = await Promise.resolve(field.Validate(value));
+                    let isValid: boolean;
+                    if (Array.isArray(result)) {
+                        //[boolean, abortCallback]
+                        [isValid] = result;
+                        const abortCallback = result[1];
+                        if (typeof abortCallback === 'function')
+                            callback = abortCallback;
+
+                    } else
+                        isValid = result;
+
+                    if (!isValid) {
+                        foundInvalid = true;
+                    }
+
+                }
+
+                if (field.Unique && foundDuplicate)
+                    errors.push(`All ${field.Label} values must be unique.`);
+
+                if (foundEmpty)
+                    errors.push(`All ${field.Label} values cannot be empty.`);
+
+                if (foundInvalid)
+                    errors.push(`All ${field.Label} values must be valid.`);
+
+                // Check for SameValueForAllRows 
+                if (field.SameValueForAllRows ?? false) {
+                    const allValues = props.AdditionalProps.Data.map(row => row[fieldIndex + 1] ?? '');
+                    if (new Set(allValues).size > 1)
+                        errors.push(`All rows must contain the same value for ${field.Label}.`);
+                }
             }
 
-        });
+            if (!isEqual(props.Errors.sort(), errors.sort()))
+                props.SetErrors(errors);
+        }
 
-        if (!isEqual(props.Errors.sort(), errors.sort()))
-            props.SetErrors(errors);
+        runValidation();
+
+        return () => {
+            if (callback != null)
+                callback();
+        }
 
     }, [props.AdditionalProps?.Data, props.AdditionalProps?.Headers, props.AdditionalProps?.HeaderMap, isFileParseable, props.AdditionalProps?.Fields]);
 
@@ -349,115 +366,116 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
     return (
         <>
             <div className="container-fluid d-flex flex-column p-0 h-100">
-                <div className='row h-100'>
-                    <div className='col-12 d-flex flex-column h-100'>
-                        {pagedData.length !== 0 ?
-                            <>
-                                {isCSVMissingDataCellsCount > 0 && isCSVMissingHeadersCount > 0 ? (
-                                    <div className='row'>
-                                        <div className='col-12'>
-                                            <Alert Color='alert-info' ReTrigger={isCSVMissingDataCellsCount + isCSVMissingHeadersCount}>
-                                                <p style={{ whiteSpace: 'nowrap' }}>
-                                                    Missing data cells were added to meet the number of required fields.
-                                                </p>
-                                                <hr />
-                                                <p style={{ whiteSpace: 'nowrap' }}>
-                                                    Missing headers were added to meet the number of required fields.
-                                                </p>
-                                            </Alert>
+                <ErrorBoundary Height={'100%'} Width={'100%'} BodyErrorMessage='Error loading page.' HeaderErrorMessage='Error'>
+                    <div className='row h-100'>
+                        <div className='col-12 d-flex flex-column h-100'>
+                            {pagedData.length !== 0 ?
+                                <>
+                                    {isCSVMissingDataCellsCount > 0 && isCSVMissingHeadersCount > 0 ? (
+                                        <div className='row'>
+                                            <div className='col-12'>
+                                                <Alert Color='alert-info' ReTrigger={isCSVMissingDataCellsCount + isCSVMissingHeadersCount}>
+                                                    <p style={{ whiteSpace: 'nowrap' }}>
+                                                        Missing data cells were added to meet the number of required fields.
+                                                    </p>
+                                                    <hr />
+                                                    <p style={{ whiteSpace: 'nowrap' }}>
+                                                        Missing headers were added to meet the number of required fields.
+                                                    </p>
+                                                </Alert>
+                                            </div>
                                         </div>
-                                    </div>
 
-                                ) : isCSVMissingDataCellsCount > 0 || isCSVMissingHeadersCount > 0 ? (
-                                    <div className='row'>
-                                        <div className='col-12'>
-                                            <Alert Color='alert-info' ReTrigger={isCSVMissingDataCellsCount > 0 ? isCSVMissingDataCellsCount : isCSVMissingHeadersCount}>
-                                                <p style={{ whiteSpace: 'nowrap' }}>
-                                                    {isCSVMissingDataCellsCount > 0 ? 'Missing data cells were added to meet the number of required fields.' : 'Missing headers were added to meet the number of required fields.'}
-                                                </p>
-                                            </Alert>
+                                    ) : isCSVMissingDataCellsCount > 0 || isCSVMissingHeadersCount > 0 ? (
+                                        <div className='row'>
+                                            <div className='col-12'>
+                                                <Alert Color='alert-info' ReTrigger={isCSVMissingDataCellsCount > 0 ? isCSVMissingDataCellsCount : isCSVMissingHeadersCount}>
+                                                    <p style={{ whiteSpace: 'nowrap' }}>
+                                                        {isCSVMissingDataCellsCount > 0 ? 'Missing data cells were added to meet the number of required fields.' : 'Missing headers were added to meet the number of required fields.'}
+                                                    </p>
+                                                </Alert>
+                                            </div>
                                         </div>
-                                    </div>
-                                ) : null}
-                                <div className='row flex-grow-1' style={{ overflowY: 'hidden' }}>
-                                    <div className='col-12 h-100'>
-                                        <Table<string[]>
-                                            Data={pagedData}
-                                            key={props.AdditionalProps?.Headers.join(',')}
-                                            SortKey=''
-                                            Ascending={false}
-                                            OnSort={() => {/*no sort*/ }}
-                                            KeySelector={data => data[0]}
-                                            TableClass='table'
-                                            TableStyle={{ height: '100%', width: (props.AdditionalProps?.Headers.length ?? 0) * 150 }}
-                                        >
-                                            {props.AdditionalProps?.Headers.map((header, i) =>
-                                                <Column<string[]>
-                                                    Key={header}
-                                                    Field={i + 1}
-                                                    AllowSort={false}
-                                                    Content={({ item, field }) => {
-                                                        if (props.AdditionalProps == null) return
-                                                        const mappedField = props.AdditionalProps?.HeaderMap.get(header);
-                                                        const matchedField = props.AdditionalProps.Fields.find(f => f.Field === mappedField);
-                                                        if (matchedField == null) return item[field as number];
-
-                                                        const value = item[field as number];
-                                                        const isValid = matchedField.Validate(value);
-                                                        const feedback = matchedField.Feedback
-                                                        const selectOptions = matchedField.SelectOptions
-
-                                                        const allValues: Partial<Record<keyof T, string>> = {};
-                                                        props.AdditionalProps?.Headers.forEach((header, index) => {
+                                    ) : null}
+                                    <div className='row flex-grow-1' style={{ overflowY: 'hidden' }}>
+                                        <div className='col-12 h-100'>
+                                            <Table<string[]>
+                                                Data={pagedData}
+                                                key={props.AdditionalProps?.Headers.join(',')}
+                                                SortKey=''
+                                                Ascending={false}
+                                                OnSort={() => {/*no sort*/ }}
+                                                KeySelector={data => data[0]}
+                                                TableClass='table'
+                                                TableStyle={{ height: '100%', width: (props.AdditionalProps?.Headers.length ?? 0) * 150 }}
+                                            >
+                                                {props.AdditionalProps?.Headers.map((header, i) =>
+                                                    <Column<string[]>
+                                                        Key={header}
+                                                        Field={i + 1}
+                                                        AllowSort={false}
+                                                        Content={({ item, field }) => {
+                                                            if (props.AdditionalProps == null) return
                                                             const mappedField = props.AdditionalProps?.HeaderMap.get(header);
-                                                            if (mappedField != null) {
-                                                                allValues[mappedField] = item[index + 1];
-                                                            }
-                                                        });
+                                                            const matchedField = props.AdditionalProps.Fields.find(f => f.Field === mappedField);
+                                                            if (matchedField == null) return item[field as number];
 
+                                                            const value = item[field as number];
+                                                            const feedback = matchedField.Feedback
+                                                            const selectOptions = matchedField.SelectOptions
+
+                                                            const allValues: Partial<Record<keyof T, string>> = {};
+                                                            props.AdditionalProps?.Headers.forEach((header, index) => {
+                                                                const mappedField = props.AdditionalProps?.HeaderMap.get(header);
+                                                                if (mappedField != null) {
+                                                                    allValues[mappedField] = item[index + 1];
+                                                                }
+                                                            });
+
+                                                            return (
+                                                                <matchedField.EditComponent
+                                                                    Value={value}
+                                                                    SetValue={(val: string) => handleValueChange(parseInt(item[0]), field as number, val)}
+                                                                    Validate={matchedField.Validate}
+                                                                    Feedback={feedback}
+                                                                    AllRecordValues={allValues}
+                                                                    SelectOptions={selectOptions}
+                                                                />
+                                                            );
+                                                        }}
+                                                    >
+                                                        {getHeader(header)}
+                                                        {getFieldSelect(header)}
+                                                    </Column>
+                                                )}
+                                                <Column<string[]>
+                                                    Key={'delete'}
+                                                    Field={0}
+                                                    AllowSort={false}
+                                                    RowStyle={{ textAlign: 'right' }}
+                                                    Content={({ item }) => {
                                                         return (
-                                                            <matchedField.EditComponent
-                                                                Value={value}
-                                                                SetValue={(val: string) => handleValueChange(parseInt(item[0]), field as number, val)}
-                                                                Valid={isValid}
-                                                                Feedback={feedback}
-                                                                AllRecordValues={allValues}
-                                                                SelectOptions={selectOptions}
-                                                            />
-                                                        );
+                                                            <button className='btn' onClick={() => handleRowDelete(parseInt(item[0]))}>
+                                                                <ReactIcons.TrashCan Color="red" />
+                                                            </button>
+                                                        )
                                                     }}
                                                 >
-                                                    {getHeader(header)}
-                                                    {getFieldSelect(header)}
+                                                    {''}
                                                 </Column>
-                                            )}
-                                            <Column<string[]>
-                                                Key={'delete'}
-                                                Field={0}
-                                                AllowSort={false}
-                                                RowStyle={{ textAlign: 'right' }}
-                                                Content={({ item }) => {
-                                                    return (
-                                                        <button className='btn' onClick={() => handleRowDelete(parseInt(item[0]))}>
-                                                            <ReactIcons.TrashCan Color="red" />
-                                                        </button>
-                                                    )
-                                                }}
-                                            >
-                                                {''}
-                                            </Column>
-                                        </Table>
+                                            </Table>
+                                        </div>
                                     </div>
-                                </div>
-                                <div className='row'>
-                                    <div className='col-12'>
-                                        <Paging Current={page + 1} Total={totalPages} SetPage={(p) => setPage(p - 1)} />
+                                    <div className='row'>
+                                        <div className='col-12'>
+                                            <Paging Current={page + 1} Total={totalPages} SetPage={(p) => setPage(p - 1)} />
+                                        </div>
                                     </div>
-                                </div>
-                            </>
-                            : null}
+                                </>
+                                : null}
+                        </div>
                     </div>
-                </div>
+                </ErrorBoundary>
             </div>
         </>
     );
