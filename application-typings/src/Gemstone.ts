@@ -41,7 +41,7 @@ namespace Gemstone {
                 Field: keyof T;
                 /**
                     * Label to display for the form, defaults to the Field prop
-                    * @type {string}
+                    * @type {string | JSX.Element}
                     * @optional
                 */
                 Label?: string | JSX.Element;
