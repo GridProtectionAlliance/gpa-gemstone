@@ -22,7 +22,7 @@
 // ******************************************************************************************************
 
 const MaxPoints = 20;
-const DefaultMaxTotalPoints = 2000;
+const DefaultMaxTotalPoints = 2000; // only used 
 
 /**
  * 
@@ -55,12 +55,19 @@ export class PointNode {
         this.children = null;
         this.points = null;
         this.dim = NaN;
-        this.maxCount = maxTotalPoints ?? DefaultMaxTotalPoints;
+
+        if (maxTotalPoints !== undefined) {
+            this.maxCount = maxTotalPoints;
+        } else {
+            if (data === undefined || data.length < DefaultMaxTotalPoints)
+                this.maxCount = DefaultMaxTotalPoints;
+            else {
+                this.maxCount = data.length;
+                console.warn(`MaxTotalPoints was not provided to PointNode, adding new points will start removing the earliest points.`);
+            }
+        }
 
         if (data === undefined) return;
-
-        if (data.length > this.maxCount)
-            console.warn(`Data passed into PointNode exceeds MaxCount (${this.maxCount}). This could lead to unexpected behavior when adding a point.`);
 
         this.dim = data.length === 0 ? NaN : data[0].length;
 
@@ -139,7 +146,8 @@ export class PointNode {
         if (newPoints.length !== this.dim) throw new TypeError(`Jagged data passed to PointNode.Add(). Points should be ${this.dim} dimension.`);
 
         if (this.TryAddPoints(newPoints)) {
-            this.trimToMaxCount();
+            if (this.count > this.maxCount)
+                this.removeLeftMostPoint();
             return;
         }
 
@@ -150,7 +158,7 @@ export class PointNode {
         this.RecalculateStats();
 
         if (this.count > this.maxCount)
-            this.trimToMaxCount();
+            this.removeLeftMostPoint();
     }
 
     /**
@@ -216,19 +224,6 @@ export class PointNode {
         }
 
         return children;
-    }
-
-    private trimToMaxCount(): void {
-        if (this.count <= this.maxCount) return
-
-        if (this.count - this.maxCount > 2) {
-            // If too many extra points, reinitialize with only the last maxCount points.
-            const allPoints = this.GetFullData();
-            const recentPoints = allPoints.slice(allPoints.length - this.maxCount);
-            this.initializeNode(recentPoints);
-        } else
-            this.removeLeftMostPoint();
-
     }
 
     private removeLeftMostPoint(): void {

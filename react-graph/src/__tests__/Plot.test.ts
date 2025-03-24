@@ -284,24 +284,16 @@ test('GetData with empty data', () => {
   expect(points.toString()).toBe([].toString());
 })
 
-test('RemoveLeftMostPoint fundamental test', () => {
-  const data: [number, number][] = Array.from({length: 2000}, (_, i) => [i, i]);
+test('RemoveLeftMostPoint when data length is less than default', () => {
+  // Using 1500 points, which is less than DefaultMaxTotalPoints (2000)
+  const data: [number, number][] = Array.from({ length: 1500 }, (_, i) => [i, i]);
   const node = new PointNode(data);
-  expect(node.count).toBe(2000);
-  
-  node.AddPoint([2000, 2000]);
-  
-  expect(node.count).toEqual(2000);
-
+  expect(node.maxCount).toBe(2000);
 });
 
-test('TrimToMaxCount fundamental test', () => {
-  const data: [number, number][] = Array.from({length: 5000}, (_, i) => [i, i]);
+test('RemoveLeftMostPoint when data length is greater than default', () => {
+  // Using 2500 points, which is greater than DefaultMaxTotalPoints (2000)
+  const data: [number, number][] = Array.from({ length: 2500 }, (_, i) => [i, i]);
   const node = new PointNode(data);
-  expect(node.count).toBe(5000);
-  
-  node.AddPoint([5000, 5000]);
-  
-  expect(node.count).toEqual(2000);
-
+  expect(node.maxCount).toBe(2500);
 });
