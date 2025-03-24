@@ -168,7 +168,7 @@ test('Initialize with desiredTreeSize = 5', () => {
 test('Add Point', () => {
   const data = [... new Array(19)].map((_, i) => [i, i]);
   const node = new PointNode(data);
-  node.AddPoints([19,19])
+  node.AddPoint([19,19])
 
   expect(node.GetTreeSize()).toBe(1);
   expect(node.count).toBe(20);
@@ -184,7 +184,7 @@ test('Add Point', () => {
 
 test('Add Point to large node', () => {
   const data = [... new Array(398)].map((_, i) => [i, i]);  const node = new PointNode(data);
-  node.AddPoints([398,398])
+  node.AddPoint([398,398])
 
   expect(node.GetTreeSize()).toBe(2);
   expect(node.count).toBe(399);
@@ -201,7 +201,7 @@ test('Add Point to large node', () => {
 test('Add Point to full node', () => {
   const data = [... new Array(20)].map((_, i) => [i, i]);
   const node = new PointNode(data);
-  node.AddPoints([20,20])
+  node.AddPoint([20,20])
 
   expect(node.GetTreeSize()).toBe(2);
   expect(node.count).toBe(21);
@@ -221,14 +221,14 @@ test('Add point with incorrect dimensionality throws TypeError', () => {
 
   // Attempt to add a point with different dimensions
   const invalidPoint = [10];
-  expect(() => node.AddPoints(invalidPoint as any)).toThrow(TypeError);
+  expect(() => node.AddPoint(invalidPoint as any)).toThrow(TypeError);
 });
 
 test('Add empty point array throws Error', () => {
   const data = [... new Array(10)].map((_, i) => [i, i]);
   const node = new PointNode(data);
 
-  expect(() => node.AddPoints([])).toThrow(Error);
+  expect(() => node.AddPoint([])).toThrow(Error);
 });
 
 test('Fundamental GetCount', () => {
@@ -283,3 +283,17 @@ test('GetData with empty data', () => {
   const points = node.GetData(0 ,10);
   expect(points.toString()).toBe([].toString());
 })
+
+test('RemoveLeftMostPoint when data length is less than default', () => {
+  // Using 1500 points, which is less than DefaultMaxTotalPoints (2000)
+  const data: [number, number][] = Array.from({ length: 1500 }, (_, i) => [i, i]);
+  const node = new PointNode(data);
+  expect(node.maxCount).toBe(2000);
+});
+
+test('RemoveLeftMostPoint when data length is greater than default', () => {
+  // Using 2500 points, which is greater than DefaultMaxTotalPoints (2000)
+  const data: [number, number][] = Array.from({ length: 2500 }, (_, i) => [i, i]);
+  const node = new PointNode(data);
+  expect(node.maxCount).toBe(2500);
+});

@@ -22,6 +22,7 @@
 // ******************************************************************************************************
 
 const MaxPoints = 20;
+const DefaultMaxTotalPoints = 2000; // only used 
 
 /**
  * 
@@ -36,11 +37,12 @@ export class PointNode {
     count: number;
     // Count of all dimensions (including time)
     dim: number;
+    maxCount: number;
 
     private children: PointNode[] | null;
     private points: number[][] | null;
 
-    constructor(data?: number[][]) {
+    constructor(data?: number[][], maxTotalPoints?: number) {
         // The minimum/maximum time stamp that fits in this node
         this.minT = NaN;
         this.maxT = NaN;
@@ -53,6 +55,17 @@ export class PointNode {
         this.children = null;
         this.points = null;
         this.dim = NaN;
+
+        if (maxTotalPoints !== undefined) {
+            this.maxCount = maxTotalPoints;
+        } else {
+            if (data === undefined || data.length < DefaultMaxTotalPoints)
+                this.maxCount = DefaultMaxTotalPoints;
+            else {
+                this.maxCount = data.length;
+                console.warn(`MaxTotalPoints was not provided to PointNode, adding new points will start removing the earliest points.`);
+            }
+        }
 
         if (data === undefined) return;
 
@@ -125,19 +138,27 @@ export class PointNode {
      * 
      * @param newPoints points to add, one array of size dim
      */
-    public AddPoints(newPoints: number[]): void {
+    public AddPoint(newPoints: number[]): void {
         if (Number.isNaN(this.dim))
             this.dim = newPoints.length
 
         if (newPoints.length === 0) throw new Error('No point to add');
         if (newPoints.length !== this.dim) throw new TypeError(`Jagged data passed to PointNode.Add(). Points should be ${this.dim} dimension.`);
-        if (this.TryAddPoints(newPoints)) return
+
+        if (this.TryAddPoints(newPoints)) {
+            if (this.count > this.maxCount)
+                this.removeLeftMostPoint();
+            return;
+        }
 
         const copiedNode = PointNode.CreateCopy(this);
         this.children = [copiedNode, PointNode.createNodeWithDesiredTreeSize(newPoints, this.GetTreeSize())]
         this.points = null;
 
         this.RecalculateStats();
+
+        if (this.count > this.maxCount)
+            this.removeLeftMostPoint();
     }
 
     /**
@@ -205,6 +226,25 @@ export class PointNode {
         return children;
     }
 
+    private removeLeftMostPoint(): void {
+        // If this is a leaf node, remove the first point
+        if (this.points !== null) {
+            if (this.points.length > 0)
+                this.points.shift();
+
+        } else if (this.children !== null && this.children.length > 0) {
+            // remove the leftmost point from the first child
+            this.children[0].removeLeftMostPoint();
+
+            // If the first child is empty, remove it 
+            if (this.children[0].count === 0)
+                this.children.shift();
+
+        }
+
+        this.RecalculateStats();
+    }
+
     /**
      * Updates the statistical properties of the node based on its current points or children.
      */
@@ -220,7 +260,19 @@ export class PointNode {
      * Updates statistics based on the current points.
      */
     private CalculatePointStats(): void {
-        if (this.points === null || this.points.length === 0) return;
+        if (this.points === null) return;
+
+        if (this.points.length === 0) {
+            // Set stats to indicate an empty node
+            this.count = 0;
+            this.minT = NaN;
+            this.maxT = NaN;
+            this.dim = NaN;
+            this.minV = [];
+            this.maxV = [];
+            this.sum = [];
+            return;
+        }
 
         this.count = this.points.length;
         this.minT = this.points?.[0]?.[0] ?? NaN;
@@ -280,9 +332,9 @@ export class PointNode {
     private IncrementStatsForNewPoint(newPt: number[]): void {
         // Initialize stats if it's NaN
         if (isNaN(this.count)) this.count = 0;
-        if (isNaN(this.minT))  this.minT = newPt[0];
+        if (isNaN(this.minT)) this.minT = newPt[0];
         if (isNaN(this.maxT)) this.maxT = newPt[0];
-        
+
         this.count += 1;
         this.minT = Math.min(this.minT, newPt[0]);
         this.maxT = Math.max(this.maxT, newPt[0]);
