@@ -110,6 +110,7 @@ const Applications: React.ForwardRefRenderFunction<IApplicationRefs, React.Props
     const navBarRef = React.useRef<HTMLDivElement>(null);
     const mainDivRef = React.useRef<HTMLDivElement>(null);
     const { width } = useGetContainerPosition(mainDivRef);
+    const originalTitle = React.useMemo(() => document.title, []);
 
     const [_ignored, forceUpdate] = React.useReducer((x: number) => x + 1, 0); // integer state for resize renders
 
@@ -122,6 +123,7 @@ const Applications: React.ForwardRefRenderFunction<IApplicationRefs, React.Props
     const showOpen = (props.AllowCollapsed !== undefined && props.AllowCollapsed || shouldAddCollapseOptions) && collapsed;
     const showClose = (props.AllowCollapsed !== undefined && props.AllowCollapsed || shouldAddCollapseOptions) && !collapsed;
     const hideSide = (props.HideSideBar === undefined && !shouldRemoveSideNav) ? false : ((props.HideSideBar ?? false) || shouldRemoveSideNav);
+    
 
     React.useLayoutEffect(() => {
         setNavBarHeight(navBarRef.current?.offsetHeight ?? 40)
