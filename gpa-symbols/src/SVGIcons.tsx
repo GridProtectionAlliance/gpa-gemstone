@@ -62,7 +62,7 @@ export namespace SVGIcons {
 
     export const CircledX = <ReactIcons.CircledX/>
 
-    export const CircleCheck = <ReactIcons.CircleCheck/>
+    export const CircleCheck = <ReactIcons.CircleCheckMark/>
 
     export const Phone = <ReactIcons.Phone/>
 
