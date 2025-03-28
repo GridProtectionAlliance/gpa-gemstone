@@ -126,8 +126,10 @@ export function Table<T>(props: React.PropsWithChildren<ReactTableProps.ITable<T
         // Helper functions for the calculations
         const getWidthfromProps = (p: ReactTableProps.IColumn<T>, type: 'width'|'maxWidth'|'minWidth') => {
             // This priotizes rowstyling for width over header, since it was decided that they need to be the same
-            if (p?.RowStyle?.[type] !== undefined) return p.RowStyle[type];
-            if (p?.HeaderStyle?.[type] !== undefined) return p.HeaderStyle[type];
+            if (p?.RowStyle?.[type] !== undefined)
+                return p.RowStyle[type];
+            if (p?.HeaderStyle?.[type] !== undefined)
+                return p.HeaderStyle[type];
             return undefined;
         }
 
@@ -160,9 +162,11 @@ export function Table<T>(props: React.PropsWithChildren<ReactTableProps.ITable<T
             React.Children.forEach(props.children, (element) => {
                 if (React.isValidElement(element) && IsColumnProps(element.props)) {
                     let widthValue = getWidthfromProps(element.props, type as 'minWidth'|'width'|'maxWidth');
-                    if (type === 'width' && widthValue == null) widthValue = 'auto';
+                    if (type === 'width' && widthValue == null)
+                        widthValue = 'auto';
                     if (widthValue != null) {
-                        if (widthValue === 'auto') autoKeys.push(element.props.Key);
+                        if (widthValue === 'auto') 
+                            autoKeys.push(element.props.Key);
                         else {
                             const widthElement = document.createElement("div");
                             widthElement.id = element.props.Key + "_measurement";
@@ -202,34 +206,43 @@ export function Table<T>(props: React.PropsWithChildren<ReactTableProps.ITable<T
                 const spacePerElement = autoSpace / autoKeys.length;
                 autoKeys.forEach(key => {
                     const widthObj = newMap.get(key);
-                    if (widthObj != null) widthObj[type] = spacePerElement;
+                    if (widthObj != null)
+                         widthObj[type] = spacePerElement;
                     else console.error("Could not find width object for Key: " + key);
                 });
             }
-
-            let remainingSpace = currentTableWidth;
-            [...newMap.keys()].forEach(key => {
-                const widthObj = newMap.get(key);
-                if (widthObj != null) {
-                    if (widthObj.minWidth <= remainingSpace) {
-                        // This follows behavior consistent with MDN documentation on how these width types should behave
-                        if (widthObj.minWidth > widthObj.width) widthObj.width = widthObj.minWidth;
-                        if (widthObj.maxWidth != null && widthObj.minWidth > widthObj.maxWidth) widthObj.maxWidth = widthObj.minWidth;
-                        if (widthObj.maxWidth != null && widthObj.width > widthObj.maxWidth) widthObj.width = widthObj.maxWidth;
-                        // Constrain Width to remainingSpace
-                        if (widthObj.width > remainingSpace) widthObj.width = remainingSpace;
-                        remainingSpace -= widthObj.width;
-                    }
-                    else {
-                        widthObj.minWidth = 0;
-                        widthObj.width = 0;
-                        widthObj.maxWidth = 0;
-                    }
-                }
-                else console.error("Could not find width object for Key: " + key);
-            });
         });
         
+        let remainingSpace = currentTableWidth;
+        [...newMap.keys()].forEach(key => {
+            const widthObj = newMap.get(key);
+            if (widthObj != null) {
+                if (widthObj.minWidth <= remainingSpace) {
+                    // This follows behavior consistent with MDN documentation on how these width types should behave
+                    if (widthObj.minWidth > widthObj.width)
+                         widthObj.width = widthObj.minWidth;
+
+                    if (widthObj.maxWidth != null && widthObj.minWidth > widthObj.maxWidth)
+                         widthObj.maxWidth = widthObj.minWidth;
+
+                    if (widthObj.maxWidth != null && widthObj.width > widthObj.maxWidth)
+                         widthObj.width = widthObj.maxWidth;
+
+                    // Constrain Width to remainingSpace
+                    if (widthObj.width > remainingSpace)
+                         widthObj.width = remainingSpace;
+
+                    remainingSpace -= widthObj.width;
+                }
+                else {
+                    widthObj.minWidth = 0;
+                    widthObj.width = 0;
+                    widthObj.maxWidth = 0;
+                }
+            }
+            else console.error("Could not find width object for Key: " + key);
+        });
+
         colWidthsRef.current = newMap;
         oldWidthRef.current = currentTableWidth;
         setTrigger(c => c+1);
