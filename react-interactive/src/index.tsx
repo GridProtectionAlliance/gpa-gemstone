@@ -32,7 +32,7 @@ import TabSelector from './TabSelector';
 import ServerErrorIcon from './ServerErrorIcon';
 import GenericSlice from './GenericSlice';
 import { IState as IGenericSliceState } from './GenericSlice';
-import Application from './Menue/Application';
+import Application from './Menue/Application/Application';
 import Page from './Menue/Page';
 import Section from './Menue/Section';
 import SplitSection from './Layout/SplitSection';
