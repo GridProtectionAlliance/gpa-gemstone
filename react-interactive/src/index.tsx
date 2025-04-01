@@ -24,7 +24,7 @@
 import Modal from './Modal';
 import Warning from './Warning';
 import SearchBar from './SearchBar';
-import { Search } from './SearchBar';
+import { Search, getSearchFilters } from './SearchBar';
 import LoadingScreen from './LoadingScreen';
 import LoadingIcon from './LoadingIcon';
 import { ToolTip } from '@gpa-gemstone/react-forms';
@@ -52,6 +52,7 @@ export {
   Warning,
   SearchBar,
   Search,
+  getSearchFilters,
   LoadingScreen,
   LoadingIcon,
   /**

@@ -460,3 +460,10 @@ function FilterRow<T>(props: IFilterRowProps<T>) {
         </td>
     </tr>;
 }
+
+export const getSearchFilters = (storageID: string) => {
+    const storedFilters = JSON.parse(localStorage.getItem(`${storageID}.Filters`) as string) ?? [];
+    const storedSearch = localStorage.getItem(`${storageID}.Search`) ?? "";
+
+    return [...storedFilters, storedSearch]
+}
