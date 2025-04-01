@@ -55,7 +55,7 @@ namespace OpenXDA {
         export interface Meter { ID: number, AssetKey: string, Alias: string, Make: string, Model: string, Name: string, ShortName: string, TimeZone: string, LocationID: number, Description: string, Selected?: boolean }
         export interface Location { ID: number, LocationKey: string, Name: string, Alias: string, ShortName: string, Latitude: number, Longitude: number, Description: string }
         export interface Disturbance { ID: number, EventID: number, PhaseID: number, Magnitude: number, PerUnitMagnitude: number, DurationSeconds: number }
-        export interface EDNAPoint { ID: number, BreakerID: number, Point: string }
+        export interface SCADAPoint { ID: number, BreakerID: number, Point: string }
         export interface Channel { ID: number, Meter: string, Asset: string, MeasurementType: string, MeasurementCharacteristic: string, Phase: string, Name: string, Adder: number, Multiplier: number, SamplesPerHour: number, PerUnitValue: number, HarmonicGroup: number, Description: string, Enabled: boolean, Series: Series[], ConnectionPriority: number, Trend: boolean }
         export interface Series { ID: number, ChannelID: number, SeriesType: string, SourceIndexes: string }
         export interface Note { ID: number, NoteTypeID: number, ReferenceTableID: number, Note: string, UserAccount?: string, Timestamp: string, NoteApplicationID: number, NoteTagID : number }
@@ -73,7 +73,7 @@ namespace OpenXDA {
         // Assets
         export interface Asset { ID: number, VoltageKV: number, AssetKey: string, Description: string, AssetName: string, AssetType: AssetTypeName, Spare:boolean, Channels: Array<Channel> }
         export interface MeterAsset extends Asset { FaultDetectionLogic: string, Designation: string }
-        export interface Breaker extends Asset { ThermalRating: number, Speed: number, TripTime: number, PickupTime: number, TripCoilCondition: number, EDNAPoint?: string, SpareBreakerID?: number, AirGapResistor: boolean }
+        export interface Breaker extends Asset { ThermalRating: number, Speed: number, TripTime: number, PickupTime: number, TripCoilCondition: number, SCADAPoint?: string, SpareBreakerID?: number, AirGapResistor: boolean }
         export interface Bus extends Asset { }
         export interface CapBank extends Asset {
             NumberOfBanks: number, CapacitancePerBank: number, CktSwitcher: string, MaxKV: number, UnitKV: number, UnitKVAr: number, NegReactanceTol: number, PosReactanceTol: number,
