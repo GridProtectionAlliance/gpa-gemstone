@@ -32,8 +32,9 @@ interface IError {
 interface IProps {
     HeaderErrorMessage: string,
     BodyErrorMessage: string,
-    Height: number | string, 
-    Width: number | string
+    Height: number | string,
+    Width: number | string,
+    ErrorIconSize?: number
 }
 
 export default class ErrorBoundary extends React.Component<IProps, IError> {
@@ -55,10 +56,10 @@ export default class ErrorBoundary extends React.Component<IProps, IError> {
             return (
                 <div className="card" style={{ width: this.props.Width, height: this.props.Height }}>
                     <div className="card-header">
-                        {this.props.HeaderErrorMessage} 
+                        {this.props.HeaderErrorMessage}
                     </div>
-                    <div className="card-body">
-                        <ServerErrorIcon Show={true} Label={this.props.BodyErrorMessage} Size={150} />
+                    <div className="card-body" style={{ overflowY: 'auto' }}>
+                        <ServerErrorIcon Show={true} Label={this.props.BodyErrorMessage} Size={this.props.ErrorIconSize ?? 150} />
                     </div>
                 </div>
             );
