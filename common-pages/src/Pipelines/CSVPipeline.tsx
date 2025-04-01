@@ -374,7 +374,7 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
                                     {isCSVMissingDataCellsCount > 0 && isCSVMissingHeadersCount > 0 ? (
                                         <div className='row'>
                                             <div className='col-12'>
-                                                <Alert Color='alert-info' ReTrigger={isCSVMissingDataCellsCount + isCSVMissingHeadersCount}>
+                                                <Alert Class='alert-info' ReTrigger={isCSVMissingDataCellsCount + isCSVMissingHeadersCount}>
                                                     <p style={{ whiteSpace: 'nowrap' }}>
                                                         Missing data cells were added to meet the number of required fields.
                                                     </p>
@@ -389,7 +389,7 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
                                     ) : isCSVMissingDataCellsCount > 0 || isCSVMissingHeadersCount > 0 ? (
                                         <div className='row'>
                                             <div className='col-12'>
-                                                <Alert Color='alert-info' ReTrigger={isCSVMissingDataCellsCount > 0 ? isCSVMissingDataCellsCount : isCSVMissingHeadersCount}>
+                                                <Alert Class='alert-info' ReTrigger={isCSVMissingDataCellsCount > 0 ? isCSVMissingDataCellsCount : isCSVMissingHeadersCount}>
                                                     <p style={{ whiteSpace: 'nowrap' }}>
                                                         {isCSVMissingDataCellsCount > 0 ? 'Missing data cells were added to meet the number of required fields.' : 'Missing headers were added to meet the number of required fields.'}
                                                     </p>
