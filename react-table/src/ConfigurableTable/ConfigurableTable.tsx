@@ -324,7 +324,7 @@ function ColumnSelection(props: IColSelectionProps) {
                 </div>
             </div>
             {props.disableAdd ?
-                <Alert Color='alert-primary' Style={{ marginBottom: 0, marginTop: '0.5em' }}>Additional columns disabled due to table size.</Alert>
+                <Alert Class='alert-primary' Style={{ marginBottom: 0, marginTop: '0.5em' }}>Additional columns disabled due to table size.</Alert>
                 : null}
         </>
     );

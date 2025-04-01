@@ -29,8 +29,19 @@ interface ITab {
 }
 
 interface IProps {
+    /**
+     * List of tabs to be used in the TabSelector
+     */
     Tabs: ITab[],
-    SetTab: (t: string) => void,
+    /**
+     * Setter function to set tab that was clicked
+     * @param t tab that was clicked
+     * @returns 
+     */
+    SetTab: (tab: string) => void,
+    /**
+     * Id of the current tab
+     */
     CurrentTab: string,
 }
 

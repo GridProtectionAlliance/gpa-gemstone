@@ -23,10 +23,29 @@
 import * as React from 'react';
 
 interface IProps {
-    Color?: 'alert-primary' | 'alert-secondary' | 'alert-success' | 'alert-danger' | 'alert-warning' | 'alert-info' | 'alert-light'
+    /**
+     * Optional Class to be used on alert
+     */
+    Class?: 'alert-primary' | 'alert-secondary' | 'alert-success' | 'alert-danger' | 'alert-warning' | 'alert-info' | 'alert-light'
+    /**
+     * Optional Style to be used on alert
+     */
     Style?: React.CSSProperties,
+    /**
+     * Optional Flag to render the X
+     */
     ShowX?: boolean,
+    /**
+     * Optional Value to trigger re-showing the alert
+     * @optional
+     */
     ReTrigger?: unknown
+    /**
+     * Optional Callback function for onClick event
+     * @optional
+     * @param e mouse event
+     * @returns 
+     */
     OnClick?: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void
 }
 
@@ -45,7 +64,7 @@ const Alert = (props: React.PropsWithChildren<IProps>) => {
     }, [props.ReTrigger])
 
     return (
-        <div className={`alert ${props.Color ?? 'alert-dark'} alert-dismissible fade ${show ? 'show' : 'd-none'}`} style={props.Style}>
+        <div className={`alert ${props.Class ?? 'alert-dark'} alert-dismissible fade ${show ? 'show' : 'd-none'}`} style={props.Style}>
             {props.children}
 
             {(props.ShowX ?? true) ?

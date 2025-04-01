@@ -25,11 +25,33 @@ import { GetNodeSize} from '@gpa-gemstone/helper-functions';
 import styled from 'styled-components';
 
 interface IProps {
+    /**
+     * Title displayed when the drawer is closed but hovered over
+     */
     Title: string
+    /**
+     * Indicates the initial state of the drawer
+     */
     Open: boolean,
+    /**
+     * Location of the drawer in the component refferenced
+     */
     Location: 'left'|'right'|'top'|'bottom',
+    /**
+     * This will be called with a callback to set the Drawer to open or closed form the parent
+     * @param func 
+     * @returns 
+     */
     GetOverride?: (func: (open: boolean) => void) => void,
+    /**
+     * Callback when the Drawer changes 
+     * @param open 
+     * @returns 
+     */
     OnChange?: (open: boolean) => void,
+    /**
+     * The data-drawer property of the target containing the drawer
+     */
     Target: string,
     HideHandle?: boolean
 }
@@ -91,13 +113,6 @@ const ClosedOverlayDiv = styled.div<IClosedOverlayProps>`
     ${props => !props.Open? 'pointer-events: none;' : ''}
   }`
 
-// Props Description:
-// Title: the string displayed when the drawer is closed but hovered over
-// Open: indicates the initial state of the drawer
-// Location: location of the drawer in the component refferenced
-// Target: The data-drawer property of the target containing the drawer 
-// GetOverride: This will be called with a callback to set the Drawer to open or closed form the parent
-// OnChange: Callback when the Drawer changes 
 const OverlayDrawer: React.FunctionComponent<IProps> = (props) => {
     const divRef = React.useRef<any>(null);
  

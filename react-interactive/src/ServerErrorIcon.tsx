@@ -23,8 +23,17 @@
 import * as React from 'react';
 
 interface IProps {
+    /**
+     * Flag to show server error icon
+     */
     Show: boolean,
+    /**
+     * Label to be used next to icon, defaulting to 'A Server Error Occurred. Please Reload the Application.'
+     */
     Label?: string,
+    /**
+     * Optional number(in px) to be used for the height of the icon
+     */
     Size?: number,
 }
 

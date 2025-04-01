@@ -29,15 +29,37 @@ import { ToolTip } from '@gpa-gemstone/react-forms';
  */
 interface IButton { 
     /** 
-     * text label that appears on the button
+     * Text label that appears on the button
      */
     Label: JSX.Element | string,
+    /**
+     * Callback function for when a button is clicked
+     * @returns 
+     */
     Callback: () => void,
+    /**
+     * Optional group number for grouping items visually with dividers
+     */
     Group?: number,
+    /**
+     * Optional flag to disable button
+     */
     Disabled?: boolean
+    /**
+     * Optional content to render inside tooltip
+     */
     ToolTipContent?: JSX.Element,
+    /**
+     * Optional flag to render tooltip on button
+     */
     ShowToolTip?: boolean,
+    /**
+     * Optional location of tooltip, defaulting to top
+     */
     ToolTipLocation?: ('top' | 'bottom' | 'left' | 'right'),
+    /**
+     * Optional key to be used on the fragment that is parent of the dropdown option.
+     */
     Key?: string | number
 }
 

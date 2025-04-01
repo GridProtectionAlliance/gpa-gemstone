@@ -38,11 +38,30 @@ interface IStep {
     long: string,
     id: string | number
 }
+
 interface IProps {
+    /**
+     * List of steps for the ProgressBar
+     */
     steps: IStep[],
+    /**
+     * id of the active step
+     */
     activeStep: string | number,
+    /**
+     * Optional height of the ProgressBar, defaulting to 100%
+     */
     height?: string | number,
+    /**
+     * Optional width of the ProgressBar, defaulting to 100%
+     */
     width?: string | number,
+    /**
+     * Optional callback used when a step is clicked on
+     * @param currentStep the value of activeStep
+     * @param clickedStep the id of the clicked step
+     * @returns 
+     */
     onClick?: (currentStep: string|number, clickedStep: string|number) => void
 }
 

@@ -27,15 +27,47 @@ import { DatePicker, Select } from '@gpa-gemstone/react-forms';
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 
 interface IProps<T> {
+    /**
+     * List of available fields to be searched/filtered by
+     */
     CollumnList: Search.IField<T>[],
+    /**
+     * Setter to set filters
+     * @param filters current filters
+     * @returns 
+     */
     SetFilter: (filters: Search.IFilter<T>[]) => void,
+    /**
+     * Optional default column to be used for searching via the input box
+     */
     defaultCollumn?: Search.IField<T>,
+    /**
+     * Optional direction to control where filter popover is placed
+     */
     Direction?: 'left' | 'right',
+    /**
+     * Optional width to be used on the search bar
+     */
     Width?: string | number,
+    /**
+     * Optional label to used for search filter
+     */
     Label?: string,
+    /**
+     * Optional function used to populate enum-type filter options dynamically, will be called when enum filter is being added or edited.
+     */
     GetEnum?: EnumSetter<T>,
+    /**
+     * Optional flag to render a loading icon in quick search input box
+     */
     ShowLoading?: boolean,
+    /**
+     * Optional note to be used under quick search input
+     */
     ResultNote?: string,
+    /**
+     * If provided, component stores and loads filters to/from localStorage using this key
+     */
     StorageID?: string
 }
 

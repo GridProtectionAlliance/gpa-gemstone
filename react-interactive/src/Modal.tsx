@@ -26,44 +26,123 @@ import {CreateGuid} from '@gpa-gemstone/helper-functions';
 import { Portal } from 'react-portal';
 
 interface IProps {
+    /**
+     * Title of the modal
+     */
     Title: string,
+    /**
+     * Show or hide the X button (default true)
+     */
     ShowX?: boolean,
+    /**
+     * Callback function used when the modal is closed or a button is clicked.
+     * @param confirmed - true if Confirm was clicked
+     * @param isButton - true if closed via a button (not by clicking X)
+     * @param tertiary - true if the Tertiary button was clicked
+     */
     CallBack: ((confirmed: boolean, isButton: boolean, tertiary: boolean) => void),
+    /**
+     * Flag to show modal
+     */
     Show: boolean,
+    /**
+     * Size of the modal
+     */
     Size?: ('lg' | 'sm' | 'xlg'),
+    /**
+     * Optional style to be used on the modal body
+     */
     BodyStyle?: React.CSSProperties,
+    /**
+     * Optional style to be used on the modal header
+     */
     HeaderStyle?: React.CSSProperties,
 
+
+    /**
+     * Optional flag to show confirm button in modal footer, defaulting to true
+     */
     ShowConfirm?: boolean,
+    /**
+     * Optional flag to disable the confirm button
+     */
     DisableConfirm?: boolean,
+    /**
+     * Optional text to be used inside the confirm button, defaulting to 'Save'
+     */
     ConfirmText?: string,
+    /**
+     * Optional class to be used on the confirm button, defaulting to btn-primary
+     */
     ConfirmBtnClass?: string,
+    /**
+     * Optional flag to show tooltip on confirm button
+     */
     ConfirmShowToolTip?: boolean,
+    /**
+     * Optional content to render inside of the confirm button's tooltip
+     */
     ConfirmToolTipContent?: React.ReactNode,
 
+    /**
+     * Optional flag to show cancel button in modal footer, defaulting to true
+     */
     ShowCancel?: boolean,
+    /**
+     * Optional flag to disable the cancel button
+     */
     DisableCancel?: boolean,
+    /**
+     * Optional text to be used in cancel button, defaulting to 'Cancel'
+     */
     CancelText?: string,
+    /**
+     * Optional class to be used on the cancel button, defaulting to 'btn-danger'
+     */
     CancelBtnClass?: string,
+    /**
+     * Optional flag to show tooltip on the cancel button
+     */
     CancelShowToolTip?: boolean,
+    /**
+     * Optional content to render inside of cancel button's tooltip
+     */
     CancelToolTipContent?: React.ReactNode,
 
+
+    /**
+     * Optional flag to show a third action button
+     */
     ShowTertiary?: boolean,
+    /**
+     * Optional flag to disable the third button
+     */
     DisableTertiary?: boolean,
+    /**
+     * Optional text to be used in the third button
+     */
     TertiaryText?: string,
+    /**
+     * Optional class to be used on the third button, defaulting to btn-secondary
+     */
     TertiaryBtnClass?: string,
+    /**
+     * Optional flag to show tooltip on the third button
+     */
     TertiaryShowToolTip?: boolean,
+    /**
+     * Optional content to render inside the third button's tooltip
+     */
     TertiaryToolTipContent?: React.ReactNode,
 
+    
+    /**
+     * Optional z-index of the modal, defaulting to 9990
+     */
     ZIndex?: number
 }
 
 // Props Description:
-// Title => Title of The Modal
-// ShowX => show or hide the X button (default true)
-// CallBack => Function to be called when closing the Modal either through Cancel (confirmed=false) or Accept Button (confirmed=true)
-// Show => Whether to show the modal
-// Size => Size of the modal
 // ShowCancel => Whether to show the cancel button
 // ShowConfirm => Whether to show the confirm button
 // DisableConfirm => Disables the Confirm button

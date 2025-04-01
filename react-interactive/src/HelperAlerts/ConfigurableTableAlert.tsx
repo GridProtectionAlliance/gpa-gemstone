@@ -38,5 +38,5 @@ export const ConfigurableTableAlert = () => {
         localStorage.setItem("Gemstone.HelperAlerts.ConfigurableTable", "true");
     };
 
-    return (show ? <Alert OnClick={handleOnClick} Color="alert-primary">Use the gear at the far right of the header row to choose columns to show or hide.</Alert> : null)
+    return (show ? <Alert OnClick={handleOnClick} Class="alert-primary">Use the gear at the far right of the header row to choose columns to show or hide.</Alert> : null)
 }
