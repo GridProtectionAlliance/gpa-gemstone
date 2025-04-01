@@ -24,10 +24,26 @@ import * as React from 'react';
 import Modal from './Modal';
 
 interface IProps {
+    /**
+     * Title of the warning
+     */
     Title: string,
+    /**
+     * Callback function used when warning is closed
+     * @param confirmed Cancel Button(false) or Confirm Button(true)
+     */
     CallBack: ((confirmed: boolean) => void),
+    /**
+     * Flag to show the warning
+     */
     Show: boolean,
+    /**
+     * Message shown in the body of the warning
+     */
     Message: string,
+    /**
+     * Optional flag to show a cancel button
+     */
     ShowCancel?: boolean
 }
 
@@ -36,10 +52,8 @@ interface IProps {
 //
 
 // Props Description:
-// Title => Title of The Modal
 // CallBack => Function to be called when closing the Modal either through Cancel (confirmed=false) or Confirm Button (confirmed=true)
 // Show => Whether to show the modal
-// Message => The message shown by the Modal
 const Warning: React.FunctionComponent<IProps> = (props) => {
 
 

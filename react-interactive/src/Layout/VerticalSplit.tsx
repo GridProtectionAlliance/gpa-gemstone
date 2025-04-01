@@ -28,12 +28,16 @@ import { ToolTip } from '@gpa-gemstone/react-forms';
 import SplitDrawer from './SplitDrawer';
 import SplitSection from './SplitSection';
 
-
 interface IProps {
+    /**
+     * Optional style to be used on the container div
+     */
     style?: any,
+    /**
+     * Optional style for the draggable divider bars between sections
+     */
     sliderStyle?: any,
 }
-
 
 interface ISection {
     Width: number,

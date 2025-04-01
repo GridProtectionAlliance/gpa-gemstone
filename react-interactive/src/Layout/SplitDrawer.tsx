@@ -23,24 +23,42 @@
 import * as React from 'react';
 
 interface IProps {
+    /**
+     * Minimum width (in % of total)
+     */
     MinWidth: number,
+    /**
+     * Maximum Width (in % of total)
+     */
     MaxWidth: number,
+    /**
+     * Default Width (in % of total) 
+     */
     Width: number,
+    /**
+     * Indicates the initial state of the drawer
+     */
     Open: boolean,
+    /**
+     * The Title used for this drawer
+     */
     Title: string,
+    /**
+     * This will be called with a callback to set the Drawer to open or closed form the parent
+     * @param func 
+     * @returns 
+     */
     GetOverride?: (func: (open: boolean) => void) => void,
+    /**
+     * Callback when the Drawer changes 
+     * @param open 
+     * @returns 
+     */
     OnChange?: (open: boolean) => void,
     ShowClosed?: boolean
 }
 
-// Props Description:
-// Min Windth: minimum width (in % of total)
-// Max Width: maximum Width (in % of total)
-// Width: Default Width (in % of total) 
-// open: indicates the initial state of the drawer\
-// title: The Title used for this drawer
 const SplitDrawer: React.FunctionComponent<IProps> = (props) => {
-
     return <>{props.children}</>
 }
 

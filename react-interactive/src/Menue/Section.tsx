@@ -28,12 +28,18 @@ import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import { CreateGuid } from '@gpa-gemstone/helper-functions';
 
 export interface IProps {
+    /**
+     * Optional label to be used
+     */
     Label?: string,
+    /**
+     * Optional style to be used on component
+     */
     Style?: React.CSSProperties
     /** Needed to specify whether a user can access a section via roles. 
      * Note: Individual pages will still need to be marked with roles as well for page access control if using non-legacy navigation. */
     RequiredRoles?: Application.Types.SecurityRoleName[];
-    // Allows section to be collapsable when navbar isn't, default true
+    /** Allows section to be collapsable when navbar isn't, default true */
     AllowCollapse?: boolean
 }
 

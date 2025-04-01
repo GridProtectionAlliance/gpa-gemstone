@@ -21,7 +21,6 @@
 // ******************************************************************************************************
 
 import * as _ from 'lodash';
-import { Application } from '@gpa-gemstone/application-typings';
 import * as $ from 'jquery';
 import { Search } from './SearchBar';
 

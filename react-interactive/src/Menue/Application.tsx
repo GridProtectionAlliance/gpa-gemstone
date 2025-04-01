@@ -35,16 +35,55 @@ import Content from "./Content";
 import { useGetContainerPosition } from '@gpa-gemstone/helper-functions';
 
 interface IProps {
-    HomePath: string,
-    DefaultPath: string,
-    Logo?: string,
-    OnSignOut?: () => void,
-    Version?: string,
-    UserRoles?: Application.Types.SecurityRoleName[]
-    AllowCollapsed?: boolean
-    NavBarContent?: React.ReactNode,
-    HideSideBar?: boolean,
-    UseLegacyNavigation?: boolean
+    /** 
+     * Root path for all routes
+     */
+    HomePath: string;
+
+    /**
+     *  Default sub-path to navigate to when landing on HomePath 
+     */
+    DefaultPath: string;
+
+    /** 
+     * Optional logo URL to display in the top navigation bar 
+     */
+    Logo?: string;
+
+    /** 
+     * Callback function used when user clicks "Sign out"
+     */
+    OnSignOut?: () => void;
+
+    /** 
+     * Optional version string used in sidebar footer
+     */
+    Version?: string;
+
+    /** 
+     * List of user roles used for access control and conditional route rendering
+     */
+    UserRoles?: Application.Types.SecurityRoleName[];
+
+    /**
+     *  Allows toggling of the sidebar collapse/expand functionality
+     */
+    AllowCollapsed?: boolean;
+
+    /**
+     *  Optional JSX to be rendered on the top navigation bar
+     */
+    NavBarContent?: React.ReactNode;
+
+    /** 
+     * Flag to hide sidebar completely
+     */
+    HideSideBar?: boolean;
+
+    /**
+     * Optional flag that disables modern navigation and layout, defaulting to false
+     */
+    UseLegacyNavigation?: boolean;
 }
 
 interface IApplicationRefs {
