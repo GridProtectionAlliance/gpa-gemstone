@@ -461,7 +461,7 @@ function FilterRow<T>(props: IFilterRowProps<T>) {
     </tr>;
 }
 
-export const getSearchFilters = (storageID: string) => {
+export const GetStoredFilters = (storageID: string) => {
     const storedFilters = JSON.parse(localStorage.getItem(`${storageID}.Filters`) as string) ?? [];
     const storedSearch = localStorage.getItem(`${storageID}.Search`) ?? "";
 
