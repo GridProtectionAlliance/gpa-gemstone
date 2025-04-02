@@ -176,12 +176,22 @@ function InputWithButton<T>(props: IProps<T>) {
     return (
         <div className={"form-group " + (props.Size === 'large' ? 'form-group-lg' : '') + (props.Size === 'small' ? 'form-group-sm' : '')} style={props.InputStyle}>
             {showHelpIcon || showLabel ?
-                <label className='d-flex align-items-center'>{showLabel ? label : ''}
+                <label className='d-flex align-items-center'>
+                    <span>
+                        {showLabel ? label : ''}
+                    </span>
                     {showHelpIcon ?
-                        <button className='btn mb-1 pt-0 pb-0' onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)} data-tooltip={guid}>
-                            <ReactIcons.QuestionMark Color='var(--info)' Size={20} />
-                        </button> : null}
-                </label> : null}
+                        <span className="ml-2 d-flex align-items-center"
+                            onMouseEnter={() => setShowHelp(true)}
+                            onMouseLeave={() => setShowHelp(false)}
+                            data-tooltip={guid}
+                        >
+                            <ReactIcons.QuestionMark Color="var(--info)" Size={20} />
+                        </span>
+                        : null}
+
+                </label>
+                : null}
             {showHelpIcon ?
                 <ToolTip Show={showHelp} Target={guid} Class="info" Position="bottom">
                     {props.Help}

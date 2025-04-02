@@ -49,20 +49,33 @@ interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
 }
 
 export default function DatePicker<T>(props: IProps<T>) {
-  const guid = React.useRef<string>(CreateGuid());
+  const [guid] = React.useState<string>(CreateGuid());
   const [showHelp, setShowHelp] = React.useState<boolean>(false);
+
+  // Variables to control the rendering of label and help icon.
+  const showLabel = props.Label !== "";
+  const showHelpIcon = props.Help !== undefined;
+  const label = props.Label === undefined ? props.Field : props.Label;
 
   return (
     <div className="form-group">
-      {(props.Help != null || props.Label !== "") ?
-        <label className='d-flex align-items-center'>{props.Label ?? props.Field}
-          {props.Help != null ?
-            <button className='btn mb-1 pt-0 pb-0' onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)} data-tooltip={guid.current}>
-              <ReactIcons.QuestionMark Color='var(--info)' Size={20} />
-            </button> : <></>}
+
+      {showHelpIcon || showLabel ?
+        <label className="d-flex align-items-center">
+          <span>{showLabel ? label : ''}</span>
+          {showHelpIcon && (
+            <span className="ml-2 d-flex align-items-center"
+              onMouseEnter={() => setShowHelp(true)}
+              onMouseLeave={() => setShowHelp(false)}
+              data-tooltip={guid}
+            >
+              <ReactIcons.QuestionMark Color="var(--info)" Size={20} />
+            </span>
+          )}
         </label>
-        : <></>}
-      <ToolTip Show={showHelp} Target={guid.current} Class="info" Position="bottom">
+        : null}
+
+      <ToolTip Show={showHelp} Target={guid} Class="info" Position="bottom">
         {props.Help}
       </ToolTip>
       <input

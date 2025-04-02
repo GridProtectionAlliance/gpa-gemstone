@@ -57,7 +57,7 @@ interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
 export default function TextArea<T>(props: IProps<T>) {
   // Internal ref and state hooks for managing the component state.
   const internal = React.useRef<boolean>(false)
-  const guid = React.useRef<string>(CreateGuid())
+  const [guid] = React.useState<string>(CreateGuid())
 
   const [showHelp, setShowHelp] = React.useState<boolean>(false);
   const [heldVal, setHeldVal] = React.useState<string>('');
@@ -87,17 +87,23 @@ export default function TextArea<T>(props: IProps<T>) {
     <div className="form-group">
       {/* Rendering label and help icon */}
       {showHelpIcon || showLabel ?
-        <label className='d-flex align-items-center'>{showLabel ? label : ''}
-          {showHelpIcon ?
-            <button className='btn mb-1 pt-0 pb-0' onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)} data-tooltip={guid.current}>
-              <ReactIcons.QuestionMark Color='var(--info)' Size={20} />
-            </button>
-            : null}
-        </label> : null}
+        <label className="d-flex align-items-center">
+          <span>{showLabel ? label : ''}</span>
+          {showHelpIcon && (
+            <span className="ml-2 d-flex align-items-center"
+              onMouseEnter={() => setShowHelp(true)}
+              onMouseLeave={() => setShowHelp(false)}
+              data-tooltip={guid}
+            >
+              <ReactIcons.QuestionMark Color="var(--info)" Size={20} />
+            </span>
+          )}
+        </label>
+        : null}
 
       {/* Help message component */}
       {showHelpIcon ?
-        <ToolTip Show={showHelp} Target={guid.current} Class="info" Position="bottom">
+        <ToolTip Show={showHelp} Target={guid} Class="info" Position="bottom">
           {props.Help}
         </ToolTip>
         : null}

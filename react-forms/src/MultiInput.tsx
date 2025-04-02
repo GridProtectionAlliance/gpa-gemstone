@@ -68,7 +68,7 @@ interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> { //annota
 
 //Only supporting string/number arrays for now
 function MultiInput<T>(props: IProps<T>) {
-    const guid = React.useRef<string>(CreateGuid());
+    const [guid] = React.useState<string>(CreateGuid());
     const [showHelp, setShowHelp] = React.useState<boolean>(false);
 
     const fieldArray = props.Record[props.Field as keyof T] as Array<string | number>
@@ -83,15 +83,22 @@ function MultiInput<T>(props: IProps<T>) {
             {fieldArray.length === 0 ?
                 <>
                     <label className='d-flex align-items-center'>
-                        {props.Label ?? props.Field}
+                        <span>
+                            {props.Label ?? props.Field}
+                        </span>
+
                         {props.Help != null ?
-                            <button className='btn mb-1 pt-0 pb-0' onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)} data-tooltip={guid.current}>
-                                <ReactIcons.QuestionMark Color='var(--info)' Size={20} />
-                            </button>
+                            <span className="ml-2 d-flex align-items-center"
+                                onMouseEnter={() => setShowHelp(true)}
+                                onMouseLeave={() => setShowHelp(false)}
+                                data-tooltip={guid}
+                            >
+                                <ReactIcons.QuestionMark Color="var(--info)" Size={20} />
+                            </span>
                             : null}
                         <button className='btn' onClick={() => props.Setter({ ...props.Record, [props.Field]: [props.DefaultValue] })}> <ReactIcons.CirclePlus /> </button>
                     </label>
-                    <ToolTip Show={showHelp && props.Help != null} Target={guid.current} Class="info" Position="bottom">
+                    <ToolTip Show={showHelp && props.Help != null} Target={guid} Class="info" Position="bottom">
                         {props.Help}
                     </ToolTip>
                 </>
