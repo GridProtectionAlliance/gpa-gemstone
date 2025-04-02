@@ -21,18 +21,19 @@
 //
 // ******************************************************************************************************
 
-import { Context, IContext } from "./Context";
+import { Context, IContext } from "../Context";
 import * as React from 'react';
 import { BrowserRouter as Router, Navigate, Route, Routes } from 'react-router-dom';
-import Page, { IProps as IPageProps } from "./Page";
-import Section from './Section';
-import LoadingScreen from '../LoadingScreen';
-import ServerErrorIcon from '../ServerErrorIcon';
+import Page, { IProps as IPageProps } from "../Page";
+import Section from '../Section';
+import LoadingScreen from '../../LoadingScreen';
+import ServerErrorIcon from '../../ServerErrorIcon';
 import styled from "styled-components";
-import { ReactIcons } from "@gpa-gemstone/gpa-symbols";
 import { Application } from '@gpa-gemstone/application-typings';
-import Content from "./Content";
+import Content from "../Content";
 import { useGetContainerPosition } from '@gpa-gemstone/helper-functions';
+import SideBarContent from "./SideBarContent";
+import HeaderContent from "./HeaderContent";
 
 interface IProps {
     /** 
@@ -91,45 +92,7 @@ interface IApplicationRefs {
     navBarDiv: HTMLDivElement | null;
 }
 
-interface INavProps { collapsed: boolean }
 interface IMainDivProps { left: number, top: number }
-
-interface IHeaderProps {
-    SetCollapsed: (c: boolean) => void,
-    HomePath: string,
-    Logo?: string,
-    OnSignOut?: () => void,
-    ShowOpen: boolean,
-    ShowClose: boolean,
-    NavBarContent?: React.ReactNode,
-}
-
-interface ISideBarProps {
-    Collapsed: boolean,
-    Version?: string,
-    HideSide: boolean,
-}
-
-const SidebarNav = styled.nav <INavProps>`
-  & {
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    z-index: 100;
-    padding: 48px 0 0;
-    box-shadow: inset -1px 0 0 rgba(0,0,0,.1);
-    width: ${props => props.collapsed ? 50 : 200}px;
-  }`;
-
-const SidebarDiv = styled.div`
-  & {
-    position: -webkit-sticky;
-    position: sticky;
-    height: calc( 100% - 35px);
-    overflow-y: auto;
-    overflow-x: hidden;
-  }`;
 
 const MainDiv = styled.div<IMainDivProps>`
 & {
@@ -230,10 +193,10 @@ const Applications: React.ForwardRefRenderFunction<IApplicationRefs, React.Props
         return routes;
     }
 
-    return <>
+    return (
         <Context.Provider value={GetContext()}>
             {props.UseLegacyNavigation === undefined || !props.UseLegacyNavigation ? <Router>
-                <div ref={mainDivRef} style={{ width: '100%', height: '100%' ,position: "absolute" }}>
+                <div ref={mainDivRef} style={{ width: '100%', height: '100%', position: "absolute" }}>
                     <HeaderContent
                         SetCollapsed={setCollapsed}
                         HomePath={props.HomePath}
@@ -271,7 +234,7 @@ const Applications: React.ForwardRefRenderFunction<IApplicationRefs, React.Props
                     </React.Suspense>
                 </div>
             </Router> :
-                <div ref={mainDivRef} style={{ width: '100%', height: '100%' ,position: "absolute" }}>
+                <div ref={mainDivRef} style={{ width: '100%', height: '100%', position: "absolute" }}>
                     <HeaderContent
                         SetCollapsed={setCollapsed}
                         HomePath={props.HomePath}
@@ -296,60 +259,7 @@ const Applications: React.ForwardRefRenderFunction<IApplicationRefs, React.Props
                     </MainDiv>
                 </div>}
         </Context.Provider>
-    </>
-        ;
+    )
 };
 
 export default React.forwardRef<IApplicationRefs, React.PropsWithChildren<IProps>>(Applications);
-
-const SideBarContent: React.FC<ISideBarProps> = (props) => {
-    return <>
-        {props.HideSide ? null : <SidebarNav className={"bg-light navbar-light navbar"} collapsed={props.Collapsed}>
-            <SidebarDiv>
-                <ul className="navbar-nav px-3">
-                    {React.Children.map(props.children, (e) => {
-                        if (!React.isValidElement(e))
-                            return null;
-                        if ((e as React.ReactElement<any>).type === Page)
-                            return e;
-                        return null
-                    })}
-                </ul>
-                {React.Children.map(props.children, (e) => {
-                    if (!React.isValidElement(e))
-                        return null;
-                    if ((e as React.ReactElement<any>).type === Section)
-                        return e;
-                    return null
-                })}
-            </SidebarDiv>
-            {props.Version !== undefined && !props.Collapsed ?
-                <div style={{ width: '100%', textAlign: 'center', height: 35 }}>
-                    <span>Version {props.Version}</span>
-                    <br />
-                    <span></span>
-                </div> : null}
-        </SidebarNav>}
-    </>
-}
-
-const HeaderContent = React.forwardRef<HTMLDivElement, IHeaderProps>((props, ref) => {
-    return <>
-        <nav className="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow" ref={ref}>
-            {props.ShowOpen ? <a style={{ color: 'var(--light)', marginLeft: 15 }} onClick={() => props.SetCollapsed(false)} >
-                <ReactIcons.ArrowForward />
-            </a> : null}
-            {props.ShowClose ? <a style={{ color: 'var(--light)', marginLeft: 15 }} onClick={() => props.SetCollapsed(true)}>
-                <ReactIcons.ArrowBackward />
-            </a> : null}
-            {props.Logo !== undefined ?
-                < a className="navbar-brand col-sm-2 col-md-1 mr-0 mr-auto" href={props.HomePath} ><img style={{ maxHeight: 35, margin: -5 }} src={props.Logo} /></a> : null}
-            <ul className="navbar-nav px-3 ml-auto">
-                <li className="nav-item text-nowrap">
-                    {props.OnSignOut !== undefined ? <a className="nav-link" onClick={props.OnSignOut} >Sign out</a> : null}
-                </li>
-            </ul>
-            {props.NavBarContent}
-        </nav>
-    </>
-});
