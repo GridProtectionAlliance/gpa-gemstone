@@ -24,7 +24,7 @@
 import * as React from 'react';
 import * as moment from 'moment';
 import DateTimePopup from './DateTimeUI/DateTimePopup';
-import { CreateGuid, GetNodeSize } from '@gpa-gemstone/helper-functions';
+import { CreateGuid, GetNodeSize, useGetContainerPosition } from '@gpa-gemstone/helper-functions';
 import ToolTip from './ToolTip';
 import { Accuracy } from './DateTimeUI/Clock'
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
@@ -46,6 +46,12 @@ interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
  * Component that allows a user to pick a date or datetime.
 */
 export default function DateTimePicker<T>(props: IProps<T>) {
+    const inputRef = React.useRef<HTMLInputElement | null>(null);
+    const { width } = useGetContainerPosition(inputRef as any);
+    const [isTextOverflowing, setIsTextOverflowing] = React.useState<boolean>(false);
+    const [isInputHovered, setIsInputHovered] = React.useState<boolean>(false);
+    const [overflowGUID] = React.useState<string>(CreateGuid());
+
     // Formats for displaying dates in the input box and storing in the record.
     const boxFormat = getBoxFormat(props.Type, props.Accuracy)
     const recordFormat = props.Format !== undefined ? props.Format : "YYYY-MM-DD" + (props.Type === undefined || props.Type === 'date' ? "" : "[T]HH:mm:ss.SSS[Z]");
@@ -56,7 +62,7 @@ export default function DateTimePicker<T>(props: IProps<T>) {
     // State and ref declarations.
     const divRef = React.useRef<any | null>(null);
 
-    const [guid] = React.useState<string>(CreateGuid());
+    const [helpGuid] = React.useState<string>(CreateGuid());
     const [showHelp, setShowHelp] = React.useState<boolean>(false);
 
     // Adds a buffer between the outside props and what the box is reading to prevent box overwriting every render with a keystroke
@@ -149,31 +155,6 @@ export default function DateTimePicker<T>(props: IProps<T>) {
         }
     }
 
-    function getBoxFormat(type?: TimeUnit, accuracy?: Accuracy) {
-        const dateTime = type ?? 'date'
-        const timeUnit = accuracy ?? 'second'
-
-        if (dateTime === 'time') {
-            if (timeUnit === 'minute') {
-                return "HH:mm";
-            } else if (timeUnit === 'second') {
-                return "HH:mm:ss";
-            } else {
-                return "HH:mm:ss.SSS";
-            }
-        } else if (dateTime === 'datetime-local') {
-            if (timeUnit === 'minute') {
-                return "YYYY-MM-DD[T]HH:mm";
-            } else if (timeUnit === 'second') {
-                return "YYYY-MM-DD[T]HH:mm:ss";
-            } else {
-                return "YYYY-MM-DD[T]HH:mm:ss.SSS";
-            }
-        } else {
-            return "YYYY-MM-DD";
-        }
-    }
-
     function getFeedbackMessage() {
         if (feedbackMessage.length != 0) {
             return feedbackMessage;
@@ -237,6 +218,13 @@ export default function DateTimePicker<T>(props: IProps<T>) {
         setBoxRecord(value);
     }
 
+    React.useEffect(() => {
+        if (inputRef.current == null) return
+        const inputWidth = getInputWidth(inputRef.current, boxRecord, step);
+
+        setIsTextOverflowing(inputWidth > width);
+    }, [width, boxRecord, step])
+
     return (
         <div className="form-group" ref={divRef}>
             {/* Label and help icon */}
@@ -247,7 +235,7 @@ export default function DateTimePicker<T>(props: IProps<T>) {
                         <span className="ml-2 d-flex align-items-center"
                             onMouseEnter={() => setShowHelp(true)}
                             onMouseLeave={() => setShowHelp(false)}
-                            data-tooltip={guid}
+                            data-tooltip={helpGuid}
                         >
                             <ReactIcons.QuestionMark Color="var(--info)" Size={20} />
                         </span>
@@ -256,10 +244,11 @@ export default function DateTimePicker<T>(props: IProps<T>) {
                 : null}
 
             {showHelpIcon ?
-                <ToolTip Show={showHelp} Target={guid} Class="info" Position="bottom">
+                <ToolTip Show={showHelp} Target={helpGuid} Class="info" Position="bottom">
                     {props.Help}
                 </ToolTip>
                 : null}
+
             <input
                 className={`gpa-gemstone-datetime form-control ${IsValid() ? '' : 'is-invalid'}`}
                 type={props.Type === undefined ? 'date' : props.Type}
@@ -271,10 +260,18 @@ export default function DateTimePicker<T>(props: IProps<T>) {
                 disabled={props.Disabled === undefined ? false : props.Disabled}
                 onClick={(e) => { e.preventDefault() }}
                 step={step}
+                ref={inputRef}
+                data-tooltip={overflowGUID}
+                onMouseOver={() => setIsInputHovered(true)}
+                onMouseOut={() => setIsInputHovered(false)}
             />
             <div className="invalid-feedback">
                 {getFeedbackMessage()}
             </div>
+            <ToolTip Show={isTextOverflowing && isInputHovered} Target={overflowGUID}>
+                {props.Format != null ? moment(boxRecord).format(props.Format) : boxRecord}
+            </ToolTip>
+
             <DateTimePopup
                 Setter={(d) => {
                     setPickerAndRecord(d);
@@ -293,4 +290,56 @@ export default function DateTimePicker<T>(props: IProps<T>) {
 }
 
 
+function getBoxFormat(type?: TimeUnit, accuracy?: Accuracy) {
+    const dateTime = type ?? 'date'
+    const timeUnit = accuracy ?? 'second'
 
+    if (dateTime === 'time') {
+        if (timeUnit === 'minute') {
+            return "HH:mm";
+        } else if (timeUnit === 'second') {
+            return "HH:mm:ss";
+        } else {
+            return "HH:mm:ss.SSS";
+        }
+    } else if (dateTime === 'datetime-local') {
+        if (timeUnit === 'minute') {
+            return "YYYY-MM-DD[T]HH:mm";
+        } else if (timeUnit === 'second') {
+            return "YYYY-MM-DD[T]HH:mm:ss";
+        } else {
+            return "YYYY-MM-DD[T]HH:mm:ss.SSS";
+        }
+    } else {
+        return "YYYY-MM-DD";
+    }
+}
+
+const getInputWidth = (inputRef: HTMLInputElement, currentValue: string, currentStep: string) => {
+    const computedStyle = window.getComputedStyle(inputRef);
+
+    const dummyInput = document.createElement('input');
+
+    dummyInput.type = inputRef.type;
+    dummyInput.value = currentValue;
+    dummyInput.step = currentStep;
+    dummyInput.style.font = computedStyle.font;
+    dummyInput.style.fontSize = computedStyle.fontSize;
+    dummyInput.style.fontFamily = computedStyle.fontFamily;
+    dummyInput.style.fontWeight = computedStyle.fontWeight;
+    dummyInput.style.letterSpacing = computedStyle.letterSpacing;
+    dummyInput.style.whiteSpace = 'nowrap';
+
+    // Position it off-screen and hide it so it doesn't affect layout
+    dummyInput.style.position = 'absolute';
+    dummyInput.style.visibility = 'hidden';
+
+    document.body.appendChild(dummyInput);
+
+    const { width } = dummyInput.getBoundingClientRect();
+
+    // Clean up
+    document.body.removeChild(dummyInput);
+
+    return width;
+}
