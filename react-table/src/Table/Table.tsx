@@ -28,7 +28,7 @@ import * as React from 'react';
 import * as _ from 'lodash';
 import * as ReactTableProps from './Types';
 import { ColumnDataWrapper, ColumnHeaderWrapper } from './Column';
-import { CreateGuid } from '@gpa-gemstone/helper-functions';
+import { CreateGuid, GetScrollBarWidth } from '@gpa-gemstone/helper-functions';
 import { Search } from '@gpa-gemstone/react-interactive';
 import FilterableColumn, { FilterableColumnHeader } from './FilterableColumn';
 
@@ -88,7 +88,7 @@ const IsColumnAdjustable = (props: unknown) => {
     return false;
 }
 
-const scrollBarWidth = getScrollbarWidth();
+const scrollBarWidth = GetScrollbarWidth();
 const lastColumnWidth = 17;
 
 export function Table<T>(props: React.PropsWithChildren<ReactTableProps.ITable<T>>) {
@@ -682,25 +682,4 @@ function Header<T>(props: React.PropsWithChildren<IHeaderProps<T>>) {
         </tr>
         </thead>
     );
-}
-
-function getScrollbarWidth() {
-
-    // Creating invisible container
-    const outer = document.createElement('div');
-    outer.style.visibility = 'hidden';
-    outer.style.overflow = 'scroll'; // forcing scrollbar to appear
-    document.body.appendChild(outer);
-  
-    // Creating inner element and placing it in the container
-    const inner = document.createElement('div');
-    outer.appendChild(inner);
-    
-    // Calculating difference between container's full width and the child width
-    const scrollbarWidth = (outer.offsetWidth - inner.offsetWidth);
-  
-    // Removing temporary elements from the DOM
-    outer.parentNode!.removeChild(outer);
-  
-    return scrollbarWidth;
 }
