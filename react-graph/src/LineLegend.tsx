@@ -24,7 +24,7 @@
 
 import * as React from 'react';
 import { LineStyle } from './GraphContext';
-import { GetTextHeight,  CreateGuid } from '@gpa-gemstone/helper-functions';
+import { GetTextHeight, CreateGuid, GetScrollbarWidth } from '@gpa-gemstone/helper-functions';
 import { Warning } from '@gpa-gemstone/gpa-symbols';
 import { ILegendRequiredProps, LegendContext } from './LegendContext';
 
@@ -39,15 +39,18 @@ export interface IProps extends ILegendRequiredProps {
 const fontFamily = window.getComputedStyle(document.body).fontFamily;
 const nonTextualWidth = 25;
 const cssStyle = `margin: auto auto auto 0px; display: inline-block; font-weight: 400; font-family: ${fontFamily};`
+const scrollBarWidth = GetScrollbarWidth();
 
 function LineLegend(props: IProps) {
+    const containerRef = React.useRef<HTMLDivElement | null>(null);
+
     const [label, setLabel] = React.useState<string>(props.label);
     const [legendWidth, setLegendWith] = React.useState<number>(100);
     const [legendHeight, setLegendHeight] = React.useState<number>(100);
-    const [textSize, setTextSize] = React.useState<number>(1);
     const [useMultiLine, setUseMultiLine] = React.useState<boolean>(false);
     const [guid] = React.useState<string>(CreateGuid());
     const context = React.useContext(LegendContext);
+
     React.useEffect(() => {
         return () => {
             context.RequestLegendWidth(-1, guid);
@@ -62,38 +65,47 @@ function LineLegend(props: IProps) {
     React.useEffect(() => setLegendHeight(props.size === 'sm' ? context.SmHeight : context.LgHeight), [context.SmHeight, context.LgHeight, props.size]);
 
     React.useEffect(() => {
-        let fontSize = 1;
-        let textHeight = GetTextHeight(fontFamily, `${fontSize}em`, label, `${cssStyle}`, `${legendWidth - nonTextualWidth}px`);
-        let textWidth = GetTextWidth(fontFamily, `${fontSize}em`, label, `${cssStyle}`, `${textHeight}px`);
+        const hasYScroll = legendHeight < (containerRef.current?.scrollHeight ?? -1)
+        const availableWidth = hasYScroll ? legendWidth - scrollBarWidth : legendWidth;
+
+        let newFontSize = 1;
+        let textHeight = GetTextHeight(fontFamily, `${newFontSize}em`, label, `${cssStyle}`, `${availableWidth - nonTextualWidth}px`);
+        let textWidth = GetTextWidth(fontFamily, `${newFontSize}em`, label, `${cssStyle}`, `${textHeight}px`);
 
         let useML = false;
         context.RequestLegendWidth(textWidth + nonTextualWidth, guid);
 
-        while (fontSize > 0.4 && (textWidth > legendWidth - nonTextualWidth || textHeight > legendHeight)) {
-            fontSize -= 0.05;
-            
-            textWidth = GetTextWidth(fontFamily, `${fontSize}em`, label, `${cssStyle}`, `${legendHeight}px`, `${useML ? 'normal' : undefined}`, `${legendWidth - nonTextualWidth}px`);
-            textHeight = GetTextHeight(fontFamily, `${fontSize}em`, label, `${cssStyle}`, `${legendWidth - nonTextualWidth}px`, `${useML ? 'normal' : undefined}`);
+        while (newFontSize > 0.4 && (textWidth > availableWidth - nonTextualWidth || textHeight > legendHeight)) {
+            newFontSize -= 0.05;
+
+            textWidth = GetTextWidth(fontFamily, `${newFontSize}em`, label, `${cssStyle}`, `${legendHeight}px`, `${useML ? 'normal' : undefined}`, `${availableWidth - nonTextualWidth}px`);
+            textHeight = GetTextHeight(fontFamily, `${newFontSize}em`, label, `${cssStyle}`, `${availableWidth - nonTextualWidth}px`, `${useML ? 'normal' : undefined}`);
             useML = false;
             // Consider special case when width is limiting but height is available
-            if (textWidth >= (legendWidth - nonTextualWidth) && textHeight < legendHeight) {
+            if (textWidth >= (availableWidth - nonTextualWidth) && textHeight < legendHeight) {
                 useML = true;
-                textHeight = GetTextHeight(fontFamily, `${fontSize}em`, label, `${cssStyle}`, `${legendWidth - nonTextualWidth}px`, `${useML ? 'normal' : undefined}`);
-                textWidth = GetTextWidth(fontFamily, `${fontSize}em`, label, `${cssStyle}`, `${legendHeight}px`, `${useML ? 'normal' : undefined}`, `${legendWidth - nonTextualWidth}px`);
+                textHeight = GetTextHeight(fontFamily, `${newFontSize}em`, label, `${cssStyle}`, `${availableWidth - nonTextualWidth}px`, `${useML ? 'normal' : undefined}`);
+                textWidth = GetTextWidth(fontFamily, `${newFontSize}em`, label, `${cssStyle}`, `${legendHeight}px`, `${useML ? 'normal' : undefined}`, `${availableWidth - nonTextualWidth}px`);
             }
         }
-        setTextSize(fontSize);
+        context.RegisterFontSize(guid, newFontSize)
         setUseMultiLine(useML);
-    }, [label, legendWidth, legendHeight, props.size, props.hasNoData]);
+    }, [label, legendWidth, legendHeight, props.size, props.hasNoData, guid, context.RegisterFontSize]);
+
+    React.useEffect(() => {
+        return () => {
+            context.UnRegisterFontSize(guid)
+        }
+    }, [guid])
 
     return (
-        <div style={{ height: legendHeight, width: legendWidth }}>
+        <div style={{ height: legendHeight, width: legendWidth }} ref={containerRef}>
             <div onClick={() => props.setEnabled(!props.enabled)} style={{ width: '100%', display: 'flex', alignItems: 'center', marginRight: '5px', height: '100%' }}>
                 {(props.lineStyle === '-' ?
                     <div style={{ width: ' 10px', height: 0, borderTop: `2px solid ${props.color}`, borderRight: `10px solid ${props.color}`, borderBottom: `2px solid ${props.color}`, borderLeft: `10px solid ${props.color}`, overflow: 'hidden', marginRight: '5px', opacity: (props.enabled ? 1 : 0.5) }}></div> :
                     <div style={{ width: ' 10px', height: '4px', borderTop: 'none', borderRight: `3px solid ${props.color}`, borderBottom: 'none', borderLeft: `3px solid ${props.color}`, overflow: 'hidden', marginRight: '5px', opacity: (props.enabled ? 1 : 0.5) }}></div>
                 )}
-                <label style={{ fontFamily: fontFamily, fontWeight: 400, display: 'inline-block', margin: 'auto', marginLeft: 0, fontSize: textSize + 'em', whiteSpace: (useMultiLine ? 'normal' : 'nowrap') }}> {label}</label>
+                <label style={{ fontFamily: fontFamily, fontWeight: 400, display: 'inline-block', margin: 'auto', marginLeft: 0, fontSize: context.SmallestFontSize + 'em', whiteSpace: (useMultiLine ? 'normal' : 'nowrap') }}> {label}</label>
             </div>
         </div>
     );
