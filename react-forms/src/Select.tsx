@@ -51,13 +51,8 @@ interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
 
 
 export default function Select<T>(props: IProps<T>) {
-  const [guid, setGuid] = React.useState<string>("");
+  const [guid] = React.useState<string>(CreateGuid());
   const [showHelp, setShowHelp] = React.useState<boolean>(false);
-
-  // Effect to generate a unique ID for the component.
-  React.useEffect(() => {
-    setGuid(CreateGuid());
-  }, []);
 
   // Effect to validate the current value against the available options.
   React.useEffect(() => {
@@ -94,18 +89,23 @@ export default function Select<T>(props: IProps<T>) {
   const showHelpIcon = props.Help !== undefined;
   const label = props.Label === undefined ? props.Field : props.Label;
 
-
   return (
     <div className="form-group">
       {/* Rendering label and optional help icon */}
       {showHelpIcon || showLabel ?
-        <label className='d-flex align-items-center'>{showLabel ? label : ''}
-          {showHelpIcon ?
-            <button className='btn mb-1 pt-0 pb-0' onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)} data-tooltip={guid}>
-              <ReactIcons.QuestionMark Color='var(--info)' Size={20} />
-            </button>
-            : null}
-        </label> : null}
+        <label className="d-flex align-items-center">
+          <span>{showLabel ? label : ''}</span>
+          {showHelpIcon && (
+            <span className="ml-2 d-flex align-items-center"
+              onMouseEnter={() => setShowHelp(true)}
+              onMouseLeave={() => setShowHelp(false)}
+              data-tooltip={guid}
+            >
+              <ReactIcons.QuestionMark Color="var(--info)" Size={20} />
+            </span>
+          )}
+        </label>
+        : null}
 
       {showHelpIcon ?
         <ToolTip Show={showHelp} Target={guid} Class="info" Position="bottom">

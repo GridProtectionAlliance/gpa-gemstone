@@ -177,17 +177,29 @@ export default function StylableSelect<T>(props: IProps<T>) {
     setShow(false);
   }
 
+  // Variables to control the rendering of label and help icon.
+  const showLabel = props.Label !== "";
+  const showHelpIcon = props.Help !== undefined;
+  const label = props.Label === undefined ? props.Field : props.Label;
+
   return (
     <div ref={stylableSelect} style={{ position: 'relative', display: 'inline-block', width: 'inherit' }}>
       {/* Label and help icon rendering */}
-      {(props.Label !== "") ?
-        <label className='d-flex align-items-center'>{props.Label === undefined ? props.Field : props.Label}
-          {props.Help !== undefined ?
-            <button className='btn mb-1 pt-0 pb-0' onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)} data-tooltip={guid}>
-              <ReactIcons.QuestionMark Color='var(--info)' Size={20} />
-            </button>
-            : null}
-        </label> : null}
+      {showHelpIcon || showLabel ?
+        <label className="d-flex align-items-center">
+          <span>{showLabel ? label : ''}</span>
+          {showHelpIcon && (
+            <span
+              onMouseEnter={() => setShowHelp(true)}
+              onMouseLeave={() => setShowHelp(false)}
+              data-tooltip={guid}
+              className="ml-2 d-flex align-items-center"
+            >
+              <ReactIcons.QuestionMark Color="var(--info)" Size={20} />
+            </span>
+          )}
+        </label>
+        : null}
 
       {props.Help !== undefined ?
         <ToolTip Show={showHelp} Target={guid} Class="info" Position="bottom">

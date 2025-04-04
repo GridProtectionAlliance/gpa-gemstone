@@ -37,11 +37,13 @@ interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
 }
 
 export default function ToggleSwitch<T>(props: IProps<T>) {
-  const helpID = React.useRef<string>(CreateGuid());
-  const switchID = React.useRef<string>(CreateGuid());
+  const [helpID] = React.useState<string>(CreateGuid());
+  const [switchID] = React.useState<string>(CreateGuid());
   const [showHelp, setShowHelp] = React.useState<boolean>(false);
 
+  // Variables to control the rendering of label and help icon.
   const showHelpIcon = props.Help !== undefined;
+  const label = props.Label === undefined ? props.Field : props.Label;
 
   return (
     <div className="custom-control custom-switch" style={props.Style}>
@@ -56,16 +58,22 @@ export default function ToggleSwitch<T>(props: IProps<T>) {
         value={(props.Record[props.Field] as unknown as boolean) ? 'on' : 'off'}
         checked={(props.Record[props.Field] as unknown as boolean)}
         disabled={props.Disabled == null ? false : props.Disabled}
-        id={switchID.current}
+        id={switchID}
       />
-      <label className="custom-control-label" htmlFor={switchID.current}>
-        {props.Label == null ? props.Field : props.Label}
+      <label className="custom-control-label d-flex align-items-center" htmlFor={switchID}>
+        <span>
+          {label}
+        </span>
         {showHelpIcon ?
           <>
-            <button className='btn mb-1 pt-0 pb-0' onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)} data-tooltip={helpID.current}>
-              <ReactIcons.QuestionMark Color='var(--info)' Size={20} />
-            </button>
-            <ToolTip Show={showHelp} Target={helpID.current} Zindex={9999} Class="info" Position="bottom">
+            <span className="ml-2 d-flex align-items-center"
+              onMouseEnter={() => setShowHelp(true)}
+              onMouseLeave={() => setShowHelp(false)}
+              data-tooltip={helpID}
+            >
+              <ReactIcons.QuestionMark Color="var(--info)" Size={20} />
+            </span>
+            <ToolTip Show={showHelp} Target={helpID} Zindex={9999} Class="info" Position="bottom">
               {props.Help}
             </ToolTip>
           </>

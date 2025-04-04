@@ -85,28 +85,28 @@ const MultiSelect = (props: IProps) => {
         setPosition({ Top: rect.bottom, Left: rect.left, Width: rect.width, Height: rect.height });
       }
     }, 200);
-  
-    const handleScroll = (event: Event) => {
-      if(tableContainer.current == null) return
 
-      if (event.type === 'scroll' && !tableContainer.current.contains(event.target as Node)) 
-          setShow(false);
-        updatePosition()
+    const handleScroll = (event: Event) => {
+      if (tableContainer.current == null) return
+
+      if (event.type === 'scroll' && !tableContainer.current.contains(event.target as Node))
+        setShow(false);
+      updatePosition()
     };
 
     if (show) {
       updatePosition();
-  
+
       window.addEventListener('scroll', handleScroll, true);
       window.addEventListener('resize', updatePosition);
-  
+
       return () => {
         window.removeEventListener('scroll', handleScroll, true);
         window.removeEventListener('resize', updatePosition);
         updatePosition.cancel();
       };
     }
-  
+
   }, [show]);
 
   // Effect to generate a unique ID for the component.
@@ -116,11 +116,11 @@ const MultiSelect = (props: IProps) => {
 
   // Handle showing and hiding of the dropdown.
   function HandleShow(evt: React.MouseEvent<HTMLButtonElement, MouseEvent> | MouseEvent) {
-    if(selectTable.current != null && selectTable.current.contains(evt.target as Node)) return;
+    if (selectTable.current != null && selectTable.current.contains(evt.target as Node)) return;
 
     //ignore the click if it was inside the table or table container
-    if((selectTable.current != null && selectTable.current.contains(evt.target as Node)) || (tableContainer.current != null && tableContainer.current.contains(evt.target as Node)))
-      return 
+    if ((selectTable.current != null && selectTable.current.contains(evt.target as Node)) || (tableContainer.current != null && tableContainer.current.contains(evt.target as Node)))
+      return
 
     if (multiSelect.current === null) setShow(!show);
     else if (!(multiSelect.current as HTMLDivElement).contains(evt.target as Node)) setShow(false);
@@ -139,12 +139,19 @@ const MultiSelect = (props: IProps) => {
     <div className="form-group">
       {/* Rendering label and help icon */}
       {showLabel || showHelpIcon ?
-        <label className='d-flex align-items-center'>{showLabel ?
-          (props.Label === undefined ? 'Select' : props.Label) : ''}
+        <label className='d-flex align-items-center'>
+          <span>
+            {showLabel ?
+              (props.Label === undefined ? 'Select' : props.Label) : ''}
+          </span>
           {showHelpIcon ?
-            <button className='btn btn mb-1 pt-0 pb-0' onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)} data-tooltip={helperGuid}>
-            <ReactIcons.QuestionMark Color='var(--info)' Size={20}/>
-          </button>
+            <span className="ml-2 d-flex align-items-center"
+              onMouseEnter={() => setShowHelp(true)}
+              onMouseLeave={() => setShowHelp(false)}
+              data-tooltip={helperGuid}
+            >
+              <ReactIcons.QuestionMark Color="var(--info)" Size={20} />
+            </span>
             : null}
         </label> : null
       }
@@ -167,7 +174,7 @@ const MultiSelect = (props: IProps) => {
         <button
           data-tooltip={guid}
           type="button"
-          style={{padding: '.375rem .75rem', fontSize: '1rem', color: 'currentColor', backgroundColor: 'inherit' }}
+          style={{ padding: '.375rem .75rem', fontSize: '1rem', color: 'currentColor', backgroundColor: 'inherit' }}
           className="btn border form-control dropdown-toggle"
           onClick={HandleShow}
           onMouseEnter={() => setShowItems(true)}
@@ -207,7 +214,7 @@ const MultiSelect = (props: IProps) => {
                   }}
                 >
                   <td>
-                    <input type="checkbox" checked={props.Options.filter((x) => x.Selected).length === props.Options.length} onChange={() => null}/>
+                    <input type="checkbox" checked={props.Options.filter((x) => x.Selected).length === props.Options.length} onChange={() => null} />
                   </td>
                   <td>All</td>
                 </tr>

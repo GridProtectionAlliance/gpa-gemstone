@@ -55,14 +55,21 @@ export default function CheckBox<T>(props: Gemstone.TSX.Interfaces.IBaseFormProp
         checked={(props.Record[props.Field] as unknown as boolean)}
         disabled={props.Disabled == null ? false : props.Disabled}
       />
+
       {showHelpIcon || showLabel ?
-        <label className='form-check-label'>{showLabel ? label : ''}
-          {showHelpIcon ?
-            <button className='btn mb-1 pt-0 pb-0' onMouseEnter={() => setShowHelp(true)} onMouseLeave={() => setShowHelp(false)} data-tooltip={guid}>
-              <ReactIcons.QuestionMark Color='var(--info)' Size={20} />
-            </button>
-            : null}
-        </label> : null}
+        <label className="form-check-label d-flex align-items-center">
+          <span>{showLabel ? label : ''}</span>
+          {showHelpIcon && (
+            <span className="ml-2 d-flex align-items-center"
+              onMouseEnter={() => setShowHelp(true)}
+              onMouseLeave={() => setShowHelp(false)}
+              data-tooltip={guid}
+            >
+              <ReactIcons.QuestionMark Color="var(--info)" Size={20} />
+            </span>
+          )}
+        </label>
+        : null}
 
       {showHelpIcon ?
         <ToolTip Show={showHelp} Target={guid} Class="info" Position="bottom">
