@@ -28,10 +28,10 @@ import * as React from 'react';
  * @returns true if the current document state matches the media query
  */
 const useMediaQuery = (query: string): boolean => {
-    const [matches, setMatches] = React.useState(() => {
-        if (typeof window !== 'undefined' && window.matchMedia) {
+    const [matches, setMatches] = React.useState<boolean>(() => {
+        if (typeof window !== 'undefined' && window.matchMedia != null) 
             return window.matchMedia(query).matches;
-        }
+        
         return false;
     });
 
