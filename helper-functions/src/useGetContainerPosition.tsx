@@ -30,6 +30,7 @@ import * as React from 'react'
  * - `left`: Distance from the left of the viewport to the left of the container.
  * - `height`: Height of the container.
  * - `width`: Width of the container.
+ * - `scrollWidth`: Scroll Width of the container.
  * - `x`: Horizontal position of the container relative to the viewport.
  * - `y`: Vertical position of the container relative to the viewport.
  * - `bottom`: Distance from the top of the viewport to the bottom of the container.
@@ -40,7 +41,10 @@ export const useGetContainerPosition = (containerRef: React.MutableRefObject<HTM
     const [top, setTop] = React.useState<number>(0);
     const [left, setLeft] = React.useState<number>(0);
     const [height, setHeight] = React.useState<number>(0);
+
     const [width, setWidth] = React.useState<number>(0);
+    const [scrollWidth, setScrollWidth] = React.useState<number>(0);
+
     const [x, setX] = React.useState<number>(0);
     const [y, setY] = React.useState<number>(0);
     const [bottom, setBottom] = React.useState<number>(0);
@@ -52,25 +56,27 @@ export const useGetContainerPosition = (containerRef: React.MutableRefObject<HTM
         const handleResize = () => {
             if (containerRef.current == null) return
             const newSize = containerRef.current.getBoundingClientRect()
+            const newScrollWidth = containerRef.current.scrollWidth;
             if (newSize.top !== top) setTop(newSize.top);
             if (newSize.left !== left) setLeft(newSize.left);
             if (newSize.height !== height) setHeight(newSize.height);
             if (newSize.width !== width) setWidth(newSize.width);
+            if (newScrollWidth !== scrollWidth) setScrollWidth(newScrollWidth);
             if (newSize.x !== x) setX(newSize.x);
             if (newSize.y !== y) setY(newSize.y);
             if (newSize.bottom !== bottom) setBottom(newSize.bottom);
             if (newSize.right !== right) setRight(newSize.right);
         }
-        
+
         const resizeObserver = new ResizeObserver(handleResize);
         resizeObserver.observe(containerRef.current);
 
         handleResize();
 
         return () => {
-            resizeObserver.disconnect(); 
+            resizeObserver.disconnect();
         };
     })
 
-    return {top, left, height, width, x, y, bottom, right}
+    return { top, left, height, width, x, y, bottom, right, scrollWidth }
 }
