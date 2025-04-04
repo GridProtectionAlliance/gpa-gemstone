@@ -116,6 +116,7 @@ const Applications: React.ForwardRefRenderFunction<IApplicationRefs, React.Props
     const [_ignored, forceUpdate] = React.useReducer((x: number) => x + 1, 0); // integer state for resize renders
 
     const [navBarHeight, setNavBarHeight] = React.useState<number>(40);
+    const [sidebarWidth, setSideBarWidth] = React.useState<number>(50);
 
     const [shouldRemoveSideNav, setShouldRemoveSideNav] = React.useState<boolean>(false);
     const [shouldAddCollapseOptions, setShouldAddCollapseOptions] = React.useState<boolean>(false);
@@ -167,7 +168,7 @@ const Applications: React.ForwardRefRenderFunction<IApplicationRefs, React.Props
             useSearchMatch: props.UseLegacyNavigation ?? false,
             activeSection,
             setActiveSection
-        } as IContext
+        }
     }
 
     function CreateRoute(element: React.ReactElement<React.PropsWithChildren<IPageProps>>): JSX.Element[] {
@@ -208,8 +209,15 @@ const Applications: React.ForwardRefRenderFunction<IApplicationRefs, React.Props
                         ref={navBarRef}
                     />
                     <React.Suspense fallback={<LoadingScreen Show={true} />}>
-                        <SideBarContent Collapsed={collapsed} HideSide={hideSide} Version={props.Version}>{props.children}</SideBarContent>
-                        <MainDiv left={hideSide ? 0 : (collapsed ? 50 : 200)} top={navBarHeight}>
+                        <SideBarContent
+                            Collapsed={collapsed}
+                            HideSide={hideSide}
+                            Version={props.Version}
+                            SetSideBarWidth={setSideBarWidth}
+                        >
+                            {props.children}
+                        </SideBarContent>
+                        <MainDiv left={hideSide ? 0 : (collapsed ? sidebarWidth : 200)} top={navBarHeight}>
                             <Routes>
                                 <Route path={`${props.HomePath}`}>
                                     <Route index element={<Navigate to={`${props.HomePath}${props.DefaultPath}`} />} />
@@ -245,8 +253,15 @@ const Applications: React.ForwardRefRenderFunction<IApplicationRefs, React.Props
                         NavBarContent={props.NavBarContent}
                         ref={navBarRef}
                     />
-                    <SideBarContent Collapsed={collapsed} HideSide={hideSide} Version={props.Version}>{props.children}</SideBarContent>
-                    <MainDiv left={hideSide ? 0 : (collapsed ? 50 : 200)} top={navBarHeight}>
+                    <SideBarContent
+                        Collapsed={collapsed}
+                        HideSide={hideSide}
+                        Version={props.Version}
+                        SetSideBarWidth={setSideBarWidth}
+                    >
+                        {props.children}
+                    </SideBarContent>
+                    <MainDiv left={hideSide ? 0 : (collapsed ? sidebarWidth : 200)} top={navBarHeight}>
                         {React.Children.map(props.children, (element) => {
                             if (!React.isValidElement(element))
                                 return null;
