@@ -22,21 +22,30 @@
 
 import * as React from 'react';
 import Alert from "../Alert";
+import { ConfigurableTableKey } from './AlertKeys';
 
 export const ConfigurableTableAlert = () => {
     const [show, setShow] = React.useState<boolean>(true);
 
     //Effect to set the show state onMount
     React.useEffect(() => {
-        const dismissed = localStorage.getItem("Gemstone.HelperAlerts.ConfigurableTable");
+        const dismissed = localStorage.getItem(ConfigurableTableKey);
         if (dismissed === "true")
             setShow(false);
 
     }, []);
 
     const handleOnClick = () => {
-        localStorage.setItem("Gemstone.HelperAlerts.ConfigurableTable", "true");
+        localStorage.setItem(ConfigurableTableKey, "true");
     };
 
-    return (show ? <Alert OnClick={handleOnClick} Class="alert-primary">Use the gear at the far right of the header row to choose columns to show or hide.</Alert> : null)
+    return (
+        <>
+            {show ?
+                <Alert OnClick={handleOnClick} Class="alert-primary" >
+                    Use the gear at the far right of the header row to choose columns to show or hide.
+                </Alert>
+                : null}
+        </>
+    )
 }
