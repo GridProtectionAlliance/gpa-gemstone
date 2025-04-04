@@ -40,6 +40,8 @@ import { IsRegex } from './IsRegex';
 import { CsvStringToArray } from './CSVStringToArray';
 import { useGetContainerPosition } from './useGetContainerPosition';
 import GetScrollbarWidth from './GetScrollBarWidth';
+import useMediaQuery from './useMediaQuery';
+import useGetScreenSize from './useGetScreenSize';
 
 export {
     CreateGuid,
@@ -58,5 +60,7 @@ export {
     IsRegex,
     CsvStringToArray,
     useGetContainerPosition,
-    GetScrollbarWidth
+    GetScrollbarWidth,
+    useMediaQuery,
+    useGetScreenSize
 }
