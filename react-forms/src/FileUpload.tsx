@@ -103,7 +103,7 @@ const FileUpload = (props: IProps) => {
             </div>
             {isFileUpload ?
                 <>
-                    <div className='row align-items-center justify-content-center' style={{ border: '2px dashed var(--secondary)' }}>
+                    <div className='row align-items-center justify-content-center' style={{ border: '2px dashed var(--secondary)', borderRadius: '0.5em' }}>
                         <div className='col-auto'>
                             File Name: {fileName ?? ''}
                         </div>
