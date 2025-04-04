@@ -24,7 +24,7 @@
 
 import * as React from 'react';
 import { LineStyle } from './GraphContext';
-import { GetTextHeight, CreateGuid, GetScrollbarWidth } from '@gpa-gemstone/helper-functions';
+import { GetTextHeight, CreateGuid, GetScrollbarWidth, GetTextWidth } from '@gpa-gemstone/helper-functions';
 import { Warning } from '@gpa-gemstone/gpa-symbols';
 import { ILegendRequiredProps, LegendContext } from './LegendContext';
 
@@ -102,49 +102,49 @@ function LineLegend(props: IProps) {
         <div style={{ height: legendHeight, width: legendWidth }} ref={containerRef}>
             <div onClick={() => props.setEnabled(!props.enabled)} style={{ width: '100%', display: 'flex', alignItems: 'center', marginRight: '5px', height: '100%' }}>
                 {(props.lineStyle === '-' ?
-                    <div style={{ width: ' 10px', height: 0, borderTop: `2px solid ${props.color}`, borderRight: `10px solid ${props.color}`, borderBottom: `2px solid ${props.color}`, borderLeft: `10px solid ${props.color}`, overflow: 'hidden', marginRight: '5px', opacity: (props.enabled ? 1 : 0.5) }}></div> :
-                    <div style={{ width: ' 10px', height: '4px', borderTop: 'none', borderRight: `3px solid ${props.color}`, borderBottom: 'none', borderLeft: `3px solid ${props.color}`, overflow: 'hidden', marginRight: '5px', opacity: (props.enabled ? 1 : 0.5) }}></div>
+                    <div
+                        style={{
+                            width: '10px',
+                            height: 0,
+                            borderTop: `2px solid ${props.color}`,
+                            borderRight: `10px solid ${props.color}`,
+                            borderBottom: `2px solid ${props.color}`,
+                            borderLeft: `10px solid ${props.color}`,
+                            overflow: 'hidden',
+                            marginRight: '5px',
+                            opacity: (props.enabled ? 1 : 0.5)
+                        }}
+                    /> :
+                    <div
+                        style={{
+                            width: '10px',
+                            height: '4px',
+                            borderTop: 'none',
+                            borderRight: `3px solid ${props.color}`,
+                            borderBottom: 'none',
+                            borderLeft: `3px solid ${props.color}`,
+                            overflow: 'hidden',
+                            marginRight: '5px',
+                            opacity: (props.enabled ? 1 : 0.5)
+                        }}
+                    />
                 )}
-                <label style={{ fontFamily: fontFamily, fontWeight: 400, display: 'inline-block', margin: 'auto', marginLeft: 0, fontSize: context.SmallestFontSize + 'em', whiteSpace: (useMultiLine ? 'normal' : 'nowrap') }}> {label}</label>
+                <label
+                    style={{
+                        fontFamily: fontFamily,
+                        fontWeight: 400,
+                        display: 'inline-block',
+                        margin: 'auto',
+                        marginLeft: 0,
+                        fontSize: context.SmallestFontSize + 'em',
+                        whiteSpace: (useMultiLine ? 'normal' : 'nowrap')
+                    }}
+                >
+                    {label}
+                </label>
             </div>
         </div>
     );
-}
-
-function GetTextWidth(font: string, fontSize: string, word: string, cssStyle?: string, height?: string, whiteSpace?: string, containerWidth?: string): number {
-    const text = document.createElement("span");
-
-    if (cssStyle !== undefined)
-        text.style.cssText = cssStyle;
-
-    // Set font properties
-    text.style.font = font;
-    text.style.fontSize = fontSize;
-    text.style.height = height ?? 'auto';
-    text.style.width = 'auto';
-    text.style.whiteSpace = whiteSpace ?? 'nowrap';
-    text.innerHTML = word;
-
-    // Create a container
-    const container = document.createElement('div');
-    container.style.position = 'absolute';
-    container.style.visibility = 'hidden';
-    container.style.overflow = 'visible'; // So overflowed text is measured
-    container.style.height = height ?? 'auto';
-    container.style.width = containerWidth ?? 'auto';
-    container.style.whiteSpace = whiteSpace ?? 'nowrap';
-
-    // Append text to the container
-    container.appendChild(text);
-    document.body.appendChild(container);
-
-    // Measure the width
-    const width = text.offsetWidth;
-
-    // Clean up
-    document.body.removeChild(container);
-
-    return Math.ceil(width);
 }
 
 export default LineLegend;
