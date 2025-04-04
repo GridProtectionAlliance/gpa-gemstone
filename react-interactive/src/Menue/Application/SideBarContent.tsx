@@ -24,11 +24,13 @@
 import * as React from 'react';
 import Page from "../Page";
 import Section from '../Section';
+import { useGetContainerPosition } from '@gpa-gemstone/helper-functions';
 
 interface IProps {
     Collapsed: boolean,
     Version?: string,
     HideSide: boolean,
+    SetSideBarWidth: React.Dispatch<React.SetStateAction<number>>
 }
 
 const SidebarNavStyle: React.CSSProperties = {
@@ -49,10 +51,15 @@ const SidebarBodyStyle: React.CSSProperties = {
 };
 
 const SideBarContent: React.FC<IProps> = (props) => {
-    const width = props.Collapsed ? 'auto' : 200;
+    const sideBarRef = React.useRef<HTMLDivElement | null>(null);
+    const { width } = useGetContainerPosition(sideBarRef);
+    const widthStyle = props.Collapsed ? 'auto' : 200;
+
+    React.useEffect(() => props.SetSideBarWidth(width), [width])
+    
     return <>
         {props.HideSide ? null :
-            <div className={"bg-light navbar-light navbar"} style={{ ...SidebarNavStyle, width }}>
+            <div className={"bg-light navbar-light navbar"} style={{ ...SidebarNavStyle, width: widthStyle }} ref={sideBarRef}>
                 <div style={SidebarBodyStyle}>
                     <ul className="navbar-nav px-3">
                         {React.Children.map(props.children, (e) => {

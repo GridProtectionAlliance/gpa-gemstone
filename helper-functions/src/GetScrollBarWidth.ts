@@ -1,5 +1,5 @@
 // ******************************************************************************************************
-//  HelperAlerts.tsx - Gbtc
+//  GetScrollBarWidth.tsx - Gbtc
 //
 //  Copyright © 2025, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,18 +16,31 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  02/25/2025 - Preston Crawford
+//  04/03/2025 - Preston Crawford
 //       Generated original version of source code.
+//
 // ******************************************************************************************************
 
-import { AllHelperAlertKeys } from './AlertKeys';
-import { ConfigurableTableAlert } from './ConfigurableTableAlert';
 
+const GetScrollbarWidth = () => {
 
-export namespace Gemstone {
-    export namespace HelperAlerts {
-        export const ConfigurableTable = ConfigurableTableAlert
-        export const ResetAllHelperAlertValues = () => AllHelperAlertKeys.forEach((key) => localStorage.setItem(key, "false"))
-    }
+    // Creating invisible container
+    const outer = document.createElement('div');
+    outer.style.visibility = 'hidden';
+    outer.style.overflow = 'scroll'; // forcing scrollbar to appear
+    document.body.appendChild(outer);
+  
+    // Creating inner element and placing it in the container
+    const inner = document.createElement('div');
+    outer.appendChild(inner);
+    
+    // Calculating difference between container's full width and the child width
+    const scrollbarWidth = (outer.offsetWidth - inner.offsetWidth);
+  
+    // Removing temporary elements from the DOM
+    outer.parentNode!.removeChild(outer);
+  
+    return scrollbarWidth;
 }
 
+export default GetScrollbarWidth;

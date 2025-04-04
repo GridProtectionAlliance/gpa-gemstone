@@ -90,7 +90,7 @@ const TimeFilter = (props: IProps) => {
                 {props.dateTimeSetting === 'startWindow' || props.dateTimeSetting === 'startEnd' ?
                     <Row addRow={!props.isHorizontal} class='m-0'>
                         <div className={props.isHorizontal ? (props.showQuickSelect ? props.dateTimeSetting === 'startEnd' ? 'col-2' : 'col-4' : 'col-6') : 'col-12 p-0'}>
-                            <DatePicker< ITimeWindow > Record={filter} Field="start" Help={(props.showHelpMessage ?? true) ? `All times are in system time. System time is currently set to ${props.timeZone}. ` : undefined}
+                            <DatePicker<ITimeWindow> Record={filter} Field="start" Help={(props.showHelpMessage ?? true) ? `All times are in system time. System time is currently set to ${props.timeZone}. ` : undefined}
                                 Setter={(r) => {
                                     const flt = props.dateTimeSetting === 'startWindow' ?
                                         getTimeWindowFromFilter({ start: r.start, duration: r.duration, unit: r.unit }, format) :
@@ -98,7 +98,7 @@ const TimeFilter = (props: IProps) => {
                                     setFilter(flt);
                                     setActiveQP(-1);
                                 }}
-                                Label='Start of Time Window:'
+                                Label='Start'
                                 Type={props.format ?? 'datetime-local'}
                                 Valid={() => true}
                                 Format={format}
@@ -122,7 +122,7 @@ const TimeFilter = (props: IProps) => {
                                     setFilter(flt);
                                     setActiveQP(-1);
                                 }}
-                                Label='End of Time Window :'
+                                Label='End'
                                 Type={props.format ?? 'datetime-local'}
                                 Valid={() => true}
                                 Format={format}
@@ -211,7 +211,9 @@ const StartWindowForm = (props: IStartEndWindowProps) => {
         <Row addRow={!props.IsHorizontal} class='m-0'>
             <div className={props.IsHorizontal ? props.ShowQuickSelect ? 'col-12 p-0' : 'col-6' : 'col-12 p-0'}>
                 <div className='form-group'>
-                    <label style={{ width: '100%', position: 'relative', float: "left" }}>Time Window(+): </label>
+                    <label style={{ width: '100%', position: 'relative', float: "left" }}>
+                        Span(+)
+                    </label>
                     <div className='row'>
                         <div className={'col-6'}>
                             <Input<ITimeWindow> Record={props.Filter} Field='duration' Label='' Valid={() => true} Type='number'
@@ -239,7 +241,9 @@ const EndWindowForm = (props: IStartEndWindowProps) => {
         <Row addRow={!props.IsHorizontal} class='m-0'>
             <div className={props.IsHorizontal ? props.ShowQuickSelect ? 'col-12 p-0' : 'col-6' : 'col-12 p-0'}>
                 <div className='form-group'>
-                    <label style={{ width: '100%', position: 'relative', float: "left" }}>Time Window(-): </label>
+                    <label style={{ width: '100%', position: 'relative', float: "left" }}>
+                        Span(-)
+                    </label>
                     <div className='row'>
                         <div className={'col-6'}>
                             <Input<ITimeWindow> Record={props.Filter} Field='duration' Label='' Valid={() => true} Type='number'

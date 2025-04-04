@@ -27,8 +27,11 @@ export interface ILegendContext {
     LgWidth: number,
     SmHeight: number,
     LgHeight: number,
+    SmallestFontSize: number
     RequestLegendWidth: (width: number, requesterID: string) => void,
-    RequestLegendHeight: (height: number) => void
+    RequestLegendHeight: (height: number) => void,
+    RegisterFontSize: (requesterID: string, fontsize: number) => void,
+    UnRegisterFontSize: (requesterID: string) => void
 }
 
 export interface ILegendRequiredProps {
@@ -36,11 +39,14 @@ export interface ILegendRequiredProps {
     enabled: boolean
 }
 
-export const LegendContext = React.createContext({
+export const LegendContext = React.createContext<ILegendContext>({
     SmWidth: 0,
     LgWidth: 0,
     SmHeight: 0,
     LgHeight: 0,
+    SmallestFontSize: 0,
     RequestLegendWidth: () => undefined,
-    RequestLegendHeight: () => undefined
-} as ILegendContext);
+    RequestLegendHeight: () => undefined,
+    RegisterFontSize: () => undefined,
+    UnRegisterFontSize: () => undefined
+});

@@ -1,5 +1,5 @@
 // ******************************************************************************************************
-//  HelperAlerts.tsx - Gbtc
+//  ConfigurableTableAlert.tsx - Gbtc
 //
 //  Copyright © 2025, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -20,14 +20,10 @@
 //       Generated original version of source code.
 // ******************************************************************************************************
 
-import { AllHelperAlertKeys } from './AlertKeys';
-import { ConfigurableTableAlert } from './ConfigurableTableAlert';
+const baseKey = `Gemstone.HelperAlerts.`
 
+export const ConfigurableTableKey = `${baseKey}ConfigurableTable`
 
-export namespace Gemstone {
-    export namespace HelperAlerts {
-        export const ConfigurableTable = ConfigurableTableAlert
-        export const ResetAllHelperAlertValues = () => AllHelperAlertKeys.forEach((key) => localStorage.setItem(key, "false"))
-    }
-}
-
+export const AllHelperAlertKeys = [
+    ConfigurableTableKey
+]
