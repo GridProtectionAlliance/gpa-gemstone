@@ -81,7 +81,7 @@ const LayoutGrid: React.FC<React.PropsWithChildren<IProps>> = (props) => {
             rowsOnGrid.push(row); // push a row onto array with appropriate number of items
         }
         setRows(rowsOnGrid);
-    }, [totalNumOfItems]);
+    }, [totalNumOfItems, props.ColMax]);
 
     function generateColumns(currentRow: IRow) {
         const ItemDivs: JSX.Element[] = [];
