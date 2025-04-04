@@ -28,7 +28,7 @@ import * as React from 'react';
 import * as _ from 'lodash';
 import * as ReactTableProps from './Types';
 import { ColumnDataWrapper, ColumnHeaderWrapper } from './Column';
-import { CreateGuid, GetScrollBarWidth } from '@gpa-gemstone/helper-functions';
+import { CreateGuid, GetScrollbarWidth } from '@gpa-gemstone/helper-functions';
 import { Search } from '@gpa-gemstone/react-interactive';
 import FilterableColumn, { FilterableColumnHeader } from './FilterableColumn';
 

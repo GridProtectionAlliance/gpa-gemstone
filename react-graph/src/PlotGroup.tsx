@@ -23,7 +23,7 @@
 import * as React from 'react';
 import PlotGroupContext, { IPlotGroupContext } from './PlotGroupContext';
 
-const PlotGroup = (props: React.PropsWithChildren<{}>) => {
+const PlotGroup = (props: React.PropsWithChildren<Record<string, never>>) => {
     const legendWidthMap = React.useRef<Map<string, number>>(new Map());
     const [maxLegendWidth, setMaxLegendWidth] = React.useState<number>(0);
 
