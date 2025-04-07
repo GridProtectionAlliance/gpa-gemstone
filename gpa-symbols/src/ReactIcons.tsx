@@ -365,6 +365,28 @@ export namespace ReactIcons {
             <line x1="12" y1="2" x2="12" y2="22"></line>
         </svg>
 
+    export const ChevronLeft: React.FC<IProps> = (props) =>
+        <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24, }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-chevron-left">
+            <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+
+    export const ChevronRight: React.FC<IProps> = (props) =>
+        <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24, }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-chevron-right">
+            <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+
+    export const DoubleChevronLeft: React.FC<IProps> = (props) =>
+        <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24, }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-chevrons-left">
+            <polyline points="11 17 6 12 11 7"></polyline>
+            <polyline points="18 17 13 12 18 7"></polyline>
+        </svg>
+
+    export const DoubleChevronRight: React.FC<IProps> = (props) =>
+        <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24, }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-chevrons-right">
+            <polyline points="13 17 18 12 13 7"></polyline>
+            <polyline points="6 17 11 12 6 7"></polyline>
+        </svg>
+
     export const ChevronDown: React.FC<IProps> = (props) =>
         <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24, }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-chevron-down">
             <polyline points="6 9 12 15 18 9"></polyline>
