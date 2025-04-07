@@ -423,6 +423,7 @@ function Rows<T>(props: React.PropsWithChildren<IRowProps<T>>) {
                                     }
                                 }
                                 dragStart={
+                                    props.DragStart == null ? undefined :
                                     (e) => {
                                         if (props.DragStart == null) return;
                                         return props.DragStart(
