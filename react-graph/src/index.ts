@@ -14,9 +14,11 @@ import { AxisMap } from './GraphContext';
 import HighlightBox from './HighlightBox';
 import { PointNode } from './PointNode';
 import StreamingLine from './StreamingLine';
+import PlotGroup from './PlotGroup';
 
 export { 
     Plot,
+    PlotGroup,
     Line,
     HeatMapChart,
     LineWithThreshold,

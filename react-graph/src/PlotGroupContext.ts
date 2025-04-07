@@ -1,5 +1,5 @@
 // ******************************************************************************************************
-//  HelperAlerts.tsx - Gbtc
+//  PlotGroupContext.ts - Gbtc
 //
 //  Copyright © 2025, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,18 +16,24 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  02/25/2025 - Preston Crawford
+//  04/03/2025 - Preston Crawford
 //       Generated original version of source code.
+//
 // ******************************************************************************************************
+import * as React from 'react';
 
-import { AllHelperAlertKeys } from './AlertKeys';
-import { ConfigurableTableAlert } from './ConfigurableTableAlert';
-
-
-export namespace Gemstone {
-    export namespace HelperAlerts {
-        export const ConfigurableTable = ConfigurableTableAlert
-        export const ResetAllHelperAlertValues = () => AllHelperAlertKeys.forEach((key) => localStorage.setItem(key, "false"))
-    }
+export interface IPlotGroupContext {
+    LegendWidth: number 
+    RegisterLegendWidth: (requesterID: string, width: number) => void,
+    UnRegisterLegendWidth: (requesterID: string) => void,
+    HasConsumer: boolean
 }
 
+const PlotGroupContext = React.createContext({
+    HasConsumer: false,
+    LegendWidth: 0,
+    RegisterLegendWidth: () => undefined,
+    UnRegisterLegendWidth: () => undefined,
+} as IPlotGroupContext);
+
+export default PlotGroupContext;

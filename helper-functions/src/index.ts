@@ -23,10 +23,10 @@
 //
 // ******************************************************************************************************
 
-import {CreateGuid} from './CreateGuid';
-import {GetTextWidth} from './GetTextWidth';
-import {GetTextHeight} from './GetTextHeight';
-import {GetNodeSize} from './GetNodeSize';
+import { CreateGuid } from './CreateGuid';
+import { GetTextWidth } from './GetTextWidth';
+import { GetTextHeight } from './GetTextHeight';
+import { GetNodeSize } from './GetNodeSize';
 import { RandomColor } from './RandomColor';
 import { IsNumber } from './IsNumber';
 import { IsInteger } from './IsInteger';
@@ -39,5 +39,28 @@ import { findLastIndex } from './FindLastIndex'
 import { IsRegex } from './IsRegex';
 import { CsvStringToArray } from './CSVStringToArray';
 import { useGetContainerPosition } from './useGetContainerPosition';
+import GetScrollbarWidth from './GetScrollBarWidth';
+import useMediaQuery from './useMediaQuery';
+import useGetScreenSize from './useGetScreenSize';
 
-export {CreateGuid, GetTextWidth, GetNodeSize, RandomColor, GetTextHeight, IsNumber, IsInteger, IsCron, SpacedColor, HsvToHex, HexToHsv, findLastIndex, useEffectWithPrevious, IsRegex, CsvStringToArray, useGetContainerPosition}
+export {
+    CreateGuid,
+    GetTextWidth,
+    GetNodeSize,
+    RandomColor,
+    GetTextHeight,
+    IsNumber,
+    IsInteger,
+    IsCron,
+    SpacedColor,
+    HsvToHex,
+    HexToHsv,
+    findLastIndex,
+    useEffectWithPrevious,
+    IsRegex,
+    CsvStringToArray,
+    useGetContainerPosition,
+    GetScrollbarWidth,
+    useMediaQuery,
+    useGetScreenSize
+}
