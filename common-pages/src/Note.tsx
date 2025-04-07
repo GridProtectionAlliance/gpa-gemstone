@@ -243,7 +243,7 @@ function Note(props: React.PropsWithChildren<IProps>)  {
                             <>
                                 { allowEdit ? 
                                     <button className="btn btn-sm" onClick={() => handleEdit(row.item)}>
-                                        <ReactIcons.CrossMark/>
+                                        <ReactIcons.Pencil/>
                                     </button> 
                                 : null }
                                 { allowRemove ? 
