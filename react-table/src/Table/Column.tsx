@@ -105,7 +105,7 @@ export function ColumnDataWrapper (props: React.PropsWithChildren<IDataWrapperPr
         <td
             style={props.style}
             onClick={props.onClick}
-            draggable={props.dragStart !== undefined}
+            draggable={props.dragStart != undefined}
             onDragStart={props.dragStart}
         >
             {props.children}
