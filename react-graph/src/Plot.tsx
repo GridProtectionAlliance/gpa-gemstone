@@ -186,7 +186,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
 
     groupContext.RegisterLegendWidth(guid, legendWidth)
 
-  }, [legendWidth, groupContext?.RegisterLegendWidth, groupContext?.HasConsumer, guid])
+  }, [legendWidth, groupContext.RegisterLegendWidth, groupContext.HasConsumer, guid])
 
   React.useEffect(() => {
     if (!groupContext.HasConsumer) return
@@ -194,7 +194,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
     return () => {
       groupContext.UnRegisterLegendWidth(guid)
     }
-  }, [guid, !groupContext.HasConsumer, groupContext.UnRegisterLegendWidth])
+  }, [guid, groupContext.HasConsumer, groupContext.UnRegisterLegendWidth])
 
   const applyToYDomain = React.useCallback((predicate: (domain: [number, number], axis: number, allDomains: [number, number][]) => boolean): void => {
     const newDomain = [...yDomain];
