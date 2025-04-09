@@ -113,7 +113,7 @@ const FileUpload = (props: IProps) => {
                     </div>
                 </>
                 :
-                <div className='row' onDragOver={handleDragOver} onDrop={handleDrop} style={{ border: '2px dashed var(--secondary)' }}>
+                <div className='row' onDragOver={handleDragOver} onDrop={handleDrop} style={{ border: '2px dashed var(--secondary)', borderRadius: '0.5em' }}>
                     <div className='col-12 pt-3 pb-3 d-flex justify-content-center align-items-center' >
                         <ReactIcons.Image Size={100} />
                         <span>Drag and Drop</span>
