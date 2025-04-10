@@ -81,17 +81,24 @@ export default function SearchableSelect<T>(props: IProps<T>) {
         }
     }, [props.GetLabel])
 
+    // Call props.Search every 500ms to avoid hammering the server while typing
     React.useEffect(() => {
         setLoading(true);
         
-        const [handle, callback] = props.Search(search);
+        let searchHandle: Promise<IOption[]>; 
+        let searchCallback: () => void;
+        const timeoutHandle = setTimeout(() => {
+            [searchHandle, searchCallback] = props.Search(search);
+            searchHandle.then((d: IOption[]) => {
+                setResults(d.map(o => ({ Value: o.Value, Element: o.Label })));
+                setLoading(false);
+            }).catch(() => setLoading(false));
+        }, 500);
 
-        handle.then((d: IOption[]) => {
-            setResults(d.map(o => ({ Value: o.Value, Element: o.Label })));
-            setLoading(false);
-        }).catch(() => setLoading(false));
-
-        return callback;
+        return () => { 
+            if (searchCallback != null) searchCallback();
+            if (timeoutHandle != null) clearTimeout(timeoutHandle); 
+        };
     }, [search])
 
     const handleOnBlur = React.useCallback(() => {
