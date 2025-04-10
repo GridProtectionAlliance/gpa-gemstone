@@ -79,7 +79,7 @@ export default function SearchableSelect<T>(props: IProps<T>) {
             });
             return callback
         }
-    }, [props.GetLabel])
+    }, [props.GetLabel]);
 
     // Call props.Search every 500ms to avoid hammering the server while typing
     React.useEffect(() => {
@@ -99,11 +99,32 @@ export default function SearchableSelect<T>(props: IProps<T>) {
             if (searchCallback != null) searchCallback();
             if (timeoutHandle != null) clearTimeout(timeoutHandle); 
         };
-    }, [search])
+    }, [search]);
+
+    const update = React.useCallback((record: T, selectedOption: IStylableOption) => {
+        const stringVal: string = (record[props.Field] as any)?.toString() ?? '';
+        let newLabel = stringVal;
+
+        if (!React.isValidElement(selectedOption.Element))
+            newLabel = selectedOption.Element as string;
+
+        setLabel(newLabel);
+
+        props.Setter(record);
+        setSearch(newLabel);
+    }, [props.Setter, props.Field, label]);
 
     const handleOnBlur = React.useCallback(() => {
-        setSearch(label)
-    }, [label])
+        if (props.AllowCustom) {
+            console.log("allowed")
+            const record: T = { ...props.Record };
+            if (search !== '') record[props.Field] = search as any;
+            else record[props.Field] = null as any;
+            update(record, {Value: search, Element: search})
+        }
+        else
+            setSearch(label)
+    }, [label, props.AllowCustom, props.Record, props.Field, update, search]);
 
     const options = React.useMemo(() => {
         const ops = [] as IStylableOption[];
@@ -127,35 +148,10 @@ export default function SearchableSelect<T>(props: IProps<T>) {
             </div>
         })
 
-        if (!(props.AllowCustom ?? false))
-            ops.push({ Value: 'search-' + props.Record[props.Field], Element: label });
-        else
-            ops.push({ Value: search, Element: search });
-
         ops.push(...results.filter(f => f.Value !== search && f.Value !== props.Record[props.Field]));
 
         return ops;
-    }, [search, props.Record[props.Field], results, props.Disabled, loading, label, props.AllowCustom, handleOnBlur]);
-
-    const update = React.useCallback((record: T, selectedOption: IStylableOption) => {
-        const stringVal: string = (record[props.Field] as any)?.toString() ?? '';
-        let newLabel = stringVal;
-
-        if (!React.isValidElement(selectedOption.Element))
-            newLabel = selectedOption.Element as string;
-
-        setLabel(newLabel);
-
-        if (stringVal.startsWith('search-')) {
-            const value = stringVal.replace('search-', '');
-            props.Setter({ ...record, [props.Field]: value });
-            setSearch(newLabel ?? value);
-            return;
-        }
-
-        props.Setter(record);
-        setSearch(newLabel);
-    }, [props.Setter, props.Field, label])
+    }, [search, props.Record[props.Field], results, props.Disabled, loading, label, handleOnBlur]);
 
     return <StylableSelect<T>
         Record={props.Record}
