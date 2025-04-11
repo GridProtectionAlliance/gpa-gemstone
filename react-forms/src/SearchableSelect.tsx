@@ -87,7 +87,7 @@ export default function SearchableSelect<T>(props: IProps<T>) {
         
         let searchHandle: PromiseLike<IOption[]>; 
         let searchCallback: () => void;
-        
+
         const timeoutHandle = setTimeout(() => {
             [searchHandle, searchCallback] = props.Search(search);
             searchHandle.then((d: IOption[]) => {
@@ -117,7 +117,6 @@ export default function SearchableSelect<T>(props: IProps<T>) {
 
     const handleOnBlur = React.useCallback(() => {
         if (props.AllowCustom) {
-            console.log("allowed")
             const record: T = { ...props.Record };
             if (search !== '') record[props.Field] = search as any;
             else record[props.Field] = null as any;
