@@ -36,11 +36,11 @@ interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
     */
     AllowCustom?: boolean
     /**
-    * Function to perform a search and return a promise with a list of IOption and an optional callback
+    * Function to perform a search and return a promiselike object with a list of IOption and an optional callback
     * @param search - Search string
-    * @returns {[promise: Promise<IOption[]>, callback?: () => void]}
+    * @returns {[promise: PromiseLike<IOption[]>, callback?: () => void]}
     */
-    Search: (search: string) => [Promise<IOption[]>, () => void];
+    Search: (search: string) => [PromiseLike<IOption[]>, () => void];
     /**
     * CSS styles to apply to the form group
     * @type {React.CSSProperties}
@@ -85,14 +85,15 @@ export default function SearchableSelect<T>(props: IProps<T>) {
     React.useEffect(() => {
         setLoading(true);
         
-        let searchHandle: Promise<IOption[]>; 
+        let searchHandle: PromiseLike<IOption[]>; 
         let searchCallback: () => void;
+        
         const timeoutHandle = setTimeout(() => {
             [searchHandle, searchCallback] = props.Search(search);
             searchHandle.then((d: IOption[]) => {
                 setResults(d.map(o => ({ Value: o.Value, Element: o.Label })));
                 setLoading(false);
-            }).catch(() => setLoading(false));
+            }, () => setLoading(false));
         }, 500);
 
         return () => { 
