@@ -183,7 +183,7 @@ export default function StylableSelect<T>(props: IProps<T>) {
   const label = props.Label === undefined ? props.Field : props.Label;
 
   return (
-    <div ref={stylableSelect} style={{ position: 'relative', display: 'inline-block', width: 'inherit' }}>
+    <div ref={stylableSelect} className="form-group" style={{ position: 'relative', display: 'inline-block', width: 'inherit' }}>
       {/* Label and help icon rendering */}
       {showHelpIcon || showLabel ?
         <label className="d-flex align-items-center">
