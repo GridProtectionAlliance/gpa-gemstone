@@ -93,7 +93,10 @@ export default function SearchableSelect<T>(props: IProps<T>) {
             searchHandle.then((d: IOption[]) => {
                 setResults(d.map(o => ({ Value: o.Value, Element: o.Label })));
                 setLoading(false);
-            }, () => setLoading(false));
+            }, () => {
+                    setLoading(false);
+                }
+            );
         }, 500);
 
         return () => { 
@@ -115,17 +118,6 @@ export default function SearchableSelect<T>(props: IProps<T>) {
         setSearch(newLabel);
     }, [props.Setter, props.Field, label]);
 
-    const handleOnBlur = React.useCallback(() => {
-        if (props.AllowCustom ?? false) {
-            const record: T = { ...props.Record };
-            if (search !== '') record[props.Field] = search as any;
-            else record[props.Field] = null as any;
-            update(record, {Value: search, Element: search})
-        }
-        else
-            setSearch(label)
-    }, [label, props.AllowCustom, props.Record, props.Field, update, search]);
-
     const options = React.useMemo(() => {
         const ops = [] as IStylableOption[];
 
@@ -137,7 +129,7 @@ export default function SearchableSelect<T>(props: IProps<T>) {
                     className="form-control"
                     value={search}
                     onChange={(d) => setSearch(d.target.value)}
-                    onBlur={handleOnBlur}
+                    onBlur={() => setSearch(label)}
                     onClick={(evt) => { evt.preventDefault(); evt.stopPropagation(); }}
                     disabled={props.Disabled ?? false}
                 />
@@ -149,10 +141,13 @@ export default function SearchableSelect<T>(props: IProps<T>) {
             </div>
         })
 
+        if (props.AllowCustom ?? false)
+-            ops.push({ Value: search, Element: <>{search} (Entered Value)</> });
+
         ops.push(...results.filter(f => f.Value !== search && f.Value !== props.Record[props.Field]));
 
         return ops;
-    }, [search, props.Record[props.Field], results, props.Disabled, loading, label, handleOnBlur]);
+    }, [search, props.Record[props.Field], results, props.Disabled, loading, label]);
 
     return <StylableSelect<T>
         Record={props.Record}
