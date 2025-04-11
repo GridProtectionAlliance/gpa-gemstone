@@ -116,7 +116,7 @@ export default function SearchableSelect<T>(props: IProps<T>) {
     }, [props.Setter, props.Field, label]);
 
     const handleOnBlur = React.useCallback(() => {
-        if (props.AllowCustom) {
+        if (props.AllowCustom ?? false) {
             const record: T = { ...props.Record };
             if (search !== '') record[props.Field] = search as any;
             else record[props.Field] = null as any;
