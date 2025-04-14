@@ -1,4 +1,4 @@
-// ******************************************************************************************************
+﻿// ******************************************************************************************************
 //  LineLegend.tsx - Gbtc
 //
 //  Copyright © 2023, Grid Protection Alliance.  All Rights Reserved.
@@ -77,7 +77,7 @@ function LineLegend(props: IProps) {
         context.RequestLegendWidth(textWidth + nonTextualWidth, guid);
 
         while (newFontSize > 0.4 && (textWidth > availableWidth - nonTextualWidth || textHeight > legendHeight)) {
-            newFontSize -= 0.05;
+            newFontSize -= 0.1;
 
             textWidth = GetTextWidth(fontFamily, `${newFontSize}em`, label, `${cssStyle}`, `${legendHeight}px`, `${useML ? 'normal' : undefined}`, `${availableWidth - nonTextualWidth}px`);
             textHeight = GetTextHeight(fontFamily, `${newFontSize}em`, label, `${cssStyle}`, `${availableWidth - nonTextualWidth}px`, `${useML ? 'normal' : undefined}`);
@@ -89,6 +89,7 @@ function LineLegend(props: IProps) {
                 textWidth = GetTextWidth(fontFamily, `${newFontSize}em`, label, `${cssStyle}`, `${legendHeight}px`, `${useML ? 'normal' : undefined}`, `${availableWidth - nonTextualWidth}px`);
             }
         }
+
         context.RegisterFontSize(guid, newFontSize)
         setUseMultiLine(useML);
     }, [label, legendWidth, legendHeight]);
