@@ -1,4 +1,4 @@
-﻿// ******************************************************************************************************
+// ******************************************************************************************************
 //  LineLegend.tsx - Gbtc
 //
 //  Copyright © 2023, Grid Protection Alliance.  All Rights Reserved.
@@ -53,6 +53,7 @@ function LineLegend(props: IProps) {
 
     React.useEffect(() => {
         return () => {
+            context.UnRegisterFontSize(guid);
             context.RequestLegendWidth(-1, guid);
         }
     }, []);
@@ -90,13 +91,7 @@ function LineLegend(props: IProps) {
         }
         context.RegisterFontSize(guid, newFontSize)
         setUseMultiLine(useML);
-    }, [label, legendWidth, legendHeight, props.size, props.hasNoData, guid, context.RegisterFontSize]);
-
-    React.useEffect(() => {
-        return () => {
-            context.UnRegisterFontSize(guid)
-        }
-    }, [guid])
+    }, [label, legendWidth, legendHeight]);
 
     return (
         <div style={{ height: legendHeight, width: legendWidth }} ref={containerRef}>
