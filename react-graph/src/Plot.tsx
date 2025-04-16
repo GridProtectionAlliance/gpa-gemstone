@@ -125,7 +125,6 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
   const wheelTimeout = React.useRef<{ timeout?: NodeJS.Timeout, stopScroll: boolean }>({ timeout: undefined, stopScroll: false });
   const heightChange = React.useRef<{ timeout?: NodeJS.Timeout, extraNeeded: number, captureID?: string }>(
     { timeout: undefined, extraNeeded: 0, captureID: undefined });
-  const widthTimeout = React.useRef<{ timeout?: NodeJS.Timeout, requesterMap: Map<string, number> }>({ timeout: undefined, requesterMap: new Map<string, number>() });
 
   const guid = React.useMemo(() => CreateGuid(), []);
 
@@ -434,26 +433,14 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
     if (props.legend !== 'bottom') return;
     const limitedHeight = Math.min(newHeight, heightLimit);
     if (legendHeight !== limitedHeight) setLegendHeight(limitedHeight);
-  }, [props.legendHeight, setLegendHeight, legendHeight, props.legend, photoReady]);
+  }, [props.legendHeight, legendHeight, props.legend, photoReady]);
 
-  const requestLegendWidthChange = React.useCallback((newWidth: number, requesterID: string) => {
-    if (newWidth < 0) {
-      widthTimeout.current.requesterMap.delete(requesterID);
-      return;
-    }
+  const requestLegendWidthChange = React.useCallback((newWidth: number) => {
+    if (newWidth < 0) return;
     if (props.legend !== 'right') return;
     const limitedWidth = Math.min(newWidth, props.legendWidth ?? defaultLegendWidth);
-    // we can't immediately complete the request, since there are multiple legend items trying to adjust this at a time sometimes
-    clearTimeout(widthTimeout.current.timeout);
-    widthTimeout.current.requesterMap.set(requesterID, limitedWidth);
-
-    // timeout to set if we don't see any more requests within 0.05 seconds
-    widthTimeout.current.timeout = setTimeout(() => {
-      const largestRequested = Math.max(...widthTimeout.current.requesterMap.values());
-      if (legendWidth !== largestRequested)
-        setLegendWidth(largestRequested);
-    }, 50);
-  }, [props.legendWidth, setLegendWidth, legendWidth, props.legend]);
+    if (legendWidth !== limitedWidth) setLegendWidth(limitedWidth);
+  }, [props.legendWidth, legendWidth, props.legend]);
 
   // transforms from pixels into x value. result passed into onClick function 
   const xInvTransform = React.useCallback((p: number) => {
