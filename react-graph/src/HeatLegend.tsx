@@ -57,7 +57,7 @@ function HeatLegend(props: IProps) {
   const [wLegend, setWLegend] = React.useState<number>(100);
   const [hLegend, setHLegend] = React.useState<number>(100);
   const [nDigits, setNdigits] = React.useState<number>(1);
-  const [guid, setGuid] = React.useState<string>('');
+  const [guid] = React.useState<string>(CreateGuid());
   const context = React.useContext(LegendContext);
 
   // Effect to update the legend's width and height based on the container's dimensions
@@ -86,14 +86,6 @@ function HeatLegend(props: IProps) {
       setNdigits(2);
 
   }, [props.maxValue, props.minValue]);
-
-  // Generate a unique ID for the gradient and request space for the legend
-  React.useEffect(() => {
-      const id = CreateGuid();
-      setGuid(id);
-      context.RequestLegendWidth(50, id);
-      return () => { context.RequestLegendWidth(-1, id); }
-  }, []);
 
   return (
     <div style={{ height: hLegend, width: wLegend }}>
