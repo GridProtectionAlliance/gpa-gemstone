@@ -26,6 +26,7 @@ import * as React from 'react';
 import { LineStyle } from './GraphContext';
 import { Warning } from '@gpa-gemstone/gpa-symbols';
 import { ILegendRequiredProps, LegendContext } from './LegendContext';
+import { fontFamily } from './Legend'
 
 export interface IProps extends ILegendRequiredProps {
     color: string,
@@ -34,8 +35,6 @@ export interface IProps extends ILegendRequiredProps {
     hasNoData: boolean,
     label: string
 }
-
-const fontFamily = "Courier New";
 
 function LineLegend(props: IProps) {
     const containerRef = React.useRef<HTMLDivElement | null>(null);

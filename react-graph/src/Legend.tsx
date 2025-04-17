@@ -45,7 +45,7 @@ const itemHeight = 25;
 const itemsWhenBottom = 3;
 
 // line legend consts (font family needs to be monospaced)
-const fontFamily = "Courier New"
+export const fontFamily = "Courier New"
 const nonTextualWidth = 25;
 const cssStyle = `margin: auto auto auto 0px; display: inline-block; font-weight: 400; font-family: ${fontFamily};`;
 
