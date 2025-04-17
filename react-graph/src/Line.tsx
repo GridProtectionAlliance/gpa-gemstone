@@ -1,4 +1,4 @@
-// ******************************************************************************************************
+﻿// ******************************************************************************************************
 //  Line.tsx - Gbtc
 //
 //  Copyright © 2020, Grid Protection Alliance.  All Rights Reserved.
@@ -102,7 +102,14 @@ export const InternalLine = React.forwardRef<PointNode | null, IInteralProps>((p
                 setHighlight([NaN, NaN]);
             }
         }
-    }, [data, context.XHover])
+    }, [data, context.XHover]);
+
+    React.useEffect(() => {
+        if (context.MassEnableCommand.command === "enable-all") 
+            setEnabled(true);
+        else if (context.MassEnableCommand.command === "disable-others")
+            setEnabled(guid === context.MassEnableCommand.requester);
+    }, [context.MassEnableCommand]);
 
     React.useEffect(() => {
         if (props.data == null) setData(null);
