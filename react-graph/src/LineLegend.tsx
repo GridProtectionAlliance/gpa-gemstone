@@ -49,7 +49,13 @@ function LineLegend(props: IProps) {
 
     return (
         <div style={{ height: context.SmHeight, width: context.SmWidth }} ref={containerRef}>
-            <div onClick={() => props.setEnabled(!props.enabled)} style={{ width: '100%', display: 'flex', alignItems: 'center', marginRight: '5px', height: '100%' }}>
+            <div 
+                onClick={(evt) => {
+                    if (evt.ctrlKey && context.SendMassEnable != null) context.SendMassEnable.current(props.id)
+                    else props.setEnabled(!props.enabled)
+                }} 
+                style={{ width: '100%', display: 'flex', alignItems: 'center', marginRight: '5px', height: '100%' }}
+            >
                 {(props.lineStyle === '-' ?
                     <div
                         style={{

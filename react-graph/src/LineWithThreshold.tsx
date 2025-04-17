@@ -1,4 +1,4 @@
-// ******************************************************************************************************
+﻿// ******************************************************************************************************
 //  LineWithThreshold.tsx - Gbtc
 //
 //  Copyright © 2020, Grid Protection Alliance.  All Rights Reserved.
@@ -73,6 +73,13 @@ function LineWithThreshold(props: IProps) {
                setHighlight(point as [number, number]);
        }
    }, [data, context.XHover])
+   
+    React.useEffect(() => {
+        if (context.MassEnableCommand.command === "enable-all") 
+            setEnabled(true);
+        else if (context.MassEnableCommand.command === "disable-others")
+            setEnabled(guid === context.MassEnableCommand.requester);
+    }, [context.MassEnableCommand]);
 
    React.useEffect(() => {
       setData(new PointNode(props.data));
