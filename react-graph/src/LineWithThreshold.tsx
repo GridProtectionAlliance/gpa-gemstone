@@ -120,7 +120,7 @@ function LineWithThreshold(props: IProps) {
       txt = txt + ` (${moment.utc(highlight[0]).format('MM/DD/YY hh:mm:ss')}: ${highlight[1].toPrecision(6)})`
 
       return <LineLegend 
-        size = 'sm' label={txt} color={props.color} lineStyle={props.lineStyle}
+        label={txt} color={props.color} lineStyle={props.lineStyle}
         setEnabled={setEnabled} enabled={enabled} hasNoData={data == null}/>;
    }
 

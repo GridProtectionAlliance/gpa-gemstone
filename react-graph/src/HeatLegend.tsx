@@ -54,15 +54,11 @@ const TextStyle: React.CSSProperties = {
 };
 
 function HeatLegend(props: IProps) {
-  const [wLegend, setWLegend] = React.useState<number>(100);
-  const [hLegend, setHLegend] = React.useState<number>(100);
   const [nDigits, setNdigits] = React.useState<number>(1);
   const [guid] = React.useState<string>(CreateGuid());
   const context = React.useContext(LegendContext);
-
-  // Effect to update the legend's width and height based on the container's dimensions
-  React.useEffect(() => setWLegend(props.size === 'sm' ? context.SmWidth : context.LgWidth), [context.LgWidth, context.SmWidth, props.size]);
-  React.useEffect(() => setHLegend(props.size === 'sm' ? context.SmHeight : context.LgHeight), [context.SmHeight, context.LgHeight, props.size]);
+  const hLegend = context.LgHeight;
+  const wLegend = context.LgWidth;
 
   // Determine the number of decimal digits to display based on the value range
   React.useEffect(() => {

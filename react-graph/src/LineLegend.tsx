@@ -39,22 +39,16 @@ const fontFamily = window.getComputedStyle(document.body).fontFamily;
 
 function LineLegend(props: IProps) {
     const containerRef = React.useRef<HTMLDivElement | null>(null);
-
     const [label, setLabel] = React.useState<string>(props.label ?? "");
-    const [legendWidth, setLegendWith] = React.useState<number>(100);
-    const [legendHeight, setLegendHeight] = React.useState<number>(100);
     const context = React.useContext(LegendContext);
 
     React.useEffect(() => {
         setLabel((props.hasNoData ? Warning : "") + props.label);
     }, [props.hasNoData, props.label]);
 
-    React.useEffect(() => setLegendWith(props.size === 'sm' ? context.SmWidth : context.LgWidth), [context.LgWidth, context.SmWidth, props.size]);
-    React.useEffect(() => setLegendHeight(props.size === 'sm' ? context.SmHeight : context.LgHeight), [context.SmHeight, context.LgHeight, props.size]);
-
 
     return (
-        <div style={{ height: legendHeight, width: legendWidth }} ref={containerRef}>
+        <div style={{ height: context.SmHeight, width: context.SmWidth }} ref={containerRef}>
             <div onClick={() => props.setEnabled(!props.enabled)} style={{ width: '100%', display: 'flex', alignItems: 'center', marginRight: '5px', height: '100%' }}>
                 {(props.lineStyle === '-' ?
                     <div

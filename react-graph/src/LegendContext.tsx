@@ -32,7 +32,6 @@ export interface ILegendContext {
 }
 
 export interface ILegendRequiredProps {
-    size: 'lg' | 'sm',
     enabled: boolean
 }
 
