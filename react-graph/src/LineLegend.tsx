@@ -35,7 +35,7 @@ export interface IProps extends ILegendRequiredProps {
     label: string
 }
 
-const fontFamily = window.getComputedStyle(document.body).fontFamily;
+const fontFamily = "Courier New";
 
 function LineLegend(props: IProps) {
     const containerRef = React.useRef<HTMLDivElement | null>(null);
