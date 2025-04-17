@@ -55,7 +55,6 @@ const TextStyle: React.CSSProperties = {
 
 function HeatLegend(props: IProps) {
   const [nDigits, setNdigits] = React.useState<number>(1);
-  const [guid] = React.useState<string>(CreateGuid());
   const context = React.useContext(LegendContext);
   const hLegend = context.LgHeight;
   const wLegend = context.LgWidth;
@@ -88,7 +87,7 @@ function HeatLegend(props: IProps) {
       <div style={{ width: '100%', display: 'flex', alignItems: 'center', marginRight: '5px', height:'100%' }}>
         <svg style={SvgStyle} viewBox={`0 0 ${wLegend} ${hLegend}`}>
           {/* Gradient */}
-        <linearGradient id={guid} x1="0" x2={`${wLegend < hLegend ? 0 : 1}`} y1="0" y2={`${wLegend < hLegend ? 1 : 0}`}>
+        <linearGradient id={props.id} x1="0" x2={`${wLegend < hLegend ? 0 : 1}`} y1="0" y2={`${wLegend < hLegend ? 1 : 0}`}>
             <stop offset="5%" stopColor={props.minColor} />
             <stop offset="95%" stopColor={props.maxColor} />
           </linearGradient>
@@ -96,7 +95,7 @@ function HeatLegend(props: IProps) {
         {/* Rectangle path filled with the defined gradient */}
         <path 
           stroke='currentColor' 
-          fill={`url(#${guid})`} 
+          fill={`url(#${props.id})`} 
           style={{ strokeWidth: 1, transition: 'd 0.5s' }} 
             d={wLegend < hLegend ? 
               `M ${0.05*wLegend} ${0.1*hLegend} H ${0.5*wLegend} V ${0.9*hLegend} H ${0.05*wLegend} V ${0.1*hLegend}` :
