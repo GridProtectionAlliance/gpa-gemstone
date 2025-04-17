@@ -48,6 +48,9 @@ const fontFamily = window.getComputedStyle(document.body).fontFamily;
 const nonTextualWidth = 25;
 const cssStyle = `margin: auto auto auto 0px; display: inline-block; font-weight: 400; font-family: ${fontFamily};`;
 
+// heat legend consts
+const heatWidth = 50;
+
 function Legend(props: IProps) {
   const graphContext = React.useContext(GraphContext);
 
@@ -55,8 +58,12 @@ function Legend(props: IProps) {
     const newNLegends = [...graphContext.Data.current.values()].reduce((s, c) => {
       if (c.legend === undefined) return s;
       if (props.HideDisabled && !(c.legend?.props?.enabled as boolean ?? true)) return s;
-      if ((c.legend?.props?.size ?? 'sm') === 'sm') s.sm = s.sm + 1;
-      else s.lg = s.lg + 1;
+      if ((c.legend as React.ReactElement<any>).type === LineLegend) s.sm = s.sm + 1;
+      else if ((c.legend as React.ReactElement<any>).type === HeatLegend) s.lg = s.lg + 1;
+      else {
+        s.sm = s.sm + 1;
+        console.warn("Unknown legend element found. Please check legend component or children to legend.")
+      }
       return s;
     }, { sm: 0, lg: 0 });
     return [newNLegends.sm, newNLegends.lg];
@@ -87,27 +94,26 @@ function Legend(props: IProps) {
     }
 
     // Handle line array
-    const findLargestNeededLine = (size: 'sm'|'lg', label: string) => {
-        console.log(label)
-        const availableWidth = size === 'sm' ? smWidth : lgWidth;
-        const availableHeight = size === 'sm' ? smHeight : lgHeight;
+    const findSizing = (label: string) => {
         let newFontSize = 1;
-        let textHeight = GetTextHeight(fontFamily, `${newFontSize}em`, label, `${cssStyle}`, `${availableWidth - nonTextualWidth}px`);
+        let textHeight = GetTextHeight(fontFamily, `${newFontSize}em`, label, `${cssStyle}`, `${smWidth - nonTextualWidth}px`);
         let textWidth = GetTextWidth(fontFamily, `${newFontSize}em`, label, `${cssStyle}`, `${textHeight}px`);
+        // LineLegend is considered a "small" element
+        if (textWidth > smWidthNeeded) smWidthNeeded = textWidth;
+
         let useML = false;
-        while (newFontSize > 0.4 && (textWidth > availableWidth - nonTextualWidth || textHeight > availableHeight)) {
+        while (newFontSize > 0.4 && (textWidth > smWidth - nonTextualWidth || textHeight > smHeight)) {
             newFontSize -= 0.05;
-            textWidth = GetTextWidth(fontFamily, `${newFontSize}em`, label, `${cssStyle}`, `${availableHeight}px`, `${useML ? 'normal' : undefined}`, `${availableWidth - nonTextualWidth}px`);
-            textHeight = GetTextHeight(fontFamily, `${newFontSize}em`, label, `${cssStyle}`, `${availableWidth - nonTextualWidth}px`, `${useML ? 'normal' : undefined}`);
+            textWidth = GetTextWidth(fontFamily, `${newFontSize}em`, label, `${cssStyle}`, `${smHeight}px`, `${useML ? 'normal' : undefined}`, `${smWidth - nonTextualWidth}px`);
+            textHeight = GetTextHeight(fontFamily, `${newFontSize}em`, label, `${cssStyle}`, `${smWidth - nonTextualWidth}px`, `${useML ? 'normal' : undefined}`);
             useML = false;
             // Consider special case when width is limiting but height is available
-            if (textWidth >= (availableWidth - nonTextualWidth) && textHeight < availableHeight) {
+            if (textWidth >= (smWidth - nonTextualWidth) && textHeight < smHeight) {
                 useML = true;
-                textHeight = GetTextHeight(fontFamily, `${newFontSize}em`, label, `${cssStyle}`, `${availableWidth - nonTextualWidth}px`, `${useML ? 'normal' : undefined}`);
-                textWidth = GetTextWidth(fontFamily, `${newFontSize}em`, label, `${cssStyle}`, `${availableHeight}px`, `${useML ? 'normal' : undefined}`, `${availableWidth - nonTextualWidth}px`);
+                textHeight = GetTextHeight(fontFamily, `${newFontSize}em`, label, `${cssStyle}`, `${smWidth - nonTextualWidth}px`, `${useML ? 'normal' : undefined}`);
+                textWidth = GetTextWidth(fontFamily, `${newFontSize}em`, label, `${cssStyle}`, `${smHeight}px`, `${useML ? 'normal' : undefined}`, `${smWidth - nonTextualWidth}px`);
             }
         }
-        setNeeded(size, textWidth);
         if (newFontSize < smallestFont) {
           smallestFont = newFontSize;
           isMultiLine = useML;
@@ -118,25 +124,18 @@ function Legend(props: IProps) {
       (!props.HideDisabled || (legend?.props?.enabled ?? false)) &&
       (legend as React.ReactElement<any>).type === LineLegend
     ),(item) => item?.props?.label?.length ?? 0, ['desc']);
-    
-    const smLineIndex = lineLegendArray.findIndex(legend => legend?.props?.size === 'sm');
-    const lgLineIndex = lineLegendArray.findIndex(legend => legend?.props?.size === 'lg');
-    if (smLineIndex >= 0) findLargestNeededLine('sm', lineLegendArray[smLineIndex]?.props?.label);
-    if (lgLineIndex >= 0) findLargestNeededLine('lg', lineLegendArray[lgLineIndex]?.props?.label);
+
+    if (lineLegendArray.length > 0) findSizing(lineLegendArray[0]?.props?.label);
 
     // Find if we have a heat legend
-    const handleHeatLegend = (size: 'sm' | 'lg') => {
-      const heatIndex = legendArray.findIndex(legend => 
-        (props.HideDisabled && !(legend?.props?.enabled ?? false)) &&
-        (legend as React.ReactElement<any>).type === HeatLegend &&
-        legend?.props?.size === size
-      );
-      if (heatIndex >=0) setNeeded(size, 50);
-    }
-    handleHeatLegend('sm');
-    handleHeatLegend('lg');
+    const heatIndex = legendArray.findIndex(legend => 
+      (props.HideDisabled && !(legend?.props?.enabled ?? false)) &&
+      (legend as React.ReactElement<any>).type === HeatLegend
+    );
+    // HeatLegend is considered a "large" element
+    if (heatIndex >=0) setNeeded('lg', 50);
+    if (heatIndex >=0 && heatWidth > lgWidthNeeded) lgWidthNeeded = heatWidth;
 
-    
     const smTotal = (smWidthNeeded + scrollBarSpace) * (props.location === 'bottom' ? itemsWhenBottom : 1) + leftPad;
     const lgTotal = lgWidthNeeded + leftPad + scrollBarSpace;
   

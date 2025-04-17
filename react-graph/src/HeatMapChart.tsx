@@ -82,7 +82,7 @@ function HeatMapChart(props: IProps) {
     }, [data, context.XTransformation, props.sampleMs]);
 
    const createLegend = React.useCallback(() => {
-        return <HeatLegend size='lg'
+        return <HeatLegend
             unitLabel={props.legendUnit}
             enabled={true}
             minColor={HsvToHex(props.hue, props.saturation, 1)} maxColor={HsvToHex(props.hue, props.saturation, 0)}
