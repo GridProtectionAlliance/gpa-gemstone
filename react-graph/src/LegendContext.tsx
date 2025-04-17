@@ -28,7 +28,8 @@ export interface ILegendContext {
     SmHeight: number,
     LgHeight: number,
     SmallestFontSize: number,
-    UseMultiLine: boolean
+    UseMultiLine: boolean,
+    SendMassEnable?: React.MutableRefObject<(id: string)=> void>
 }
 
 export interface ILegendRequiredProps {
@@ -42,5 +43,6 @@ export const LegendContext = React.createContext<ILegendContext>({
     SmHeight: 0,
     LgHeight: 0,
     SmallestFontSize: 0,
-    UseMultiLine: false
+    UseMultiLine: false,
+    SendMassEnable: undefined
 });

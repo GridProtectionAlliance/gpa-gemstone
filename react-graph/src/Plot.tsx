@@ -174,6 +174,8 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
   const [svgWidth, setSVGwidth] = React.useState<number>(props.width);
   const [menueWidth, setMenueWidth] = React.useState<number>(28);
 
+  const [command, setCurrentCommand] = React.useState<{requester: string, command: "disable-others"|"enable-all"|"none"}>({requester: "", command: "none"});
+
   const groupContext = React.useContext(PlotGroupContext);
 
   const legendWidthToUse = React.useMemo(() => {
@@ -825,6 +827,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
       UpdateFlag={updateFlag}
       Data={data}
       DataGuid={dataGuid}
+      MassEnableCommand={command}
       XApplyPixelOffset={xApplyOffset}
       YApplyPixelOffset={yApplyOffset}
       XTransform={xTransform}
@@ -960,6 +963,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
             graphHeight={svgHeight}
             RequestLegendWidth={requestLegendWidthChange}
             RequestLegendHeight={requestLegendHeightChange}
+            SendMassCommand={setCurrentCommand}
             HideDisabled={photoReady}
           />
           : null}

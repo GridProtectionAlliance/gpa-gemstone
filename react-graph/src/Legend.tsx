@@ -37,6 +37,7 @@ interface IProps {
   graphWidth: number,
   RequestLegendWidth: (width: number) => void,
   RequestLegendHeight: (height: number) => void,
+  SendMassCommand: (args: {requester: string, command: "disable-others"|"enable-all"}) => void, 
   HideDisabled: boolean
 }
 
@@ -53,13 +54,14 @@ const heatWidth = 50;
 
 function Legend(props: IProps) {
   const graphContext = React.useContext(GraphContext);
+  const massEnableRef = React.useRef((_: string)=>{});
 
   const [nLegendsSm, nLegendsLg] = React.useMemo(() => {
     const newNLegends = [...graphContext.Data.current.values()].reduce((s, c) => {
       if (c.legend === undefined) return s;
       if (props.HideDisabled && !(c.legend?.props?.enabled as boolean ?? true)) return s;
-      if ((c.legend as React.ReactElement<any>).type === LineLegend) s.sm = s.sm + 1;
-      else if ((c.legend as React.ReactElement<any>).type === HeatLegend) s.lg = s.lg + 1;
+      if ((c.legend as React.ReactElement<any>)?.type === LineLegend) s.sm = s.sm + 1;
+      else if ((c.legend as React.ReactElement<any>)?.type === HeatLegend) s.lg = s.lg + 1;
       else {
         s.sm = s.sm + 1;
         console.warn("Unknown legend element found. Please check legend component or children to legend.")
@@ -122,7 +124,7 @@ function Legend(props: IProps) {
 
     const lineLegendArray = _.orderBy(legendArray.filter(legend => 
       (!props.HideDisabled || (legend?.props?.enabled ?? false)) &&
-      (legend as React.ReactElement<any>).type === LineLegend
+      (legend as React.ReactElement<any>)?.type === LineLegend
     ),(item) => item?.props?.label?.length ?? 0, ['desc']);
 
     if (lineLegendArray.length > 0) findSizing(lineLegendArray[0]?.props?.label);
@@ -130,7 +132,7 @@ function Legend(props: IProps) {
     // Find if we have a heat legend
     const heatIndex = legendArray.findIndex(legend => 
       (props.HideDisabled && !(legend?.props?.enabled ?? false)) &&
-      (legend as React.ReactElement<any>).type === HeatLegend
+      (legend as React.ReactElement<any>)?.type === HeatLegend
     );
     // HeatLegend is considered a "large" element
     if (heatIndex >=0) setNeeded('lg', 50);
@@ -149,7 +151,8 @@ function Legend(props: IProps) {
       SmHeight: smHeight,
       LgHeight: lgHeight,
       SmallestFontSize: smallestFontSize,
-      UseMultiLine: useMultiLine
+      UseMultiLine: useMultiLine,
+      SendMassEnable: massEnableRef
     }
   }, [smallestFontSize, smHeight, lgHeight, smWidth, smHeight, useMultiLine]);
 
@@ -160,6 +163,15 @@ function Legend(props: IProps) {
   React.useEffect(() => {
     if (props.RequestLegendWidth !== undefined && requiredWidth !== width) props.RequestLegendWidth(requiredHeight);
   }, [requiredHeight, height]);
+
+  React.useEffect(() => {
+    massEnableRef.current = (triggerId: string) => {
+      const isMassDisable = [...graphContext.Data.current.values()].some(dataSeries => 
+        (dataSeries?.legend?.props?.enabled && (dataSeries?.legend?.props?.id !== triggerId))
+      );
+      props.SendMassCommand({requester: triggerId, command: isMassDisable ? "disable-others" : "enable-all"});
+    }
+  }, [graphContext.DataGuid, props.SendMassCommand]);
 
   return (
     <LegendContext.Provider value={legendContextValue}>
