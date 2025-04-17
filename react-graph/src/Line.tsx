@@ -1,4 +1,4 @@
-﻿// ******************************************************************************************************
+// ******************************************************************************************************
 //  Line.tsx - Gbtc
 //
 //  Copyright © 2020, Grid Protection Alliance.  All Rights Reserved.
@@ -60,7 +60,7 @@ export const InternalLine = React.forwardRef<PointNode | null, IInteralProps>((p
     React.useImperativeHandle<PointNode | null, PointNode | null>(ref, () => data, [data]);
 
     const createLegend = React.useCallback(() => {
-        if (props.legend === undefined)
+        if (props.legend === undefined || guid === "")
             return undefined;
 
         let txt = props.legend;
@@ -68,10 +68,10 @@ export const InternalLine = React.forwardRef<PointNode | null, IInteralProps>((p
         if ((props.highlightHover ?? false) && !isNaN(highlight[0]) && !isNaN(highlight[1]))
             txt = txt + ` (${moment.utc(highlight[0]).format('MM/DD/YY hh:mm:ss')}: ${highlight[1].toPrecision(6)})`
 
-        return <LineLegend
+        return <LineLegend id={guid}
             label={txt} color={props.color} lineStyle={props.lineStyle}
             setEnabled={setEnabled} enabled={enabled} hasNoData={data == null} />;
-    }, [props.color, props.lineStyle, enabled, data, props.legend]);
+    }, [props.color, props.lineStyle, enabled, data, props.legend, guid]);
 
     const createContextData = React.useCallback(() => {
         return {

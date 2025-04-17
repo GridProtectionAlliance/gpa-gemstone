@@ -32,7 +32,8 @@ export interface ILegendContext {
 }
 
 export interface ILegendRequiredProps {
-    enabled: boolean
+    enabled: boolean,
+    id: string
 }
 
 export const LegendContext = React.createContext<ILegendContext>({
