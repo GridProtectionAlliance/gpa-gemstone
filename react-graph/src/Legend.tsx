@@ -54,7 +54,7 @@ const heatWidth = 50;
 
 function Legend(props: IProps) {
   const graphContext = React.useContext(GraphContext);
-  const massEnableRef = React.useRef((_: string)=>{});
+  const massEnableRef = React.useRef((_: string)=>{ /* do nothing */ });
 
   const [nLegendsSm, nLegendsLg] = React.useMemo(() => {
     const newNLegends = [...graphContext.Data.current.values()].reduce((s, c) => {
@@ -123,7 +123,7 @@ function Legend(props: IProps) {
       }
 
     const lineLegendArray = _.orderBy(legendArray.filter(legend => 
-      (!props.HideDisabled || (legend?.props?.enabled ?? false)) &&
+      (!props.HideDisabled || ((legend?.props?.enabled as boolean) ?? false)) &&
       (legend as React.ReactElement<any>)?.type === LineLegend
     ),(item) => item?.props?.label?.length ?? 0, ['desc']);
 
@@ -131,7 +131,7 @@ function Legend(props: IProps) {
 
     // Find if we have a heat legend
     const heatIndex = legendArray.findIndex(legend => 
-      (props.HideDisabled && !(legend?.props?.enabled ?? false)) &&
+      (props.HideDisabled && !((legend?.props?.enabled as boolean)  ?? false)) &&
       (legend as React.ReactElement<any>)?.type === HeatLegend
     );
     // HeatLegend is considered a "large" element
@@ -167,7 +167,7 @@ function Legend(props: IProps) {
   React.useEffect(() => {
     massEnableRef.current = (triggerId: string) => {
       const isMassDisable = [...graphContext.Data.current.values()].some(dataSeries => 
-        (dataSeries?.legend?.props?.enabled && (dataSeries?.legend?.props?.id !== triggerId))
+        ((dataSeries?.legend?.props?.enabled as boolean) && (dataSeries?.legend?.props?.id !== triggerId))
       );
       props.SendMassCommand({requester: triggerId, command: isMassDisable ? "disable-others" : "enable-all"});
     }
