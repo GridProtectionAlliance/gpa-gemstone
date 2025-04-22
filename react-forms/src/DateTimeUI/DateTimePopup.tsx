@@ -28,7 +28,7 @@ import styled from 'styled-components';
 import Calender from './Calender';
 import Clock from './Clock';
 import { TimeUnit } from '../DatePicker'
-import { Accuracy } from './Clock'
+import { Gemstone } from '@gpa-gemstone/application-typings';
 
 interface IWrapperProps {
     Top: number,
@@ -73,7 +73,7 @@ interface IProps {
     Show: boolean,
     Top: number,
     Center: number,
-    Accuracy?: Accuracy
+    Accuracy?: Gemstone.TSX.Types.Accuracy
 }
 
 export default function DateTimePopup(props: IProps) {

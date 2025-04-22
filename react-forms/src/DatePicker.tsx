@@ -26,7 +26,6 @@ import * as moment from 'moment';
 import DateTimePopup from './DateTimeUI/DateTimePopup';
 import { CreateGuid, GetNodeSize, useGetContainerPosition } from '@gpa-gemstone/helper-functions';
 import ToolTip from './ToolTip';
-import { Accuracy } from './DateTimeUI/Clock'
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 
@@ -38,7 +37,7 @@ interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
     Format?: string;
     Type?: TimeUnit; // Default to date
     AllowEmpty?: boolean,
-    Accuracy?: Accuracy, //Default to second
+    Accuracy?: Gemstone.TSX.Types.Accuracy    //Default to second
     MinDate?: moment.Moment // Default to 01/01/1753 (SQL Database limit)
 }
 
@@ -290,7 +289,7 @@ export default function DateTimePicker<T>(props: IProps<T>) {
 }
 
 
-function getBoxFormat(type?: TimeUnit, accuracy?: Accuracy) {
+function getBoxFormat(type?: TimeUnit, accuracy?: Gemstone.TSX.Types.Accuracy) {
     const dateTime = type ?? 'date'
     const timeUnit = accuracy ?? 'second'
 

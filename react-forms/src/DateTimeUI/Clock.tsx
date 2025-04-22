@@ -24,13 +24,13 @@
 import * as React from 'react';
 import * as moment from 'moment';
 import { IsInteger } from '@gpa-gemstone/helper-functions'
+import { Gemstone } from '@gpa-gemstone/application-typings';
 
 interface IProps {
     DateTime: moment.Moment| undefined,
     Setter: (record: moment.Moment) => void,
-    Accuracy?: Accuracy
+    Accuracy?: Gemstone.TSX.Types.Accuracy
 }
-export type Accuracy = ('minute' | 'second' | 'millisecond');
 
 type Parameter = ('h' | 'm' | 's' | 'ms');
 
