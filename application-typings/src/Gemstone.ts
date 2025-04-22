@@ -26,6 +26,7 @@ namespace Gemstone {
     export namespace TSX {
         export namespace Types {
             export type BulkUploadStep = ('Upload' | 'Process' | 'Review' | 'Complete')
+            export type Accuracy = ('minute' | 'second' | 'millisecond'); 
         }
         export namespace Interfaces {
             export interface IBaseFormProps<T> {
@@ -179,7 +180,6 @@ namespace Gemstone {
                 Steps: IPipelineSteps<T, U>[]; //list of steps to go through based on current step,
                 AdditionalUploadUI?: JSX.Element //Additional UI to go under the input element in the Upload stage
             }
-
         }
     }
 }

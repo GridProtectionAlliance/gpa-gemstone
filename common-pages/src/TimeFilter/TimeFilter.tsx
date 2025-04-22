@@ -32,6 +32,7 @@ import {
 import moment from 'moment';
 import { AvailableQuickSelects, getFormat, DateUnit } from './QuickSelects';
 import _ from 'lodash';
+import { Gemstone } from '@gpa-gemstone/application-typings';
 
 interface ITimeWindow {
     start: string,
@@ -55,6 +56,7 @@ interface IProps {
     timeZone: string;
     isHorizontal: boolean;
     format?: DateUnit;
+    accuracy?: Gemstone.TSX.Types.Accuracy
     showHelpMessage?: boolean
 }
 
@@ -105,9 +107,17 @@ const TimeFilter = (props: IProps) => {
                                 Type={props.format ?? 'datetime-local'}
                                 Valid={() => true}
                                 Format={format}
+                                Accuracy={props.accuracy}
                             />
                             {props.showQuickSelect && props.dateTimeSetting === 'startWindow' ?
-                                <StartWindowForm IsHorizontal={props.isHorizontal} Filter={filter} SetFilter={setFilter} SetActiveQP={setActiveQP} Format={format} ShowQuickSelect={props.showQuickSelect} />
+                                <StartWindowForm
+                                    IsHorizontal={props.isHorizontal}
+                                    Filter={filter}
+                                    SetFilter={setFilter}
+                                    SetActiveQP={setActiveQP}
+                                    Format={format}
+                                    ShowQuickSelect={props.showQuickSelect}
+                                />
                                 : null
                             }
                         </div>
@@ -132,9 +142,17 @@ const TimeFilter = (props: IProps) => {
                                 Type={props.format ?? 'datetime-local'}
                                 Valid={() => true}
                                 Format={format}
+                                Accuracy={props.accuracy}
                             />
                             {props.showQuickSelect && props.dateTimeSetting === 'endWindow' ?
-                                <EndWindowForm IsHorizontal={props.isHorizontal} Filter={filter} SetFilter={setFilter} SetActiveQP={setActiveQP} Format={format} ShowQuickSelect={props.showQuickSelect} />
+                                <EndWindowForm
+                                    IsHorizontal={props.isHorizontal}
+                                    Filter={filter}
+                                    SetFilter={setFilter}
+                                    SetActiveQP={setActiveQP}
+                                    Format={format}
+                                    ShowQuickSelect={props.showQuickSelect}
+                                />
                                 : null
                             }
                         </div>
