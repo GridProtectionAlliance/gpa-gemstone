@@ -92,6 +92,10 @@ export default function ConfigurableTable<T>(props: React.PropsWithChildren<ITab
     }, []);
 
     React.useEffect(() => {
+        setColumns(getKeyMappings());
+    }, [props.children]);
+
+    React.useEffect(() => {
         if (props.OnSettingsChange !== undefined) props.OnSettingsChange(showSettings);
     }, [showSettings]);
 
@@ -99,10 +103,6 @@ export default function ConfigurableTable<T>(props: React.PropsWithChildren<ITab
         saveLocal();
     }, [columns]);
 
-    /**
-    *
-    * @returns
-    */
     function saveLocal() {
         if (props.LocalStorageKey === undefined) return;
         const currentState = localStorage.getItem(props.LocalStorageKey);
