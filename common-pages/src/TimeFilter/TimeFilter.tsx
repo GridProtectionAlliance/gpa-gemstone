@@ -90,7 +90,10 @@ const TimeFilter = (props: IProps) => {
                 {props.dateTimeSetting === 'startWindow' || props.dateTimeSetting === 'startEnd' ?
                     <Row addRow={!props.isHorizontal} class='m-0'>
                         <div className={props.isHorizontal ? (props.showQuickSelect ? props.dateTimeSetting === 'startEnd' ? 'col-2' : 'col-4' : 'col-6') : 'col-12 p-0'}>
-                            <DatePicker<ITimeWindow> Record={filter} Field="start" Help={(props.showHelpMessage ?? true) ? `All times are in system time. System time is currently set to ${props.timeZone}. ` : undefined}
+                            <DatePicker<ITimeWindow>
+                                Record={filter}
+                                Field="start"
+                                Help={(props.showHelpMessage ?? true) ? `All times shown are in system time (${props.timeZone}).` : undefined}
                                 Setter={(r) => {
                                     const flt = props.dateTimeSetting === 'startWindow' ?
                                         getTimeWindowFromFilter({ start: r.start, duration: r.duration, unit: r.unit }, format) :
@@ -114,7 +117,10 @@ const TimeFilter = (props: IProps) => {
                 {props.dateTimeSetting === 'endWindow' || props.dateTimeSetting === 'startEnd' ?
                     <Row addRow={!props.isHorizontal} class='m-0'>
                         <div className={props.isHorizontal ? (props.showQuickSelect ? props.dateTimeSetting === 'startEnd' ? 'col-2' : 'col-4' : 'col-6') : 'col-12 p-0'}>
-                            <DatePicker<ITimeWindow> Record={filter} Field="end" Help={(props.showHelpMessage ?? true) ? `All times are in system time. System time is currently set to ${props.timeZone}. ` : undefined}
+                            <DatePicker<ITimeWindow>
+                                Record={filter}
+                                Field="end"
+                                Help={(props.showHelpMessage ?? true) ? `All times shown are in system time (${props.timeZone}).` : undefined}
                                 Setter={(r) => {
                                     const flt = props.dateTimeSetting === 'endWindow' ?
                                         getTimeWindowFromFilter({ end: r.end, duration: r.duration, unit: r.unit }, format) :
@@ -136,11 +142,25 @@ const TimeFilter = (props: IProps) => {
                     : null
                 }
                 {props.dateTimeSetting === 'startWindow' && !props.showQuickSelect ?
-                    <StartWindowForm IsHorizontal={props.isHorizontal} Filter={filter} SetFilter={setFilter} SetActiveQP={setActiveQP} Format={format} ShowQuickSelect={props.showQuickSelect} />
+                    <StartWindowForm
+                        IsHorizontal={props.isHorizontal}
+                        Filter={filter}
+                        SetFilter={setFilter}
+                        SetActiveQP={setActiveQP}
+                        Format={format}
+                        ShowQuickSelect={props.showQuickSelect}
+                    />
                     : null
                 }
                 {props.dateTimeSetting === 'endWindow' && !props.showQuickSelect ?
-                    <EndWindowForm IsHorizontal={props.isHorizontal} Filter={filter} SetFilter={setFilter} SetActiveQP={setActiveQP} Format={format} ShowQuickSelect={props.showQuickSelect} />
+                    <EndWindowForm
+                        IsHorizontal={props.isHorizontal}
+                        Filter={filter}
+                        SetFilter={setFilter}
+                        SetActiveQP={setActiveQP}
+                        Format={format}
+                        ShowQuickSelect={props.showQuickSelect}
+                    />
                     : null
                 }
 
@@ -151,7 +171,13 @@ const TimeFilter = (props: IProps) => {
                                 if (i % 3 !== 0)
                                     return null;
                                 return (
-                                    <div key={i} className={props.isHorizontal && props.dateTimeSetting === 'startEnd' ? 'col-2' : "col-4"} style={{ paddingLeft: (props.isHorizontal && props.dateTimeSetting === 'startEnd' ? 0 : (i % 9 == 0 ? 15 : 0)), paddingRight: (props.isHorizontal && props.dateTimeSetting === 'startEnd' ? 2 : ((i % 18 == 6 || i % 18 == 15) ? 15 : 2)), marginTop: 10 }}>
+                                    <div key={i} className={props.isHorizontal && props.dateTimeSetting === 'startEnd' ? 'col-2' : "col-4"}
+                                        style={{
+                                            paddingLeft: (props.isHorizontal && props.dateTimeSetting === 'startEnd' ? 0 : (i % 9 == 0 ? 15 : 0)),
+                                            paddingRight: (props.isHorizontal && props.dateTimeSetting === 'startEnd' ? 2 : ((i % 18 == 6 || i % 18 == 15) ? 15 : 2)),
+                                            marginTop: 10
+                                        }}
+                                    >
                                         <ul className="list-group" key={i}>
                                             <li key={i} style={{ cursor: 'pointer' }}
                                                 onClick={() => {
