@@ -21,14 +21,13 @@
 //
 //******************************************************************************************************
 import useMediaQuery from './useMediaQuery';
-
-type ScreenSize = 'xs' | "sm" | 'md' | 'lg' | 'xl'
+import { Gemstone } from '@gpa-gemstone/application-typings';
 
 /**
  * Custom hook to return the current sreen size
  * @returns 'xs' | "sm" | 'md' | 'lg' | 'xl' - screen sizes according to bootstrap 4.6.2 documentation
  */
-const useGetScreenSize = (): ScreenSize => {
+const useGetScreenSize = (): Gemstone.TSX.Types.ScreenSize => {
     const isSm = useMediaQuery('(min-width: 576px) and (max-width: 767.98px)');
     const isMd = useMediaQuery('(min-width: 768px) and (max-width: 991.98px)');
     const isLg = useMediaQuery('(min-width: 992px) and (max-width: 1199.98px)');

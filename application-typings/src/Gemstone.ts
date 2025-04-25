@@ -27,6 +27,7 @@ namespace Gemstone {
         export namespace Types {
             export type BulkUploadStep = ('Upload' | 'Process' | 'Review' | 'Complete')
             export type Accuracy = ('minute' | 'second' | 'millisecond'); 
+            export type ScreenSize = 'xs' | "sm" | 'md' | 'lg' | 'xl'
         }
         export namespace Interfaces {
             export interface IBaseFormProps<T> {
