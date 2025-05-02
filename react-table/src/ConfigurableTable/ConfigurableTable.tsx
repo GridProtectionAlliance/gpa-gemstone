@@ -60,25 +60,30 @@ interface IColDesc {
 * Table with modal to show and hide columns
 */
 export default function ConfigurableTable<T>(props: React.PropsWithChildren<ITableProps<T>>) {
-    const getKeyMappings: () => Map<string, IColDesc> = () => {
-        const u = new Map<string, IColDesc>();
+    const getKeyMappings = () => {
+        const updated = new Map<string, IColDesc>();
+        const localKeys = localStorage.getItem(props.LocalStorageKey ?? '')?.split(',') ?? [];
+
         React.Children.forEach(props.children, (element) => {
             if (!React.isValidElement(element)) return;
             if ((element as React.ReactElement).type === ConfigurableColumn) {
-                const c = {
+                const key = element.props.Key;
+
+                const baseCol = {
+                    Key: key,
+                    Label: element.props.Label ?? key,
                     Default: element.props.Default ?? false,
-                    Label: element.props.Label ?? element.props.Key,
                     Enabled: false,
-                    Key: element.props.Key,
-                };
-                c.Enabled = isEnabled(c);
-                u.set(c.Key, c);
+                };          // use local if it has anything
+                baseCol.Enabled = localKeys.length > 1 ? localKeys.includes(key) : isEnabled(baseCol);
+                updated.set(key, baseCol);
             }
         });
-        return u;
+        return updated;
     };
+
     const [showSettings, setShowSettings] = React.useState<boolean>(false);
-    const [columns, setColumns] = React.useState<Map<string, IColDesc>>(getKeyMappings());
+    const [columns, setColumns] = React.useState<Map<string, IColDesc>>(() => getKeyMappings());
     const [hover, setHover] = React.useState<boolean>(false);
     const [guid] = React.useState<string>(CreateGuid());
     const [widthDisabledAdd, setWidthDisabledAdd] = React.useState<boolean>(false);
@@ -92,7 +97,7 @@ export default function ConfigurableTable<T>(props: React.PropsWithChildren<ITab
     }, []);
 
     React.useEffect(() => {
-        setColumns(getKeyMappings());
+        setColumns(() => getKeyMappings());
     }, [props.children]);
 
     React.useEffect(() => {
@@ -137,14 +142,18 @@ export default function ConfigurableTable<T>(props: React.PropsWithChildren<ITab
     }
 
     /**
-    *     * Determines if a column is enabled by default, required, or was saved in the users preferences
-    *     * @param c Column to check
-    *     * @param skipLocal If true, will return whether it is enabled as part of the default settings
-    *     */
-    function isEnabled(c: IColDesc | undefined, skipLocal = false) {
-        const isSort = props.SortKey === c?.Key;
-        const isLocal = checkLocal(c?.Key) && !skipLocal;
-        return (c?.Default ?? false) || isSort || isLocal;
+    * Returns true if a column is enabled by default, required as sortKey, or was saved in the users preferences
+    * @param c Column to check
+    * @param useLocal If true, will not consider if key is in localstorage
+    */
+    function isEnabled(c: IColDesc | undefined, useLocal = true) {
+        if (c == undefined) return false;
+
+        const isDefault = c.Default === true;
+        const isSortKey = props.SortKey === c.Key;
+        const isInLocal = useLocal && checkLocal(c.Key);
+
+        return isSortKey || isInLocal || isDefault;
     }
 
     return (
@@ -188,7 +197,7 @@ export default function ConfigurableTable<T>(props: React.PropsWithChildren<ITab
                                 Array.from(d.keys()).forEach((k) => {
                                     const ref = u.get(k);
                                     if (ref != null)
-                                        ref.Enabled = isEnabled(u.get(k), true) ?? true;
+                                        ref.Enabled = isEnabled(u.get(k), false) ?? true;
                                 });
                                 return u;
                             });
