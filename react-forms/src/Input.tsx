@@ -88,9 +88,13 @@ export default function Input<T>(props: IProps<T>) {
 
   // Handle changes to the record's field value.
   React.useEffect(() => {
-    if (!internal.current) {
-      setHeldVal(props.Record[props.Field] == null ? '' : (props.Record[props.Field] as any).toString());
-    }
+    const rawValue = props.Record[props.Field] == null ? '' : (props.Record[props.Field] as any).toString();
+
+    if ((props.Type === 'number' || props.Type === 'integer') && !internal.current)
+      setHeldVal(rawValue);
+    else if (rawValue !== heldVal)
+      setHeldVal(rawValue);
+
     internal.current = false;
   }, [props.Record[props.Field]]);
 
