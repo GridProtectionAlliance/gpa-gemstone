@@ -75,7 +75,7 @@ export default function ConfigurableTable<T>(props: React.PropsWithChildren<ITab
                     Default: element.props.Default ?? false,
                     Enabled: false,
                 };          // use local if it has anything
-                baseCol.Enabled = localKeys.length > 1 ? localKeys.includes(key) : isEnabled(baseCol);
+                baseCol.Enabled = localKeys.length > 0 ? localKeys.includes(key) : isEnabled(baseCol);
                 updated.set(key, baseCol);
             }
         });
@@ -110,13 +110,16 @@ export default function ConfigurableTable<T>(props: React.PropsWithChildren<ITab
 
     function saveLocal() {
         if (props.LocalStorageKey === undefined) return;
-        const currentState = localStorage.getItem(props.LocalStorageKey);
-        let currentKeys: string[] = [];
-        if (currentState !== null) currentKeys = currentState.split(',');
 
+        const currentState = localStorage.getItem(props.LocalStorageKey);
         const allKeys = Array.from(columns.keys());
+        let currentKeys: string[] = [];
+
+        if (currentState !== null) currentKeys = currentState.split(',');
         currentKeys = currentKeys.filter((k) => !allKeys.includes(k));
-        const enabled = Array.from(columns.keys()).filter((k) => columns.get(k)?.Enabled);
+
+        const enabled = allKeys.filter((k) => columns.get(k)?.Enabled);
+
         currentKeys.push(...enabled);
         localStorage.setItem(props.LocalStorageKey, currentKeys.join(','));
     }
