@@ -57,18 +57,33 @@ interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
     * Function to get the initial label for the input
     */
     GetLabel?: () => [Promise<string>, () => void]
+    /**
+     * Flag to reset search text to an empty string when a user selects an option. Defaulting to false
+     */
+    ResetSearchOnSelect?: boolean
+}
+
+const getInitialSearchText = (useBlankString: boolean, recordValue: any) => {
+    return useBlankString ? '' : recordValue
 }
 
 export default function SearchableSelect<T>(props: IProps<T>) {
-    const [search, setSearch] = React.useState<string>((props.Record[props.Field] as any)?.toString() ?? '');
+    const [search, setSearch] = React.useState<string>(() =>
+        getInitialSearchText(props.ResetSearchOnSelect ?? false, (props.Record[props.Field] as any)?.toString() ?? '')
+    );
+
     const [label, setLabel] = React.useState<string>((props.Record[props.Field] as any)?.toString() ?? '');
 
     const [results, setResults] = React.useState<IStylableOption[]>([]);
     const [loading, setLoading] = React.useState<boolean>(false);
 
     React.useEffect(() => {
-        if (props.GetLabel === undefined)
-            setLabel((props.Record[props.Field] as any)?.toString() ?? '')
+        if (props.GetLabel === undefined) {
+            if (props.ResetSearchOnSelect ?? false)
+                setSearch('')
+            else
+                setLabel((props.Record[props.Field] as any)?.toString() ?? '')
+        }
         else {
             setLoading(true);
             const [handle, callback] = props.GetLabel();
@@ -84,8 +99,8 @@ export default function SearchableSelect<T>(props: IProps<T>) {
     // Call props.Search every 500ms to avoid hammering the server while typing
     React.useEffect(() => {
         setLoading(true);
-        
-        let searchHandle: PromiseLike<IOption[]>; 
+
+        let searchHandle: PromiseLike<IOption[]>;
         let searchCallback: () => void;
 
         const timeoutHandle = setTimeout(() => {
@@ -94,14 +109,14 @@ export default function SearchableSelect<T>(props: IProps<T>) {
                 setResults(d.map(o => ({ Value: o.Value, Element: o.Label })));
                 setLoading(false);
             }, () => {
-                    setLoading(false);
-                }
+                setLoading(false);
+            }
             );
         }, 500);
 
-        return () => { 
+        return () => {
             if (searchCallback != null) searchCallback();
-            if (timeoutHandle != null) clearTimeout(timeoutHandle); 
+            if (timeoutHandle != null) clearTimeout(timeoutHandle);
         };
     }, [search]);
 
@@ -115,7 +130,10 @@ export default function SearchableSelect<T>(props: IProps<T>) {
         setLabel(newLabel);
 
         props.Setter(record);
-        setSearch(newLabel);
+        if (props.ResetSearchOnSelect ?? false)
+            setSearch('')
+        else
+            setSearch(newLabel);
     }, [props.Setter, props.Field, label]);
 
     const options = React.useMemo(() => {
@@ -142,7 +160,7 @@ export default function SearchableSelect<T>(props: IProps<T>) {
         })
 
         if (props.AllowCustom ?? false)
--            ops.push({ Value: search, Element: <>{search} (Entered Value)</> });
+            -            ops.push({ Value: search, Element: <>{search} (Entered Value)</> });
 
         ops.push(...results.filter(f => f.Value !== search && f.Value !== props.Record[props.Field]));
 
