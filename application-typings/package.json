@@ -2,7 +2,7 @@
   "name": "@gpa-gemstone/application-typings",
   "version": "0.0.84",
   "description": "Application typings for GPA products",
-  "private": true,
+  "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "files": ["lib/**/*"],
   "scripts":   {
