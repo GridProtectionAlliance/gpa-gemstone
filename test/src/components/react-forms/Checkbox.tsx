@@ -1,5 +1,5 @@
 //******************************************************************************************************
-//  App.tsx - Gbtc
+//  Checkbox.tsx - Gbtc
 //
 //  Copyright (c) 2025, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -21,20 +21,39 @@
 //
 //******************************************************************************************************
 
-import * as React from 'react';
-import ReactDOM from 'react-dom/client';
-import AlertTestComponent from './components/react-interactive/Alert';
-import CheckBoxTestComponent from './components/react-forms/Checkbox';
-import './style.css';
+import { CheckBox } from "@gpa-gemstone/react-forms";
+import React from "react";
 
-const root = ReactDOM.createRoot(document.getElementById('window'));
+const CheckBoxTestComponent: React.FC = () => {
+    type FormType = {
+        FormData: string,
+        FormBoolean: boolean
+    }
 
-/** Test App Root */
-const App: React.FC = () => {
+    const RecordForm: FormType = {
+        FormData: 'Example form Data.',
+        FormBoolean: false,
+    }
+
+    const [record, setRecord] = React.useState<FormType>(RecordForm);
+
     return (<>
-        <AlertTestComponent />
-        <CheckBoxTestComponent />
+        This Record's boolean value is {record.FormBoolean.toString()}
+        <CheckBox
+            Label={'Form Boolean'} // Optional: Defaults to Field string
+            Disabled={false}
+            Record={record}
+            Field={'FormBoolean'}
+            Setter={setRecord}
+        />
+        <CheckBox
+            Label={'Disabled Form Boolean'} // Optional: Defaults to Field string
+            Disabled={true}
+            Record={record}
+            Field={'FormBoolean'}
+            Setter={setRecord}
+        />
     </>);
 }
 
-root.render(<App />);
+export default CheckBoxTestComponent;
