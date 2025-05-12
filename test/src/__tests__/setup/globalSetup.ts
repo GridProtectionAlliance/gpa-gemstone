@@ -22,18 +22,12 @@
 //******************************************************************************************************
 
 import { Builder, By, until, WebDriver, WebElement } from 'selenium-webdriver';
-import { test, beforeEach, afterEach, expect } from '@jest/globals';
+import { beforeEach, afterEach } from '@jest/globals';
 import 'selenium-webdriver/chrome';
 import 'chromedriver';
 
 const rootURL = 'http://localhost:8080';
 let driver: WebDriver;
-
-/** Helper Function to find element by ID and wait until it's visible */
-async function getElementById(id): Promise<WebElement> {
-    const el = await driver.wait(until.elementLocated(By.id(id)), 10000);
-    return driver.wait(until.elementIsVisible(el), 10000);
-}
 
 beforeEach(async () => {
     driver = await new Builder().forBrowser('chrome').build();
@@ -43,14 +37,4 @@ beforeEach(async () => {
 
 afterEach(async () => {
     if (driver) await driver.quit();
-});
-
-test('loads the correct title', async () => {
-    const title = await driver.getTitle();
-    expect(title).toBe('GPA Test');
-});
-
-test('has a visible #window element', async () => {
-    const el = await getElementById('window');
-    expect(await el.isDisplayed()).toBe(true);
 });
