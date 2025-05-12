@@ -77,4 +77,12 @@ test(('Alert.tsx: Validating callback functionality'), async () => {
     // verifies the alert is not displayed
     const component = await driver.findElements(By.xpath("//*[contains(text(), 'Alert component with X')]"));
     expect(await component[0].isDisplayed()).toBe(false);
+
+    // clicks "Bring Back Closed Alert" button
+    const bringBackButton = await driver.findElement(By.xpath("//button[contains(text(), 'Bring Back Closed Alert')]"));
+    await bringBackButton.click();
+
+    // re-locate and verify the alert is visible again
+    const reappeared = await driver.findElements(By.xpath("//*[contains(text(), 'Alert component with X')]"));
+    expect(await reappeared[0].isDisplayed()).toBe(true);
 })
