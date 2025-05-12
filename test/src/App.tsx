@@ -1,5 +1,5 @@
 //******************************************************************************************************
-//  index.tsx - Gbtc
+//  App.tsx - Gbtc
 //
 //  Copyright (c) 2025, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -23,22 +23,16 @@
 
 import * as React from 'react';
 import ReactDOM from 'react-dom/client';
-import { Alert } from '@gpa-gemstone/react-interactive';
+import AlertTestComponent from './components/react-interactive/Alert';
 import './style.css';
 
 const root = ReactDOM.createRoot(document.getElementById('window'));
 
 /** Test App Root */
 const App: React.FC = () => {
-    return (
-        <Alert
-            Class='alert-primary'
-            ShowX={true}
-            OnClick={() => alert('Closing Alert')}
-        >
-            Content
-        </Alert>
-    );
+    return (<>
+        <AlertTestComponent />
+    </>);
 }
 
 root.render(<App />);
