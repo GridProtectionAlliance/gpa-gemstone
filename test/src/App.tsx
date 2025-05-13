@@ -27,6 +27,7 @@ import AlertTestComponent from './components/react-interactive/Alert';
 import CheckBoxTestComponent from './components/react-forms/Checkbox';
 import './style.css';
 import BreadcrumbTestComponent from './components/react-interactive/Breadcrumb';
+import BtnDropdownTestComponent from './components/react-interactive/DropdownButton';
 
 const root = ReactDOM.createRoot(document.getElementById('window'));
 
@@ -36,6 +37,7 @@ const App: React.FC = () => {
         <AlertTestComponent />
         <CheckBoxTestComponent />
         <BreadcrumbTestComponent ComponentTestID='breadcrumb-test-id' />
+        <BtnDropdownTestComponent />
     </>);
 }
 
