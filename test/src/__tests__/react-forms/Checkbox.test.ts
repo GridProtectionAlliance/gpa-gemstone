@@ -51,6 +51,9 @@ test('Checkbox.tsx: Validating checkbox label prop', async () => {
 test(('Checkbox.tsx: Validating disabled and label checkbox props are applied'), async () => {
     const component = await driver.findElements(disabledCheckboxSelector);
     expect(component.length).toBe(1);
+
+    const isDisabled = await component[0].getAttribute('disabled');
+    expect(isDisabled).toBe('true');
 });
 
 test(('Checkbox.tsx: Validating checkbox form setting'), async () => {

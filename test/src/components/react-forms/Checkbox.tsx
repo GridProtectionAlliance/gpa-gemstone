@@ -40,14 +40,14 @@ const CheckBoxTestComponent: React.FC = () => {
     return (<>
         <div id="checkbox-test-text">This Record's boolean value is {record.FormBoolean.toString()}</div>
         <CheckBox
-            Label={'Form Boolean'} // Optional: Defaults to Field string
-            Disabled={false}
-            Record={record}
-            Field={'FormBoolean'}
-            Setter={setRecord}
+            Label={'Form Boolean'}  // Optional: Defaults to Field string
+            Disabled={false}        // Optional: Defaults to false
+            Record={record}         // record to be set
+            Field={'FormBoolean'}   // field within the record to be set
+            Setter={setRecord}      // fn that sets the record
         />
         <CheckBox
-            Label={'Disabled Form Boolean'} // Optional: Defaults to Field string
+            Label={'Disabled Form Boolean'}
             Disabled={true}
             Record={record}
             Field={'FormBoolean'}
