@@ -21,37 +21,56 @@
 //
 //******************************************************************************************************
 
-import { afterAll, beforeAll, expect, test } from "@jest/globals";
+import { afterEach, beforeEach, expect, test } from "@jest/globals";
 import { Builder, By, until, WebDriver } from 'selenium-webdriver';
 import 'selenium-webdriver/chrome';
 import 'chromedriver';
 
 const rootURL = 'http://localhost:8080';
 let driver: WebDriver;
+const checkboxSelector = By.xpath(`//*[@id="window"]//span[text()="Form Boolean"]/ancestor::label/preceding-sibling::input[@type="checkbox"]`);
+const disabledCheckboxSelector = By.xpath(`//*[@id="window"]//span[text()="Disabled Form Boolean"]/ancestor::label/preceding-sibling::input[@type="checkbox"]`);
 
 // Before, create a selenium webdriver that goes to the rootURL
-beforeAll(async () => {
+beforeEach(async () => {
     driver = await new Builder().forBrowser('chrome').build();
     await driver.get(rootURL); // Navigate to the page
     await driver.wait(until.titleIs('GPA Test'), 10000); // Wait until the page title is loaded
 });
 
 // close the driver after
-afterAll(async () => {
+afterEach(async () => {
     if (driver) await driver.quit();
 });
 
 test('Checkbox.tsx: Validating checkbox label prop', async () => {
-    const component = await driver.findElements(By.xpath(`//*[@id="window"]//span[text()="Form Boolean"]/ancestor::label/preceding-sibling::input[@type="checkbox"]`));
+    const component = await driver.findElements(checkboxSelector);
     expect(component.length).toBe(1);
-    expect(component[0])
 });
 
 test(('Checkbox.tsx: Validating disabled and label checkbox props are applied'), async () => {
-    const component = await driver.findElements(By.xpath(`//*[@id="window"]//span[text()="Disabled Form Boolean"]/ancestor::label/preceding-sibling::input[@type="checkbox"]`))
+    const component = await driver.findElements(disabledCheckboxSelector);
     expect(component.length).toBe(1);
 });
 
 test(('Checkbox.tsx: Validating checkbox form setting'), async () => {
+    const component = await driver.findElements(checkboxSelector);
+    // that it changes state
+    await component[0].click();
+    const value = await component[0].getAttribute('value');
+    expect(value).toBe('on');
+    // that it changes data
+    const text = await driver.findElement(By.id('checkbox-test-text')).getText();
+    expect(text).toContain('true');
+});
 
-})
+test(('Checkbox.tsx: Validating disabled checkbox form setting'), async () => {
+    const component = await driver.findElements(disabledCheckboxSelector);
+    // that it changes state
+    await component[0].click();
+    const value = await component[0].getAttribute('value');
+    expect(value).toBe('off');
+    // that it changes data
+    const text = await driver.findElement(By.id('checkbox-test-text')).getText();
+    expect(text).toContain('false');
+});
