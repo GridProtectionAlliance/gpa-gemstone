@@ -1,5 +1,5 @@
 //******************************************************************************************************
-//  App.tsx - Gbtc
+//  Breadcrumb.tsx - Gbtc
 //
 //  Copyright (c) 2025, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,27 +16,55 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  05/05/2025 - Collins Self
+//  05/13/2025 - Collins Self
 //       Generated original version of source code.
 //
 //******************************************************************************************************
-
+import { Breadcrumb } from '@gpa-gemstone/react-interactive';
 import * as React from 'react';
-import ReactDOM from 'react-dom/client';
-import AlertTestComponent from './components/react-interactive/Alert';
-import CheckBoxTestComponent from './components/react-forms/Checkbox';
-import './style.css';
-import BreadcrumbTestComponent from './components/react-interactive/Breadcrumb';
 
-const root = ReactDOM.createRoot(document.getElementById('window'));
+const BreadcrumbTestComponent: React.FC = () => {
+    type IStep = { Label: string; ID: string | number; IsNavigable?: boolean }
+    const steps = [{
+        Label: 'Step One',
+        ID: '1',
+        IsNavigable: true,
+    },
+    {
+        Label: 'Step Two',
+        ID: 2,
+        IsNavigable: false,
+    },
+    {
+        Label: 'Step Three',
+        ID: 3,
+        IsNavigable: true,
+    },
+    {
+        Label: 'Step Four',
+        ID: 4,
+        IsNavigable: true,
+    }]
 
-/** Test App Root */
-const App: React.FC = () => {
-    return (<>
-        <AlertTestComponent />
-        <CheckBoxTestComponent />
-        <BreadcrumbTestComponent />
-    </>);
+    const [step, setStep] = React.useState<IStep>(steps[0]);
+
+    return (<div id="breadcrumb-test-id">
+        <Breadcrumb
+            /**
+             * List of steps to render in breadcrumb
+             */
+            Steps={steps}
+            /**
+             * Current step in Steps list
+             */
+            CurrentStep={step}
+            /**
+             * Callback function for when a step was clicked on.
+             * @param step Step that was clicked on
+             */
+            OnClick={setStep}
+        />
+    </div>)
 }
 
-root.render(<App />);
+export default BreadcrumbTestComponent;
