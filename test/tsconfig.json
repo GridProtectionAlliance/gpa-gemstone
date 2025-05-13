@@ -6,7 +6,8 @@
       "dom"
     ],
     "module": "commonjs",
-    "declaration": true,
+    "declaration": false,
+    "emitDeclarationOnly": false,
     "strict": true,
     "skipLibCheck": true,
     "inlineSourceMap": true,
