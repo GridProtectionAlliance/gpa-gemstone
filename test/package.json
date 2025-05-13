@@ -6,7 +6,7 @@
   "scripts": {
     "test": "jest --runInBand --detectOpenHandles --verbose",
     "build": "npm prune && webpack",
-    "builddebug": "npm prune && webpack && webpack serve --open"
+    "builddebug": "npm prune && webpack && webpack serve"
   },
   "keywords": [
     "Gemstone",
