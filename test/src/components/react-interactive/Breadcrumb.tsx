@@ -23,7 +23,7 @@
 import { Breadcrumb } from '@gpa-gemstone/react-interactive';
 import * as React from 'react';
 
-const BreadcrumbTestComponent: React.FC = () => {
+const BreadcrumbTestComponent: React.FC<{ ComponentTestID: string }> = (props) => {
     type IStep = { Label: string; ID: string | number; IsNavigable?: boolean }
     const steps = [{
         Label: 'Step One',
@@ -48,7 +48,7 @@ const BreadcrumbTestComponent: React.FC = () => {
 
     const [step, setStep] = React.useState<IStep>(steps[0]);
 
-    return (<div id="breadcrumb-test-id">
+    return (<div id={props.ComponentTestID}>
         <Breadcrumb
             /**
              * List of steps to render in breadcrumb

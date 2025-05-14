@@ -35,7 +35,7 @@ const App: React.FC = () => {
     return (<>
         <AlertTestComponent />
         <CheckBoxTestComponent />
-        <BreadcrumbTestComponent />
+        <BreadcrumbTestComponent ComponentTestID='breadcrumb-test-id' />
     </>);
 }
 

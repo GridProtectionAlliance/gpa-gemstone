@@ -20,13 +20,14 @@
 //       Generated original version of source code.
 //
 //******************************************************************************************************
-import { afterAll, beforeAll, expect, test } from "@jest/globals";
+import { afterAll, beforeAll, describe, expect, it } from "@jest/globals";
 import { Builder, By, until, WebDriver } from 'selenium-webdriver';
 import 'selenium-webdriver/chrome';
 import 'chromedriver';
 
 const rootURL = 'http://localhost:8080';
 let driver: WebDriver;
+const componentTestID = 'breadcrumb-test-id';
 
 // Before each test, create a selenium webdriver that goes to the rootURL
 beforeAll(async () => {
@@ -40,49 +41,45 @@ afterAll(async () => {
     if (driver) await driver.quit();
 });
 
-const breadcrumbSelector = By.xpath(`//*[@id='breadcrumb-test-id']/nav/ol`);
-const stepItemsSelector = By.xpath(`//*[@id='breadcrumb-test-id']//li[contains(@class, 'breadcrumb-item')]`);
-const getStepByText = (text: string) =>
-    By.xpath(`//*[@id='breadcrumb-test-id']//li[normalize-space()='${text}' or a[normalize-space(text())='${text}']]`);
+describe('Breadcrumb Component', () => {
+    const breadcrumbSelector = By.css(`#${componentTestID} .breadcrumb`);
+    const stepItemsSelector = By.css(`#${componentTestID} .breadcrumb .breadcrumb-item`);
 
-test('Breadcrumb.tsx: Validating Breadcrumb is visible and props applied', async () => {
-    // verify is rendered
-    const breadcrumb = await driver.findElement(breadcrumbSelector);
-    expect(await breadcrumb.isDisplayed()).toBe(true);
+    it('Renders Breadcrumb as visible and props applied', async () => {
+        // verify is rendered
+        const breadcrumb = await driver.findElement(breadcrumbSelector);
+        expect(await breadcrumb.isDisplayed()).toBe(true);
 
-    // verify order
-    const steps = await driver.findElements(stepItemsSelector);
-    expect(steps.length).toBe(4); // Step One to Step Four
+        // verify order
+        const steps = await driver.findElements(stepItemsSelector);
+        expect(steps.length).toBe(4); // Step One to Step Four
 
-    const stepTexts = await Promise.all(steps.map(step => step.getText()));
-    expect(stepTexts).toEqual(['Step One', 'Step Two', 'Step Three', 'Step Four']);
+        const stepTexts = await Promise.all(steps.map(step => step.getText()));
+        expect(stepTexts).toEqual(['Step One', 'Step Two', 'Step Three', 'Step Four']);
 
-    // verify the selected one is active
-    const activeStep = await driver.findElement(
-        By.xpath(`//*[@id='breadcrumb-test-id']//li[contains(@class, 'active')]`)
-    );
-    const activeText = await activeStep.getText();
-    expect(activeText).toBe('Step One');
-});
+        // verify the selected one is active
+        const activeStep = await driver.findElement(By.css(`#${componentTestID} .active`));
+        const activeText = await activeStep.getText();
+        expect(activeText).toBe('Step One');
+    });
 
-test('Breadcrumb.tsx: Validating step change', async () => {
-    // Click a non-navigable item (Step Two, no link)
-    const stepTwo = await driver.findElement(getStepByText('Step Two'));
-    await stepTwo.click();
-    let activeStep = await driver.findElement(  // The one with the active class
-        By.xpath(`//*[@id='breadcrumb-test-id']//li[contains(@class, 'active')]`)
-    ).getText();
-    expect(activeStep).toBe('Step One');        // Should remain unchanged
+    it('Validly changes steps', async () => {
+        // Click a non-navigable item (Step Two, no link)
+        const stepItems = await driver.findElements(stepItemsSelector);
+        const stepTwo = stepItems[1];
+        await stepTwo.click();
+        let activeStep = await driver.findElement(By.css(`#${componentTestID} .active`)).getText();
+        // Should remain unchanged
+        expect(activeStep).toBe('Step One');
 
-    // Click a navigable item (Step Four)
-    const stepFourLink = await driver.findElement(getStepByText('Step Four')).then(el => el.findElement(By.tagName('a')));
-    await stepFourLink.click();
+        // Click a navigable item (Step Four)
+        const stepFourLink = stepItems[3];
+        await stepFourLink.click();
 
-    // Wait for breadcrumb to update
-    await driver.sleep(500);
+        // Wait for breadcrumb to update
+        await driver.sleep(500);
 
-    activeStep = await driver.findElement(
-        By.xpath(`//*[@id='breadcrumb-test-id']//li[contains(@class, 'active')]`)
-    ).getText();
-    expect(activeStep).toBe('Step Four');
+        activeStep = await driver.findElement(By.css(`#${componentTestID} .active`)).getText();
+        expect(activeStep).toBe('Step Four');
+    });
 });
