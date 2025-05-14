@@ -28,17 +28,23 @@ import CheckBoxTestComponent from './components/react-forms/Checkbox';
 import './style.css';
 import BreadcrumbTestComponent from './components/react-interactive/Breadcrumb';
 import BtnDropdownTestComponent from './components/react-interactive/DropdownButton';
+import TableTestingComponent from './components/react-table/Table';
 
 const root = ReactDOM.createRoot(document.getElementById('window'));
 
 /** Test App Root */
 const App: React.FC = () => {
-    return (<>
-        <AlertTestComponent />
-        <CheckBoxTestComponent />
-        <BreadcrumbTestComponent ComponentTestID='breadcrumb-test-id' />
-        <BtnDropdownTestComponent ComponentTestID="btn-dropdown-test" />
-    </>);
-}
+    return (
+        <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '100vh' }}>
+            <div className="" style={{ width: '50%', height: 'auto' }}>
+                <TableTestingComponent ComponentTestID="table-test-id" />
+                <AlertTestComponent />
+                <CheckBoxTestComponent />
+                <BreadcrumbTestComponent ComponentTestID='breadcrumb-test-id' />
+                <BtnDropdownTestComponent ComponentTestID="btn-dropdown-test" />
+            </div>
+    </div>
+    );
+};
 
 root.render(<App />);
