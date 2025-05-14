@@ -37,7 +37,7 @@ const App: React.FC = () => {
         <AlertTestComponent />
         <CheckBoxTestComponent />
         <BreadcrumbTestComponent ComponentTestID='breadcrumb-test-id' />
-        <BtnDropdownTestComponent />
+        <BtnDropdownTestComponent ComponentTestID="btn-dropdown-test" />
     </>);
 }
 
