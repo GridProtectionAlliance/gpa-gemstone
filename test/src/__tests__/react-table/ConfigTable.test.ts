@@ -34,8 +34,8 @@ beforeEach(async () => {
     driver = await new Builder().forBrowser('chrome').build();
     await driver.manage().window().setSize(1600, 750);
     await driver.get(rootURL); // Navigate to the page
-    await driver.wait(until.elementIsVisible(driver.findElement(By.css(`#${componentTestID}-1 table`))), 25000);
-    await driver.wait(until.elementIsVisible(driver.findElement(By.css(`#${componentTestID}-2 table`))), 25000);
+    await driver.wait(until.elementIsVisible(driver.findElement(By.css(`#${componentTestID}-1 table thead tr th`))), 25000);
+    await driver.wait(until.elementIsVisible(driver.findElement(By.css(`#${componentTestID}-2 table thead tr th`))), 25000);
 });
 
 // close the driver after each test
@@ -59,14 +59,20 @@ describe('ConfigTable Component 1', () => {
 
     it('Renders the table with proper, default column titles', async () => {
         const tableCols = await driver.findElements(By.css(`${tableSelector} thead tr th`));
-        expect(tableCols).toHaveLength(4);
+        expect(tableCols).toHaveLength(5); // 4 data col + 1 config col
 
         const colTitles = ['Title', 'Author', 'Vol.', 'Category'];
-        for (let i = 0; i < tableCols.length; i++) {
-            const col = await tableCols[i].getText();
-            expect(col).toBe(colTitles[i]);
+
+        for (let i = 0; i < colTitles.length; i++) {
+            const colText = await tableCols[i].getText();
+            expect(colText).toBe(colTitles[i]);
         }
-    })
+
+        // Last column is the config icon column — check for SVG presence
+        const configIcon = await tableCols[4].findElement(By.css('svg.feather-file-text'));
+        expect(configIcon).toBeDefined();
+    });
+
 });
 
 describe('ConfigTable Component 2: Children Load Columns', () => {
@@ -85,12 +91,17 @@ describe('ConfigTable Component 2: Children Load Columns', () => {
 
     it('Renders the table with proper, default column titles', async () => {
         const tableCols = await driver.findElements(By.css(`${tableSelector} thead tr th`));
-        expect(tableCols).toHaveLength(4);
+        expect(tableCols).toHaveLength(5); // 4 data col + 1 config col
 
         const colTitles = ['Title', 'Author', 'Vol.', 'Category'];
-        for (let i = 0; i < tableCols.length; i++) {
-            const col = await tableCols[i].getText();
-            expect(col).toBe(colTitles[i]);
+
+        for (let i = 0; i < colTitles.length; i++) {
+            const colText = await tableCols[i].getText();
+            expect(colText).toBe(colTitles[i]);
         }
-    })
+
+        // Last column is the config icon column — check for SVG presence
+        const configIcon = await tableCols[4].findElement(By.css('svg.feather-file-text'));
+        expect(configIcon).toBeDefined(); // or .not.toBeNull()
+    });
 });
