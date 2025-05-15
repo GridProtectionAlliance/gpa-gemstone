@@ -25,7 +25,7 @@ import { Builder, By, until, WebDriver } from 'selenium-webdriver';
 import 'selenium-webdriver/chrome';
 import 'chromedriver';
 
-const rootURL = 'http://localhost:8080';
+const rootURL = `http://localhost:${global.PORT}`;
 let driver: WebDriver;
 const componentTestID = 'breadcrumb-test-id';
 
