@@ -43,8 +43,13 @@ afterEach(async () => {
     if (driver) await driver.quit();
 });
 
-describe('ConfigTable Component 1', () => {
-    const tableSelector = `#${componentTestID}-1 table`;
+const componentVariants = [
+    ['ConfigTable Component 1', '1'],
+    ['ConfigTable Component 2: Children Load Columns', '2'],
+];
+
+describe.each(componentVariants)('%s', (desc, idSuffix) => {
+    const tableSelector = `#${componentTestID}-${idSuffix} table`;
 
     it('Renders the table with proper styles', async () => {
         const body = await driver.findElement(By.css(`${tableSelector} tbody`));
@@ -55,40 +60,8 @@ describe('ConfigTable Component 1', () => {
 
         const row = await driver.findElement(By.css(`${tableSelector} tbody tr`));
         expect(await row.getCssValue('font-weight')).toBe('700');
-    })
-
-    it('Renders the table with proper, default column titles', async () => {
-        const tableCols = await driver.findElements(By.css(`${tableSelector} thead tr th`));
-        expect(tableCols).toHaveLength(5); // 4 data col + 1 config col
-
-        const colTitles = ['Title', 'Author', 'Vol.', 'Category'];
-
-        for (let i = 0; i < colTitles.length; i++) {
-            const colText = await tableCols[i].getText();
-            expect(colText).toBe(colTitles[i]);
-        }
-
-        // Last column is the config icon column — check for SVG presence
-        const configIcon = await tableCols[4].findElement(By.css('svg.feather-file-text'));
-        expect(configIcon).toBeDefined();
     });
 
-});
-
-describe('ConfigTable Component 2: Children Load Columns', () => {
-    const tableSelector = `#${componentTestID}-2 table`;
-
-    it('Renders the table with proper styles', async () => {
-        const body = await driver.findElement(By.css(`${tableSelector} tbody`));
-        expect(await body.getCssValue('font-style')).toBe('italic');
-
-        const head = await driver.findElement(By.css(`${tableSelector} thead`));
-        expect(await head.getCssValue('font-weight')).toBe('100');
-
-        const row = await driver.findElement(By.css(`${tableSelector} tbody tr`));
-        expect(await row.getCssValue('font-weight')).toBe('700');
-    })
-
     it('Renders the table with proper, default column titles', async () => {
         const tableCols = await driver.findElements(By.css(`${tableSelector} thead tr th`));
         expect(tableCols).toHaveLength(5); // 4 data col + 1 config col
@@ -100,8 +73,7 @@ describe('ConfigTable Component 2: Children Load Columns', () => {
             expect(colText).toBe(colTitles[i]);
         }
 
-        // Last column is the config icon column — check for SVG presence
         const configIcon = await tableCols[4].findElement(By.css('svg.feather-file-text'));
-        expect(configIcon).toBeDefined(); // or .not.toBeNull()
+        expect(configIcon).toBeDefined();
     });
 });
