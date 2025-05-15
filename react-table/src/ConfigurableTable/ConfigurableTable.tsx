@@ -121,7 +121,7 @@ export default function ConfigurableTable<T>(props: React.PropsWithChildren<ITab
         const enabled = allKeys.filter((k) => columns.get(k)?.Enabled);
 
         currentKeys.push(...enabled);
-        localStorage.setItem(props.LocalStorageKey, currentKeys.join(','));
+        (currentKeys.length == 0 && currentState == null) ? null : localStorage.setItem(props.LocalStorageKey, currentKeys.join(','));
     }
 
     function changeColumns(key: string) {
