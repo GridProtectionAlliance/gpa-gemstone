@@ -17,7 +17,7 @@
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
 //  05/14/2025 - Collins Self
-//       Updated to use Great Books of the Western World data.
+//       Generated original code.
 //
 //******************************************************************************************************
 
@@ -26,17 +26,17 @@ import tableData from '../../test-data/table_test_data.json';
 import React from "react";
 
 type Book = {
-    title: string;
-    author: string;
-    volume: number;
-    category: string;
+    Title: string;
+    Author: string;
+    Volume: number;
+    Category: string;
 };
 /**
  * This is not a visually functional table (data sorting, etc. ) but it sets data like one
  */
 const TableTestingComponent: React.FC<{ ComponentTestID: string }> = (props) => {
     const [data, setData] = React.useState<Book[]>([]);
-    const [sortKey, setSortKey] = React.useState<keyof Book>('title');
+    const [sortKey, setSortKey] = React.useState<keyof Book>('Title');
     const [asc, setAsc] = React.useState<boolean>(true);
 
     React.useEffect(() => {
@@ -66,41 +66,41 @@ const TableTestingComponent: React.FC<{ ComponentTestID: string }> = (props) => 
                         setSortKey(clickedCol.colKey as keyof Book);
                 }}
                 OnClick={(rowClicked) => {
-                    alert(`${props.ComponentTestID}: ${rowClicked.row.title}`);
+                    alert(`${props.ComponentTestID}: ${rowClicked.row.Title}`);
                 }}
-                KeySelector={(d) => `${d.volume}-${d.title}`}
+                KeySelector={(d) => `${d.Volume}-${d.Title}`}
             >
                 <Column<Book>
-                    Key="title"
+                    Key="Title"
                     AllowSort={true}
-                    Field="title"
+                    Field="Title"
                     HeaderStyle={{ width: 'auto' }}
                     RowStyle={{ width: 'auto' }}
                 >
                     Title
                 </Column>
                 <Column<Book>
-                    Key="author"
+                    Key="Author"
                     AllowSort={true}
-                    Field="author"
+                    Field="Author"
                     HeaderStyle={{ width: 'auto' }}
                     RowStyle={{ width: 'auto' }}
                 >
                     Author
                 </Column>
                 <Column<Book>
-                    Key="volume"
+                    Key="Volume"
                     AllowSort={true}
-                    Field="volume"
+                    Field="Volume"
                     HeaderStyle={{ width: 'auto' }}
                     RowStyle={{ width: 'auto' }}
                 >
                     Vol.
                 </Column>
                 <Column<Book>
-                    Key="category"
+                    Key="Category"
                     AllowSort={true}
-                    Field="category"
+                    Field="Category"
                     HeaderStyle={{ width: 'auto' }}
                     RowStyle={{ width: 'auto' }}
                 >
