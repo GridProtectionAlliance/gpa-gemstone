@@ -49,11 +49,11 @@ const TableTestingComponent: React.FC<{ ComponentTestID: string }> = (props) => 
     const containerWidth = 700;
 
     return (
-        <div className="border" style={{ maxHeight: `${containerHeight}px`, maxWidth: `${containerWidth}px` }}>
+        <div id={props.ComponentTestID} className="border" style={{ maxHeight: `${containerHeight}px`, maxWidth: `${containerWidth}px` }}>
             <Table<Book>
-                TableClass={`${props.ComponentTestID} table table-hover`}
-                RowStyle={{ fontSize: 'smaller' }}
-                TheadStyle={{ fontSize: 'smaller', maxHeight: `${headerHeight}px` }}
+                TableClass={`table table-hover`}
+                RowStyle={{ fontSize: 'smaller', fontWeight: 'bolder' }}
+                TheadStyle={{ fontSize: 'smaller', fontWeight: 'lighter', maxHeight: `${headerHeight}px` }}
                 TbodyStyle={{ fontStyle: 'italic', maxHeight: `${bodyHeight}px` }}
                 TfootStyle={{ fontStyle: 'bold' }}
                 Data={data}
