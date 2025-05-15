@@ -31,84 +31,82 @@ type Book = {
     volume: number;
     category: string;
 };
-
+/**
+ * This is not a visually functional table (data sorting, etc. ) but it sets data like one
+ */
 const TableTestingComponent: React.FC<{ ComponentTestID: string }> = (props) => {
     const [data, setData] = React.useState<Book[]>([]);
     const [sortKey, setSortKey] = React.useState<keyof Book>('title');
     const [asc, setAsc] = React.useState<boolean>(true);
 
     React.useEffect(() => {
-        setData(tableData.slice(40));
+        setData(tableData.slice());
     }, []);
 
+    const headerHeight = 45;
+    const bodyHeight = 300;
+    const containerHeight = bodyHeight + headerHeight + 1;
+    const containerWidth = 700;
+
     return (
-        <div className="row h-30 border m-3 d-flex justify-content-center align-items-center">
-            <div className="container-fluid d-flex flex-column align-items-center">
-                <div className="row" style={{ flex: 1, overflow: 'hidden', justifyContent: 'center' }}>
-                    <Table<Book>
-                        TableClass={`${props.ComponentTestID} table table-hover`}
-                        RowStyle={{ fontSize: 'smaller' }}
-                        TheadStyle={{ fontSize: 'smaller' }}
-                        TbodyStyle={{
-                            fontStyle: 'italic',
-                            flex: 1, // Make sure tbody takes available space and scrolls if needed
-                            overflowY: 'auto', // Enable vertical scrolling
-                            maxHeight: '300px', // Set a max height for the body
-                        }}
-                        TfootStyle={{ fontStyle: 'bold' }}
-                        Data={data}
-                        SortKey={sortKey}
-                        Ascending={asc}
-                        OnSort={(clickedCol) => {
-                            if (clickedCol.colKey === sortKey)
-                                setAsc(!asc);
-                            else
-                                setSortKey(clickedCol.colKey as keyof Book);
-                        }}
-                        OnClick={(rowClicked) => {
-                            alert(`${props.ComponentTestID}: ${rowClicked.row.title}`);
-                        }}
-                        KeySelector={(d) => `${d.volume}-${d.title}`}
-                    >
-                        <Column<Book>
-                            Key="title"
-                            AllowSort={true}
-                            Field="title"
-                            HeaderStyle={{ width: '20%' }}
-                            RowStyle={{ width: '20%' }}
-                        >
-                            Title
-                        </Column>
-                        <Column<Book>
-                            Key="author"
-                            AllowSort={true}
-                            Field="author"
-                            HeaderStyle={{ width: 'auto' }}
-                            RowStyle={{ width: 'auto' }}
-                        >
-                            Author
-                        </Column>
-                        <Column<Book>
-                            Key="volume"
-                            AllowSort={true}
-                            Field="volume"
-                            HeaderStyle={{ width: 'auto' }}
-                            RowStyle={{ width: 'auto' }}
-                        >
-                            Vol.
-                        </Column>
-                        <Column<Book>
-                            Key="category"
-                            AllowSort={true}
-                            Field="category"
-                            HeaderStyle={{ width: 'auto' }}
-                            RowStyle={{ width: 'auto' }}
-                        >
-                            Category
-                        </Column>
-                    </Table>
-                </div>
-            </div>
+        <div className="border" style={{ maxHeight: `${containerHeight}px`, maxWidth: `${containerWidth}px` }}>
+            <Table<Book>
+                TableClass={`${props.ComponentTestID} table table-hover`}
+                RowStyle={{ fontSize: 'smaller' }}
+                TheadStyle={{ fontSize: 'smaller', maxHeight: `${headerHeight}px` }}
+                TbodyStyle={{ fontStyle: 'italic', maxHeight: `${bodyHeight}px` }}
+                TfootStyle={{ fontStyle: 'bold' }}
+                Data={data}
+                SortKey={sortKey}
+                Ascending={asc}
+                OnSort={(clickedCol) => {
+                    if (clickedCol.colKey === sortKey)
+                        setAsc(!asc);
+                    else
+                        setSortKey(clickedCol.colKey as keyof Book);
+                }}
+                OnClick={(rowClicked) => {
+                    alert(`${props.ComponentTestID}: ${rowClicked.row.title}`);
+                }}
+                KeySelector={(d) => `${d.volume}-${d.title}`}
+            >
+                <Column<Book>
+                    Key="title"
+                    AllowSort={true}
+                    Field="title"
+                    HeaderStyle={{ width: 'auto' }}
+                    RowStyle={{ width: 'auto' }}
+                >
+                    Title
+                </Column>
+                <Column<Book>
+                    Key="author"
+                    AllowSort={true}
+                    Field="author"
+                    HeaderStyle={{ width: 'auto' }}
+                    RowStyle={{ width: 'auto' }}
+                >
+                    Author
+                </Column>
+                <Column<Book>
+                    Key="volume"
+                    AllowSort={true}
+                    Field="volume"
+                    HeaderStyle={{ width: 'auto' }}
+                    RowStyle={{ width: 'auto' }}
+                >
+                    Vol.
+                </Column>
+                <Column<Book>
+                    Key="category"
+                    AllowSort={true}
+                    Field="category"
+                    HeaderStyle={{ width: 'auto' }}
+                    RowStyle={{ width: 'auto' }}
+                >
+                    Category
+                </Column>
+            </Table>
         </div>
     );
 };

@@ -35,8 +35,8 @@ const root = ReactDOM.createRoot(document.getElementById('window'));
 /** Test App Root */
 const App: React.FC = () => {
     return (
-        <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '100vh' }}>
-            <div className="" style={{ width: '50%', height: 'auto' }}>
+        <div className="d-flex align-items-center">
+            <div>
                 <TableTestingComponent ComponentTestID="table-test-id" />
                 <AlertTestComponent />
                 <CheckBoxTestComponent />
