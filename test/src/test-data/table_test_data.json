@@ -1,344 +1,344 @@
 [
     {
-        "title": "The Great Conversation",
-        "author": "Robert M. Hutchins",
-        "volume": 1,
-        "category": "Introduction"
+        "Title": "The Great Conversation",
+        "Author": "Robert M. Hutchins",
+        "Volume": 1,
+        "Category": "Introduction"
     },
     {
-        "title": "Syntopicon I",
-        "author": "Mortimer J. Adler",
-        "volume": 2,
-        "category": "Index"
+        "Title": "Syntopicon I",
+        "Author": "Mortimer J. Adler",
+        "Volume": 2,
+        "Category": "Index"
     },
     {
-        "title": "Syntopicon II",
-        "author": "Mortimer J. Adler",
-        "volume": 3,
-        "category": "Index"
+        "Title": "Syntopicon II",
+        "Author": "Mortimer J. Adler",
+        "Volume": 3,
+        "Category": "Index"
     },
     {
-        "title": "The Iliad",
-        "author": "Homer",
-        "volume": 4,
-        "category": "Epic Poetry"
+        "Title": "The Iliad",
+        "Author": "Homer",
+        "Volume": 4,
+        "Category": "Epic Poetry"
     },
     {
-        "title": "Oedipus the King",
-        "author": "Sophocles",
-        "volume": 5,
-        "category": "Tragedy"
+        "Title": "Oedipus the King",
+        "Author": "Sophocles",
+        "Volume": 5,
+        "Category": "Tragedy"
     },
     {
-        "title": "The History",
-        "author": "Herodotus",
-        "volume": 6,
-        "category": "History"
+        "Title": "The History",
+        "Author": "Herodotus",
+        "Volume": 6,
+        "Category": "History"
     },
     {
-        "title": "The Republic",
-        "author": "Plato",
-        "volume": 7,
-        "category": "Philosophy"
+        "Title": "The Republic",
+        "Author": "Plato",
+        "Volume": 7,
+        "Category": "Philosophy"
     },
     {
-        "title": "Metaphysics",
-        "author": "Aristotle",
-        "volume": 8,
-        "category": "Philosophy"
+        "Title": "Metaphysics",
+        "Author": "Aristotle",
+        "Volume": 8,
+        "Category": "Philosophy"
     },
     {
-        "title": "Nicomachean Ethics",
-        "author": "Aristotle",
-        "volume": 9,
-        "category": "Philosophy"
+        "Title": "Nicomachean Ethics",
+        "Author": "Aristotle",
+        "Volume": 9,
+        "Category": "Philosophy"
     },
     {
-        "title": "On the Natural Faculties",
-        "author": "Galen",
-        "volume": 10,
-        "category": "Medicine"
+        "Title": "On the Natural Faculties",
+        "Author": "Galen",
+        "Volume": 10,
+        "Category": "Medicine"
     },
     {
-        "title": "Elements",
-        "author": "Euclid",
-        "volume": 11,
-        "category": "Mathematics"
+        "Title": "Elements",
+        "Author": "Euclid",
+        "Volume": 11,
+        "Category": "Mathematics"
     },
     {
-        "title": "On the Nature of Things",
-        "author": "Lucretius",
-        "volume": 12,
-        "category": "Philosophy"
+        "Title": "On the Nature of Things",
+        "Author": "Lucretius",
+        "Volume": 12,
+        "Category": "Philosophy"
     },
     {
-        "title": "Aeneid",
-        "author": "Virgil",
-        "volume": 13,
-        "category": "Epic Poetry"
+        "Title": "Aeneid",
+        "Author": "Virgil",
+        "Volume": 13,
+        "Category": "Epic Poetry"
     },
     {
-        "title": "Lives of the Noble Grecians and Romans",
-        "author": "Plutarch",
-        "volume": 14,
-        "category": "Biography"
+        "Title": "Lives of the Noble Grecians and Romans",
+        "Author": "Plutarch",
+        "Volume": 14,
+        "Category": "Biography"
     },
     {
-        "title": "The Annals",
-        "author": "Tacitus",
-        "volume": 15,
-        "category": "History"
+        "Title": "The Annals",
+        "Author": "Tacitus",
+        "Volume": 15,
+        "Category": "History"
     },
     {
-        "title": "Almagest",
-        "author": "Ptolemy",
-        "volume": 16,
-        "category": "Astronomy"
+        "Title": "Almagest",
+        "Author": "Ptolemy",
+        "Volume": 16,
+        "Category": "Astronomy"
     },
     {
-        "title": "The Six Enneads",
-        "author": "Plotinus",
-        "volume": 17,
-        "category": "Philosophy"
+        "Title": "The Six Enneads",
+        "Author": "Plotinus",
+        "Volume": 17,
+        "Category": "Philosophy"
     },
     {
-        "title": "The Confessions",
-        "author": "Augustine",
-        "volume": 18,
-        "category": "Autobiography"
+        "Title": "The Confessions",
+        "Author": "Augustine",
+        "Volume": 18,
+        "Category": "Autobiography"
     },
     {
-        "title": "Summa Theologica",
-        "author": "Thomas Aquinas",
-        "volume": 19,
-        "category": "Theology"
+        "Title": "Summa Theologica",
+        "Author": "Thomas Aquinas",
+        "Volume": 19,
+        "Category": "Theology"
     },
     {
-        "title": "Summa Theologica (Continued)",
-        "author": "Thomas Aquinas",
-        "volume": 20,
-        "category": "Theology"
+        "Title": "Summa Theologica (Continued)",
+        "Author": "Thomas Aquinas",
+        "Volume": 20,
+        "Category": "Theology"
     },
     {
-        "title": "The Divine Comedy",
-        "author": "Dante Alighieri",
-        "volume": 21,
-        "category": "Epic Poetry"
+        "Title": "The Divine Comedy",
+        "Author": "Dante Alighieri",
+        "Volume": 21,
+        "Category": "Epic Poetry"
     },
     {
-        "title": "The Canterbury Tales",
-        "author": "Geoffrey Chaucer",
-        "volume": 22,
-        "category": "Poetry"
+        "Title": "The Canterbury Tales",
+        "Author": "Geoffrey Chaucer",
+        "Volume": 22,
+        "Category": "Poetry"
     },
     {
-        "title": "The Prince",
-        "author": "Niccolò Machiavelli",
-        "volume": 23,
-        "category": "Political Philosophy"
+        "Title": "The Prince",
+        "Author": "Niccolò Machiavelli",
+        "Volume": 23,
+        "Category": "Political Philosophy"
     },
     {
-        "title": "Gargantua and Pantagruel",
-        "author": "François Rabelais",
-        "volume": 24,
-        "category": "Satire"
+        "Title": "Gargantua and Pantagruel",
+        "Author": "François Rabelais",
+        "Volume": 24,
+        "Category": "Satire"
     },
     {
-        "title": "Essays",
-        "author": "Michel de Montaigne",
-        "volume": 25,
-        "category": "Philosophy"
+        "Title": "Essays",
+        "Author": "Michel de Montaigne",
+        "Volume": 25,
+        "Category": "Philosophy"
     },
     {
-        "title": "Hamlet",
-        "author": "William Shakespeare",
-        "volume": 26,
-        "category": "Drama"
+        "Title": "Hamlet",
+        "Author": "William Shakespeare",
+        "Volume": 26,
+        "Category": "Drama"
     },
     {
-        "title": "Othello",
-        "author": "William Shakespeare",
-        "volume": 27,
-        "category": "Drama"
+        "Title": "Othello",
+        "Author": "William Shakespeare",
+        "Volume": 27,
+        "Category": "Drama"
     },
     {
-        "title": "Dialogues Concerning the Two New Sciences",
-        "author": "Galileo Galilei",
-        "volume": 28,
-        "category": "Science"
+        "Title": "Dialogues Concerning the Two New Sciences",
+        "Author": "Galileo Galilei",
+        "Volume": 28,
+        "Category": "Science"
     },
     {
-        "title": "Don Quixote",
-        "author": "Miguel de Cervantes",
-        "volume": 29,
-        "category": "Novel"
+        "Title": "Don Quixote",
+        "Author": "Miguel de Cervantes",
+        "Volume": 29,
+        "Category": "Novel"
     },
     {
-        "title": "Novum Organum",
-        "author": "Francis Bacon",
-        "volume": 30,
-        "category": "Philosophy"
+        "Title": "Novum Organum",
+        "Author": "Francis Bacon",
+        "Volume": 30,
+        "Category": "Philosophy"
     },
     {
-        "title": "Meditations on First Philosophy",
-        "author": "René Descartes",
-        "volume": 31,
-        "category": "Philosophy"
+        "Title": "Meditations on First Philosophy",
+        "Author": "René Descartes",
+        "Volume": 31,
+        "Category": "Philosophy"
     },
     {
-        "title": "Paradise Lost",
-        "author": "John Milton",
-        "volume": 32,
-        "category": "Epic Poetry"
+        "Title": "Paradise Lost",
+        "Author": "John Milton",
+        "Volume": 32,
+        "Category": "Epic Poetry"
     },
     {
-        "title": "Pensées",
-        "author": "Blaise Pascal",
-        "volume": 33,
-        "category": "Philosophy"
+        "Title": "Pensées",
+        "Author": "Blaise Pascal",
+        "Volume": 33,
+        "Category": "Philosophy"
     },
     {
-        "title": "Mathematical Principles of Natural Philosophy",
-        "author": "Isaac Newton",
-        "volume": 34,
-        "category": "Science"
+        "Title": "Mathematical Principles of Natural Philosophy",
+        "Author": "Isaac Newton",
+        "Volume": 34,
+        "Category": "Science"
     },
     {
-        "title": "An Essay Concerning Human Understanding",
-        "author": "John Locke",
-        "volume": 35,
-        "category": "Philosophy"
+        "Title": "An Essay Concerning Human Understanding",
+        "Author": "John Locke",
+        "Volume": 35,
+        "Category": "Philosophy"
     },
     {
-        "title": "Gulliver's Travels",
-        "author": "Jonathan Swift",
-        "volume": 36,
-        "category": "Satire"
+        "Title": "Gulliver's Travels",
+        "Author": "Jonathan Swift",
+        "Volume": 36,
+        "Category": "Satire"
     },
     {
-        "title": "The History of Tom Jones, a Foundling",
-        "author": "Henry Fielding",
-        "volume": 37,
-        "category": "Novel"
+        "Title": "The History of Tom Jones, a Foundling",
+        "Author": "Henry Fielding",
+        "Volume": 37,
+        "Category": "Novel"
     },
     {
-        "title": "The Social Contract",
-        "author": "Jean-Jacques Rousseau",
-        "volume": 38,
-        "category": "Political Philosophy"
+        "Title": "The Social Contract",
+        "Author": "Jean-Jacques Rousseau",
+        "Volume": 38,
+        "Category": "Political Philosophy"
     },
     {
-        "title": "The Wealth of Nations",
-        "author": "Adam Smith",
-        "volume": 39,
-        "category": "Economics"
+        "Title": "The Wealth of Nations",
+        "Author": "Adam Smith",
+        "Volume": 39,
+        "Category": "Economics"
     },
     {
-        "title": "The Decline and Fall of the Roman Empire",
-        "author": "Edward Gibbon",
-        "volume": 40,
-        "category": "History"
+        "Title": "The Decline and Fall of the Roman Empire",
+        "Author": "Edward Gibbon",
+        "Volume": 40,
+        "Category": "History"
     },
     {
-        "title": "Critique of Pure Reason",
-        "author": "Immanuel Kant",
-        "volume": 42,
-        "category": "Philosophy"
+        "Title": "Critique of Pure Reason",
+        "Author": "Immanuel Kant",
+        "Volume": 42,
+        "Category": "Philosophy"
     },
     {
-        "title": "The Federalist Papers",
-        "author": "Alexander Hamilton, James Madison, John Jay",
-        "volume": 43,
-        "category": "Political Philosophy"
+        "Title": "The Federalist Papers",
+        "Author": "Alexander Hamilton, James Madison, John Jay",
+        "Volume": 43,
+        "Category": "Political Philosophy"
     },
     {
-        "title": "The Life of Samuel Johnson",
-        "author": "James Boswell",
-        "volume": 44,
-        "category": "Biography"
+        "Title": "The Life of Samuel Johnson",
+        "Author": "James Boswell",
+        "Volume": 44,
+        "Category": "Biography"
     },
     {
-        "title": "Elements of Chemistry",
-        "author": "Antoine Lavoisier",
-        "volume": 45,
-        "category": "Science"
+        "Title": "Elements of Chemistry",
+        "Author": "Antoine Lavoisier",
+        "Volume": 45,
+        "Category": "Science"
     },
     {
-        "title": "The Philosophy of Right",
-        "author": "Georg Wilhelm Friedrich Hegel",
-        "volume": 46,
-        "category": "Philosophy"
+        "Title": "The Philosophy of Right",
+        "Author": "Georg Wilhelm Friedrich Hegel",
+        "Volume": 46,
+        "Category": "Philosophy"
     },
     {
-        "title": "Faust",
-        "author": "Johann Wolfgang von Goethe",
-        "volume": 47,
-        "category": "Drama"
+        "Title": "Faust",
+        "Author": "Johann Wolfgang von Goethe",
+        "Volume": 47,
+        "Category": "Drama"
     },
     {
-        "title": "Moby Dick",
-        "author": "Herman Melville",
-        "volume": 48,
-        "category": "Novel"
+        "Title": "Moby Dick",
+        "Author": "Herman Melville",
+        "Volume": 48,
+        "Category": "Novel"
     },
     {
-        "title": "The Origin of Species",
-        "author": "Charles Darwin",
-        "volume": 49,
-        "category": "Science"
+        "Title": "The Origin of Species",
+        "Author": "Charles Darwin",
+        "Volume": 49,
+        "Category": "Science"
     },
     {
-        "title": "Capital",
-        "author": "Karl Marx",
-        "volume": 50,
-        "category": "Economics"
+        "Title": "Capital",
+        "Author": "Karl Marx",
+        "Volume": 50,
+        "Category": "Economics"
     },
     {
-        "title": "War and Peace",
-        "author": "Leo Tolstoy",
-        "volume": 51,
-        "category": "Novel"
+        "Title": "War and Peace",
+        "Author": "Leo Tolstoy",
+        "Volume": 51,
+        "Category": "Novel"
     },
     {
-        "title": "The Brothers Karamazov",
-        "author": "Fyodor Dostoevsky",
-        "volume": 52,
-        "category": "Novel"
+        "Title": "The Brothers Karamazov",
+        "Author": "Fyodor Dostoevsky",
+        "Volume": 52,
+        "Category": "Novel"
     },
     {
-        "title": "The Principles of Psychology",
-        "author": "William James",
-        "volume": 53,
-        "category": "Psychology"
+        "Title": "The Principles of Psychology",
+        "Author": "William James",
+        "Volume": 53,
+        "Category": "Psychology"
     },
     {
-        "title": "The Interpretation of Dreams",
-        "author": "Sigmund Freud",
-        "volume": 54,
-        "category": "Psychology"
+        "Title": "The Interpretation of Dreams",
+        "Author": "Sigmund Freud",
+        "Volume": 54,
+        "Category": "Psychology"
     },
     {
-        "title": "The Theory of the Leisure Class",
-        "author": "Thorstein Veblen",
-        "volume": 57,
-        "category": "Economics"
+        "Title": "The Theory of the Leisure Class",
+        "Author": "Thorstein Veblen",
+        "Volume": 57,
+        "Category": "Economics"
     },
     {
-        "title": "The Golden Bough",
-        "author": "James George Frazer",
-        "volume": 58,
-        "category": "Anthropology"
+        "Title": "The Golden Bough",
+        "Author": "James George Frazer",
+        "Volume": 58,
+        "Category": "Anthropology"
     },
     {
-        "title": "Heart of Darkness",
-        "author": "Joseph Conrad",
-        "volume": 59,
-        "category": "Novel"
+        "Title": "Heart of Darkness",
+        "Author": "Joseph Conrad",
+        "Volume": 59,
+        "Category": "Novel"
     },
     {
-        "title": "The Great Gatsby",
-        "author": "F. Scott Fitzgerald",
-        "volume": 60,
-        "category": "Novel"
+        "Title": "The Great Gatsby",
+        "Author": "F. Scott Fitzgerald",
+        "Volume": 60,
+        "Category": "Novel"
     }
 ]
