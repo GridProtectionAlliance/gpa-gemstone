@@ -3,7 +3,7 @@ import { Builder, By, until, WebDriver } from 'selenium-webdriver';
 import 'selenium-webdriver/chrome';
 import 'chromedriver';
 
-const rootURL = 'http://localhost:9000'; // TODO: CHANGE THIS
+const rootURL = `http://localhost:${global.PORT}`; // TODO: CHANGE THIS
 let driver: WebDriver;
 const componentTestID = 'table-test-id';
 
