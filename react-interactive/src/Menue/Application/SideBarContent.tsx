@@ -29,7 +29,9 @@ import { useGetContainerPosition } from '@gpa-gemstone/helper-functions';
 interface IProps {
     Collapsed: boolean,
     Version?: string,
+    SidebarUI?: JSX.Element;
     HideSide: boolean,
+    NavbarHeight: number
     SetSideBarWidth: React.Dispatch<React.SetStateAction<number>>
 }
 
@@ -39,28 +41,46 @@ const SidebarNavStyle: React.CSSProperties = {
     bottom: 0,
     left: 0,
     zIndex: 100,
-    padding: '48px 0 0',
     boxShadow: 'inset -1px 0 0 rgba(0,0,0,.1)'
 };
 
 const SidebarBodyStyle: React.CSSProperties = {
     position: 'sticky',
-    height: 'calc( 100% - 35px)',
     overflowY: 'auto',
     overflowX: 'hidden'
 };
 
 const SideBarContent: React.FC<IProps> = (props) => {
     const sideBarRef = React.useRef<HTMLDivElement | null>(null);
+
+    const additionalUIRef = React.useRef<HTMLDivElement | null>(null);
+    const { height: additionalUIHeight } = useGetContainerPosition(additionalUIRef);
+
     const { width } = useGetContainerPosition(sideBarRef);
     const widthStyle = props.Collapsed ? 'auto' : 200;
 
+    const heightToSubtract = React.useMemo(() => {
+        const hasVersion = props.Version != null;
+        const hasExtraUI = props.SidebarUI != null;
+
+        if (!hasVersion && !hasExtraUI)
+            return 0;
+
+        if (hasVersion && hasExtraUI)
+            return 35 + additionalUIHeight;
+
+        if(hasExtraUI)
+            return additionalUIHeight;
+
+        return 35;
+    }, [props.Version, props.SidebarUI, additionalUIHeight])
+
     React.useEffect(() => props.SetSideBarWidth(width), [width])
-    
+
     return <>
         {props.HideSide ? null :
-            <div className={"bg-light navbar-light navbar"} style={{ ...SidebarNavStyle, width: widthStyle }} ref={sideBarRef}>
-                <div style={SidebarBodyStyle}>
+            <div className={"bg-light navbar-light navbar"} style={{ ...SidebarNavStyle, width: widthStyle, padding: `${props.NavbarHeight}px 1px 0px` }} ref={sideBarRef}>
+                <div style={{ ...SidebarBodyStyle, height: `calc(100% - ${heightToSubtract}px)` }}>
                     <ul className="navbar-nav px-3">
                         {React.Children.map(props.children, (e) => {
                             if (!React.isValidElement(e))
@@ -84,6 +104,12 @@ const SideBarContent: React.FC<IProps> = (props) => {
                         <br />
                         <span></span>
                     </div> : null}
+
+                {props.SidebarUI != null ?
+                    <div ref={additionalUIRef} style={{ width: '100%' }}>
+                        {props.SidebarUI}
+                    </div>
+                    : null}
             </div>
         }
     </>
