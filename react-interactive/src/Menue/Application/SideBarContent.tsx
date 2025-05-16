@@ -29,7 +29,9 @@ import { useGetContainerPosition } from '@gpa-gemstone/helper-functions';
 interface IProps {
     Collapsed: boolean,
     Version?: string,
+    SidebarText?: string;
     HideSide: boolean,
+    NavbarHeight: number
     SetSideBarWidth: React.Dispatch<React.SetStateAction<number>>
 }
 
@@ -39,13 +41,11 @@ const SidebarNavStyle: React.CSSProperties = {
     bottom: 0,
     left: 0,
     zIndex: 100,
-    padding: '48px 0 0',
     boxShadow: 'inset -1px 0 0 rgba(0,0,0,.1)'
 };
 
 const SidebarBodyStyle: React.CSSProperties = {
     position: 'sticky',
-    height: 'calc( 100% - 35px)',
     overflowY: 'auto',
     overflowX: 'hidden'
 };
@@ -55,12 +55,25 @@ const SideBarContent: React.FC<IProps> = (props) => {
     const { width } = useGetContainerPosition(sideBarRef);
     const widthStyle = props.Collapsed ? 'auto' : 200;
 
+    const heightToSubtract = React.useMemo(() => {
+        const hasVersion = props.Version != null;
+        const hasText = props.SidebarText != null;
+
+        if (!hasVersion && !hasText)
+            return 0;
+
+        if (hasVersion && hasText)
+            return 70;
+
+        return 35;
+    }, [props.Version, props.SidebarText])
+
     React.useEffect(() => props.SetSideBarWidth(width), [width])
-    
+
     return <>
         {props.HideSide ? null :
-            <div className={"bg-light navbar-light navbar"} style={{ ...SidebarNavStyle, width: widthStyle }} ref={sideBarRef}>
-                <div style={SidebarBodyStyle}>
+            <div className={"bg-light navbar-light navbar"} style={{ ...SidebarNavStyle, width: widthStyle, padding: `${props.NavbarHeight}px 0 0` }} ref={sideBarRef}>
+                <div style={{ ...SidebarBodyStyle, height: `calc(100% - ${heightToSubtract}px)` }}>
                     <ul className="navbar-nav px-3">
                         {React.Children.map(props.children, (e) => {
                             if (!React.isValidElement(e))
@@ -81,6 +94,13 @@ const SideBarContent: React.FC<IProps> = (props) => {
                 {props.Version !== undefined && !props.Collapsed ?
                     <div style={{ width: '100%', textAlign: 'center', height: 35 }}>
                         <span>Version {props.Version}</span>
+                        <br />
+                        <span></span>
+                    </div> : null}
+
+                {props.SidebarText !== undefined && !props.Collapsed ?
+                    <div style={{ width: '100%', textAlign: 'center', height: 35 }}>
+                        <span>{props.SidebarText}</span>
                         <br />
                         <span></span>
                     </div> : null}
