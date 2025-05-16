@@ -112,7 +112,7 @@ const ConfigurableTableTestComponent: React.FC<{ ComponentTestID: string }> = (p
                         HeaderStyle={{ width: 'auto' }}
                         RowStyle={{ width: 'auto' }}
                     >
-                        Vol.
+                        Volume
                     </Column>
                 </ConfigurableColumn>
                 <ConfigurableColumn Key="Category" Default={true} Label={'Category'}>

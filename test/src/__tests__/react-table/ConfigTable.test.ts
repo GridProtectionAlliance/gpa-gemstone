@@ -63,10 +63,11 @@ describe.each(componentVariants)('%s', (desc, idSuffix) => {
     });
 
     it('Renders the table with proper, default column titles', async () => {
+        await driver.executeScript('window.localStorage.clear();');
         const tableCols = await driver.findElements(By.css(`${tableSelector} thead tr th`));
-        expect(tableCols).toHaveLength(5); // 4 data col + 1 config col
+        expect(tableCols.length).toBe(5); // 4 data col + 1 config col
 
-        const colTitles = ['Title', 'Author', 'Vol.', 'Category'];
+        const colTitles = ['Title', 'Author', 'Volume', 'Category'];
 
         for (let i = 0; i < colTitles.length; i++) {
             const colText = await tableCols[i].getText();
