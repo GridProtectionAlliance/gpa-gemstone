@@ -62,9 +62,9 @@ interface IProps {
     Version?: string;
 
     /**
-     * Optional text to add in sidebar footer
+     * Optional elemetn to add in sidebar footer
      */
-    SidebarText?: string;
+    SidebarUI?: JSX.Element;
     /** 
      * List of user roles used for access control and conditional route rendering
      */
@@ -217,7 +217,7 @@ const Applications: React.ForwardRefRenderFunction<IApplicationRefs, React.Props
                             Collapsed={collapsed}
                             HideSide={hideSide}
                             Version={props.Version}
-                            SidebarText={props.SidebarText}
+                            SidebarUI={props.SidebarUI}
                             SetSideBarWidth={setSideBarWidth}
                             NavbarHeight={navBarHeight}
                         >
@@ -264,7 +264,7 @@ const Applications: React.ForwardRefRenderFunction<IApplicationRefs, React.Props
                         HideSide={hideSide}
                         Version={props.Version}
                         SetSideBarWidth={setSideBarWidth}
-                        SidebarText={props.SidebarText}
+                        SidebarUI={props.SidebarUI}
                         NavbarHeight={navBarHeight}
                     >
                         {props.children}
