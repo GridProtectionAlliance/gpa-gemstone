@@ -68,9 +68,6 @@ describe('Table Component', () => {
     })
 
     it('Renders the table with proper column titles', async () => {
-        await driver.manage().window().setSize(750, 900);
-        const size = await driver.manage().window().getSize();
-        console.log(size);
         const tableCols = await driver.findElements(By.css(`${tableSelector} thead tr th`));
         expect(tableCols).toHaveLength(4);
 
