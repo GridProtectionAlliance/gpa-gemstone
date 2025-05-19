@@ -25,7 +25,6 @@ import * as React from 'react';
 import ReactDOM from 'react-dom/client';
 import AlertTestComponent from './components/react-interactive/Alert';
 import CheckBoxTestComponent from './components/react-forms/Checkbox';
-import './style.css';
 import BreadcrumbTestComponent from './components/react-interactive/Breadcrumb';
 import BtnDropdownTestComponent from './components/react-interactive/DropdownButton';
 import TableTestingComponent from './components/react-table/Table';
