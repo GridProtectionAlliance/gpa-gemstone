@@ -22,7 +22,7 @@
 //******************************************************************************************************
 import { afterEach, beforeEach, expect, describe, it } from "@jest/globals";
 import { Builder, By, until, WebDriver } from 'selenium-webdriver';
-import 'selenium-webdriver/chrome';
+import chrome from 'selenium-webdriver/chrome';
 import 'chromedriver';
 
 const rootURL = `http://localhost:${global.PORT}`;
@@ -31,8 +31,15 @@ const componentTestID = 'configtable-test-id';
 
 // Before each test, create a selenium webdriver that goes to the rootURL
 beforeEach(async () => {
-    driver = await new Builder().forBrowser('chrome').build();
-    await driver.manage().window().setSize(1600, 750);
+    const options = new chrome.Options();
+    // Ensure headless mode for sizing tests. Mimics Jenkins
+    options.addArguments('--window-size=1600,900', '--headless=new');
+
+    driver = await new Builder()
+        .forBrowser('chrome')
+        .setChromeOptions(options)
+        .build();
+
     await driver.get(rootURL); // Navigate to the page
     await driver.wait(until.elementIsVisible(driver.findElement(By.css(`#${componentTestID}-1 table thead tr th`))), 25000);
     await driver.wait(until.elementIsVisible(driver.findElement(By.css(`#${componentTestID}-2 table thead tr th`))), 25000);
