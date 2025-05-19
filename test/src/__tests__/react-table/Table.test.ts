@@ -22,7 +22,7 @@
 //******************************************************************************************************
 import { afterEach, beforeEach, expect, describe, it } from "@jest/globals";
 import { Builder, By, until, WebDriver } from 'selenium-webdriver';
-import 'selenium-webdriver/chrome';
+import chrome from 'selenium-webdriver/chrome';
 import 'chromedriver';
 
 const rootURL = `http://localhost:${global.PORT}`;
@@ -31,10 +31,21 @@ const componentTestID = 'table-test-id';
 
 // Before each test, create a selenium webdriver that goes to the rootURL
 beforeEach(async () => {
-    driver = await new Builder().forBrowser('chrome').build();
-    await driver.manage().window().setSize(750, 900);
+    const options = new chrome.Options();
+    // Ensure headless mode for sizing tests. Mimics Jenkins
+    options.addArguments('--window-size=750,900', '--headless=new');
+
+    driver = await new Builder()
+        .forBrowser('chrome')
+        .setChromeOptions(options)
+        .build();
+
     await driver.get(rootURL); // Navigate to the page
-    await driver.wait(until.elementIsVisible(driver.findElement(By.css(`#${componentTestID} table`))), 25000);
+
+    await driver.wait(
+        until.elementIsVisible(driver.findElement(By.css(`#${componentTestID} table`))),
+        25000
+    );
 });
 
 // close the driver after each test
@@ -57,6 +68,9 @@ describe('Table Component', () => {
     })
 
     it('Renders the table with proper column titles', async () => {
+        await driver.manage().window().setSize(750, 900);
+        const size = await driver.manage().window().getSize();
+        console.log(size);
         const tableCols = await driver.findElements(By.css(`${tableSelector} thead tr th`));
         expect(tableCols).toHaveLength(4);
 
