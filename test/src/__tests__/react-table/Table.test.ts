@@ -32,7 +32,7 @@ const componentTestID = 'table-test-id';
 // Before each test, create a selenium webdriver that goes to the rootURL
 beforeEach(async () => {
     driver = await new Builder().forBrowser('chrome').build();
-    await driver.manage().window().setSize(750, 780);
+    await driver.manage().window().setSize(750, 900);
     await driver.get(rootURL); // Navigate to the page
     await driver.wait(until.elementIsVisible(driver.findElement(By.css(`#${componentTestID} table`))), 25000);
 });
