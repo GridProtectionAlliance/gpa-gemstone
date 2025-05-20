@@ -23,8 +23,8 @@
 
 import { afterEach, beforeEach, expect, test } from "@jest/globals";
 import { Builder, By, until, WebDriver } from 'selenium-webdriver';
-import 'selenium-webdriver/chrome';
-import 'chromedriver';
+import chrome from 'selenium-webdriver/chrome';
+import chromedriver from "chromedriver";
 
 const rootURL = `http://localhost:${global.PORT}`;
 let driver: WebDriver;
@@ -33,8 +33,20 @@ const disabledCheckboxSelector = By.xpath(`//*[@id="window"]//span[text()="Disab
 
 // Before, create a selenium webdriver that goes to the rootURL
 beforeEach(async () => {
-    driver = await new Builder().forBrowser('chrome').build();
+    const service = new chrome.ServiceBuilder(chromedriver.path);
+
+    const options = new chrome.Options();
+    // Ensure headless mode for sizing tests. Mimics Jenkins
+    options.addArguments('--window-size=750,900', '--headless=new');
+
+    driver = await new Builder()
+        .forBrowser('chrome')
+        .setChromeService(service)
+        .setChromeOptions(options)
+        .build();
+
     await driver.get(rootURL); // Navigate to the page
+
     await driver.wait(until.titleIs('GPA Test'), 10000); // Wait until the page title is loaded
 });
 
