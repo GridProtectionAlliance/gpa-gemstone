@@ -23,7 +23,7 @@
 import { afterEach, beforeEach, expect, describe, it } from "@jest/globals";
 import { Builder, By, until, WebDriver } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome';
-import 'chromedriver';
+import chromedriver from 'chromedriver';
 
 const rootURL = `http://localhost:${global.PORT}`;
 let driver: WebDriver;
@@ -31,12 +31,15 @@ const componentTestID = 'configtable-test-id';
 
 // Before each test, create a selenium webdriver that goes to the rootURL
 beforeEach(async () => {
+    const service = new chrome.ServiceBuilder(chromedriver.path);
+
     const options = new chrome.Options();
     // Ensure headless mode for sizing tests. Mimics Jenkins
     options.addArguments('--window-size=1600,900', '--headless=new');
 
     driver = await new Builder()
         .forBrowser('chrome')
+        .setChromeService(service)
         .setChromeOptions(options)
         .build();
 
