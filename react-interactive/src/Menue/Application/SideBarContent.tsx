@@ -105,7 +105,7 @@ const SideBarContent: React.FC<IProps> = (props) => {
                         <span></span>
                     </div> : null}
 
-                {props.SidebarUI != null ?
+                {props.SidebarUI != null && !props.Collapsed ?
                     <div ref={additionalUIRef} style={{ width: '100%' }}>
                         {props.SidebarUI}
                     </div>
