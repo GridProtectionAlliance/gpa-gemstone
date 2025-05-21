@@ -87,8 +87,8 @@ const ConfigurableTableTestComponent: React.FC<{ ComponentTestID: string }> = (p
                         Key="Title"
                         AllowSort={true}
                         Field="Title"
-                        HeaderStyle={{ width: 'auto' }}
-                        RowStyle={{ width: 'auto' }}
+                        HeaderStyle={{ width: '50%' }}
+                        RowStyle={{ width: '50%' }}
                     >
                         Title
                     </Column>
@@ -96,7 +96,7 @@ const ConfigurableTableTestComponent: React.FC<{ ComponentTestID: string }> = (p
                 <ConfigurableColumn Key="Author" Default={true} Label={'Author'}>
                     <Column<Book>
                         Key="Author"
-                        AllowSort={true}
+                        AllowSort={false}
                         Field="Author"
                         HeaderStyle={{ width: 'auto' }}
                         RowStyle={{ width: 'auto' }}
