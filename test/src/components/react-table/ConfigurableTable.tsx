@@ -68,6 +68,10 @@ const ConfigurableTableTestComponent: React.FC<{ ComponentTestID: string }> = (p
         alert(`${props.ComponentTestID}: ${rowClicked.row.Title}`);
     }, []);
 
+    const handleRowClick = React.useCallback((rowClicked) => {
+        alert(`${props.ComponentTestID}: ${rowClicked.row.Title}`);
+    }, []);
+
     const headerHeight = 45;
     const bodyHeight = 300;
     const containerHeight = bodyHeight + headerHeight + 1;
