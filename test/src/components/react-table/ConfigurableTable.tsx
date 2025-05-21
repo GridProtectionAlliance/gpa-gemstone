@@ -63,6 +63,10 @@ const ConfigurableTableTestComponent: React.FC<{ ComponentTestID: string }> = (p
             setCols(updatedCols);
     }, [data2]);
 
+    const handleRowClick = React.useCallback((rowClicked) => {
+        alert(`${props.ComponentTestID}: ${rowClicked.row.Title}`);
+    }, []);
+
     const headerHeight = 45;
     const bodyHeight = 300;
     const containerHeight = bodyHeight + headerHeight + 1;
@@ -85,9 +89,7 @@ const ConfigurableTableTestComponent: React.FC<{ ComponentTestID: string }> = (p
                     else
                         setSortKey(clickedCol.colKey as keyof Book);
                 }}
-                OnClick={(rowClicked) => {
-                    alert(`${props.ComponentTestID}: ${rowClicked.row.Title}`);
-                }}
+                OnClick={handleRowClick}
                 KeySelector={(d) => `${d.Volume}-${d.Title}`}
                 ModalZIndex={30000}
                 //SettingsPortal={}

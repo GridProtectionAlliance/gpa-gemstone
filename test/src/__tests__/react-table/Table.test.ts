@@ -35,7 +35,7 @@ beforeEach(async () => {
 
     const options = new chrome.Options();
     // Ensure headless mode for sizing tests. Mimics Jenkins
-    options.addArguments('--window-size=750,900');//, '--headless=new');
+    options.addArguments('--window-size=750,900', '--headless=new');
 
     driver = await new Builder()
         .forBrowser('chrome')
@@ -86,9 +86,9 @@ describe('Table Component', () => {
         const titleCol = tableCols[0];
         await driver.sleep(500); // removes flakieness. gives time for cols to fully adjust
 
-        expect(parseFloat(await titleCol.getCssValue('width'))).toBeCloseTo(341.5);
+        expect(parseFloat(await titleCol.getCssValue('width'))).toBeCloseTo(246.5, 1);
         for (const col of tableCols.slice(1, 4)) {
-            expect(parseFloat(await col.getCssValue('width'))).toBeCloseTo(113.8, 1);
+            expect(parseFloat(await col.getCssValue('width'))).toBeCloseTo(82.1667, 1);
         }
     });
 
@@ -96,9 +96,9 @@ describe('Table Component', () => {
         const tableRows = await driver.findElements(By.css(`${tableSelector} tbody tr td`)); // first row data elements
         const firstCol = tableRows[0]; // should be 50% width
 
-        expect(parseFloat(await firstCol.getCssValue('width'))).toBeCloseTo(341.5);
+        expect(parseFloat(await firstCol.getCssValue('width'))).toBeCloseTo(246.5, 1);
         for (const col of tableRows.slice(1, 4)) {
-            expect(parseFloat(await col.getCssValue('width'))).toBeCloseTo(113.8, 1);
+            expect(parseFloat(await col.getCssValue('width'))).toBeCloseTo(82.1667, 1);
         }
     });
 
