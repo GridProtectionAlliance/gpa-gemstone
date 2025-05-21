@@ -38,9 +38,13 @@ const ConfigurableTableTestComponent: React.FC<{ ComponentTestID: string }> = (p
     const [sortKey, setSortKey] = React.useState<keyof Book>('Title');
     const [asc, setAsc] = React.useState<boolean>(true);
     const [cols, setCols] = React.useState<string[]>([]);
+    const [data2, setData2] = React.useState<Book[]>([]);
+    const [sortKey2, setSortKey2] = React.useState<keyof Book>('Title');
+    const [asc2, setAsc2] = React.useState<boolean>(true);
 
     React.useEffect(() => {
         setData(tableData.slice());
+        setData2(tableData.slice());
     }, []);
 
     React.useEffect(() => {
@@ -50,6 +54,14 @@ const ConfigurableTableTestComponent: React.FC<{ ComponentTestID: string }> = (p
         if (!_.isEqual(updatedCols, cols))
             setCols(updatedCols);
     }, [data]);
+
+    React.useEffect(() => {
+        if (data2.length == 0)
+            return;
+        const updatedCols = Object.keys(data2[0]);
+        if (!_.isEqual(updatedCols, cols))
+            setCols(updatedCols);
+    }, [data2]);
 
     const headerHeight = 45;
     const bodyHeight = 300;
@@ -135,14 +147,14 @@ const ConfigurableTableTestComponent: React.FC<{ ComponentTestID: string }> = (p
             TheadStyle={{ fontSize: 'smaller', fontWeight: 'lighter', maxHeight: `${headerHeight}px` }}
             TbodyStyle={{ fontStyle: 'italic', maxHeight: `${bodyHeight}px` }}
             TfootStyle={{ fontStyle: 'bold' }}
-            Data={data}
-            SortKey={sortKey}
-            Ascending={asc}
+            Data={data2}
+            SortKey={sortKey2}
+            Ascending={asc2}
             OnSort={(clickedCol) => {
-                if (clickedCol.colKey === sortKey)
-                    setAsc(!asc);
+                if (clickedCol.colKey === sortKey2)
+                    setAsc2(!asc2);
                 else
-                    setSortKey(clickedCol.colKey as keyof Book);
+                    setSortKey2(clickedCol.colKey as keyof Book);
             }}
             OnClick={(rowClicked) => {
                 alert(`${props.ComponentTestID}: ${rowClicked.row.Title}`);
