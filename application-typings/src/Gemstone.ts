@@ -71,7 +71,7 @@ namespace Gemstone {
                 Width: number,
                 Height: number
             }
-            export interface ICSVFieldEditProps<T> {
+            export interface ICSVFieldEditContext<T> {
                 Value: string,
                 SetValue: (val: string) => void,
                 Validate: ((value: string) => boolean) | ((value: string) => Promise<[boolean, () => void]>);
@@ -102,7 +102,7 @@ namespace Gemstone {
                 /**
                  * Component for editing the field value.
                  */
-                EditComponent: (props: ICSVFieldEditProps<T>) => JSX.Element;
+                EditComponent: JSX.Element;
 
                 /**
                  * Optional help text for the select element.

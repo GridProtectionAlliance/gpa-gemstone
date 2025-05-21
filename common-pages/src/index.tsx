@@ -30,10 +30,11 @@ import TimeFilter from './TimeFilter/TimeFilter';
 import EventTypeFilter from './EventTypeFilter';
 import EventCharacteristicFilter from './EventCharacteristicFilter';
 import NavBarFilterButton from './NavBarFilterButton';
-import { useCSVPipeline } from './Pipelines/CSVPipeline';
+import { useCSVPipeline } from './Pipelines/CSVPipeline/CSVPipeline';
 import * as TimeWindowUtils from './TimeFilter/TimeWindowUtils';
 import BulkUpload from './BulkUpload';
 import RoleAccessErrorPage from './RoleAcessErrorPage';
+import { useCSVFieldEditContext, CSVFieldEditContext } from './Pipelines/CSVPipeline/CSVFieldContext';
 
 const Pipelines = {
   CSV: useCSVPipeline
@@ -51,6 +52,8 @@ export {
   DefaultSelects,
   ErrorBoundary,
   Pipelines,
+  useCSVFieldEditContext,
+  CSVFieldEditContext,
   BulkUpload,
   RoleAccessErrorPage
 };

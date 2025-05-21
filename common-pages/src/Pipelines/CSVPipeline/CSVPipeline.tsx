@@ -29,7 +29,8 @@ import { CheckBox, Select } from '@gpa-gemstone/react-forms';
 import { Column, Table, Paging } from '@gpa-gemstone/react-table';
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import { isEqual } from 'lodash';
-import ErrorBoundary from '../ErrorBoundary';
+import ErrorBoundary from '../../ErrorBoundary';
+import { CSVFieldEditContext } from './CSVFieldContext';
 
 interface IAdditionalProps<T> {
     Fields: Gemstone.TSX.Interfaces.ICSVField<T>[],
@@ -421,8 +422,6 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
                                                             if (matchedField == null) return item[field as number];
 
                                                             const value = item[field as number];
-                                                            const feedback = matchedField.Feedback
-                                                            const selectOptions = matchedField.SelectOptions
 
                                                             const allValues: Partial<Record<keyof T, string>> = {};
                                                             props.AdditionalProps?.Headers.forEach((header, index) => {
@@ -433,14 +432,16 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
                                                             });
 
                                                             return (
-                                                                <matchedField.EditComponent
-                                                                    Value={value}
-                                                                    SetValue={(val: string) => handleValueChange(parseInt(item[0]), field as number, val)}
-                                                                    Validate={matchedField.Validate}
-                                                                    Feedback={feedback}
-                                                                    AllRecordValues={allValues}
-                                                                    SelectOptions={selectOptions}
-                                                                />
+                                                                <CSVFieldEditContext.Provider value={{
+                                                                    Value: value,
+                                                                    SetValue: (val) => handleValueChange(parseInt(item[0]), field as number, val),
+                                                                    Validate: matchedField.Validate,
+                                                                    Feedback: matchedField.Feedback,
+                                                                    AllRecordValues: allValues,
+                                                                    SelectOptions: matchedField.SelectOptions
+                                                                }}>
+                                                                    {matchedField.EditComponent}
+                                                                </CSVFieldEditContext.Provider>
                                                             );
                                                         }}
                                                     >
