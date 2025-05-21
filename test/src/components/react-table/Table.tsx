@@ -74,14 +74,14 @@ const TableTestingComponent: React.FC<{ ComponentTestID: string }> = (props) => 
                     Key="Title"
                     AllowSort={true}
                     Field="Title"
-                    HeaderStyle={{ width: 'auto' }}
-                    RowStyle={{ width: 'auto' }}
+                    HeaderStyle={{ width: '50%' }}
+                    RowStyle={{ width: '50%' }}
                 >
                     Title
                 </Column>
                 <Column<Book>
                     Key="Author"
-                    AllowSort={true}
+                    AllowSort={false}
                     Field="Author"
                     HeaderStyle={{ width: 'auto' }}
                     RowStyle={{ width: 'auto' }}
