@@ -60,6 +60,95 @@ const componentVariants = [
 
 describe.each(componentVariants)('%s', (desc, idSuffix) => {
     const tableSelector = `#${componentTestID}-${idSuffix} table`;
+    const modalSelector = `.modal.show`;
+
+    /**
+    * Enables or disables provided column or all non-disabled column checkboxes if none provided
+    * @param targetValue 'on' to enable, 'off' to disable
+    * @param col optional string of table column title text
+    */
+    const setColumnState = async (targetValue: 'on' | 'off', col?: string) => {
+        let tableHeaders = await driver.findElements(By.css(`${tableSelector} thead tr th`));
+        const configButton = await tableHeaders.slice(-1)[0];
+        await configButton.click();
+
+        if (col != null) {
+            const checkbox = await driver.findElement(
+                By.xpath(`//label[span[text()="${col}"]]/preceding-sibling::input[@type="checkbox"]`)
+            );
+            const isDisabled = await checkbox.getAttribute('disabled');
+            const currentValue = await checkbox.getAttribute('value');
+
+            if (!isDisabled && currentValue !== targetValue) {
+                await checkbox.click();
+
+                // Wait until the column header is updated
+                await driver.wait(async () => {
+                    const colHeader = await driver.findElements(By.css(`${tableSelector} thead tr th#${col}`));
+                    if (colHeader.length === 0) return true;
+                    const isDisplayed = await colHeader[0].isDisplayed();
+                    if (targetValue == 'off') return !isDisplayed;
+                    else return isDisplayed;
+                }, 5000, `Timed out waiting for ${col} column to be updated`);
+
+            }
+
+            expect(await checkbox.getAttribute('value')).toBe(targetValue);
+
+            // Check headers after removal
+            const tableHeaders = await driver.findElements(By.css(`${tableSelector} thead tr th`));
+            const texts = await Promise.all(tableHeaders.map((el) => el.getText()));
+            targetValue == 'off' ? expect(texts).not.toContain(col) : expect(texts).toContain(col);
+
+            const configIcon = await tableHeaders.slice(-1)[0].findElement(By.css('svg.feather-file-text'));
+            expect(configIcon).toBeDefined();
+        } else {
+            const checkboxes = await driver.findElements(By.css(`${modalSelector} .form-check-input`));
+            const enabledCols: string[] = [];
+
+            for (const box of checkboxes) {
+                const isDisabled = await box.getAttribute('disabled');
+                const currentValue = await box.getAttribute('value');
+
+                if (!isDisabled && currentValue !== targetValue) {
+                    await box.click();
+                }
+
+                if (isDisabled) {
+                    const label = await box.findElement(By.xpath(`following-sibling::label/span[1]`));
+                    const labelText = await label.getText();
+                    enabledCols.push(labelText);
+                }
+            }
+
+            // Verify all checkboxes are now in the expected state
+            for (const box of checkboxes) {
+                const isDisabled = await box.getAttribute('disabled');
+                const value = await box.getAttribute('value');
+                if (!isDisabled) {
+                    expect(value).toBe(targetValue);
+                }
+            }
+
+            tableHeaders = await driver.findElements(By.css(`${tableSelector} thead tr th`));
+            const colTitles = ['Title', 'Author', 'Volume', 'Category'].filter((c) =>
+                targetValue === 'on' ? true : enabledCols.includes(c)
+            );
+
+            for (let i = 0; i < colTitles.length; i++) {
+                const colText = await tableHeaders[i].getText();
+                expect(colText).toBe(colTitles[i]);
+            }
+
+            const configIcon = await tableHeaders.slice(-1)[0].findElement(By.css('svg.feather-file-text'));
+            expect(configIcon).toBeDefined();
+        }
+
+        const closeButton = await driver.findElement(
+            By.css(`${modalSelector} .modal-header > button.close`)
+        );
+        await closeButton.click();
+    };
 
     it('Renders the table with proper styles', async () => {
         const body = await driver.findElement(By.css(`${tableSelector} tbody`));
@@ -155,5 +244,33 @@ describe.each(componentVariants)('%s', (desc, idSuffix) => {
         await driver.wait(until.alertIsPresent(), 5000);
         alert = await driver.switchTo().alert();
         await alert.accept();
+    });
+
+    it('Can disable and enable table columns and update localStorage', async () => {
+        await setColumnState('off', 'Author');
+
+        // Validate Author is removed
+        let headers = await driver.findElements(By.css(`${tableSelector} thead tr th`));
+        const visibleTexts = await Promise.all(headers.map(h => h.getText()));
+        expect(visibleTexts).not.toContain('Author');
+
+        // check localStorage
+        let storage = await driver.executeScript(
+            `return window.localStorage.getItem('${componentTestID}-${idSuffix}');`
+        );
+        expect(storage).not.toContain('Author');
+
+        // re-enable it
+        await setColumnState('on', 'Author');
+
+        headers = await driver.findElements(By.css(`${tableSelector} thead tr th`));
+        const recheckTexts = await Promise.all(headers.map(h => h.getText()));
+        expect(recheckTexts).toContain('Author');
+
+        // check localStorage
+        storage = await driver.executeScript(
+            `return window.localStorage.getItem('${componentTestID}-${idSuffix}');`
+        );
+        expect(storage).toContain('Author');
     });
 });
