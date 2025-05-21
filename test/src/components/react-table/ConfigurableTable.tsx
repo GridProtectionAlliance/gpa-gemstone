@@ -62,6 +62,10 @@ const ConfigurableTableTestComponent = () => {
     }, [data2]);
 
     const handleRowClick = React.useCallback((rowClicked) => {
+        alert(`${props.ComponentTestID}: ${rowClicked.row.Title}`);
+    }, []);
+
+    const handleRowClick = React.useCallback((rowClicked) => {
         alert(`${CONFIGTABLE1_TEST_ID}: ${rowClicked.row.Title}`);
     }, []);
 
