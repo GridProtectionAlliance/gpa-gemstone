@@ -35,7 +35,7 @@ beforeEach(async () => {
 
     const options = new chrome.Options();
     // Ensure headless mode for sizing tests. Mimics Jenkins
-    options.addArguments('--window-size=1600,900', '--headless=new');
+    options.addArguments('--window-size=1600,760', '--headless=new');
 
     driver = await new Builder()
         .forBrowser('chrome')
@@ -45,7 +45,7 @@ beforeEach(async () => {
 
     await driver.get(rootURL); // Navigate to the page
     await driver.wait(until.elementIsVisible(driver.findElement(By.css(`#${componentTestID}-1 table thead tr th`))), 25000);
-    await driver.wait(until.elementIsVisible(driver.findElement(By.css(`#${componentTestID}-2 table thead tr th`))), 25000);
+    await driver.wait(until.elementIsVisible(driver.findElement(By.css(`#${componentTestID}-2 table tbody tr`))), 25000);
 });
 
 // close the driver after each test
@@ -86,5 +86,74 @@ describe.each(componentVariants)('%s', (desc, idSuffix) => {
 
         const configIcon = await tableCols[4].findElement(By.css('svg.feather-file-text'));
         expect(configIcon).toBeDefined();
+    });
+
+    it('Renders col widths correctly', async () => {
+        const tableCols = await driver.findElements(By.css(`${tableSelector} thead tr th`));
+        const titleCol = tableCols[0];
+        await driver.sleep(500); // removes flakieness. gives time for cols to fully adjust
+
+        if (idSuffix == '1') {
+            expect(parseFloat(await titleCol.getCssValue('width'))).toBeCloseTo(275.5, 1);
+            for (const col of tableCols.slice(1, 4)) {
+                expect(parseFloat(await col.getCssValue('width'))).toBeCloseTo(91.8281, 1);
+            }
+        } else {
+            for (const col of tableCols.slice(0, 4)) {
+                expect(parseFloat(await col.getCssValue('width'))).toBeCloseTo(137.75, 1);
+            }
+        }
+    });
+
+    it('Renders col rowstyles correctly', async () => {
+        const tableRows = await driver.findElements(By.css(`${tableSelector} tbody tr td`)); // first row data elements
+        const firstCol = tableRows[0]; // should be 50% width
+
+        if (idSuffix == '1') {
+            expect(parseFloat(await firstCol.getCssValue('width'))).toBeCloseTo(275.5, 1);
+            for (const col of tableRows.slice(1, 4)) {
+                expect(parseFloat(await col.getCssValue('width'))).toBeCloseTo(91.8281, 1);
+            }
+        } else {
+            for (const col of tableRows.slice(0, 4)) {
+                expect(parseFloat(await col.getCssValue('width'))).toBeCloseTo(137.75, 1);
+            }
+        }
+    });
+
+    it('Gives Title Col sort order icon and click changes ascending', async () => { // NOTE: does not test sorting, just the icon
+        const tableCols = (await driver.findElements(By.css(`${tableSelector} thead tr th`))).slice(0, 3);
+        const titleCol = tableCols[0];
+
+        let sortIcon = await titleCol.findElement(By.css(`svg path`));
+        expect(await sortIcon.getAttribute('d')).toBe('M7 14l5-5 5 5z');
+
+        for (const col of tableCols) { // Clicks each and expects the descending icon
+            if (await col.getText() === 'Author' && idSuffix != '2') { // Second col is not clickable on first table
+                await col.click();
+                const icon = await col.findElements(By.css(`svg path`));
+                expect(icon.length).toBe(0); // should not find any svg's as children
+                return;
+            }
+            await col.click();
+            sortIcon = await col.findElement(By.css(`svg path`));
+            expect(await sortIcon.getAttribute('d')).toBe('M7 10l5 5 5-5z');
+        }
+    });
+
+    it('Does the onClick for a row', async () => {
+        const tableRows = await driver.findElements(By.css(`${tableSelector} tbody tr`)); // first row
+        const firstRow = tableRows[0];
+
+        await firstRow.click();
+        await driver.wait(until.alertIsPresent(), 5000);
+        let alert = await driver.switchTo().alert();
+
+        expect(await alert.getText()).toContain(`${componentTestID}: The Great Conversation`);
+        await alert.accept();
+        // Two alerts pop up
+        await driver.wait(until.alertIsPresent(), 5000);
+        alert = await driver.switchTo().alert();
+        await alert.accept();
     });
 });
