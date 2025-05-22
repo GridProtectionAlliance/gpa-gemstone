@@ -24,7 +24,7 @@
 import { CheckBox } from "@gpa-gemstone/react-forms";
 import React from "react";
 
-const CheckBoxTestComponent: React.FC = () => {
+const CheckBoxTestComponent: React.FC<{ ComponentTestID: string }> = (props) => {
     type FormType = {
         FormData: string,
         FormBoolean: boolean
@@ -38,7 +38,7 @@ const CheckBoxTestComponent: React.FC = () => {
     const [record, setRecord] = React.useState<FormType>(RecordForm);
 
     return (<>
-        <div id="checkbox-test-text">This Record's boolean value is {record.FormBoolean.toString()}</div>
+        <div id={props.ComponentTestID}>This Record's boolean value is {record.FormBoolean.toString()}</div>
         <CheckBox
             Label={'Form Boolean'}  // Optional: Defaults to Field string
             Disabled={false}        // Optional: Defaults to false
