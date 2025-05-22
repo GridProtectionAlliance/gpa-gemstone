@@ -68,7 +68,7 @@ interface IProps<T> {
      */
     OnComplete: (records: T[]) => void;
     /**
-     * Callback function to set errors encountered during CSV processing.
+     * Callback function to set validation errors during processing.
      * @param {string[]} errors - Array of error messages.
      */
     SetErrors: (errors: string[]) => void;
