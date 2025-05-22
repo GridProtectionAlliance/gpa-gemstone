@@ -78,7 +78,7 @@ const BtnDropdownTestComponent: React.FC<{ ComponentTestID: string }> = (props) 
     }]
 
     return (
-        <div className="row g-2" id={props.ComponentTestID}>
+        <div className="row" id={props.ComponentTestID}>
             <div className="col" id={`${props.ComponentTestID}-1`}>
                 <div id={`${props.ComponentTestID}-message`}>{message}</div>
                 <BtnDropdown

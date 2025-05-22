@@ -169,7 +169,7 @@ const ConfigurableTableTestComponent: React.FC<{ ComponentTestID: string }> = (p
                 </ConfigurableColumn>
             </ConfigurableTable>
         </div>
-        <div id={props.ComponentTestID + "-2"} className="border col p-0 m-0" style={{ maxHeight: `${containerHeight}px`, maxWidth: `${containerWidth}px` }}>
+        <div id={props.ComponentTestID + "-2"} className="border col p-0 m-0 ml-3" style={{ maxHeight: `${containerHeight}px`, maxWidth: `${containerWidth}px` }}>
             <ConfigurableTable<Book>
                 TableClass={`table table-hover`}
                 RowStyle={{ fontSize: 'smaller', fontWeight: 'bolder' }}
