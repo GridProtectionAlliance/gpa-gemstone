@@ -54,20 +54,31 @@ const App: React.FC = () => {
                 AllowCollapsed={false}
             >
                 <Section Label="Component Tests" Style={{ marginLeft: "10px" }}>
-                    <Page Name={`table`} Label="React Table" />
                     <Page Name={`interactive`} Label="React Interactive" />
                     <Page Name={`forms`} Label="React Forms" />
+                    <Page Name={`application-typings`} Label="Application Typings" />
+                    <Page Name={`common-pages`} Label="Common Pages" />
+                    <Page Name={`symbols`} Label="GPA Symbols" />
+                    <Page Name={`graph`} Label="React Graph" />
+                </Section>
+                <Section Label="Table Tests" Style={{ marginLeft: "10px" }}>
+                    <Page Name={`react-table`} Label="React Table" />
+                    <Page Name={`config-table`} Label="Configurable Table" />
                 </Section>
 
                 <div className="m-3 p-0">
                     <div className="m-3">   {/* Container to center with no padding */}
                         <Routes>
                             <Route index element={<Navigate to={`table`} />} />
-                            <Route path="table" element={
+                            <Route path="react-table" element={
                                 <>
                                     <div className="row">
                                         <TableTestingComponent ComponentTestID="table-test-id" />
                                     </div>
+                                </>
+                            } />
+                            <Route path="config-table" element={
+                                <>
                                     <div className="row mt-3">
                                         <ConfigurableTableTestComponent ComponentTestID='configtable-test-id' />
                                     </div>
