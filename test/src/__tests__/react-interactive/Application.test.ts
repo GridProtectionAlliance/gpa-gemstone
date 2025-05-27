@@ -27,9 +27,9 @@ import chrome from 'selenium-webdriver/chrome';
 import chromedriver from "chromedriver";
 
 
-const rootURL = `http://localhost:${global.PORT}`;
+const rootURL = `http://localhost:${global.PORT}/`;
 let driver: WebDriver;
-const componentTestID = 'breadcrumb-test-id';
+const componentTestID = 'application-test-id';
 
 // Before each test, create a selenium webdriver that goes to the rootURL
 beforeAll(async () => {
