@@ -69,7 +69,7 @@ const App: React.FC = () => {
                 <div className="m-3 p-0">
                     <div className="m-3">   {/* Container to center with no padding */}
                         <Routes>
-                            <Route index element={<Navigate to={`table`} />} />
+                            <Route index element={<Navigate to={`react-table`} />} />
                             <Route path="react-table" element={
                                 <>
                                     <div className="row">
@@ -87,7 +87,7 @@ const App: React.FC = () => {
                             <Route path="interactive" element={
                                 <div className="row">
                                     <div className="row p-0">
-                                        <AlertTestComponent />
+                                        <AlertTestComponent ComponentTestID="alert-test-id" />
                                     </div>
                                     <div className="row p-0">
                                         <BtnDropdownTestComponent ComponentTestID="btn-dropdown-test" />
