@@ -63,6 +63,7 @@ export default function ConfigurableTable<T>(props: React.PropsWithChildren<ITab
     const getKeyMappings = () => {
         const updated = new Map<string, IColDesc>();
         const localKeys = localStorage.getItem(props.LocalStorageKey ?? '')?.split(',') ?? [];
+        if (localKeys[0] == '') localKeys.pop(); // if localstorage is empty, set the array to an empty array. [''] by default
 
         React.Children.forEach(props.children, (element) => {
             if (!React.isValidElement(element)) return;
@@ -121,7 +122,9 @@ export default function ConfigurableTable<T>(props: React.PropsWithChildren<ITab
         const enabled = allKeys.filter((k) => columns.get(k)?.Enabled);
 
         currentKeys.push(...enabled);
-        (currentKeys.length == 0 && currentState == null) ? null : localStorage.setItem(props.LocalStorageKey, currentKeys.join(','));
+        (currentState == null || currentState == '')
+            ? localStorage.setItem(props.LocalStorageKey, enabled.join(','))
+        : localStorage.setItem(props.LocalStorageKey, currentKeys.join(','));
     }
 
     function changeColumns(key: string) {
@@ -274,6 +277,9 @@ interface IColSelectionProps<> {
 
 function ColumnSelection(props: IColSelectionProps) {
     const [showAlert, setShowAlert] = React.useState<boolean>(true);
+    const enabledCols = props.columns.filter((column) => column.Enabled);
+    const isOnlyOneEnabled = enabledCols.length === 1;
+
     return (
         <>
             <div className="row">
@@ -286,11 +292,17 @@ function ColumnSelection(props: IColSelectionProps) {
                                 Record={c}
                                 Setter={() => props.onChange(c.Key)}
                                 key={c.Key}
-                                Disabled={c.Key == props.sortKey || (props.disableAdd && !c.Enabled)}
+                                Disabled={
+                                    c.Key === props.sortKey ||
+                                    (props.disableAdd && !c.Enabled) ||
+                                    (isOnlyOneEnabled && c.Enabled)
+                                }
                                 Help={
-                                    c.Key == props.sortKey
+                                    c.Key === props.sortKey
                                         ? 'The Table is currently sorted by this column so it cannot be hidden.'
-                                        : undefined
+                                    : isOnlyOneEnabled && c.Enabled
+                                        ? 'Table must have one column visible at all times.'
+                                    : undefined
                                 }
                             />
                         ) : null,
@@ -305,11 +317,17 @@ function ColumnSelection(props: IColSelectionProps) {
                                 Record={c}
                                 Setter={() => props.onChange(c.Key)}
                                 key={c.Key}
-                                Disabled={c.Key == props.sortKey || (props.disableAdd && !c.Enabled)}
+                                Disabled={
+                                    c.Key === props.sortKey ||
+                                    (props.disableAdd && !c.Enabled) ||
+                                    (isOnlyOneEnabled && c.Enabled)
+                                }
                                 Help={
-                                    c.Key == props.sortKey
+                                    c.Key === props.sortKey
                                         ? 'The Table is currently sorted by this column so it cannot be hidden.'
-                                        : undefined
+                                        : isOnlyOneEnabled && c.Enabled
+                                            ? 'Table must have one column visible at all times.'
+                                            : undefined
                                 }
                             />
                         ) : null,
@@ -324,11 +342,17 @@ function ColumnSelection(props: IColSelectionProps) {
                                 Record={c}
                                 Setter={() => props.onChange(c.Key)}
                                 key={c.Key}
-                                Disabled={c.Key == props.sortKey || (props.disableAdd && !c.Enabled)}
+                                Disabled={
+                                    c.Key === props.sortKey ||
+                                    (props.disableAdd && !c.Enabled) ||
+                                    (isOnlyOneEnabled && c.Enabled)
+                                }
                                 Help={
-                                    c.Key == props.sortKey
+                                    c.Key === props.sortKey
                                         ? 'The Table is currently sorted by this column so it cannot be hidden.'
-                                        : undefined
+                                        : isOnlyOneEnabled && c.Enabled
+                                            ? 'Table must have one column visible at all times.'
+                                            : undefined
                                 }
                             />
                         ) : null,
