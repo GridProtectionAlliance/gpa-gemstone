@@ -26,7 +26,7 @@ import chrome from 'selenium-webdriver/chrome';
 import chromedriver from "chromedriver";
 
 
-const rootURL = `http://localhost:${global.PORT}`;
+const rootURL = `http://localhost:${global.PORT}/interactive`;
 let driver: WebDriver;
 const componentTestID = 'breadcrumb-test-id';
 

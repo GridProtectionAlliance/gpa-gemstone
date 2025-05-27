@@ -25,7 +25,7 @@ import { Builder, By, until, WebDriver } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome';
 import chromedriver from 'chromedriver';
 
-const rootURL = `http://localhost:${global.PORT}`;
+const rootURL = `http://localhost:${global.PORT}/config-table`;
 let driver: WebDriver;
 const componentTestID = 'configtable-test-id';
 
