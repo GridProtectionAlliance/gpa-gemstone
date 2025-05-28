@@ -47,10 +47,89 @@ beforeAll(async () => {
 
     await driver.get(rootURL); // Navigate to the page
 
-    await driver.wait(until.titleIs('GPA Test'), 10000); // Wait until the page title is loaded
+    await driver.wait(until.elementIsVisible(driver.findElement(By.css(`div.navbar`))), 10000); // Wait until the navbar
 });
 
 // close the driver after each test
 afterAll(async () => {
     if (driver) await driver.quit();
 });
+
+// TODO: - Clicking goes to the right place, test for two routes
+//       - Clicking bolds the selection and no others
+//       - Clicking header folds, clicking header that is not foldable does not fold
+
+describe('Application Component', () => {
+    it('Renders the navbar component with some list elements', async () => {
+        const navbar = await driver.findElement(By.css(`div.navbar`));
+        expect(parseFloat(await navbar.getCssValue('width'))).toBeGreaterThan(0);
+
+        const elements = await navbar.findElements(By.css(`ul`));
+        expect(elements.length).toBeGreaterThan(2);
+    });
+
+    it.each([
+        { tooltip: 'interactive', expectedPath: '/interactive', expectedElements: ['alert-test-id-2', 'btn-dropdown-test'] },
+        { tooltip: 'forms', expectedPath: '/forms', expectedElements: ['checkbox-test-text'] }
+    ])('Goes to correct path, sets path active and loads page when $tooltip link is clicked',
+    async ({ tooltip, expectedPath, expectedElements }) => {
+        const navbar = await driver.findElement(By.css('div.navbar'));
+        const links = await navbar.findElements(By.css('a.nav-link'));
+
+        let targetLink;
+        for (const link of links) {
+            const dataTooltip = await link.getAttribute('data-tooltip');
+            if (dataTooltip === tooltip) {
+                targetLink = link;
+                break;
+            }
+        }
+
+        expect(targetLink).toBeDefined();
+
+        await targetLink.click();
+        await driver.wait(until.urlContains(expectedPath));
+
+        const classAttr = await targetLink.getAttribute('class');
+        expect(classAttr).toContain('active');
+
+        for (const id of expectedElements) {
+            const element = await driver.findElement(By.id(id));
+            expect(element).toBeDefined();
+        }
+    });
+
+    it('Folds header on click and does not allow folding when in section', async () => {
+        const navbarHeaders = await driver.findElements(By.css('h6.sidebar-heading'));
+        expect(navbarHeaders.length).toBeGreaterThanOrEqual(2);
+
+        let navSections = await driver.findElements(By.css('ul.navbar-nav.px-3'));
+        const initNumOfSections = navSections.length;
+
+        // Locate the icon inside the span
+        const header = await navbarHeaders[1].findElement(By.css('span'));
+        const iconUp = await header.findElement(By.css('svg.feather'));
+        expect(iconUp).toBeDefined();
+
+        // Second header should not have a chevron (non-collapsible)
+        const secondHeaderIcons = await navbarHeaders[0].findElements(By.css('svg'));
+        expect(secondHeaderIcons.length).toBe(0);
+
+        // Click first header to fold
+        await navbarHeaders[1].click();
+
+        // Wait for icon flip
+        await driver.wait(until.elementLocated(By.css('h6.sidebar-heading span svg')), 3000);
+        const chevronDown = await navbarHeaders[1].findElement(By.css('svg'));
+        expect(chevronDown).toBeDefined();
+
+        // Check nav section count changed
+        navSections = await driver.findElements(By.css('ul.navbar-nav.px-3'));
+        expect(navSections.length).toBeLessThan(initNumOfSections);
+
+        // Click second header (should remain unchanged)
+        await navbarHeaders[0].click();
+        const secondHeaderIconsAfter = await navbarHeaders[0].findElements(By.css('svg'));
+        expect(secondHeaderIconsAfter.length).toBe(0);
+    });
+})
