@@ -25,7 +25,7 @@ import { Builder, By, until, WebDriver } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome';
 import chromedriver from 'chromedriver';
 
-const rootURL = `http://localhost:${global.PORT}/table`;
+const rootURL = `http://localhost:${global.PORT}/react-table`;
 let driver: WebDriver;
 const componentTestID = 'table-test-id';
 
@@ -86,9 +86,9 @@ describe('Table Component', () => {
         const titleCol = tableCols[0];
         await driver.sleep(500); // removes flakieness. gives time for cols to fully adjust
 
-        expect(parseFloat(await titleCol.getCssValue('width'))).toBeCloseTo(246.5, 1);
+        expect(parseFloat(await titleCol.getCssValue('width'))).toBeCloseTo(241.5, 1);
         for (const col of tableCols.slice(1, 4)) {
-            expect(parseFloat(await col.getCssValue('width'))).toBeCloseTo(82.1667, 1);
+            expect(parseFloat(await col.getCssValue('width'))).toBeCloseTo(80.5, 1);
         }
     });
 
@@ -97,9 +97,9 @@ describe('Table Component', () => {
         const firstCol = tableRows[0]; // should be 50% table width
         await driver.sleep(500); // removes flakieness. gives time for cols to fully adjust
 
-        expect(parseFloat(await firstCol.getCssValue('width'))).toBeCloseTo(246.5, 1);
+        expect(parseFloat(await firstCol.getCssValue('width'))).toBeCloseTo(241.5, 1);
         for (const col of tableRows.slice(1, 4)) {
-            expect(parseFloat(await col.getCssValue('width'))).toBeCloseTo(82.1667, 1);
+            expect(parseFloat(await col.getCssValue('width'))).toBeCloseTo(80.5, 1);
         }
     });
 
