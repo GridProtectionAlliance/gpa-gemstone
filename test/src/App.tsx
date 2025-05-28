@@ -35,7 +35,10 @@ import {
     BreadcrumbTestComponent,
     BtnDropdownTestComponent
 } from './components/react-interactive';
-import CheckBoxTestComponent from './components/react-forms/Checkbox';
+import {
+    CheckBoxTestComponent,
+    RadioButtonsTestComponent
+ } from './components/react-forms';
 import TableTestingComponent from './components/react-table/Table';
 import ConfigurableTableTestComponent from './components/react-table/ConfigurableTable';
 
@@ -90,6 +93,9 @@ const App: React.FC = () => {
                                 <div className="row">
                                     <div className='col p-0'>
                                         <CheckBoxTestComponent ComponentTestID='checkbox-test-text'/>
+                                    </div>
+                                    <div className='col p-0'>
+                                        <RadioButtonsTestComponent ComponentTestID='radiobuttons-test-id' />
                                     </div>
                                 </div>
                             } />
