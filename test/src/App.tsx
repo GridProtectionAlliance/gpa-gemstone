@@ -65,7 +65,6 @@ const App: React.FC = () => {
                     <Page Name={`react-table`} Label="React Table" />
                     <Page Name={`config-table`} Label="Configurable Table" />
                 </Section>
-
                 <div className="m-3 p-0">
                     <div className="m-3">   {/* Container to center with no padding */}
                         <Routes>
