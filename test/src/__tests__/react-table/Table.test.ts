@@ -35,7 +35,7 @@ beforeEach(async () => {
 
     const options = new chrome.Options();
     // Ensure headless mode for sizing tests. Mimics Jenkins
-    options.addArguments('--window-size=750,900', '--headless=new');
+    options.addArguments('--window-size=750,900', '--headless=new', '--disable-gpu');
 
     driver = await new Builder()
         .forBrowser('chrome')
@@ -94,7 +94,8 @@ describe('Table Component', () => {
 
     it('Renders col rowstyles correctly', async () => {
         const tableRows = await driver.findElements(By.css(`${tableSelector} tbody tr td`)); // first row data elements
-        const firstCol = tableRows[0]; // should be 50% width
+        const firstCol = tableRows[0]; // should be 50% table width
+        await driver.sleep(500); // removes flakieness. gives time for cols to fully adjust
 
         expect(parseFloat(await firstCol.getCssValue('width'))).toBeCloseTo(246.5, 1);
         for (const col of tableRows.slice(1, 4)) {
