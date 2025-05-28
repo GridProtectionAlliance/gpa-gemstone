@@ -35,7 +35,7 @@ beforeEach(async () => {
 
     const options = new chrome.Options();
     // Ensure headless mode for sizing tests. Mimics Jenkins
-    options.addArguments('--window-size=1600,760', '--headless=new');
+    options.addArguments('--window-size=1600,760', '--headless=new', '--disable-gpu');
 
     driver = await new Builder()
         .forBrowser('chrome')
