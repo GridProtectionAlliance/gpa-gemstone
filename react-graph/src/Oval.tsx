@@ -154,7 +154,7 @@ const Oval = (props: IProps) => {
         const fontFamily = "Segoe UI";
         const fontSizeUnit = "em";
 
-        const ovalWidth = Math.abs(context.XTransformation(props.Data[1]) - context.XTransformation(props.Data[0]));;
+        const ovalWidth = Math.abs(context.XTransformation(props.Data[1]) - context.XTransformation(props.Data[0]));
 
         let minSize = 0.05;
         let maxSize = 5;
