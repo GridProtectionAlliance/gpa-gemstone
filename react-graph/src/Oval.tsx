@@ -73,6 +73,11 @@ export interface IProps {
     Text?: string,
 
     /**
+     * Where to place text in the oval
+     */
+    TextPlacement?: 'center' | 'left' | 'right'
+
+    /**
      * Opacity of the oval and circles.
      * @optional
      * @type {number}
@@ -100,6 +105,19 @@ const Oval = (props: IProps) => {
     const [guid, setGuid] = React.useState<string>("");
     const [textSize, setTextSize] = React.useState<number>(1);
 
+    const { radius, pxHeight } = React.useMemo(() => {
+        const x0px = context.XTransformation(props.Data[0]);
+        const x1px = context.XTransformation(props.Data[1]);
+
+        const widthPx = Math.abs(x1px - x0px);
+
+        const heightFromProvidedRad = 2 * props.Radius;
+        const heightPx = Math.min(heightFromProvidedRad, widthPx / 2);
+        const r = heightPx / 2;
+
+        return { radius: r, pxHeight: heightPx };
+    }, [context.XTransformation, props.Data?.[0], props.Data?.[1], props.Radius]);
+
     // Update data series information in the graph context based on circle properties
     React.useEffect(() => {
         if (guid === "")
@@ -110,19 +128,20 @@ const Oval = (props: IProps) => {
             legend: undefined,
             getMax: (t) => (t[0] < props.Data[0] && t[1] > props.Data[1] ? props.Data[2] : undefined),
             getMin: (t) => (t[0] < props.Data[0] && t[1] > props.Data[1] ? props.Data[2] : undefined),
-        } as IDataSeries)
+        } as IDataSeries);
     }, [props.Axis, props.Data])
 
     // Add a new data series on component mount / removing on unmount
     React.useEffect(() => {
-
         const id = context.AddData({
             axis: props.Axis,
             legend: undefined,
             getMax: (t) => (t[0] < props.Data[0] && t[1] > props.Data[1] ? props.Data[2] : undefined),
             getMin: (t) => (t[0] < props.Data[0] && t[1] > props.Data[1] ? props.Data[2] : undefined),
-        } as IDataSeries)
-        setGuid(id)
+        } as IDataSeries);
+
+        setGuid(id);
+
         return () => {
             context.RemoveData(id)
         }
@@ -135,8 +154,7 @@ const Oval = (props: IProps) => {
         const fontFamily = "Segoe UI";
         const fontSizeUnit = "em";
 
-        const ovalWidth = Math.abs(context.XTransformation(props.Data[1]) - context.XTransformation(props.Data[0])) + (2 * props.Radius);
-        const ovalHeight = 2 * props.Radius;
+        const ovalWidth = Math.abs(context.XTransformation(props.Data[1]) - context.XTransformation(props.Data[0]));;
 
         let minSize = 0.05;
         let maxSize = 5;
@@ -152,7 +170,7 @@ const Oval = (props: IProps) => {
             const midSize = (maxSize + minSize) / 2;
             const { dX, dY } = calculateTextSize(midSize);
 
-            if (dX <= ovalWidth && dY <= ovalHeight) {
+            if (dX <= ovalWidth && dY <= pxHeight) {
                 bestSize = midSize;
                 minSize = midSize; // Try larger
             } else
@@ -160,7 +178,7 @@ const Oval = (props: IProps) => {
         }
 
         setTextSize(bestSize);
-    }, [props.Text, props.Radius, context.XTransformation, props.Data]);
+    }, [props.Text, pxHeight, context.XTransformation, props.Data]);
 
     // Set up a click handler if provided in props
     React.useEffect(() => {
@@ -171,7 +189,7 @@ const Oval = (props: IProps) => {
     }, [props.OnClick, context.UpdateFlag])
 
     // Handle click events on the oval
-    function onClick(xClick: number, yClick: number) {
+    const onClick = React.useCallback((xClick: number, yClick: number) => {
         if (props.OnClick === undefined)
             return;
 
@@ -180,30 +198,46 @@ const Oval = (props: IProps) => {
         const xClickTransformed = context.XTransformation(xClick);
         const yClickTransformed = context.YTransformation(yClick, axis);
 
-        const x1Transformed = context.XTransformation(props.Data[0]) - props.Radius;
-        const x2Transformed = context.XTransformation(props.Data[1]) + props.Radius;
+        const x1Transformed = context.XTransformation(props.Data[0]);
+        const x2Transformed = context.XTransformation(props.Data[1]);
         const yTransformed = context.YTransformation(props.Data[2], axis);
 
         const isWithinHorizontalBounds = xClickTransformed >= x1Transformed && xClickTransformed <= x2Transformed;
-        const isWithinVerticalBounds = yClickTransformed >= yTransformed - props.Radius && yClickTransformed <= yTransformed + props.Radius;
+        const isWithinVerticalBounds = yClickTransformed >= yTransformed - radius && yClickTransformed <= yTransformed + radius;
 
         if (isWithinHorizontalBounds && isWithinVerticalBounds)
             props.OnClick(xClick, yClick, { setYDomain: context.SetYDomain as React.SetStateAction<[number, number][]>, setTDomain: context.SetXDomain as React.SetStateAction<[number, number]> });
-    }
+    }, [props.OnClick, props.Axis, props.Data, radius, context.XTransformation, context.YTransformation, context.SetXDomain, context.SetYDomain])
 
-    // Render null if coordinates are not valid, otherwise render the circle / text
+    const textXPosition = React.useMemo(() => {
+        const xLeft = context.XTransformation(props.Data[0]);
+        const xRight = context.XTransformation(props.Data[1]);
+        const xCenter = (xLeft + xRight) / 2
+        if (props.TextPlacement == null || props.TextPlacement === 'center')
+            return xCenter
+
+        if (props.TextPlacement === 'left')
+            return xLeft
+
+        if (props.TextPlacement === 'right')
+            return xRight
+
+        return xCenter
+    }, [context.XTransformation, props.Data[0], props.Data[1], props.TextPlacement])
+
+    // Render null if coordinates are not valid, otherwise render the oval / text
     if (!isFinite(context.XTransformation((props.Data[0], props.Data[1]) / 2)) || !isFinite(context.YTransformation(props.Data[2], AxisMap.get(props.Axis))))
         return null;
 
     return (
         <g>
             <rect
-                x={context.XTransformation(props.Data[0]) - props.Radius}
-                y={context.YTransformation(props.Data[2], AxisMap.get(props.Axis)) - props.Radius}
-                width={Math.abs(context.XTransformation(props.Data[1]) - context.XTransformation(props.Data[0])) + (2 * props.Radius)}
-                height={2 * props.Radius}
-                rx={props.Radius}
-                ry={props.Radius}
+                x={context.XTransformation(props.Data[0])}
+                y={context.YTransformation(props.Data[2], AxisMap.get(props.Axis)) - radius}
+                width={Math.abs(context.XTransformation(props.Data[1]) - context.XTransformation(props.Data[0]))}
+                height={pxHeight}
+                rx={radius}
+                ry={radius}
                 fill={props.Color}
                 opacity={props.Opacity}
                 stroke={props.BorderColor}
@@ -212,9 +246,11 @@ const Oval = (props: IProps) => {
             />
 
             {props.Text !== undefined ?
-                <text fill={props.TextColor ?? 'currentColor'} style={{ fontSize: textSize + 'em', textAnchor: 'middle', dominantBaseline: 'middle' }}
+                <text
+                    fill={props.TextColor ?? 'currentColor'}
+                    style={{ fontSize: textSize + 'em', textAnchor: 'middle', dominantBaseline: 'middle' }}
                     y={context.YTransformation(props.Data[2], AxisMap.get(props.Axis))}
-                    x={(context.XTransformation(props.Data[0]) + context.XTransformation(props.Data[1])) / 2}>
+                    x={textXPosition}>
                     {props.Text}
                 </text> : null}
         </g>
