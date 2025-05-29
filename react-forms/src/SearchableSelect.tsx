@@ -94,7 +94,7 @@ export default function SearchableSelect<T>(props: IProps<T>) {
             });
             return callback
         }
-    }, [props.GetLabel]);
+    }, [props.GetLabel, props.Record[props.Field], props.ResetSearchOnSelect]);
 
     // Call props.Search every 500ms to avoid hammering the server while typing
     React.useEffect(() => {
