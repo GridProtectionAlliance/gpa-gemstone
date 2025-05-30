@@ -56,7 +56,7 @@ interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
     /*
     * Function to get the initial label for the input
     */
-    GetLabel?: () => [Promise<string>, () => void]
+    GetLabel?: () => [PromiseLike<string>, () => void]
     /**
      * Flag to reset search text to an empty string when a user selects an option. Defaulting to false
      */
@@ -94,7 +94,7 @@ export default function SearchableSelect<T>(props: IProps<T>) {
             });
             return callback
         }
-    }, [props.GetLabel]);
+    }, [props.GetLabel, props.Record[props.Field], props.ResetSearchOnSelect]);
 
     // Call props.Search every 500ms to avoid hammering the server while typing
     React.useEffect(() => {
@@ -110,8 +110,7 @@ export default function SearchableSelect<T>(props: IProps<T>) {
                 setLoading(false);
             }, () => {
                 setLoading(false);
-            }
-            );
+            });
         }, 500);
 
         return () => {
