@@ -20,18 +20,30 @@
 //       Generated original version of source code.
 //
 //******************************************************************************************************
-import { afterAll, beforeAll, expect, test } from "@jest/globals";
+import { afterAll, beforeAll, describe, expect, it, test } from "@jest/globals";
 import { Builder, By, until, WebDriver } from 'selenium-webdriver';
-import 'selenium-webdriver/chrome';
-import 'chromedriver';
+import chrome from 'selenium-webdriver/chrome';
+import chromedriver from "chromedriver";
 
 const rootURL = `http://localhost:${global.PORT}`;
 let driver: WebDriver;
 
 // Before each test, create a selenium webdriver that goes to the rootURL
 beforeAll(async () => {
-    driver = await new Builder().forBrowser('chrome').build();
+    const service = new chrome.ServiceBuilder(chromedriver.path);
+
+    const options = new chrome.Options();
+    // Ensure headless mode for sizing tests. Mimics Jenkins
+    options.addArguments('--window-size=750,900', '--headless=new');
+
+    driver = await new Builder()
+        .forBrowser('chrome')
+        .setChromeService(service)
+        .setChromeOptions(options)
+        .build();
+
     await driver.get(rootURL); // Navigate to the page
+
     await driver.wait(until.titleIs('GPA Test'), 10000); // Wait until the page title is loaded
 });
 
@@ -40,49 +52,51 @@ afterAll(async () => {
     if (driver) await driver.quit();
 });
 
-test('Alert.tsx: Validating Alert with X props are applied', async () => {
-    const component = await driver.findElements(By.xpath("//*[contains(text(), 'Alert component with X')]"));
+describe('Alert Component', () => {
+    it('Applies Alert with X props', async () => {
+        const component = await driver.findElements(By.xpath("//*[contains(text(), 'Alert component with X')]"));
 
-    const className = await component[0].getAttribute('class');
-    const xButton = await component[0].findElements(By.css('button'));
+        const className = await component[0].getAttribute('class');
+        const xButton = await component[0].findElements(By.css('button'));
 
-    expect(className).toContain('alert-primary');
-    expect(xButton.length).toBe(1);
+        expect(className).toContain('alert-primary');
+        expect(xButton.length).toBe(1);
+    });
+
+    it(('Applies Alert without X props'), async () => {
+        const component = await driver.findElements(By.xpath("//*[contains(text(), 'Alert component without X')]"))
+
+        const className = await component[0].getAttribute('class');
+        const xButton = await component[0].findElements(By.css('button'));
+
+        expect(className).toContain('alert-primary');
+        expect(xButton.length).toBe(0);
+    });
+
+    it(('Uses the callback'), async () => {
+        // gets x button
+        const button = await driver.wait(
+            until.elementLocated(By.xpath("//*[contains(text(), 'Alert component with X')]")))
+            .findElements(By.css('button'));
+        expect(button.length).toBe(1);
+
+        // clicks it and validates alert popped up
+        await button[0].click();
+        const alert = await driver.switchTo().alert();
+        const alertText = await alert.getText();
+        expect(alertText).toBe('Closing Alert');
+        await alert.accept();
+
+        // verifies the alert is not displayed
+        const component = await driver.findElements(By.xpath("//*[contains(text(), 'Alert component with X')]"));
+        expect(await component[0].isDisplayed()).toBe(false);
+
+        // clicks "Bring Back Closed Alert" button
+        const bringBackButton = await driver.findElement(By.xpath("//button[contains(text(), 'Bring Back Closed Alert')]"));
+        await bringBackButton.click();
+
+        // re-locate and verify the alert is visible again
+        const reappeared = await driver.findElements(By.xpath("//*[contains(text(), 'Alert component with X')]"));
+        expect(await reappeared[0].isDisplayed()).toBe(true);
+    });
 });
-
-test(('Alert.tsx: Validating Alert without X props are applied'), async () => {
-    const component = await driver.findElements(By.xpath("//*[contains(text(), 'Alert component without X')]"))
-
-    const className = await component[0].getAttribute('class');
-    const xButton = await component[0].findElements(By.css('button'));
-
-    expect(className).toContain('alert-primary');
-    expect(xButton.length).toBe(0);
-});
-
-test(('Alert.tsx: Validating callback functionality'), async () => {
-    // gets x button
-    const button = await driver.wait(
-        until.elementLocated(By.xpath("//*[contains(text(), 'Alert component with X')]")))
-        .findElements(By.css('button'));
-    expect(button.length).toBe(1);
-
-    // clicks it and validates alert popped up
-    await button[0].click();
-    const alert = await driver.switchTo().alert();
-    const alertText = await alert.getText();
-    expect(alertText).toBe('Closing Alert');
-    await alert.accept();
-
-    // verifies the alert is not displayed
-    const component = await driver.findElements(By.xpath("//*[contains(text(), 'Alert component with X')]"));
-    expect(await component[0].isDisplayed()).toBe(false);
-
-    // clicks "Bring Back Closed Alert" button
-    const bringBackButton = await driver.findElement(By.xpath("//button[contains(text(), 'Bring Back Closed Alert')]"));
-    await bringBackButton.click();
-
-    // re-locate and verify the alert is visible again
-    const reappeared = await driver.findElements(By.xpath("//*[contains(text(), 'Alert component with X')]"));
-    expect(await reappeared[0].isDisplayed()).toBe(true);
-})
