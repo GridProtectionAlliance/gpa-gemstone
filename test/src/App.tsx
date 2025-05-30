@@ -23,26 +23,97 @@
 
 import * as React from 'react';
 import ReactDOM from 'react-dom/client';
-import AlertTestComponent from './components/react-interactive/Alert';
-import CheckBoxTestComponent from './components/react-forms/Checkbox';
-import BreadcrumbTestComponent from './components/react-interactive/Breadcrumb';
-import BtnDropdownTestComponent from './components/react-interactive/DropdownButton';
+import {
+    BrowserRouter as Router,
+    Route,
+    Routes,
+    Navigate
+} from 'react-router-dom';
+import { Application, Page, Section } from '@gpa-gemstone/react-interactive';
+import {
+    AlertTestComponent,
+    BreadcrumbTestComponent,
+    BtnDropdownTestComponent
+} from './components/react-interactive';
+import {
+    CheckBoxTestComponent,
+    RadioButtonsTestComponent
+ } from './components/react-forms';
 import TableTestingComponent from './components/react-table/Table';
+import ConfigurableTableTestComponent from './components/react-table/ConfigurableTable';
 
 const root = ReactDOM.createRoot(document.getElementById('window'));
+
+declare const homePath: string;
 
 /** Test App Root */
 const App: React.FC = () => {
     return (
-        <div className="d-flex align-items-center">
-            <div>
-                <TableTestingComponent ComponentTestID="table-test-id" />
-                <AlertTestComponent />
-                <CheckBoxTestComponent />
-                <BreadcrumbTestComponent ComponentTestID='breadcrumb-test-id' />
-                <BtnDropdownTestComponent ComponentTestID="btn-dropdown-test" />
-            </div>
-    </div>
+        <Router basename="/">
+            <Application
+                HomePath={homePath}
+                DefaultPath={"index.html"}
+                UseLegacyNavigation={true}
+                AllowCollapsed={false}
+            >
+                <Section Label="Component Tests" Style={{ marginLeft: "10px" }}>
+                    <Page Name={`interactive`} Label="React Interactive" />
+                    <Page Name={`forms`} Label="React Forms" />
+                    <Page Name={`application-typings`} Label="Application Typings" />
+                    <Page Name={`common-pages`} Label="Common Pages" />
+                    <Page Name={`symbols`} Label="GPA Symbols" />
+                    <Page Name={`graph`} Label="React Graph" />
+                </Section>
+                <Section Label="Table Tests" Style={{ marginLeft: "10px" }}>
+                    <Page Name={`react-table`} Label="React Table" />
+                    <Page Name={`config-table`} Label="Configurable Table" />
+                </Section>
+                <div className="m-3 p-0">
+                    <div className="m-3">   {/* Container to center with no padding */}
+                        <Routes>
+                            <Route index element={<Navigate to={`react-table`} />} />
+                            <Route path="react-table" element={
+                                <>
+                                    <div className="row">
+                                        <TableTestingComponent ComponentTestID="table-test-id" />
+                                    </div>
+                                </>
+                            } />
+                            <Route path="config-table" element={
+                                <>
+                                    <div className="row mt-3">
+                                        <ConfigurableTableTestComponent ComponentTestID='configtable-test-id' />
+                                    </div>
+                                </>
+                            } />
+                            <Route path="interactive" element={
+                                <div className="row">
+                                    <div className="row p-0">
+                                        <AlertTestComponent ComponentTestID="alert-test-id" />
+                                    </div>
+                                    <div className="row p-0">
+                                        <BtnDropdownTestComponent ComponentTestID="btn-dropdown-test" />
+                                    </div>
+                                    <div className="row p-0 mt-3">
+                                        <BreadcrumbTestComponent ComponentTestID='breadcrumb-test-id' />
+                                    </div>
+                                </div>
+                            } />
+                            <Route path="forms" element={
+                                <div className="row">
+                                    <div className='col p-0'>
+                                        <CheckBoxTestComponent ComponentTestID='checkbox-test-text'/>
+                                    </div>
+                                    <div className='col p-0'>
+                                        <RadioButtonsTestComponent ComponentTestID='radiobuttons-test-id' />
+                                    </div>
+                                </div>
+                            } />
+                        </Routes>
+                    </div>
+                </div>
+            </Application>
+        </Router>
     );
 };
 

@@ -26,7 +26,7 @@ import { Builder, By, until, WebDriver } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome';
 import chromedriver from "chromedriver";
 
-const rootURL = `http://localhost:${global.PORT}`;
+const rootURL = `http://localhost:${global.PORT}/forms`;
 let driver: WebDriver;
 const checkboxSelector = By.xpath(`//*[@id="window"]//span[text()="Form Boolean"]/ancestor::label/preceding-sibling::input[@type="checkbox"]`);
 const disabledCheckboxSelector = By.xpath(`//*[@id="window"]//span[text()="Disabled Form Boolean"]/ancestor::label/preceding-sibling::input[@type="checkbox"]`);
