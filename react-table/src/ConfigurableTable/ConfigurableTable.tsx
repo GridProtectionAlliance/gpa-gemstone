@@ -122,9 +122,7 @@ export default function ConfigurableTable<T>(props: React.PropsWithChildren<ITab
         const enabled = allKeys.filter((k) => columns.get(k)?.Enabled);
 
         currentKeys.push(...enabled);
-        (currentState == null || currentState == '')
-            ? localStorage.setItem(props.LocalStorageKey, enabled.join(','))
-        : localStorage.setItem(props.LocalStorageKey, currentKeys.join(','));
+        localStorage.setItem(props.LocalStorageKey, currentKeys.join(','));
     }
 
     function changeColumns(key: string) {
@@ -276,9 +274,15 @@ interface IColSelectionProps<> {
 }
 
 function ColumnSelection(props: IColSelectionProps) {
-    const [showAlert, setShowAlert] = React.useState<boolean>(true);
     const enabledCols = props.columns.filter((column) => column.Enabled);
     const isOnlyOneEnabled = enabledCols.length === 1;
+    const helpMessage = (col: IColDesc) => {
+        if (col.Key === props.sortKey)
+            return 'The Table is currently sorted by this column, so it cannot be hidden.';
+        if (isOnlyOneEnabled && col.Enabled)
+            return 'The Table must have one column visible at all times, so it cannot be hidden.';
+        return undefined;
+    }
 
     return (
         <>
@@ -297,13 +301,7 @@ function ColumnSelection(props: IColSelectionProps) {
                                     (props.disableAdd && !c.Enabled) ||
                                     (isOnlyOneEnabled && c.Enabled)
                                 }
-                                Help={
-                                    c.Key === props.sortKey
-                                        ? 'The Table is currently sorted by this column so it cannot be hidden.'
-                                    : isOnlyOneEnabled && c.Enabled
-                                        ? 'Table must have one column visible at all times.'
-                                    : undefined
-                                }
+                                Help={helpMessage(c)}
                             />
                         ) : null,
                     )}
@@ -322,13 +320,7 @@ function ColumnSelection(props: IColSelectionProps) {
                                     (props.disableAdd && !c.Enabled) ||
                                     (isOnlyOneEnabled && c.Enabled)
                                 }
-                                Help={
-                                    c.Key === props.sortKey
-                                        ? 'The Table is currently sorted by this column so it cannot be hidden.'
-                                        : isOnlyOneEnabled && c.Enabled
-                                            ? 'Table must have one column visible at all times.'
-                                            : undefined
-                                }
+                                Help={helpMessage(c)}
                             />
                         ) : null,
                     )}
@@ -347,13 +339,7 @@ function ColumnSelection(props: IColSelectionProps) {
                                     (props.disableAdd && !c.Enabled) ||
                                     (isOnlyOneEnabled && c.Enabled)
                                 }
-                                Help={
-                                    c.Key === props.sortKey
-                                        ? 'The Table is currently sorted by this column so it cannot be hidden.'
-                                        : isOnlyOneEnabled && c.Enabled
-                                            ? 'Table must have one column visible at all times.'
-                                            : undefined
-                                }
+                                Help={helpMessage(c)}
                             />
                         ) : null,
                     )}
