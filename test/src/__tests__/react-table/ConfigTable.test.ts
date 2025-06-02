@@ -43,9 +43,19 @@ beforeEach(async () => {
         .setChromeOptions(options)
         .build();
 
-    await driver.get(rootURL);
-    await driver.wait(until.elementIsVisible(driver.findElement(By.css(`#${componentTestID}-1 table thead tr th`))), 10000);
-    await driver.wait(until.elementIsVisible(driver.findElement(By.css(`#${componentTestID}-2 table tbody tr`))), 10000);
+    await driver.get(rootURL)
+        .then(() => console.log('driver.get rootURL'), () => console.log('failed get rootURL')); // Navigate to the page
+    await driver.wait(until.elementIsVisible(driver.findElement(By.css(`#${componentTestID}-1 table thead tr th`))), 10000)
+        .then(() => console.log('driver.get 1st table'), () => console.log('failed table 1'));
+    try {
+        const table2Container = await driver.findElement(By.css(`#${componentTestID}-2`));
+        const html = await table2Container.getAttribute('outerHTML');
+        console.log('Table 2 outer HTML:\n', html);
+    } catch (err) {
+        console.error('Could not find #${componentTestID}-2');
+    }
+    await driver.wait(until.elementIsVisible(driver.findElement(By.css(`#${componentTestID}-2 table tbody tr`))), 10000)
+        .then(() => console.log('driver.get 2nd table'), () => console.log('failed table 2'));
 });
 
 // close the driver after each test
