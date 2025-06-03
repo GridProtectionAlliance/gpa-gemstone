@@ -26,7 +26,7 @@ namespace Gemstone {
     export namespace TSX {
         export namespace Types {
             export type BulkUploadStep = ('Upload' | 'Process' | 'Review' | 'Complete')
-            export type Accuracy = ('minute' | 'second' | 'millisecond'); 
+            export type Accuracy = ('minute' | 'second' | 'millisecond');
             export type ScreenSize = 'xs' | "sm" | 'md' | 'lg' | 'xl'
         }
         export namespace Interfaces {
@@ -180,6 +180,21 @@ namespace Gemstone {
                 Select: (mimeType: string, fileExtension: string) => boolean; //func to return true when the fileExtension is correct
                 Steps: IPipelineSteps<T, U>[]; //list of steps to go through based on current step,
                 AdditionalUploadUI?: JSX.Element //Additional UI to go under the input element in the Upload stage
+            }
+
+            export interface ILabelStringValue {
+                Label: string,
+                Value: string
+            }
+
+            export interface ILabelNumValue {
+                Label: string,
+                Value: number
+            }
+
+            export interface ILabelValue {
+                Label: string | number,
+                Value: number
             }
         }
     }
