@@ -34,7 +34,7 @@ interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
     * Options for the select dropdown
     * @type {{ Value: string; Label: string }[]}
   */
-  Options: { Value: string | number, Label: string }[];
+  Options: Gemstone.TSX.Interfaces.ILabelStringValue[];
   /**
     * Flag to include an empty option in the select dropdown
     * @type {boolean}
