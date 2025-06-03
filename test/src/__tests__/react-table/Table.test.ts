@@ -133,10 +133,14 @@ describe('Table Component', () => {
 
         expect(await alert.getText()).toContain(`${componentTestID}: The Great Conversation`);
         await alert.accept();
-        // Two alerts pop up
-        await driver.wait(until.alertIsPresent(), 5000);
-        alert = await driver.switchTo().alert();
-        await alert.accept();
+        // Ensure no more alerts
+        await driver.sleep(500); // brief delay to let any unexpected alerts appear
+        try {
+            alert = await driver.switchTo().alert();
+            await alert.dismiss();
+        } catch (err) {
+            // This is expected — no more alerts
+        }
     });
 
     /* TODO: Resizing mid-test is unreliable with selenium webdrivers

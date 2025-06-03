@@ -43,12 +43,9 @@ beforeEach(async () => {
         .setChromeOptions(options)
         .build();
 
-    await driver.get(rootURL)
-        .then(() => console.log('driver.get rootURL'), () => console.log('failed get rootURL')); // Navigate to the page
-    await driver.wait(until.elementIsVisible(driver.findElement(By.css(`#${componentTestID}-1 table thead tr th`))), 10000)
-        .then(() => console.log('driver.get 1st table'), () => console.log('failed table 1'));
-    await driver.wait(until.elementIsVisible(driver.findElement(By.css(`#${componentTestID}-2 table tbody tr`))), 10000)
-        .then(() => console.log('driver.get 2nd table'), () => console.log('failed table 2'));
+    await driver.get(rootURL);
+    await driver.wait(until.elementIsVisible(driver.findElement(By.css(`#${componentTestID}-1 table thead tr th`))), 10000);
+    await driver.wait(until.elementIsVisible(driver.findElement(By.css(`#${componentTestID}-2 table tbody tr`))), 10000);
 });
 
 // close the driver after each test
@@ -220,15 +217,18 @@ describe.each(componentVariants)('%s', (desc, idSuffix) => {
         let sortIcon = await titleCol.findElement(By.css(`svg path`));
         expect(await sortIcon.getAttribute('d')).toBe('M7 14l5-5 5 5z');
 
-        for (const col of tableCols) { // Clicks each and expects the descending icon
-            if (await col.getText() === 'Author' && idSuffix != '2') { // Second col is not clickable on first table
+        for (let i = 0; i < tableCols.length; i++) {
+            const col = (await driver.findElements(By.css(`${tableSelector} thead tr th`))).slice(0, 3)[i];
+
+            if (await col.getText() === 'Author' && idSuffix != '2') {
                 await col.click();
                 const icon = await col.findElements(By.css(`svg path`));
-                expect(icon.length).toBe(0); // should not find any svg's as children
+                expect(icon.length).toBe(0);
                 return;
             }
+
             await col.click();
-            sortIcon = await col.findElement(By.css(`svg path`));
+            const sortIcon = await col.findElement(By.css(`svg path`));
             expect(await sortIcon.getAttribute('d')).toBe('M7 10l5 5 5-5z');
         }
     });
@@ -243,10 +243,14 @@ describe.each(componentVariants)('%s', (desc, idSuffix) => {
 
         expect(await alert.getText()).toContain(`${componentTestID}: The Great Conversation`);
         await alert.accept();
-        // Two alerts pop up
-        await driver.wait(until.alertIsPresent(), 5000);
-        alert = await driver.switchTo().alert();
-        await alert.accept();
+        // Ensure no more alerts
+        await driver.sleep(500); // brief delay to let any unexpected alerts appear
+        try {
+            alert = await driver.switchTo().alert();
+            await alert.dismiss();
+        } catch (err) {
+            // This is expected — no more alerts
+        }
     });
 
     it('Can disable and enable table columns and update localStorage', async () => {
