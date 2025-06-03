@@ -43,12 +43,9 @@ beforeEach(async () => {
         .setChromeOptions(options)
         .build();
 
-    await driver.get(rootURL)
-        .then(() => console.log('driver.get rootURL'), () => console.log('failed get rootURL')); // Navigate to the page
-    await driver.wait(until.elementIsVisible(driver.findElement(By.css(`#${componentTestID}-1 table thead tr th`))), 10000)
-        .then(() => console.log('driver.get 1st table'), () => console.log('failed table 1'));
-    await driver.wait(until.elementIsVisible(driver.findElement(By.css(`#${componentTestID}-2 table tbody tr`))), 10000)
-        .then(() => console.log('driver.get 2nd table'), () => console.log('failed table 2'));
+    await driver.get(rootURL);
+    await driver.wait(until.elementIsVisible(driver.findElement(By.css(`#${componentTestID}-1 table thead tr th`))), 10000);
+    await driver.wait(until.elementIsVisible(driver.findElement(By.css(`#${componentTestID}-2 table tbody tr`))), 10000);
 });
 
 // close the driver after each test
