@@ -26,7 +26,9 @@ import StylableSelect, { IOption as IStylableOption } from './StylableSelect';
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 
-interface IOption { Value: string | number; Label: string }
+export interface AbortablePromise<T> extends PromiseLike<T> {
+    abort?: () => void
+}
 
 interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
     /**
@@ -38,9 +40,9 @@ interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
     /**
     * Function to perform a search and return a promiselike object with a list of IOption and an optional callback
     * @param search - Search string
-    * @returns {[promise: PromiseLike<IOption[]>, callback?: () => void]}
+    * @returns {AbortablePromise<T>}
     */
-    Search: (search: string) => [PromiseLike<IOption[]>, () => void];
+    Search: (search: string) => AbortablePromise<Gemstone.TSX.Interfaces.ILabelStringValue[]>;
     /**
     * CSS styles to apply to the form group
     * @type {React.CSSProperties}
@@ -56,7 +58,7 @@ interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
     /*
     * Function to get the initial label for the input
     */
-    GetLabel?: () => [PromiseLike<string>, () => void]
+    GetLabel?: () => AbortablePromise<string>
     /**
      * Flag to reset search text to an empty string when a user selects an option. Defaulting to false
      */
@@ -86,13 +88,15 @@ export default function SearchableSelect<T>(props: IProps<T>) {
         }
         else {
             setLoading(true);
-            const [handle, callback] = props.GetLabel();
+            const handle = props.GetLabel();
             handle.then(lab => {
                 setLabel(lab);
                 setSearch(lab)
                 setLoading(false)
             });
-            return callback
+            return () => {
+                if(handle?.abort != null) handle.abort()
+            }
         }
     }, [props.GetLabel, props.Record[props.Field], props.ResetSearchOnSelect]);
 
@@ -100,12 +104,11 @@ export default function SearchableSelect<T>(props: IProps<T>) {
     React.useEffect(() => {
         setLoading(true);
 
-        let searchHandle: PromiseLike<IOption[]>;
-        let searchCallback: () => void;
+        let searchHandle: AbortablePromise<Gemstone.TSX.Interfaces.ILabelStringValue[]>;
 
         const timeoutHandle = setTimeout(() => {
-            [searchHandle, searchCallback] = props.Search(search);
-            searchHandle.then((d: IOption[]) => {
+            searchHandle = props.Search(search);
+            searchHandle.then((d: Gemstone.TSX.Interfaces.ILabelStringValue[]) => {
                 setResults(d.map(o => ({ Value: o.Value, Element: o.Label })));
                 setLoading(false);
             }, () => {
@@ -114,7 +117,7 @@ export default function SearchableSelect<T>(props: IProps<T>) {
         }, 500);
 
         return () => {
-            if (searchCallback != null) searchCallback();
+            if (searchHandle.abort != null) searchHandle.abort();
             if (timeoutHandle != null) clearTimeout(timeoutHandle);
         };
     }, [search]);
