@@ -39,7 +39,7 @@ import HorizontalMarker from './HorizontalMarker';
 import VerticalMarker from './VerticalMarker';
 import SymbolicMarker from './SymbolicMarker';
 import Circle from './Circle';
-import Oval from './Oval'
+import Pill from './Pill'
 import AggregatingCircles from './AggregatingCircles';
 import Infobox from './Infobox';
 import HeatMapChart from './HeatMapChart';
@@ -911,7 +911,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
                 if ((element as React.ReactElement<any>).type === Line || (element as React.ReactElement<any>).type === LineWithThreshold || (element as React.ReactElement<any>).type === Infobox ||
                   (element as React.ReactElement<any>).type === HorizontalMarker || (element as React.ReactElement<any>).type === VerticalMarker || (element as React.ReactElement<any>).type === SymbolicMarker
                   || (element as React.ReactElement<any>).type === Circle || (element as React.ReactElement<any>).type === AggregatingCircles || (element as React.ReactElement<any>).type === HeatMapChart ||
-                  (element as React.ReactElement<any>).type === Oval || (element as React.ReactElement<any>).type === HighlightBox || (element as React.ReactElement<any>).type === StreamingLine)
+                  (element as React.ReactElement<any>).type === Pill || (element as React.ReactElement<any>).type === HighlightBox || (element as React.ReactElement<any>).type === StreamingLine)
                   return element;
                 return null;
               })}
