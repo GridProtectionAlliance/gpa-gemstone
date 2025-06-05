@@ -257,8 +257,7 @@ const EventCharacteristicFilter = (props: IProps) => {
                         Options={newPhases}
                         Label={'Phases'}
                         ItemTooltip={'dark'}
-                        OnChange={
-                            (evt, Options: { Value: string | number; Label: string; Selected: boolean; }[]) => {
+                        OnChange={(evt, Options) => {
                                 const phaseList: React.SetStateAction<{ Value: number; Label: string; Selected: boolean; }[]> = [];
                                 const phaseFilter: IPhaseFilters = { ...newEventCharacteristicFilter.phases };
                                 newPhases.forEach(phase => {
