@@ -27,7 +27,7 @@ import ToolTip from './ToolTip';
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 
-interface IOption extends Gemstone.TSX.Interfaces.ILabelValue {
+interface IOption extends Gemstone.TSX.Interfaces.ILabelValue<string | number> {
     Disabled?: boolean
 }
 

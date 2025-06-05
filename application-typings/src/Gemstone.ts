@@ -182,20 +182,15 @@ namespace Gemstone {
                 AdditionalUploadUI?: JSX.Element //Additional UI to go under the input element in the Upload stage
             }
 
-            export interface ILabelStringValue {
+            export interface ILabelValue<T> {
                 Label: string,
-                Value: string
+                Value: T
             }
 
-            export interface ILabelNumValue {
-                Label: string,
-                Value: number
+            export interface AbortablePromise<T> extends PromiseLike<T> {
+                abort?: () => void
             }
 
-            export interface ILabelValue {
-                Label: string,
-                Value: number | string
-            }
         }
     }
 }
