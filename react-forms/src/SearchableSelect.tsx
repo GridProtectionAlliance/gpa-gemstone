@@ -42,7 +42,7 @@ interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
     * @param search - Search string
     * @returns {AbortablePromise<T>}
     */
-    Search: (search: string) => AbortablePromise<Gemstone.TSX.Interfaces.ILabelStringValue[]>;
+    Search: (search: string) => AbortablePromise<Gemstone.TSX.Interfaces.ILabelValue<string | number>[]>;
     /**
     * CSS styles to apply to the form group
     * @type {React.CSSProperties}
@@ -104,11 +104,11 @@ export default function SearchableSelect<T>(props: IProps<T>) {
     React.useEffect(() => {
         setLoading(true);
 
-        let searchHandle: AbortablePromise<Gemstone.TSX.Interfaces.ILabelStringValue[]>;
+        let searchHandle: AbortablePromise<Gemstone.TSX.Interfaces.ILabelValue<string | number>[]>;
 
         const timeoutHandle = setTimeout(() => {
             searchHandle = props.Search(search);
-            searchHandle.then((d: Gemstone.TSX.Interfaces.ILabelStringValue[]) => {
+            searchHandle.then((d: Gemstone.TSX.Interfaces.ILabelValue<string | number>[]) => {
                 setResults(d.map(o => ({ Value: o.Value, Element: o.Label })));
                 setLoading(false);
             }, () => {
@@ -117,7 +117,7 @@ export default function SearchableSelect<T>(props: IProps<T>) {
         }, 500);
 
         return () => {
-            if (searchHandle.abort != null) searchHandle.abort();
+            if (searchHandle?.abort != null) searchHandle.abort();
             if (timeoutHandle != null) clearTimeout(timeoutHandle);
         };
     }, [search]);
