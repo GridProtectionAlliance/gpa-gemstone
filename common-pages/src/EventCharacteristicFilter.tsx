@@ -51,14 +51,14 @@ interface IEventCharacteristicFilters {
 
 const EventCharacteristicFilter = (props: IProps) => {
     const [newEventCharacteristicFilter, setNewEventCharacteristicFilter] = React.useState<IEventCharacteristicFilters>(props.eventCharacteristicFilter);
-    const [newPhases, setNewPhases] = React.useState<{ Value: number, Text: string, Selected: boolean }[]>([]);
+    const [newPhases, setNewPhases] = React.useState<{ Value: number, Label: string, Selected: boolean }[]>([]);
 
     React.useEffect(() => { setNewEventCharacteristicFilter(props.eventCharacteristicFilter); }, [props.eventCharacteristicFilter])
 
 
     React.useEffect(() => {
-        const setupPhases: { Value: number, Text: string, Selected: boolean }[] = [];
-        Object.keys(props.eventCharacteristicFilter.phases).forEach((key, index) => setupPhases.push({ Value: index, Text: key, Selected: props.eventCharacteristicFilter.phases[key as keyof IPhaseFilters] }));
+        const setupPhases: { Value: number, Label: string, Selected: boolean }[] = [];
+        Object.keys(props.eventCharacteristicFilter.phases).forEach((key, index) => setupPhases.push({ Value: index, Label: key, Selected: props.eventCharacteristicFilter.phases[key as keyof IPhaseFilters] }));
         setNewPhases(setupPhases);
     }, []);
 
@@ -258,13 +258,13 @@ const EventCharacteristicFilter = (props: IProps) => {
                         Label={'Phases'}
                         ItemTooltip={'dark'}
                         OnChange={
-                            (evt, Options: { Value: string | number; Text: string; Selected: boolean; }[]) => {
-                                const phaseList: React.SetStateAction<{ Value: number; Text: string; Selected: boolean; }[]> = [];
+                            (evt, Options: { Value: string | number; Label: string; Selected: boolean; }[]) => {
+                                const phaseList: React.SetStateAction<{ Value: number; Label: string; Selected: boolean; }[]> = [];
                                 const phaseFilter: IPhaseFilters = { ...newEventCharacteristicFilter.phases };
                                 newPhases.forEach(phase => {
                                     const phaseSelected: boolean = phase.Selected != (Options.findIndex(option => phase.Value === option.Value) > -1);
                                     phaseList.push({ ...phase, Selected: phaseSelected });
-                                    phaseFilter[phase.Text as keyof IPhaseFilters] = phaseSelected;
+                                    phaseFilter[phase.Label as keyof IPhaseFilters] = phaseSelected;
                                 })
                                 setNewPhases(phaseList);
                                 setNewEventCharacteristicFilter({ ...newEventCharacteristicFilter, phases: phaseFilter });
