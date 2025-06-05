@@ -193,8 +193,8 @@ namespace Gemstone {
             }
 
             export interface ILabelValue {
-                Label: string | number,
-                Value: number
+                Label: string,
+                Value: number | string
             }
         }
     }
