@@ -34,6 +34,7 @@ namespace SystemCenter {
 		export type AdditionalFieldType = 'integer' | 'number' | 'string' | 'boolean' | string;
         // Tables
         export interface Setting {ID: number, Name: string, Value: string, DefaultValue: string }
+        export interface SEBrowserSetting extends Setting { ApplicationInstance: boolean, Scope: string, Roles: string }
 		export interface AdditionalField { ID: number, ParentTable: string, FieldName: string, Type: AdditionalFieldType, ExternalDBTableID?: number, IsSecure: boolean, IsInfo: boolean, IsKey: boolean, Searchable: boolean}
 		export interface AdditionalFieldView extends AdditionalField { ExternalDB?: string, ExternalTable?: string }
 		export interface AdditionalFieldValue { ID: number, ParentTableID: number, AdditionalFieldID: number, Value: string }
