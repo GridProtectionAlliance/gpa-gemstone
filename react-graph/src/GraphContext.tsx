@@ -35,6 +35,7 @@ export interface IGraphContext extends IHandlerRegistration, IDataRegistration {
   CurrentMode: SelectType,
   Data: React.MutableRefObject<Map<string, IDataSeries>>,
   DataGuid: string,
+  MassEnableCommand: {requester: string, command: "disable-others"|"enable-all"|"none"},
   XApplyPixelOffset: (x: number) => number,
   YApplyPixelOffset: (y: number) => number,
   XTransformation: (x: number) => number,
@@ -55,6 +56,7 @@ export const GraphContext = React.createContext({
   YHoverSnap: [NaN, NaN],
   YDomain: [[0, 0]],
   CurrentMode: 'select',
+  MassEnableCommand: {requester: "", command: "none"},
 
 
   Data: React.createRef(),
@@ -159,6 +161,7 @@ interface IContextWrapperProps extends IHandlerRegistration, IDataRegistration {
   UpdateFlag: number,
   Data: React.MutableRefObject<Map<string, IDataSeries>>,
   DataGuid: string,
+  MassEnableCommand: {requester: string, command: "disable-others"|"enable-all"|"none"},
   XApplyPixelOffset: (_: number) => number,
   YApplyPixelOffset: (_: number) => number, 
   XTransform: (x: number) => number,
@@ -207,6 +210,7 @@ export const ContextWrapper: React.FC<IContextWrapperProps> = (props) => {
         YDomain: props.YDomain,
         CurrentMode: props.CurrentMode,
         Data: props.Data,
+        MassEnableCommand: props.MassEnableCommand,
         DataGuid: props.DataGuid,
         XApplyPixelOffset: props.XApplyPixelOffset,
         YApplyPixelOffset: props.YApplyPixelOffset,

@@ -60,7 +60,7 @@ export const InternalLine = React.forwardRef<PointNode | null, IInteralProps>((p
     React.useImperativeHandle<PointNode | null, PointNode | null>(ref, () => data, [data]);
 
     const createLegend = React.useCallback(() => {
-        if (props.legend === undefined)
+        if (props.legend === undefined || guid === "")
             return undefined;
 
         let txt = props.legend;
@@ -68,10 +68,10 @@ export const InternalLine = React.forwardRef<PointNode | null, IInteralProps>((p
         if ((props.highlightHover ?? false) && !isNaN(highlight[0]) && !isNaN(highlight[1]))
             txt = txt + ` (${moment.utc(highlight[0]).format('MM/DD/YY hh:mm:ss')}: ${highlight[1].toPrecision(6)})`
 
-        return <LineLegend
-            size='sm' label={txt} color={props.color} lineStyle={props.lineStyle}
+        return <LineLegend id={guid}
+            label={txt} color={props.color} lineStyle={props.lineStyle}
             setEnabled={setEnabled} enabled={enabled} hasNoData={data == null} />;
-    }, [props.color, props.lineStyle, enabled, data, props.legend]);
+    }, [props.color, props.lineStyle, enabled, data, props.legend, guid]);
 
     const createContextData = React.useCallback(() => {
         return {
@@ -102,7 +102,14 @@ export const InternalLine = React.forwardRef<PointNode | null, IInteralProps>((p
                 setHighlight([NaN, NaN]);
             }
         }
-    }, [data, context.XHover])
+    }, [data, context.XHover]);
+
+    React.useEffect(() => {
+        if (context.MassEnableCommand.command === "enable-all") 
+            setEnabled(true);
+        else if (context.MassEnableCommand.command === "disable-others")
+            setEnabled(guid === context.MassEnableCommand.requester);
+    }, [context.MassEnableCommand]);
 
     React.useEffect(() => {
         if (props.data == null) setData(null);
