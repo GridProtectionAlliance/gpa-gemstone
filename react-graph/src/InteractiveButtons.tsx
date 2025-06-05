@@ -57,17 +57,12 @@ const InteractiveButtons = React.memo((props: IProps) => {
     const [currentSelect, setCurrentSelect] = React.useState<(ButtonType|undefined|string)>(undefined);
 
     const [nButtons, height, width] = React.useMemo(() => {
-    let zoomCount = 0;
-    if (props.showZoom) {
-      zoomCount = 3;
-    } else {
-      zoomCount += (props.showHorizontalZoom ? 1 : 0);
-      zoomCount += (props.showVerticalZoom   ? 1 : 0);
-    }
-
+ 
     let nButtons =
       ((props.holdOpen ?? false) ? 1 : 0) +
-      zoomCount +
+      (props.showZoom ? 1 : 0) +
+      (props.showZoom || props.showHorizontalZoom ? 1 : 0) +
+      (props.showZoom || props.showHorizontalZoom ? 1 : 0) +
       (props.showPan      ? 1 : 0) +
       (props.showReset    ? 1 : 0) +
       (props.showSelect   ? 1 : 0) +
