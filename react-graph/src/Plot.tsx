@@ -21,7 +21,6 @@
 //
 // ******************************************************************************************************
 
-
 import * as React from 'react';
 import * as _ from 'lodash';
 import InteractiveButtons from './InteractiveButtons';
@@ -50,7 +49,7 @@ import StreamingLine from './StreamingLine';
 import PlotGroupContext from './PlotGroupContext';
 const html2canvas: any = _html2canvas;
 
-// A ZoomMode of AutoValue means it will zoom on time, and auto Adjust the Value to fit the data.
+// A yDomain of AutoValue means it will zoom on time, and auto Adjust the Value to fit the data.
 // HalfAutoValue is the same as AutoValue except it "pins" either max or min at zero
 // divCaptureId allows the div to be captured to be external to this plot
 export interface IProps {
@@ -66,6 +65,8 @@ export interface IProps {
   showGrid?: boolean,
   XAxisType?: 'time' | 'log' | 'value',
   zoom?: boolean,
+  yZoom?: boolean,
+  xZoom?: boolean,
   pan?: boolean,
   Tmin?: number,
   Tmax?: number,
@@ -142,7 +143,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
   const [yHasData, setYHasData] = React.useState<boolean[]>(Array(2).fill(0));
 
   const [mouseMode, setMouseMode] = React.useState<'none' | SelectType>('none');
-  const [selectedMode, setSelectedMode] = React.useState<SelectType>(props.defaultMouseMode ?? 'zoom-rectangular');
+  const [selectedMode, setSelectedMode] = React.useState<SelectType>(getDefaultMouseMode(props.defaultMouseMode, props.yDomain, props.zoom, props.xZoom, props.yZoom));
 
   const [mouseIn, setMouseIn] = React.useState<boolean>(false);
   const [mousePosition, setMousePosition] = React.useState<[number, number]>([0, 0]);
@@ -181,6 +182,33 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
   const legendWidthToUse = React.useMemo(() => {
     return groupContext.HasConsumer ? groupContext.LegendWidth : legendWidth
   }, [groupContext.HasConsumer, legendWidth, groupContext.LegendWidth])
+
+  const { showZoomButton, showHorizontalZoomButton, showVerticalZoomButton } = React.useMemo(() => {
+    //NOTE: zoom-horizontal really is zooming on the y-axis and zoom-vertical is zooming on the x-axis
+
+    if (props.yDomain === 'AutoValue') {
+      return {
+        showZoomButton: false,
+        showHorizontalZoomButton: false,
+        showVerticalZoomButton: true
+      }
+    }
+
+    const zoomEnabled = props.zoom ?? true;
+    if (zoomEnabled) {
+      return {
+        showZoomButton: true,
+        showHorizontalZoomButton: true,
+        showVerticalZoomButton: true
+      }
+    }
+
+    return {
+      showZoomButton: false,
+      showHorizontalZoomButton: props.yZoom ?? true,
+      showVerticalZoomButton: props.xZoom ?? true
+    }
+  }, [props.yDomain, props.zoom, props.yZoom, props.xZoom]);
 
   React.useEffect(() => {
     if (!groupContext.HasConsumer) return
@@ -580,8 +608,6 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
   }, [dataGuid, yDomain]);
 
   function handleMouseWheel(evt: any) {
-    if (props.zoom !== undefined && !props.zoom)
-      return;
     if (!selectedMode.includes('zoom'))
       return;
     if (!mouseIn)
@@ -601,6 +627,8 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
     // event.deltaY positive is wheel down or out and negative is wheel up or in
     if (evt.deltaY < 0) multiplier = 0.75;
 
+    const isAutoY = props.yDomain === 'AutoValue' || props.yDomain === 'HalfAutoValue';
+
     if (selectedMode !== 'zoom-horizontal') {
       let x0 = xTransform(tDomain[0]);
       let x1 = xTransform(tDomain[1]);
@@ -617,9 +645,10 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
         let newTDomain: [number, number];
         if (props.limitZoom ?? false) newTDomain = [Math.max(defaultTdomain[0], xInvTransform(x0)), Math.min(defaultTdomain[1], xInvTransform(x1))]
         else newTDomain = [xInvTransform(x0), xInvTransform(x1)];
-        if (selectedMode === 'zoom-vertical') {
+        if (selectedMode === 'zoom-vertical' && isAutoY) {
           const newYDomain = getConstrainedYDomain(newTDomain);
-          if (!_.isEqual(newYDomain, yDomain)) setYdomain(newYDomain);
+          if (!_.isEqual(newYDomain, yDomain))
+            setYdomain(newYDomain);
         }
         setTdomain(newTDomain);
       }
@@ -715,8 +744,19 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
     pt.y = evt.clientY;
     const ptTransform = pt.matrixTransform(SVGref.current!.getScreenCTM().inverse())
     setMouseClick([ptTransform.x, ptTransform.y]);
-    if (selectedMode.includes('zoom') && (props.zoom === undefined || props.zoom))
-      setMouseMode(selectedMode);
+    const zoomEnabled = props.zoom ?? true;
+    const horizEnabled = props.yZoom ?? true;
+    const vertEnabled = props.xZoom ?? true;
+
+    if (selectedMode === 'zoom-horizontal' && horizEnabled) {
+      setMouseMode('zoom-horizontal');
+    }
+    else if (selectedMode === 'zoom-vertical' && vertEnabled) {
+      setMouseMode('zoom-vertical');
+    }
+    else if (selectedMode === 'zoom-rectangular' && zoomEnabled) {
+      setMouseMode('zoom-rectangular');
+    }
     if (selectedMode === 'pan' && (props.pan === undefined || props.pan)) {
       setMouseMode('pan');
       setMouseStyle('grabbing');
@@ -749,13 +789,16 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
         return;
       }
 
+      const isAutoY = props.yDomain === 'AutoValue' || props.yDomain === 'HalfAutoValue';
+
       if (mouseMode !== 'zoom-horizontal') {
         const t0 = Math.min(xInvTransform(mousePosition[0]), xInvTransform(mouseClick[0]));
         const t1 = Math.max(xInvTransform(mousePosition[0]), xInvTransform(mouseClick[0]));
         const newTDomain: [number, number] = [Math.max(tDomain[0], t0), Math.min(tDomain[1], t1)];
         if (selectedMode === 'zoom-vertical') {
           const newYDomain = getConstrainedYDomain(newTDomain);
-          if (!_.isEqual(newYDomain, yDomain)) setYdomain(newYDomain);
+          if (!_.isEqual(newYDomain, yDomain) && isAutoY)
+            setYdomain(newYDomain);
         }
         setTdomain(newTDomain);
       }
@@ -921,7 +964,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
                   `M ${offsetLeft} ${mousePosition[1]} H ${svgWidth - offsetRight}`)
                 } />
                 : null}
-              {(props.zoom === undefined || props.zoom) && mouseMode.includes('zoom') ?
+              {(showZoomButton || showHorizontalZoomButton || showVerticalZoomButton) && mouseMode.includes('zoom') ?
                 <rect fillOpacity={0.8} fill={'currentColor'}
                   x={mouseMode !== 'zoom-horizontal' ? Math.min(mouseClick[0], mousePosition[0]) : offsetLeft}
                   y={mouseMode !== 'zoom-vertical' ? Math.min(mouseClick[1], mousePosition[1]) : offsetTop}
@@ -930,8 +973,11 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
                 : null}
             </g>
             {(photoReady || props.menuLocation === 'hide') ? <></> :
-              <InteractiveButtons showPan={(props.pan === undefined || props.pan)}
-                showZoom={props.zoom === undefined || props.zoom}
+              <InteractiveButtons
+                showPan={(props.pan === undefined || props.pan)}
+                showZoom={showZoomButton}
+                showHorizontalZoom={showHorizontalZoomButton}
+                showVerticalZoom={showVerticalZoomButton}
                 showReset={!(props.pan !== undefined && props.zoom !== undefined && !props.zoom && !props.pan)}
                 showSelect={props.onSelect !== undefined || handlers.current.size > 0}
                 showDownload={props.onDataInspect !== undefined}
@@ -971,6 +1017,25 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
     </ContextWrapper>
   )
 
+}
+
+function getDefaultMouseMode(defaultMouseMode?: SelectType, yDomain?: 'Manual' | 'AutoValue' | 'HalfAutoValue', zoom?: boolean, xZoom?: boolean, yZoom?: boolean): SelectType {
+  if (defaultMouseMode != null) return defaultMouseMode;
+
+  if (yDomain === 'AutoValue')
+    return 'zoom-vertical';
+
+  if (zoom ?? true) 
+    return 'zoom-rectangular';
+
+  // If zoom is false, fall back to whichever axis‐only zoom is enabled
+  if (xZoom?? true) 
+    return 'zoom-vertical';
+  
+  if (yZoom ?? true) 
+    return 'zoom-horizontal';
+  
+  return 'pan';
 }
 
 export default Plot;
