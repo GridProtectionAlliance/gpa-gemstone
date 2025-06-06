@@ -42,6 +42,10 @@ export interface IProps {
      */
     YData: [number, number],
     /**
+     * Radius of the pill in pixels.
+     */
+    RadiusPX: number,
+    /**
      * Fill color of the pill.
      * @type {string}
      */
@@ -119,8 +123,8 @@ const Pill = (props: IProps) => {
     }, [context.XTransformation, props.XData])
 
     const radius = React.useMemo(() => {
-        return Math.min(pxHeight / 2, pxWidth / 2);
-    }, [pxHeight, pxWidth])
+        return Math.min(pxHeight / 2, pxWidth / 2, props.RadiusPX);
+    }, [pxHeight, pxWidth, props.RadiusPX])
 
     const getMax = React.useCallback((tDomain: [number, number]) => {
         const [t0, t1] = tDomain;
