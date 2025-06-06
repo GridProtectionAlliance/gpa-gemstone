@@ -193,19 +193,10 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
   }, [groupContext.HasConsumer, legendWidth, groupContext.LegendWidth])
 
 
-  const { showZoomButton, showHorizontalZoomButton, showVerticalZoomButton } = React.useMemo(() => {
-    //NOTE: zoom-horizontal really is zooming on the y-axis and zoom-vertical is zooming on the x-axis
-
-    const showZoomButton = props.yDomain !== 'AutoValue' && (props.zoom ?? true);
-    const showHorizontalZoomButton = props.yDomain !== 'AutoValue' && ((props.zoom ?? true) || (props.yZoom ?? true));
-    const showVerticalZoomButton = props.yDomain === 'AutoValue' || (props.zoom ?? true) || (props.xZoom ?? true);
-
-    return {
-      showZoomButton,
-      showHorizontalZoomButton,
-      showVerticalZoomButton
-    }
-  }, [props.yDomain, props.zoom, props.yZoom, props.xZoom]);
+  //NOTE: zoom-horizontal really is zooming on the y-axis and zoom-vertical is zooming on the x-axis
+  const showZoomButton = props.yDomain !== 'AutoValue' && (props.zoom ?? true);
+  const showHorizontalZoomButton = props.yDomain !== 'AutoValue' && ((props.zoom ?? true) || (props.yZoom ?? true));
+  const showVerticalZoomButton = props.yDomain === 'AutoValue' || (props.zoom ?? true) || (props.xZoom ?? true);
 
   React.useEffect(() => {
     if (!groupContext.HasConsumer) return
@@ -1022,16 +1013,16 @@ function getDefaultMouseMode(defaultMouseMode?: SelectType, yDomain?: 'Manual' |
   if (yDomain === 'AutoValue')
     return 'zoom-vertical';
 
-  if (zoom ?? true) 
+  if (zoom ?? true)
     return 'zoom-rectangular';
 
   // If zoom is false, fall back to whichever axis‐only zoom is enabled
-  if (xZoom?? true) 
+  if (xZoom ?? true)
     return 'zoom-vertical';
-  
-  if (yZoom ?? true) 
+
+  if (yZoom ?? true)
     return 'zoom-horizontal';
-  
+
   return 'pan';
 }
 
