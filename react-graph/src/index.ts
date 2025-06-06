@@ -9,7 +9,7 @@ import Button from './Button';
 import AggregatingCircles from './AggregatingCircles';
 import Circle from './Circle';
 import Infobox from './Infobox';
-import Oval from './Oval';
+import Pill from './Pill';
 import { AxisMap } from './GraphContext';
 import HighlightBox from './HighlightBox';
 import { PointNode } from './PointNode';
@@ -27,7 +27,7 @@ export {
     VerticalMarker,
     SymbolicMarker,
     Circle,
-    Oval,
+    Pill,
     AggregatingCircles,
     Infobox,
     AxisMap,

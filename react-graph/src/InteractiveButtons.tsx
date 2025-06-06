@@ -28,6 +28,8 @@ import Button from './Button'
 
 interface IProps {
     showZoom: boolean,
+    showHorizontalZoom: boolean,
+    showVerticalZoom: boolean,
     showPan: boolean,
     showReset: boolean,
     showSelect: boolean,
@@ -54,20 +56,24 @@ const InteractiveButtons = React.memo((props: IProps) => {
     const [expand, setExpand] = React.useState<boolean>(props.holdOpen ?? false);
     const [currentSelect, setCurrentSelect] = React.useState<(ButtonType|undefined|string)>(undefined);
 
-    const [nButtons, nRows, height, width] = React.useMemo(() => {
-      let nButtons = ((props.holdOpen ?? false) ? 1 : 0) + 
-      (props.showZoom? 3 : 0) + 
-      (props.showPan? 1 : 0) + 
-      (props.showReset? 1 : 0) + 
-      (props.showSelect? 1 : 0) + 
-      (props.showDownload? 1 : 0) + 
-      (props.showCapture? 1 : 0) + 
+    const [nButtons, height, width] = React.useMemo(() => {
+ 
+    let nButtons =
+      ((props.holdOpen ?? false) ? 1 : 0) +
+      (props.showZoom ? 1 : 0) +
+      (props.showZoom || props.showHorizontalZoom ? 1 : 0) +
+      (props.showZoom || props.showVerticalZoom ? 1 : 0) +
+      (props.showPan      ? 1 : 0) +
+      (props.showReset    ? 1 : 0) +
+      (props.showSelect   ? 1 : 0) +
+      (props.showDownload ? 1 : 0) +
+      (props.showCapture  ? 1 : 0) +
       ((props.children == null) ? 0 : React.Children.count(props.children));
       const buttonsAllowed = Math.floor((props.heightAvaliable - 20) / heightPerButton);
       const rows =  Math.ceil(nButtons/buttonsAllowed)
       const width = 20 * rows;
       nButtons = Math.min(nButtons, buttonsAllowed);
-      return [nButtons, rows, heightPerButton*(nButtons - 1), width];
+      return [nButtons, heightPerButton*(nButtons - 1), width];
     }, [props.holdOpen, props.showZoom, props.showPan, props.showReset, props.showSelect, props.showDownload, props.showCapture, props.children]);
 
     const setBtnAndSelect = React.useCallback((newIcon: React.ReactElement, id: ButtonType|string) => {
@@ -130,29 +136,61 @@ const InteractiveButtons = React.memo((props: IProps) => {
         symbolNames.push(['collaspe' as ButtonType]);
       }
     }
+
     if (props.showZoom) {
-      if (symbols[symbols.length-1].length < nButtons) {
-        symbolNames[symbols.length-1].push('zoom-rectangular');
-        symbols[symbols.length-1].push(<Button onClick={() => {props.setSelection('zoom-rectangular'); collaspeMenu(); }}>{MagnifyingGlass}</Button>);
+      if (symbols[symbols.length - 1].length < nButtons) {
+        symbolNames[symbolNames.length - 1].push('zoom-rectangular');
+        symbols[symbols.length - 1].push(
+          <Button onClick={() => { props.setSelection('zoom-rectangular'); collaspeMenu(); }}>
+            {MagnifyingGlass}
+          </Button>
+        );
       } else {
         symbolNames.push(['zoom-rectangular']);
-        symbols.push([<Button onClick={() => {props.setSelection('zoom-rectangular'); collaspeMenu(); }}>{MagnifyingGlass}</Button>]);
-      }
-      if (symbols[symbols.length-1].length < nButtons) {
-        symbolNames[symbols.length-1].push('zoom-vertical');
-        symbols[symbols.length-1].push(<Button onClick={() => {props.setSelection('zoom-vertical'); collaspeMenu(); }}>{"\u2016"}</Button>);
-      } else {
-        symbolNames.push(['zoom-vertical']);
-        symbols.push([<Button onClick={() => {props.setSelection('zoom-vertical'); collaspeMenu(); }}>{"\u2016"}</Button>]);
-       }
-      if (symbols[symbols.length-1].length < nButtons) {
-        symbolNames[symbols.length-1].push('zoom-horizontal');
-        symbols[symbols.length-1].push(<Button onClick={() => {props.setSelection('zoom-horizontal'); collaspeMenu(); }}>{"\u2550"}</Button>);
-      } else {
-        symbolNames.push(['zoom-horizontal']);
-        symbols.push([<Button onClick={() => {props.setSelection('zoom-horizontal'); collaspeMenu(); }}>{"\u2550"}</Button>]);
+        symbols.push([
+          <Button onClick={() => { props.setSelection('zoom-rectangular'); collaspeMenu(); }}>
+            {MagnifyingGlass}
+          </Button>
+        ]);
       }
     }
+
+    if (props.showZoom || props.showVerticalZoom) {
+      if (symbols[symbols.length - 1].length < nButtons) {
+        symbolNames[symbolNames.length - 1].push('zoom-vertical');
+        symbols[symbols.length - 1].push(
+          <Button onClick={() => { props.setSelection('zoom-vertical'); collaspeMenu(); }}>
+            {'\u2016'}
+          </Button>
+        );
+      } else {
+        symbolNames.push(['zoom-vertical']);
+        symbols.push([
+          <Button onClick={() => { props.setSelection('zoom-vertical'); collaspeMenu(); }}>
+            {'\u2016'}
+          </Button>
+        ]);
+      }
+    }
+
+    if (props.showZoom || props.showHorizontalZoom) {
+      if (symbols[symbols.length - 1].length < nButtons) {
+        symbolNames[symbolNames.length - 1].push('zoom-horizontal');
+        symbols[symbols.length - 1].push(
+          <Button onClick={() => { props.setSelection('zoom-horizontal'); collaspeMenu(); }}>
+            {'\u2550'}
+          </Button>
+        );
+      } else {
+        symbolNames.push(['zoom-horizontal']);
+        symbols.push([
+          <Button onClick={() => { props.setSelection('zoom-horizontal'); collaspeMenu(); }}>
+            {'\u2550'}
+          </Button>
+        ]);
+      }
+    }
+
     if (props.showPan && symbols[symbols.length-1].length < nButtons) {
       symbolNames[symbols.length-1].push('pan');
       symbols[symbols.length-1].push(<Button onClick={() => {props.setSelection('pan'); collaspeMenu(); }}>{Pan}</Button>)

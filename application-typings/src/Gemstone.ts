@@ -26,7 +26,7 @@ namespace Gemstone {
     export namespace TSX {
         export namespace Types {
             export type BulkUploadStep = ('Upload' | 'Process' | 'Review' | 'Complete')
-            export type Accuracy = ('minute' | 'second' | 'millisecond'); 
+            export type Accuracy = ('minute' | 'second' | 'millisecond');
             export type ScreenSize = 'xs' | "sm" | 'md' | 'lg' | 'xl'
         }
         export namespace Interfaces {
@@ -181,6 +181,16 @@ namespace Gemstone {
                 Steps: IPipelineSteps<T, U>[]; //list of steps to go through based on current step,
                 AdditionalUploadUI?: JSX.Element //Additional UI to go under the input element in the Upload stage
             }
+
+            export interface ILabelValue<T> {
+                Label: string,
+                Value: T
+            }
+
+            export interface AbortablePromise<T> extends PromiseLike<T> {
+                abort?: () => void
+            }
+
         }
     }
 }

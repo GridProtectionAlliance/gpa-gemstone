@@ -27,6 +27,10 @@ import ToolTip from './ToolTip';
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 
+interface IOption extends Gemstone.TSX.Interfaces.ILabelValue<string | number> {
+    Disabled?: boolean
+}
+
 interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
     /**
         * Position to display radion buttons in
@@ -36,13 +40,9 @@ interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
     Position?: ('vertical' | 'horizontal'),
     /**
         * Options for the radion buttons
-        * @type {{ Value: string | number; Label: string, Disabled?: boolean }[]}
+        * @type {IOption[]}
     */
-    Options: {
-        Value: string | number,
-        Label: string,
-        Disabled?: boolean
-    }[];
+    Options: IOption[];
 }
 
 export default function RadioButtons<T>(props: IProps<T>) {

@@ -1,5 +1,5 @@
 // ******************************************************************************************************
-//  Oval.tsx - Gbtc
+//  Pill.tsx - Gbtc
 //
 //  Copyright © 2024, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -28,57 +28,62 @@ import { IDataSeries, GraphContext, IHandlers, IActionFunctions, AxisIdentifier,
 
 export interface IProps {
     /**
-     * Data for the oval and circles:
-     * [x1, x2, y]
-     * - x1: The x-coordinate of the left edge of the oval.
-     * - x2: The x-coordinate of the right edge of the oval.
-     * - y: The y-coordinate of the center of the oval.
+     * Data for the pill and circles:
+     * [x1, x2]
+     * - x1: The x-coordinate of the left edge of the pill.
+     * - x2: The x-coordinate of the right edge of the pill.
      */
-    Data: [number, number, number],
-
+    XData: [number, number],
     /**
-     * Fill color of the oval.
+     * Data for the pill and circles:
+     * [y1, y2]
+     * - y1: The y-coordinate of the bottom edge of the pill.
+     * - y2: The y-coordinate of the top edge of the pill.
+     */
+    YData: [number, number],
+    /**
+     * Radius of the pill in pixels.
+     */
+    RadiusPX: number,
+    /**
+     * Fill color of the pill.
      * @type {string}
      */
     Color: string,
     /**
-     * Color of text in oval.
+     * Color of text in pill.
      * @type {string}
      */
     TextColor?: string,
+
     /**
-     * The vertical radius of the oval.
-     * @type {number}
-     */
-    Radius: number,
-    /**
-     * Stroke color of the oval and circles.
+     * Stroke color of the pill and circles.
      * @optional
      * @type {string}
      */
     BorderColor?: string,
 
     /**
-     * Stroke thickness of the oval and circles.
+     * Stroke thickness of the pill and circles.
      * @optional
      * @type {number}
      */
     BorderThickness?: number,
 
     /**
-     * Optional text to display inside the oval.
+     * Optional text to display inside the pill.
      * @optional
      * @type {string}
      */
     Text?: string,
 
     /**
-     * Where to place text in the oval
+     * Where to place text in the pill
      */
     TextPlacement?: 'center' | 'left' | 'right'
 
     /**
-     * Opacity of the oval and circles.
+     * Opacity of the pill and circles.
      * @optional
      * @type {number}
      */
@@ -92,31 +97,52 @@ export interface IProps {
     Axis?: AxisIdentifier,
 
     /**
-     * Callback function to handle click events on the oval. Provides action functions to update domains.
+     * Callback function to handle click events on the pill. Provides action functions to update domains.
      * @optional
      * @type {(actions: IActionFunctions) => void}
      */
     OnClick?: (x: number, y: number, actions: IActionFunctions) => void
 }
 
-const Oval = (props: IProps) => {
+const Pill = (props: IProps) => {
     const context = React.useContext(GraphContext);
 
     const [guid, setGuid] = React.useState<string>("");
     const [textSize, setTextSize] = React.useState<number>(1);
 
-    const { radius, pxHeight } = React.useMemo(() => {
-        const x0px = context.XTransformation(props.Data[0]);
-        const x1px = context.XTransformation(props.Data[1]);
+    const pxHeight = React.useMemo(() => {
+        const axis = AxisMap.get(props.Axis);
+        const y0px = context.YTransformation(props.YData[0], axis);
+        const y1px = context.YTransformation(props.YData[1], axis);
 
-        const widthPx = Math.abs(x1px - x0px);
+        return Math.abs(y1px - y0px);
+    }, [context.XTransformation, props.YData, props.Axis]);
 
-        const heightFromProvidedRad = 2 * props.Radius;
-        const heightPx = Math.min(heightFromProvidedRad, widthPx / 2);
-        const r = heightPx / 2;
+    const pxWidth = React.useMemo(() => {
+        return Math.abs(context.XTransformation(props.XData[1]) - context.XTransformation(props.XData[0]))
+    }, [context.XTransformation, props.XData])
 
-        return { radius: r, pxHeight: heightPx };
-    }, [context.XTransformation, props.Data?.[0], props.Data?.[1], props.Radius]);
+    const radius = React.useMemo(() => {
+        return Math.min(pxHeight / 2, pxWidth / 2, props.RadiusPX);
+    }, [pxHeight, pxWidth, props.RadiusPX])
+
+    const getMax = React.useCallback((tDomain: [number, number]) => {
+        const [t0, t1] = tDomain;
+        const [x1, x2] = props.XData;
+        if (t1 >= x1 && t0 <= x2)
+            return Math.max(props.YData[0], props.YData[1]);
+
+        return undefined;
+    }, [props.XData, props.YData])
+
+    const getMin = React.useCallback((tDomain: [number, number]) => {
+        const [t0, t1] = tDomain;
+        const [x1, x2] = props.XData;
+        if (t1 >= x1 && t0 <= x2)
+            return Math.min(props.YData[0], props.YData[1]);
+
+        return undefined;
+    }, [props.XData, props.YData])
 
     // Update data series information in the graph context based on circle properties
     React.useEffect(() => {
@@ -126,18 +152,18 @@ const Oval = (props: IProps) => {
         context.UpdateData(guid, {
             axis: props.Axis,
             legend: undefined,
-            getMax: (t) => (t[0] < props.Data[0] && t[1] > props.Data[1] ? props.Data[2] : undefined),
-            getMin: (t) => (t[0] < props.Data[0] && t[1] > props.Data[1] ? props.Data[2] : undefined),
+            getMax: getMax,
+            getMin: getMin,
         } as IDataSeries);
-    }, [props.Axis, props.Data])
+    }, [props.Axis, props.XData, props.YData])
 
     // Add a new data series on component mount / removing on unmount
     React.useEffect(() => {
         const id = context.AddData({
             axis: props.Axis,
             legend: undefined,
-            getMax: (t) => (t[0] < props.Data[0] && t[1] > props.Data[1] ? props.Data[2] : undefined),
-            getMin: (t) => (t[0] < props.Data[0] && t[1] > props.Data[1] ? props.Data[2] : undefined),
+            getMax: getMax,
+            getMin: getMin
         } as IDataSeries);
 
         setGuid(id);
@@ -147,18 +173,17 @@ const Oval = (props: IProps) => {
         }
     }, []);
 
-    // Adjust text size within the oval to ensure it fits
+    // Adjust text size within the pill to ensure it fits
     React.useEffect(() => {
         if (props.Text === undefined) return;
 
         const fontFamily = "Segoe UI";
         const fontSizeUnit = "em";
 
-        const ovalWidth = Math.abs(context.XTransformation(props.Data[1]) - context.XTransformation(props.Data[0]));
 
         let minSize = 0.05;
         let maxSize = 5;
-        let bestSize = maxSize;
+        let bestSize = minSize;
 
         const calculateTextSize = (size: number) => {
             const dX = GetTextWidth(fontFamily, size + fontSizeUnit, props.Text as string);
@@ -170,7 +195,7 @@ const Oval = (props: IProps) => {
             const midSize = (maxSize + minSize) / 2;
             const { dX, dY } = calculateTextSize(midSize);
 
-            if (dX <= ovalWidth && dY <= pxHeight) {
+            if (dX <= pxWidth && dY <= pxHeight) {
                 bestSize = midSize;
                 minSize = midSize; // Try larger
             } else
@@ -178,7 +203,7 @@ const Oval = (props: IProps) => {
         }
 
         setTextSize(bestSize);
-    }, [props.Text, pxHeight, context.XTransformation, props.Data]);
+    }, [props.Text, pxHeight, pxWidth]);
 
     // Set up a click handler if provided in props
     React.useEffect(() => {
@@ -188,30 +213,25 @@ const Oval = (props: IProps) => {
         context.UpdateSelect(guid, { onClick } as IHandlers)
     }, [props.OnClick, context.UpdateFlag])
 
-    // Handle click events on the oval
+    // Handle click events on the pill
     const onClick = React.useCallback((xClick: number, yClick: number) => {
         if (props.OnClick === undefined)
             return;
 
-        // Calculate positions and determine if the click was within the oval bounds
-        const axis = AxisMap.get(props.Axis);
-        const xClickTransformed = context.XTransformation(xClick);
-        const yClickTransformed = context.YTransformation(yClick, axis);
+        // Calculate positions and determine if the click was within the pill bounds
+        const [x1, x2] = props.XData;
+        const [y1, y2] = props.YData;
 
-        const x1Transformed = context.XTransformation(props.Data[0]);
-        const x2Transformed = context.XTransformation(props.Data[1]);
-        const yTransformed = context.YTransformation(props.Data[2], axis);
-
-        const isWithinHorizontalBounds = xClickTransformed >= x1Transformed && xClickTransformed <= x2Transformed;
-        const isWithinVerticalBounds = yClickTransformed >= yTransformed - radius && yClickTransformed <= yTransformed + radius;
+        const isWithinHorizontalBounds = xClick >= x1 && xClick <= x2;
+        const isWithinVerticalBounds = yClick >= y1 && yClick <= y2;
 
         if (isWithinHorizontalBounds && isWithinVerticalBounds)
             props.OnClick(xClick, yClick, { setYDomain: context.SetYDomain as React.SetStateAction<[number, number][]>, setTDomain: context.SetXDomain as React.SetStateAction<[number, number]> });
-    }, [props.OnClick, props.Axis, props.Data, radius, context.XTransformation, context.YTransformation, context.SetXDomain, context.SetYDomain])
+    }, [props.OnClick, props.Axis, props.XData, props.YData, context.XTransformation, context.YTransformation, context.SetXDomain, context.SetYDomain])
 
     const textXPosition = React.useMemo(() => {
-        const xLeft = context.XTransformation(props.Data[0]);
-        const xRight = context.XTransformation(props.Data[1]);
+        const xLeft = context.XTransformation(props.XData[0]);
+        const xRight = context.XTransformation(props.XData[1]);
         const xCenter = (xLeft + xRight) / 2
         if (props.TextPlacement == null || props.TextPlacement === 'center')
             return xCenter
@@ -223,18 +243,18 @@ const Oval = (props: IProps) => {
             return xRight
 
         return xCenter
-    }, [context.XTransformation, props.Data[0], props.Data[1], props.TextPlacement])
+    }, [context.XTransformation, props.XData, props.TextPlacement])
 
-    // Render null if coordinates are not valid, otherwise render the oval / text
-    if (!isFinite(context.XTransformation((props.Data[0], props.Data[1]) / 2)) || !isFinite(context.YTransformation(props.Data[2], AxisMap.get(props.Axis))))
+    // Render null if coordinates are not valid, otherwise render the pill / text
+    if (!isFinite(context.XTransformation((props.XData[0], props.XData[1]) / 2)) || !isFinite(context.YTransformation(props.YData[0], AxisMap.get(props.Axis))) || !isFinite(context.YTransformation(props.YData[1], AxisMap.get(props.Axis))))
         return null;
 
     return (
         <g>
             <rect
-                x={context.XTransformation(props.Data[0])}
-                y={context.YTransformation(props.Data[2], AxisMap.get(props.Axis)) - radius}
-                width={Math.abs(context.XTransformation(props.Data[1]) - context.XTransformation(props.Data[0]))}
+                x={context.XTransformation(props.XData[0])}
+                width={pxWidth}
+                y={context.YTransformation(props.YData[1], AxisMap.get(props.Axis))}
                 height={pxHeight}
                 rx={radius}
                 ry={radius}
@@ -246,15 +266,17 @@ const Oval = (props: IProps) => {
             />
 
             {props.Text !== undefined ?
-                <text
-                    fill={props.TextColor ?? 'currentColor'}
-                    style={{ fontSize: textSize + 'em', textAnchor: 'middle', dominantBaseline: 'middle' }}
-                    y={context.YTransformation(props.Data[2], AxisMap.get(props.Axis))}
-                    x={textXPosition}>
-                    {props.Text}
-                </text> : null}
+                <g clipPath={`url(#oval-clip-${guid})`}>
+                    <text
+                        fill={props.TextColor ?? 'currentColor'}
+                        style={{ fontSize: textSize + 'em', textAnchor: 'middle', dominantBaseline: 'middle' }}
+                        y={(context.YTransformation(props.YData[0], AxisMap.get(props.Axis)) + context.YTransformation(props.YData[1], AxisMap.get(props.Axis))) / 2}
+                        x={textXPosition}>
+                        {props.Text}
+                    </text>
+                </g> : null}
         </g>
     );
 }
 
-export default Oval;
+export default Pill;
