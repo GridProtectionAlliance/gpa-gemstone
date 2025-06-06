@@ -62,7 +62,7 @@ const InteractiveButtons = React.memo((props: IProps) => {
       ((props.holdOpen ?? false) ? 1 : 0) +
       (props.showZoom ? 1 : 0) +
       (props.showZoom || props.showHorizontalZoom ? 1 : 0) +
-      (props.showZoom || props.showHorizontalZoom ? 1 : 0) +
+      (props.showZoom || props.showVerticalZoom ? 1 : 0) +
       (props.showPan      ? 1 : 0) +
       (props.showReset    ? 1 : 0) +
       (props.showSelect   ? 1 : 0) +
