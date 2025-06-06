@@ -64,8 +64,17 @@ export interface IProps {
 
   showGrid?: boolean,
   XAxisType?: 'time' | 'log' | 'value',
+  /**
+   * Flag to enable all zooming features.
+   */
   zoom?: boolean,
+  /**
+   * Flag to enable zooming on the y-axis.
+   */
   yZoom?: boolean,
+  /**
+   * Flag to enable zooming on the x-axis.
+   */
   xZoom?: boolean,
   pan?: boolean,
   Tmin?: number,
