@@ -136,8 +136,8 @@ const InteractiveButtons = React.memo((props: IProps) => {
         symbolNames.push(['collaspe' as ButtonType]);
       }
     }
+
     if (props.showZoom) {
-      // If showZoom is true, render all three zoom modes:
       if (symbols[symbols.length - 1].length < nButtons) {
         symbolNames[symbolNames.length - 1].push('zoom-rectangular');
         symbols[symbols.length - 1].push(
@@ -153,7 +153,9 @@ const InteractiveButtons = React.memo((props: IProps) => {
           </Button>
         ]);
       }
-    
+    }
+
+    if (props.showZoom || props.showVerticalZoom) {
       if (symbols[symbols.length - 1].length < nButtons) {
         symbolNames[symbolNames.length - 1].push('zoom-vertical');
         symbols[symbols.length - 1].push(
@@ -169,7 +171,9 @@ const InteractiveButtons = React.memo((props: IProps) => {
           </Button>
         ]);
       }
-    
+    }
+
+    if (props.showZoom || props.showHorizontalZoom) {
       if (symbols[symbols.length - 1].length < nButtons) {
         symbolNames[symbolNames.length - 1].push('zoom-horizontal');
         symbols[symbols.length - 1].push(
@@ -186,44 +190,7 @@ const InteractiveButtons = React.memo((props: IProps) => {
         ]);
       }
     }
-    else {
-      // If showZoom is false, only render vertical or horizontal as requested
-      if (props.showVerticalZoom) {
-        if (symbols[symbols.length - 1].length < nButtons) {
-          symbolNames[symbolNames.length - 1].push('zoom-vertical');
-          symbols[symbols.length - 1].push(
-            <Button onClick={() => { props.setSelection('zoom-vertical'); collaspeMenu(); }}>
-              {'\u2016'}
-            </Button>
-          );
-        } else {
-          symbolNames.push(['zoom-vertical']);
-          symbols.push([
-            <Button onClick={() => { props.setSelection('zoom-vertical'); collaspeMenu(); }}>
-              {'\u2016'}
-            </Button>
-          ]);
-        }
-      }
-    
-      if (props.showHorizontalZoom) {
-        if (symbols[symbols.length - 1].length < nButtons) {
-          symbolNames[symbolNames.length - 1].push('zoom-horizontal');
-          symbols[symbols.length - 1].push(
-            <Button onClick={() => { props.setSelection('zoom-horizontal'); collaspeMenu(); }}>
-              {'\u2550'}
-            </Button>
-          );
-        } else {
-          symbolNames.push(['zoom-horizontal']);
-          symbols.push([
-            <Button onClick={() => { props.setSelection('zoom-horizontal'); collaspeMenu(); }}>
-              {'\u2550'}
-            </Button>
-          ]);
-        }
-      }
-    }
+
     if (props.showPan && symbols[symbols.length-1].length < nButtons) {
       symbolNames[symbols.length-1].push('pan');
       symbols[symbols.length-1].push(<Button onClick={() => {props.setSelection('pan'); collaspeMenu(); }}>{Pan}</Button>)
