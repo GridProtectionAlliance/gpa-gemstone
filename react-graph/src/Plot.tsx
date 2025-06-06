@@ -192,30 +192,18 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
     return groupContext.HasConsumer ? groupContext.LegendWidth : legendWidth
   }, [groupContext.HasConsumer, legendWidth, groupContext.LegendWidth])
 
+
   const { showZoomButton, showHorizontalZoomButton, showVerticalZoomButton } = React.useMemo(() => {
     //NOTE: zoom-horizontal really is zooming on the y-axis and zoom-vertical is zooming on the x-axis
 
-    if (props.yDomain === 'AutoValue') {
-      return {
-        showZoomButton: false,
-        showHorizontalZoomButton: false,
-        showVerticalZoomButton: true
-      }
-    }
-
-    const zoomEnabled = props.zoom ?? true;
-    if (zoomEnabled) {
-      return {
-        showZoomButton: true,
-        showHorizontalZoomButton: true,
-        showVerticalZoomButton: true
-      }
-    }
+    const showZoomButton = props.yDomain !== 'AutoValue' && (props.zoom ?? true);
+    const showHorizontalZoomButton = props.yDomain !== 'AutoValue' && ((props.zoom ?? true) || (props.yZoom ?? true));
+    const showVerticalZoomButton = props.yDomain === 'AutoValue' || (props.zoom ?? true) || (props.xZoom ?? true);
 
     return {
-      showZoomButton: false,
-      showHorizontalZoomButton: props.yZoom ?? true,
-      showVerticalZoomButton: props.xZoom ?? true
+      showZoomButton,
+      showHorizontalZoomButton,
+      showVerticalZoomButton
     }
   }, [props.yDomain, props.zoom, props.yZoom, props.xZoom]);
 
