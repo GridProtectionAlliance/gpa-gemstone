@@ -54,15 +54,10 @@ const TextStyle: React.CSSProperties = {
 };
 
 function HeatLegend(props: IProps) {
-  const [wLegend, setWLegend] = React.useState<number>(100);
-  const [hLegend, setHLegend] = React.useState<number>(100);
   const [nDigits, setNdigits] = React.useState<number>(1);
-  const [guid, setGuid] = React.useState<string>('');
   const context = React.useContext(LegendContext);
-
-  // Effect to update the legend's width and height based on the container's dimensions
-  React.useEffect(() => setWLegend(props.size === 'sm' ? context.SmWidth : context.LgWidth), [context.LgWidth, context.SmWidth, props.size]);
-  React.useEffect(() => setHLegend(props.size === 'sm' ? context.SmHeight : context.LgHeight), [context.SmHeight, context.LgHeight, props.size]);
+  const hLegend = context.LgHeight;
+  const wLegend = context.LgWidth;
 
   // Determine the number of decimal digits to display based on the value range
   React.useEffect(() => {
@@ -87,20 +82,12 @@ function HeatLegend(props: IProps) {
 
   }, [props.maxValue, props.minValue]);
 
-  // Generate a unique ID for the gradient and request space for the legend
-  React.useEffect(() => {
-      const id = CreateGuid();
-      setGuid(id);
-      context.RequestLegendWidth(50, id);
-      return () => { context.RequestLegendWidth(-1, id); }
-  }, []);
-
   return (
     <div style={{ height: hLegend, width: wLegend }}>
       <div style={{ width: '100%', display: 'flex', alignItems: 'center', marginRight: '5px', height:'100%' }}>
         <svg style={SvgStyle} viewBox={`0 0 ${wLegend} ${hLegend}`}>
           {/* Gradient */}
-        <linearGradient id={guid} x1="0" x2={`${wLegend < hLegend ? 0 : 1}`} y1="0" y2={`${wLegend < hLegend ? 1 : 0}`}>
+        <linearGradient id={props.id} x1="0" x2={`${wLegend < hLegend ? 0 : 1}`} y1="0" y2={`${wLegend < hLegend ? 1 : 0}`}>
             <stop offset="5%" stopColor={props.minColor} />
             <stop offset="95%" stopColor={props.maxColor} />
           </linearGradient>
@@ -108,7 +95,7 @@ function HeatLegend(props: IProps) {
         {/* Rectangle path filled with the defined gradient */}
         <path 
           stroke='currentColor' 
-          fill={`url(#${guid})`} 
+          fill={`url(#${props.id})`} 
           style={{ strokeWidth: 1, transition: 'd 0.5s' }} 
             d={wLegend < hLegend ? 
               `M ${0.05*wLegend} ${0.1*hLegend} H ${0.5*wLegend} V ${0.9*hLegend} H ${0.05*wLegend} V ${0.1*hLegend}` :

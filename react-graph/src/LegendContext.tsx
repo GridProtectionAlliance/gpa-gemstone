@@ -27,16 +27,14 @@ export interface ILegendContext {
     LgWidth: number,
     SmHeight: number,
     LgHeight: number,
-    SmallestFontSize: number
-    RequestLegendWidth: (width: number, requesterID: string) => void,
-    RequestLegendHeight: (height: number) => void,
-    RegisterFontSize: (requesterID: string, fontsize: number) => void,
-    UnRegisterFontSize: (requesterID: string) => void
+    SmallestFontSize: number,
+    UseMultiLine: boolean,
+    SendMassEnable?: React.MutableRefObject<(id: string)=> void>
 }
 
 export interface ILegendRequiredProps {
-    size: 'lg' | 'sm',
-    enabled: boolean
+    enabled: boolean,
+    id: string
 }
 
 export const LegendContext = React.createContext<ILegendContext>({
@@ -45,8 +43,6 @@ export const LegendContext = React.createContext<ILegendContext>({
     SmHeight: 0,
     LgHeight: 0,
     SmallestFontSize: 0,
-    RequestLegendWidth: () => undefined,
-    RequestLegendHeight: () => undefined,
-    RegisterFontSize: () => undefined,
-    UnRegisterFontSize: () => undefined
+    UseMultiLine: false,
+    SendMassEnable: undefined
 });
