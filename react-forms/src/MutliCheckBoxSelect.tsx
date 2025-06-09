@@ -29,6 +29,12 @@ import { Portal } from 'react-portal';
 import * as _ from 'lodash';
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 
+interface IOption {
+  Value: number | string;
+  Label: string | JSX.Element;
+  Selected: boolean
+}
+
 interface IProps {
   /**
     * Label to display for the form, defaults to the Field prop
@@ -40,14 +46,14 @@ interface IProps {
     * Array of options for the multi-select checkboxe
     * @type {{ Value: number | string; Text: string; Selected: boolean }[]}
   */
-  Options: { Value: number | string; Text: string; Selected: boolean }[];
+  Options: IOption[];
   /**
     * Function to handle changes in the selection
     * @param evt - The change event
     * @param Options - The updated options array
     * @returns {void}
   */
-  OnChange: (evt: any, Options: { Value: number | string; Text: string; Selected: boolean }[]) => void;
+  OnChange: (evt: any, Options: IOption[]) => void;
   /**
     * Help message or element to display
     * @type {string | JSX.Element}
@@ -164,7 +170,7 @@ const MultiSelect = (props: IProps) => {
       {(props.ItemTooltip ?? 'no-tip') !== 'no-tip' ?
         <ToolTip Show={showItems} Target={guid} Position="bottom">
           <p>Selected Options:</p>
-          {selectedOptions.slice(0, 10).map(opt => <p>{opt.Text}</p>)}
+          {selectedOptions.slice(0, 10).map(opt => <p>{opt.Label}</p>)}
           {selectedOptions.length > 10 ? <p>{`and ${selectedOptions.length - 10} other(s)`}</p> : null}
         </ToolTip>
         : null}
@@ -207,9 +213,7 @@ const MultiSelect = (props: IProps) => {
                   onClick={(evt) => {
                     evt.preventDefault();
                     props.OnChange(evt,
-                      props.Options.filter(
-                        (x) => x.Selected === (props.Options.filter((o) => o.Selected).length === props.Options.length),
-                      ),
+                      props.Options.filter((x) => x.Selected === (props.Options.filter((o) => o.Selected).length === props.Options.length)),
                     );
                   }}
                 >
@@ -225,7 +229,7 @@ const MultiSelect = (props: IProps) => {
                     <td>
                       <input type="checkbox" checked={f.Selected} onChange={() => null} />
                     </td>
-                    <td>{f.Text}</td>
+                    <td>{f.Label}</td>
                   </tr>
                 ))}
               </tbody>
