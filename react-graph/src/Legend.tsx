@@ -162,7 +162,7 @@ function Legend(props: IProps) {
 
   React.useEffect(() => {
     if (props.RequestLegendWidth !== undefined && requiredWidth !== width) props.RequestLegendWidth(requiredWidth);
-  }, [requiredHeight, height]);
+  }, [requiredWidth, width]);
 
   React.useEffect(() => {
     massEnableRef.current = (triggerId: string) => {
