@@ -23,8 +23,8 @@
 
 import * as React from 'react';
 import * as _ from 'lodash';
-import { GraphContext, IDataSeries } from './GraphContext';
-import { ILegendContext, ILegendRequiredProps, LegendContext } from './LegendContext';
+import { GraphContext } from './GraphContext';
+import { ILegendContext, LegendContext } from './LegendContext';
 import { GetScrollbarWidth, GetTextHeight, GetTextWidth } from '@gpa-gemstone/helper-functions';
 import LineLegend from './LineLegend';
 import HeatLegend from './HeatLegend';
@@ -161,7 +161,7 @@ function Legend(props: IProps) {
   }, [requiredHeight, height]);
 
   React.useEffect(() => {
-    if (props.RequestLegendWidth !== undefined && requiredWidth !== width) props.RequestLegendWidth(requiredHeight);
+    if (props.RequestLegendWidth !== undefined && requiredWidth !== width) props.RequestLegendWidth(requiredWidth);
   }, [requiredHeight, height]);
 
   React.useEffect(() => {
