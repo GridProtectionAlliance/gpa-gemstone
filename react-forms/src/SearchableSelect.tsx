@@ -95,7 +95,7 @@ export default function SearchableSelect<T>(props: IProps<T>) {
                 setLoading(false)
             });
             return () => {
-                if(handle?.abort != null) handle.abort()
+                if (handle?.abort != null) handle.abort()
             }
         }
     }, [props.GetLabel, props.Record[props.Field], props.ResetSearchOnSelect]);
@@ -162,7 +162,7 @@ export default function SearchableSelect<T>(props: IProps<T>) {
         })
 
         if (props.AllowCustom ?? false)
-            -            ops.push({ Value: search, Element: <>{search} (Entered Value)</> });
+            ops.push({ Value: search, Element: <>{search} (Entered Value)</> });
 
         ops.push(...results.filter(f => f.Value !== search && f.Value !== props.Record[props.Field]));
 

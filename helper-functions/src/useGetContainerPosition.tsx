@@ -40,10 +40,14 @@ import * as React from 'react'
 export const useGetContainerPosition = (containerRef: React.MutableRefObject<HTMLDivElement | null>) => {
     const [top, setTop] = React.useState<number>(0);
     const [left, setLeft] = React.useState<number>(0);
+
     const [height, setHeight] = React.useState<number>(0);
+    const [scrollHeight, setScrollHeight] = React.useState<number>(0);
+    const [clientHeight, setClientHeight] = React.useState<number>(0);
 
     const [width, setWidth] = React.useState<number>(0);
     const [scrollWidth, setScrollWidth] = React.useState<number>(0);
+    const [clientWidth, setClientWidth] = React.useState<number>(0);
 
     const [x, setX] = React.useState<number>(0);
     const [y, setY] = React.useState<number>(0);
@@ -59,9 +63,15 @@ export const useGetContainerPosition = (containerRef: React.MutableRefObject<HTM
             const newScrollWidth = containerRef.current.scrollWidth;
             if (newSize.top !== top) setTop(newSize.top);
             if (newSize.left !== left) setLeft(newSize.left);
+
             if (newSize.height !== height) setHeight(newSize.height);
+            if (containerRef.current.scrollHeight !== scrollHeight) setScrollHeight(containerRef.current.scrollHeight);
+            if (containerRef.current.clientHeight !== clientHeight) setClientHeight(containerRef.current.clientHeight);
+
             if (newSize.width !== width) setWidth(newSize.width);
             if (newScrollWidth !== scrollWidth) setScrollWidth(newScrollWidth);
+            if (clientWidth !== containerRef.current.clientWidth) setClientWidth(containerRef.current.clientWidth);
+
             if (newSize.x !== x) setX(newSize.x);
             if (newSize.y !== y) setY(newSize.y);
             if (newSize.bottom !== bottom) setBottom(newSize.bottom);
@@ -78,5 +88,5 @@ export const useGetContainerPosition = (containerRef: React.MutableRefObject<HTM
         };
     })
 
-    return { top, left, height, width, x, y, bottom, right, scrollWidth }
+    return { top, left, height, width, x, y, bottom, right, scrollWidth, clientWidth, scrollHeight, clientHeight };
 }
