@@ -170,7 +170,7 @@ const MultiSelect = (props: IProps) => {
       {(props.ItemTooltip ?? 'no-tip') !== 'no-tip' ?
         <ToolTip Show={showItems} Target={guid} Position="bottom">
           <p>Selected Options:</p>
-          {selectedOptions.slice(0, 10).map(opt => <p>{opt.Label}</p>)}
+          {selectedOptions.slice(0, 10).map((opt, i) => <p key={i}>{opt.Label}</p>)}
           {selectedOptions.length > 10 ? <p>{`and ${selectedOptions.length - 10} other(s)`}</p> : null}
         </ToolTip>
         : null}
