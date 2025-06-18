@@ -37,6 +37,18 @@ export interface IOption {
 
 interface IProps<T> {
   /**
+  * Function to determine the validity of a field
+  * @param field - Field of the record to check
+  * @returns {boolean}
+  */
+  Valid?: (field: keyof T) => boolean;
+  /**
+    * Feedback message to show when input is invalid
+    * @type {string}
+    * @optional
+  */
+  Feedback?: string;
+  /**
     * Record to be used in form
     * @type {T}
   */
@@ -210,8 +222,8 @@ export default function StylableSelect<T>(props: IProps<T>) {
       {/* Dropdown toggle button */}
       <button
         type="button"
-        style={{ border: '1px solid #ced4da', padding: '.375rem .75rem', fontSize: '1rem', borderRadius: '.25rem', ...(props.BtnStyle ?? {}) }}
-        className="btn form-control dropdown-toggle"
+        style={{ padding: '.375rem .75rem', ...(props.BtnStyle ?? {}) }}
+        className={`dropdown-toggle ${(props.Valid?.(props.Field) ?? true) ? 'form-control' : 'form-control is-invalid'}`}
         onClick={HandleShow}
         disabled={props.Disabled === undefined ? false : props.Disabled}
       >
@@ -219,6 +231,11 @@ export default function StylableSelect<T>(props: IProps<T>) {
           {selected}
         </div>
       </button>
+
+      {/* Invalid feedback message */}
+      <div className="invalid-feedback">
+        {props.Feedback == null ? props.Field.toString() + ' is a required field.' : props.Feedback}
+      </div>
 
       {/* Dropdown menu with options */}
       <Portal>
