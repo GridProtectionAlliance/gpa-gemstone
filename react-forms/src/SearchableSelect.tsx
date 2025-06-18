@@ -68,11 +68,11 @@ interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
     */
     BtnStyle?: React.CSSProperties
     /*
-    * Function to get the initial search text or when the element loses focus
+    * Function to get the initial search text or when the element loses focus or when an option is selected
     */
     GetLabel?: () => AbortablePromise<string>
     /**
-     * Flag to reset search text to an empty string when a user selects an option. Defaulting to false
+     * Flag to reset search text to an empty string when a user selects an option or when the element loses focus. Defaulting to false
      */
     ResetSearchOnSelect?: boolean
 }
