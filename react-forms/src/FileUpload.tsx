@@ -23,12 +23,13 @@
 
 import * as React from 'react';
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
+import { Application } from '@gpa-gemstone/application-typings';
 
 interface IProps {
     /** 
         * Callback function that will be called when a file is uploaded
     * */
-    OnLoadHandler: (result: File) => void
+    OnLoadHandler: (result: File) => Promise<any>
     /** 
         * Callback function that will be called when clear button is clicked
     * */
@@ -40,14 +41,19 @@ interface IProps {
     FileTypeAttribute: string
 }
 
-
 const FileUpload = (props: IProps) => {
+    const inputRef = React.useRef<HTMLInputElement>(null);
+
     const [fileName, setFileName] = React.useState<string | null>(null);
     const [fileSize, setFileSize] = React.useState<number | null>(null);
     const [isFileUpload, setIsFileUploaded] = React.useState<boolean>(false);
+    const [uploadStatus, setUploadStatus] = React.useState<Application.Types.Status>('unintiated');
 
     const handleFileUpload = (evt: React.ChangeEvent<HTMLInputElement>) => {
-        if (evt.target == null || evt.target.files == null || evt.target.files.length === 0) return;
+        if (evt.target == null || evt.target.files == null || evt.target.files.length === 0) {
+            setUploadStatus('unintiated');
+            return;
+        }
 
         const file = evt.target.files[0];
         setMetaData(file);
@@ -73,6 +79,7 @@ const FileUpload = (props: IProps) => {
     }
 
     const handleOnClear = () => {
+        setUploadStatus('unintiated');
         setIsFileUploaded(false);
         setFileName(null);
         setFileSize(null);
@@ -82,8 +89,17 @@ const FileUpload = (props: IProps) => {
     const setMetaData = (file: File) => {
         setFileName(file.name);
         setFileSize(file.size);
-        props.OnLoadHandler(file);
-        setIsFileUploaded(true);
+
+        setUploadStatus('loading');
+        console.log('props.OnLoadHandler', props.OnLoadHandler)
+        props.OnLoadHandler(file).then(() => {
+            setIsFileUploaded(true);
+            setUploadStatus('idle')
+        }).catch(() => {
+            setIsFileUploaded(false);
+            setUploadStatus('error')
+        })
+
     }
 
     return (
@@ -92,7 +108,13 @@ const FileUpload = (props: IProps) => {
                 <div className='col-auto mt-2 pl-0'>
                     <label style={{ cursor: 'pointer' }}>
                         <ReactIcons.ShareArrow Color='var(--info)' />
-                        <input type="file" onChange={handleFileUpload} accept={props.FileTypeAttribute} style={{ display: 'none' }} />
+                        <input
+                            ref={inputRef}
+                            type="file"
+                            accept={props.FileTypeAttribute}
+                            style={{ display: 'none' }}
+                            onChange={handleFileUpload}
+                        />
                     </label>
                 </div>
                 <div className='col-auto pl-0'>
@@ -101,25 +123,35 @@ const FileUpload = (props: IProps) => {
                     </button>
                 </div>
             </div>
-            {isFileUpload ?
-                <>
-                    <div className='row align-items-center justify-content-center' style={{ border: '2px dashed var(--secondary)', borderRadius: '0.5em' }}>
-                        <div className='col-auto'>
-                            File Name: {fileName ?? ''}
-                        </div>
-                        <div className='col-auto'>
-                            File Size: {formatFileSize(fileSize)}
-                        </div>
-                    </div>
-                </>
-                :
-                <div className='row' onDragOver={handleDragOver} onDrop={handleDrop} style={{ border: '2px dashed var(--secondary)', borderRadius: '0.5em' }}>
-                    <div className='col-12 pt-3 pb-3 d-flex justify-content-center align-items-center' >
-                        <ReactIcons.Image Size={100} />
-                        <span>Drag and Drop</span>
-                    </div>
+            {uploadStatus === 'error' ?
+                <div className={`alert alert-danger fade show`}>
+                    An error occured while uploading file.
                 </div>
-            }
+                : null}
+
+            <div className='row' onDragOver={handleDragOver} onDrop={handleDrop} style={{ border: '2px dashed var(--secondary)', borderRadius: '0.5em' }}>
+                {uploadStatus === 'loading' ?
+                    <div className='d-flex col-12 align-items-center justify-content-center'>
+                        <ReactIcons.SpiningIcon Size={200} />
+                    </div>
+                    :
+                    isFileUpload ?
+                        <>
+                            <div className='col-auto'>
+                                File Name: {fileName ?? ''}
+                            </div>
+                            <div className='col-auto'>
+                                File Size: {formatFileSize(fileSize)}
+                            </div>
+                        </>
+                        :
+                        <div className='col-12 pt-3 pb-3 d-flex justify-content-center align-items-center' >
+
+                            <ReactIcons.Image Size={100} />
+                            <span>Drag and Drop</span>
+                        </div>
+                }
+            </div>
         </>
     );
 }
