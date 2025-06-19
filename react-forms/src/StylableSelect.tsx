@@ -114,7 +114,7 @@ export default function StylableSelect<T>(props: IProps<T>) {
   const [showHelp, setShowHelp] = React.useState<boolean>(false);
   const [position, setPosition] = React.useState<Gemstone.TSX.Interfaces.IElementPosition>({ Top: 0, Left: 0, Width: 0, Height: 0 });
 
-  React.useEffect(() => {
+  React.useLayoutEffect(() => {
     const updatePosition = _.debounce(() => {
       if (stylableSelect.current != null) {
         const rect = stylableSelect.current.getBoundingClientRect();
@@ -150,6 +150,17 @@ export default function StylableSelect<T>(props: IProps<T>) {
     // Ignore if disabled or not a mousedown event
     if ((props.Disabled === undefined ? false : props.Disabled) || evt.type !== 'mousedown' || stylableSelect.current == null) return;
 
+    // if we’re about to OPEN it, measure right now
+    if (!show && stylableSelect.current != null) {
+      const rect = stylableSelect.current.getBoundingClientRect();
+      setPosition({
+        Top: rect.bottom,
+        Left: rect.left,
+        Width: rect.width,
+        Height: rect.height
+      });
+    }
+
     //ignore the click if it was inside the table or table container
     if ((selectTable.current != null && selectTable.current.contains(evt.target as Node)) || (tableContainer.current != null && tableContainer.current.contains(evt.target as Node)))
       return
@@ -157,7 +168,6 @@ export default function StylableSelect<T>(props: IProps<T>) {
     if (!stylableSelect.current.contains(evt.target as Node)) setShow(false);
     else setShow(!show);
   }, [props.Disabled, show])
-
 
   // Update the parent component's state with the selected option.
   function SetRecord(selectedOption: IOption) {
