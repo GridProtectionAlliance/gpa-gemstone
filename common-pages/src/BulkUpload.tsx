@@ -179,7 +179,7 @@ export default function BulkUpload<T>(props: IProps<T>) {
                     if (e.target == null){
                         reject();
                         return;
-                    };
+                    }
 
                     setRawFileContent(e.target.result as string);
                     resolve()
