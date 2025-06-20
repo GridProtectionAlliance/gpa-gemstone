@@ -184,7 +184,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
   const [svgWidth, setSVGwidth] = React.useState<number>(props.width);
   const [menueWidth, setMenueWidth] = React.useState<number>(28);
 
-  const [command, setCurrentCommand] = React.useState<{requester: string, command: "disable-others"|"enable-all"|"none"}>({requester: "", command: "none"});
+  const [command, setCurrentCommand] = React.useState<{ requester: string, command: "disable-others" | "enable-all" | "none" }>({ requester: "", command: "none" });
 
   const groupContext = React.useContext(PlotGroupContext);
 
@@ -196,7 +196,10 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
   //NOTE: zoom-horizontal really is zooming on the y-axis and zoom-vertical is zooming on the x-axis
   const showZoomButton = props.yDomain !== 'AutoValue' && (props.zoom ?? true);
   const showHorizontalZoomButton = props.yDomain !== 'AutoValue' && ((props.zoom ?? true) || (props.yZoom ?? true));
-  const showVerticalZoomButton = props.yDomain === 'AutoValue' || (props.zoom ?? true) || (props.xZoom ?? true);
+  const showVerticalZoomButton = (props.yDomain === 'AutoValue' || (props.zoom ?? true)) && (props.xZoom ?? true);
+
+  const showPan = props.pan === undefined || props.pan
+  const showReset = showPan || showZoomButton || showHorizontalZoomButton || showVerticalZoomButton;
 
   React.useEffect(() => {
     if (!groupContext.HasConsumer) return
@@ -962,11 +965,11 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
             </g>
             {(photoReady || props.menuLocation === 'hide') ? <></> :
               <InteractiveButtons
-                showPan={(props.pan === undefined || props.pan)}
+                showPan={showPan}
                 showZoom={showZoomButton}
                 showHorizontalZoom={showHorizontalZoomButton}
                 showVerticalZoom={showVerticalZoomButton}
-                showReset={!(props.pan !== undefined && props.zoom !== undefined && !props.zoom && !props.pan)}
+                showReset={showReset}
                 showSelect={props.onSelect !== undefined || handlers.current.size > 0}
                 showDownload={props.onDataInspect !== undefined}
                 showCapture={props.onCapture !== undefined}
