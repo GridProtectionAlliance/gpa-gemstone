@@ -46,6 +46,7 @@ import LayoutGrid from './LayoutGrid';
 import Alert from './Alert'
 import Breadcrumb from './Breadcrumb';
 import { Gemstone } from './HelperAlerts/HelperAlerts';
+import StatusProgressBar from './StatusProgressBar';
 
 export {
   Modal,
@@ -76,5 +77,6 @@ export {
   LayoutGrid,
   Alert,
   Breadcrumb,
-  Gemstone
+  Gemstone,
+  StatusProgressBar
 };

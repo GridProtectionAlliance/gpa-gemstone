@@ -46,7 +46,7 @@ export default function ToggleSwitch<T>(props: IProps<T>) {
   const label = props.Label === undefined ? props.Field : props.Label;
 
   return (
-    <div className="custom-control custom-switch" style={props.Style}>
+    <div className="custom-control custom-switch form-group" style={props.Style}>
       <input
         type="checkbox"
         className="custom-control-input"
