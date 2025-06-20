@@ -26,12 +26,17 @@ interface IProps {
     /**
     * Current Percentage out of 100
     */
-    CurrentPercentage: number
+    CurrentPercentage: number,
+
+    /**
+     * Class for progress div
+     */
+    Class?: string
 }
 
 const StatusProgressBar = (props: React.PropsWithChildren<IProps>) => {
     return (
-        <div className="progress w-75">
+        <div className={`progress ${props.Class ?? "w-75"}`}>
             <div
                 className="progress-bar progress-bar-striped progress-bar-animated"
                 role="progressbar"
