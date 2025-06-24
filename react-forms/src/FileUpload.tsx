@@ -42,8 +42,6 @@ interface IProps {
 }
 
 const FileUpload = (props: IProps) => {
-    const inputRef = React.useRef<HTMLInputElement>(null);
-
     const [fileName, setFileName] = React.useState<string | null>(null);
     const [fileSize, setFileSize] = React.useState<number | null>(null);
     const [isFileUpload, setIsFileUploaded] = React.useState<boolean>(false);
@@ -91,7 +89,6 @@ const FileUpload = (props: IProps) => {
         setFileSize(file.size);
 
         setUploadStatus('loading');
-        console.log('props.OnLoadHandler', props.OnLoadHandler)
         props.OnLoadHandler(file).then(() => {
             setIsFileUploaded(true);
             setUploadStatus('idle')
@@ -109,7 +106,6 @@ const FileUpload = (props: IProps) => {
                     <label style={{ cursor: 'pointer' }}>
                         <ReactIcons.ShareArrow Color='var(--info)' />
                         <input
-                            ref={inputRef}
                             type="file"
                             accept={props.FileTypeAttribute}
                             style={{ display: 'none' }}

@@ -99,8 +99,7 @@ export default function SearchableSelect<T>(props: IProps<T>) {
         }
 
         if (props.GetLabel === undefined) {
-            const stringVal: string = (props.Record[props.Field] as any)?.toString() ?? '';
-            let newSearch = stringVal;
+            let newSearch: string = (props.Record[props.Field] as any)?.toString() ?? '';
 
             if (lastSelectedOption != null && !React.isValidElement(lastSelectedOption.Element))
                 newSearch = lastSelectedOption.Element as string;

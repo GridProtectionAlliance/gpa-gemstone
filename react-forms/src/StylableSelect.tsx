@@ -233,7 +233,7 @@ export default function StylableSelect<T>(props: IProps<T>) {
       <button
         type="button"
         style={{ padding: '.375rem .75rem', ...(props.BtnStyle ?? {}) }}
-        className={`dropdown-toggle ${(props.Valid?.(props.Field) ?? true) ? 'form-control' : 'form-control is-invalid'}`}
+        className={`dropdown-toggle form-control ${(props.Valid?.(props.Field) ?? true) ? '' : 'is-invalid'}`}
         onClick={HandleShow}
         disabled={props.Disabled === undefined ? false : props.Disabled}
       >
