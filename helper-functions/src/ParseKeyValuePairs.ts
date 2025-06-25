@@ -38,11 +38,11 @@ import { ReplaceAll } from "./ReplaceAll";
  */
 export const ParseKeyValuePairs = (
     str: string,
-    parameterDelimiter: string = ';',
-    keyValueDelimiter: string = "=",
-    startValueDelimiter: string = "{",
-    endValueDelimiter: string = "}",
-    ignoreDuplicateKeys: boolean = true
+    parameterDelimiter = ';',
+    keyValueDelimiter = "=",
+    startValueDelimiter = "{",
+    endValueDelimiter = "}",
+    ignoreDuplicateKeys = true
 ) => {
 
     if (parameterDelimiter === keyValueDelimiter ||
@@ -59,10 +59,10 @@ export const ParseKeyValuePairs = (
     const escapedEndValueDelimiter = RegexEncode(endValueDelimiter);
     const backslashDelimiter = RegexEncode("\\");
 
-    var keyValuePairs = new Map();
-    var escapedValue = [];
-    var valueEscaped = false;
-    var delimiterDepth = 0;
+    const keyValuePairs = new Map();
+    const escapedValue = [];
+    let valueEscaped = false;
+    let delimiterDepth = 0;
 
     // Escape any parameter or key/value delimiters within tagged value sequences
     //      For example, the following string:
@@ -70,7 +70,7 @@ export const ParseKeyValuePairs = (
     //      would be encoded as:
     //          "normalKVP=-1; nestedKVP=p1\\u003dtrue\\u003b p2\\u003dfalse")
     for (let i = 0; i < str.length; i++) {
-        var character = str[i];
+        const character = str[i];
 
         if (character === startValueDelimiter) {
             if (!valueEscaped) {
@@ -139,16 +139,16 @@ export const ParseKeyValuePairs = (
     }
 
     // Parse key/value pairs from escaped value
-    var pairs = escapedValue.join("").split(parameterDelimiter);
+    const pairs = escapedValue.join("").split(parameterDelimiter);
 
     for (let i = 0; i < pairs.length; i++) {
         // Separate key from value
-        var elements = pairs[i].split(keyValueDelimiter);
+        const elements = pairs[i].split(keyValueDelimiter);
 
         if (elements.length === 2) {
             // Get key
-            var key = elements[0].trim();
-            var unescapedValue = elements[1].trim();
+            const key = elements[0].trim();
+            let unescapedValue = elements[1].trim();
 
             // Get unescaped value
             unescapedValue = ReplaceAll(unescapedValue, escapedParameterDelimiter, parameterDelimiter);

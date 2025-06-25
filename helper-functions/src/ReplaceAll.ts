@@ -31,8 +31,8 @@
  * @returns A new string with all matches replaced.
  */
 export const ReplaceAll = (source: string, findText: string, replaceWith: string, ignoreCase?: boolean) => {
-    var replaceVal = typeof replaceWith === "string" ? replaceWith.replace(/\$/g, "$$$$") : replaceWith;
-    var flags = ignoreCase ? "gi" : "g";
-    var pattern = new RegExp(findText.replace(/([\/\\\,\!\^\$\{\}\[\]\(\)\.\*\+\?\|\<\>\-\&])/g, "\\$&"), flags);
+    const replaceVal = typeof replaceWith === "string" ? replaceWith.replace(/\$/g, "$$$$") : replaceWith;
+    const flags = (ignoreCase ?? false) ? "gi" : "g";
+    const pattern = new RegExp(findText.replace(/([/\\,!^${}[\]().*+?|<>\-&])/g, "\\$&"), flags);
     return source.replace(pattern, replaceVal);
 }

@@ -28,7 +28,7 @@
  * @returns A string in the form `\uXXXX` representing the character's Unicode code point.
  */
 export const RegexEncode = (character: string) => {
-    var code = character.charCodeAt(0).toString(16);
+    let code = character.charCodeAt(0).toString(16);
     while (code.length < 4) code = "0" + code;
     return "\\u" + code;
 }

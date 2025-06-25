@@ -35,8 +35,8 @@ import { IsBool } from "./IsBool";
 export const JoinKeyValuePairs = (source: Record<string, string>, parameterDelimiter = ";", keyValueDelimiter = "=", startValueDelimiter = "{", endValueDelimiter = "}") => {
     const values: string[] = [];
 
-    for (let key in source) {
-        if (source.hasOwnProperty(key)) {
+    for (const key in source) {
+        if (Object.prototype.hasOwnProperty.call(source, key)) {
             let value: string = source[key];
 
             if (IsBool(value))
