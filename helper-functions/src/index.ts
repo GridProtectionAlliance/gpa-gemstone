@@ -42,6 +42,11 @@ import { useGetContainerPosition } from './useGetContainerPosition';
 import GetScrollbarWidth from './GetScrollBarWidth';
 import useMediaQuery from './useMediaQuery';
 import useGetScreenSize from './useGetScreenSize';
+import { ParseKeyValuePairs } from './ParseKeyValuePairs';
+import { JoinKeyValuePairs } from './JoinKeyValuePairs';
+import { IsBool } from './IsBool';
+import { ReplaceAll } from './ReplaceAll';
+import { RegexEncode } from './RegexEncode';
 
 export {
     CreateGuid,
@@ -62,5 +67,10 @@ export {
     useGetContainerPosition,
     GetScrollbarWidth,
     useMediaQuery,
-    useGetScreenSize
+    useGetScreenSize,
+    ParseKeyValuePairs,
+    JoinKeyValuePairs,
+    IsBool,
+    ReplaceAll,
+    RegexEncode
 }
