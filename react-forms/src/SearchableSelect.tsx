@@ -101,7 +101,7 @@ export default function SearchableSelect<T>(props: IProps<T>) {
         }
 
         if (props.GetLabel === undefined) {
-            let newSearch: string = selectedOption ?? (props.Record[props.Field] as any)?.toString() ?? '';
+            const newSearch: string = selectedOption ?? (props.Record[props.Field] as any)?.toString() ?? '';
             setSearch(newSearch);
             return
         }
