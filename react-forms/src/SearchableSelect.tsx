@@ -86,12 +86,10 @@ export default function SearchableSelect<T>(props: IProps<T>) {
         getInitialSearchText(props.ResetSearchOnSelect ?? false, (props.Record[props.Field] as any)?.toString() ?? '')
     );
 
-    const [lastSelectedOption, setLastSelectedOption] = React.useState<IStylableOption | null>(null)
-
     const [searchOptions, setSearchOptions] = React.useState<IStylableOption[]>([]);
     const [loading, setLoading] = React.useState<boolean>(false);
 
-    const update = React.useCallback((record: T, selectedOption: IStylableOption) => {
+    const setter = React.useCallback((record: T, selectedOption: IStylableOption) => {
         handleSetSearch(selectedOption);
         props.Setter(record);
     }, [props.Setter, props.Field]);
@@ -103,15 +101,7 @@ export default function SearchableSelect<T>(props: IProps<T>) {
         }
 
         if (props.GetLabel === undefined) {
-            let newSearch: string = (props.Record[props.Field] as any)?.toString() ?? '';
-
-            if (selectedOption != null) {
-                newSearch = selectedOption.Element as string;
-                setLastSelectedOption(selectedOption);
-            }
-            else if (lastSelectedOption != null && !React.isValidElement(lastSelectedOption.Element))
-                newSearch = lastSelectedOption.Element as string;
-
+            let newSearch: string = selectedOption ?? (props.Record[props.Field] as any)?.toString() ?? '';
             setSearch(newSearch);
             return
         }
@@ -122,7 +112,7 @@ export default function SearchableSelect<T>(props: IProps<T>) {
             setSearch(lab)
             setLoading(false)
         }, () => setLoading(false));
-    }, [props.ResetSearchOnSelect, props.GetLabel, props.Record[props.Field], lastSelectedOption]);
+    }, [props.ResetSearchOnSelect, props.GetLabel, props.Record[props.Field]]);
 
     //Effect to set search when props.Record[props.Field] changes externally
     React.useEffect(() => {
@@ -185,7 +175,7 @@ export default function SearchableSelect<T>(props: IProps<T>) {
     return <StylableSelect<T>
         Record={props.Record}
         Field={props.Field}
-        Setter={update}
+        Setter={setter}
         Label={props.Label}
         Disabled={props.Disabled}
         Help={props.Help}
