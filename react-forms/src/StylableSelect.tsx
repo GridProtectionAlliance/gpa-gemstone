@@ -37,6 +37,18 @@ export interface IOption {
 
 interface IProps<T> {
   /**
+  * Function to determine the validity of a field
+  * @param field - Field of the record to check
+  * @returns {boolean}
+  */
+  Valid?: (field: keyof T) => boolean;
+  /**
+    * Feedback message to show when input is invalid
+    * @type {string}
+    * @optional
+  */
+  Feedback?: string;
+  /**
     * Record to be used in form
     * @type {T}
   */
@@ -102,7 +114,7 @@ export default function StylableSelect<T>(props: IProps<T>) {
   const [showHelp, setShowHelp] = React.useState<boolean>(false);
   const [position, setPosition] = React.useState<Gemstone.TSX.Interfaces.IElementPosition>({ Top: 0, Left: 0, Width: 0, Height: 0 });
 
-  React.useEffect(() => {
+  React.useLayoutEffect(() => {
     const updatePosition = _.debounce(() => {
       if (stylableSelect.current != null) {
         const rect = stylableSelect.current.getBoundingClientRect();
@@ -138,6 +150,17 @@ export default function StylableSelect<T>(props: IProps<T>) {
     // Ignore if disabled or not a mousedown event
     if ((props.Disabled === undefined ? false : props.Disabled) || evt.type !== 'mousedown' || stylableSelect.current == null) return;
 
+    // if we’re about to OPEN it, measure right now
+    if (!show && stylableSelect.current != null) {
+      const rect = stylableSelect.current.getBoundingClientRect();
+      setPosition({
+        Top: rect.bottom,
+        Left: rect.left,
+        Width: rect.width,
+        Height: rect.height
+      });
+    }
+
     //ignore the click if it was inside the table or table container
     if ((selectTable.current != null && selectTable.current.contains(evt.target as Node)) || (tableContainer.current != null && tableContainer.current.contains(evt.target as Node)))
       return
@@ -145,7 +168,6 @@ export default function StylableSelect<T>(props: IProps<T>) {
     if (!stylableSelect.current.contains(evt.target as Node)) setShow(false);
     else setShow(!show);
   }, [props.Disabled, show])
-
 
   // Update the parent component's state with the selected option.
   function SetRecord(selectedOption: IOption) {
@@ -210,8 +232,8 @@ export default function StylableSelect<T>(props: IProps<T>) {
       {/* Dropdown toggle button */}
       <button
         type="button"
-        style={{ border: '1px solid #ced4da', padding: '.375rem .75rem', fontSize: '1rem', borderRadius: '.25rem', ...(props.BtnStyle ?? {}) }}
-        className="btn form-control dropdown-toggle"
+        style={{ padding: '.375rem .75rem', ...(props.BtnStyle ?? {}) }}
+        className={`dropdown-toggle form-control ${(props.Valid?.(props.Field) ?? true) ? '' : 'is-invalid'}`}
         onClick={HandleShow}
         disabled={props.Disabled === undefined ? false : props.Disabled}
       >
@@ -219,6 +241,11 @@ export default function StylableSelect<T>(props: IProps<T>) {
           {selected}
         </div>
       </button>
+
+      {/* Invalid feedback message */}
+      <div className="invalid-feedback">
+        {props.Feedback == null ? props.Field.toString() + ' is a required field.' : props.Feedback}
+      </div>
 
       {/* Dropdown menu with options */}
       <Portal>

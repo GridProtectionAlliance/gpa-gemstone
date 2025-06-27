@@ -116,11 +116,11 @@ const Pill = (props: IProps) => {
         const y1px = context.YTransformation(props.YData[1], axis);
 
         return Math.abs(y1px - y0px);
-    }, [context.XTransformation, props.YData, props.Axis]);
+    }, [context.YTransformation, props.YData, props.Axis, context.UpdateFlag]);
 
     const pxWidth = React.useMemo(() => {
         return Math.abs(context.XTransformation(props.XData[1]) - context.XTransformation(props.XData[0]))
-    }, [context.XTransformation, props.XData])
+    }, [context.XTransformation, props.XData, context.UpdateFlag])
 
     const radius = React.useMemo(() => {
         return Math.min(pxHeight / 2, pxWidth / 2, props.RadiusPX);
@@ -155,7 +155,7 @@ const Pill = (props: IProps) => {
             getMax: getMax,
             getMin: getMin,
         } as IDataSeries);
-    }, [props.Axis, props.XData, props.YData])
+    }, [props.Axis, getMax, getMin, guid])
 
     // Add a new data series on component mount / removing on unmount
     React.useEffect(() => {
@@ -203,7 +203,7 @@ const Pill = (props: IProps) => {
         }
 
         setTextSize(bestSize);
-    }, [props.Text, pxHeight, pxWidth]);
+    }, [props.Text, pxHeight, pxWidth, context.UpdateFlag]);
 
     // Set up a click handler if provided in props
     React.useEffect(() => {
@@ -243,10 +243,10 @@ const Pill = (props: IProps) => {
             return xRight
 
         return xCenter
-    }, [context.XTransformation, props.XData, props.TextPlacement])
+    }, [context.XTransformation, props.XData, props.TextPlacement, context.UpdateFlag])
 
     // Render null if coordinates are not valid, otherwise render the pill / text
-    if (!isFinite(context.XTransformation((props.XData[0], props.XData[1]) / 2)) || !isFinite(context.YTransformation(props.YData[0], AxisMap.get(props.Axis))) || !isFinite(context.YTransformation(props.YData[1], AxisMap.get(props.Axis))))
+    if (!isFinite(context.XTransformation((props.XData[0] + props.XData[1]) / 2)) || !isFinite(context.YTransformation(props.YData[0], AxisMap.get(props.Axis))) || !isFinite(context.YTransformation(props.YData[1], AxisMap.get(props.Axis))))
         return null;
 
     return (

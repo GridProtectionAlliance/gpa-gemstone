@@ -152,27 +152,46 @@ export default function BulkUpload<T>(props: IProps<T>) {
     }, [props.Step, props.CompleteOnReview, data]);
 
     const handleFileUpload = (file: File) => {
-        const matchArray = file.name.match(fileExtRegex);
-        const fileExtension = matchArray != null ? matchArray[0].substring(1) : ''
+        return new Promise<void>((resolve, reject) => {
+            try {
+                if(file == null){
+                    reject();
+                    return;
+                }
+                const matchArray = file.name.match(fileExtRegex);
+                const fileExtension = matchArray != null ? matchArray[0].substring(1) : ''
 
-        const pipelineIndex = props.Pipelines.findIndex(pipe => pipe.Select(file.type, fileExtension))
+                const pipelineIndex = props.Pipelines.findIndex(pipe => pipe.Select(file.type, fileExtension))
 
-        if (pipelineIndex == -1) {
-            setIsFileTypeValid(false);
-            return;
-        }
+                if (pipelineIndex == -1) {
+                    setIsFileTypeValid(false);
+                    reject();
+                    return;
+                }
 
-        setCurrentPipelineIndex(pipelineIndex);
-        setFileName(file.name);
+                setCurrentPipelineIndex(pipelineIndex);
+                setFileName(file.name);
 
-        const fileReader = new FileReader();
-        fileReader.readAsText(file);
+                const fileReader = new FileReader();
+                fileReader.readAsText(file);
 
-        fileReader.onload = (e) => {
-            if (e.target == null) return;
+                fileReader.onload = (e) => {
+                    if (e.target == null){
+                        reject();
+                        return;
+                    }
 
-            setRawFileContent(e.target.result as string);
-        };
+                    setRawFileContent(e.target.result as string);
+                    resolve()
+                };
+
+                fileReader.onerror = () => reject();
+            }
+            catch {
+                reject();
+            }
+        })
+
     }
 
     const handleFileOnClear = () => {
