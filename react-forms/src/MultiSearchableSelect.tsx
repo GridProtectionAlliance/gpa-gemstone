@@ -83,7 +83,7 @@ function MultiSearchableSelect<T>(props: IProps<T>) {
                             Label={index === 0 ? props.Label : ''}
                             Help={index === 0 ? props.Help : undefined}
                             Feedback={props.Feedback}
-                            Valid={() => props.Valid ? props.Valid(props.Field) : true}
+                            Valid={() => props.Valid != null ? props.Valid(props.Field) : true}
                             Style={props.Style}
                             Disabled={props.Disabled}
                             Setter={(record) => {
