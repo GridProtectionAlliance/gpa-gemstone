@@ -26,11 +26,7 @@ import StylableSelect, { IOption as IStylableOption } from './StylableSelect';
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 
-export interface AbortablePromise<T> extends PromiseLike<T> {
-    abort?: () => void
-}
-
-interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
+export interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
     /**
     * Function to determine the validity of a field
     * @param field - Field of the record to check
@@ -54,7 +50,7 @@ interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
     * @param search - Search string
     * @returns {AbortablePromise<T>}
     */
-    Search: (search: string) => AbortablePromise<Gemstone.TSX.Interfaces.ILabelValue<string | number>[]>;
+    Search: (search: string) => Gemstone.TSX.Interfaces.AbortablePromise<Gemstone.TSX.Interfaces.ILabelValue<string | number>[]>;
     /**
     * CSS styles to apply to the form group
     * @type {React.CSSProperties}
@@ -70,7 +66,7 @@ interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
     /*
     * Function to get the initial search text or when the element loses focus or when an option is selected
     */
-    GetLabel?: () => AbortablePromise<string>
+    GetLabel?: () => Gemstone.TSX.Interfaces.AbortablePromise<string>
     /**
      * Flag to reset search text to an empty string when a user selects an option or when the element loses focus. Defaulting to false
      */
@@ -123,7 +119,7 @@ export default function SearchableSelect<T>(props: IProps<T>) {
     React.useEffect(() => {
         setLoading(true);
 
-        let searchHandle: AbortablePromise<Gemstone.TSX.Interfaces.ILabelValue<string | number>[]>;
+        let searchHandle: Gemstone.TSX.Interfaces.AbortablePromise<Gemstone.TSX.Interfaces.ILabelValue<string | number>[]>;
 
         const timeoutHandle = setTimeout(() => {
             searchHandle = props.Search(search);

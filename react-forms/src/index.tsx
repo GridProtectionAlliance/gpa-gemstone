@@ -36,12 +36,13 @@ import TimePicker from './TimePicker';
 import StylableSelect from './StylableSelect';
 import ColorPicker from './ColorPicker'
 import SearchableSelect from './SearchableSelect';
-import ToggleSwitch from './ToggleSwitch'; 
+import ToggleSwitch from './ToggleSwitch';
 import InputWithButton from './InputWithButton';
 import RadioButtons from './RadioButtons';
 import FileUpload from './FileUpload';
 import MultiInput from './MultiInput';
 import ToolTip from './ToolTip';
+import MultiSearchableSelect from './MultiSearchableSelect';
 
 export {
     CheckBox,
@@ -64,5 +65,6 @@ export {
     RadioButtons,
     FileUpload,
     MultiInput,
-    ToolTip
+    ToolTip,
+    MultiSearchableSelect
 };
