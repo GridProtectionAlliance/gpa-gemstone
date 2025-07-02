@@ -27,8 +27,9 @@ import { Portal } from 'react-portal';
 import styled from 'styled-components';
 import Calender from './Calender';
 import Clock from './Clock';
-import { TimeUnit } from '../DatePicker'
 import { Gemstone } from '@gpa-gemstone/application-typings';
+import { useGetContainerPosition } from '@gpa-gemstone/helper-functions';
+import { TimeUnit } from './DateTimePicker/DateTimePickerBase';
 
 interface IWrapperProps {
     Top: number,
@@ -65,10 +66,8 @@ const WrapperDiv = styled.div<IWrapperProps>`
   }`
 
 interface IProps {
-    DateTime: moment.Moment|undefined,
+    DateTime: moment.Moment | undefined,
     Setter: (record: moment.Moment) => void,
-    Valid: boolean,
-    Feedback?: string,
     Type: TimeUnit,
     Show: boolean,
     Top: number,
@@ -78,16 +77,13 @@ interface IProps {
 
 export default function DateTimePopup(props: IProps) {
     const divRef = React.useRef<HTMLDivElement | null>(null);
+
     const [showTime, setShowTime] = React.useState<boolean>(props.Type !== 'date');
     const [showDate, setShowDate] = React.useState<boolean>(props.Type !== 'time');
 
-    const [width, setWidth] = React.useState<number>(0);
-    const [height, setHeight] = React.useState<number>(0);
+    const { width } = useGetContainerPosition(divRef);
 
-    React.useLayoutEffect(() => {
-        setWidth(divRef.current?.offsetWidth ?? width);
-        setHeight(divRef.current?.offsetHeight ?? height);
-    })
+    const left = Math.max(props.Center - 0.5 * width, 0)
 
     React.useEffect(() => {
         setShowTime(props.Type !== 'date');
@@ -97,8 +93,6 @@ export default function DateTimePopup(props: IProps) {
     if (!props.Show)
         return null;
 
-    const left = Math.max(props.Center - 0.5 * width, 0)
-    
     return (
         <Portal>
             <WrapperDiv Top={props.Top} Left={left} Indicator={50} ref={divRef} className='gpa-gemstone-datetime'>
