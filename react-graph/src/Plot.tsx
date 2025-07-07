@@ -196,7 +196,7 @@ const Plot: React.FunctionComponent<IProps> = (props) => {
   //NOTE: zoom-horizontal really is zooming on the y-axis and zoom-vertical is zooming on the x-axis
   const showZoomButton = props.yDomain !== 'AutoValue' && (props.zoom ?? true);
   const showHorizontalZoomButton = props.yDomain !== 'AutoValue' && ((props.zoom ?? true) || (props.yZoom ?? true));
-  const showVerticalZoomButton = (props.yDomain === 'AutoValue' || (props.zoom ?? true)) && (props.xZoom ?? true);
+  const showVerticalZoomButton = (props.yDomain === 'AutoValue' || (props.zoom ?? true)) || (props.xZoom ?? true);
 
   const showPan = props.pan === undefined || props.pan
   const showReset = showPan || showZoomButton || showHorizontalZoomButton || showVerticalZoomButton;
