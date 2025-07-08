@@ -105,7 +105,7 @@ export const InternalLine = React.forwardRef<PointNode | null, IInteralProps>((p
     }, [data, context.XHover]);
 
     React.useEffect(() => {
-        if (context.MassEnableCommand.command === "enable-all") 
+        if (context.MassEnableCommand.command === "enable-all")
             setEnabled(true);
         else if (context.MassEnableCommand.command === "disable-others")
             setEnabled(guid === context.MassEnableCommand.requester);
@@ -135,11 +135,16 @@ export const InternalLine = React.forwardRef<PointNode | null, IInteralProps>((p
 
         let result = "M ";
 
-        result = result + pointsToDraw.map((pt, _) => {
-            const x = context.XTransformation(pt[0]);
-            const y = context.YTransformation(pt[1], AxisMap.get(props.axis));
-            return `${x},${y}`
-        }).join(" L ")
+        const parts = [];
+
+        for (const [xVal, yVal] of pointsToDraw) {
+            if (isNaN(xVal) || isNaN(yVal)) continue;
+            const x = context.XTransformation(xVal);
+            const y = context.YTransformation(yVal, AxisMap.get(props.axis));
+            parts.push(`${x},${y}`);
+        }
+
+        result += parts.join(" L ");
 
         return result
     }, [context.XTransformation, context.YTransformation, props.axis])
@@ -147,13 +152,39 @@ export const InternalLine = React.forwardRef<PointNode | null, IInteralProps>((p
     return (
         enabled ?
             <g>
-                <path d={generateData(points)} style={{ fill: 'none', strokeWidth: props.width === undefined ? 3 : props.width, stroke: props.color }} strokeDasharray={LineMap.get(props.lineStyle)} />
+                <path
+                    d={generateData(points)}
+                    style={{ fill: 'none', strokeWidth: props.width === undefined ? 3 : props.width, stroke: props.color }}
+                    strokeDasharray={LineMap.get(props.lineStyle)}
+                />
 
-                {showPoints && data != null ? points.map((pt, i) => <circle key={i} r={3} cx={context.XTransformation(pt[0])} cy={context.YTransformation(pt[1], AxisMap.get(props.axis))} fill={props.color} stroke={'currentColor'}
-                    style={{ opacity: 0.8/*, transition: 'cx 0.5s,cy 0.5s'*/ }} />) : null}
+                {showPoints && data != null ?
+                    points.map((pt, i) => {
+                        if (isNaN(pt[0]) || isNaN(pt[1])) return null
+                        return (
+                            <circle
+                                key={i}
+                                r={3}
+                                cx={context.XTransformation(pt[0])}
+                                cy={context.YTransformation(pt[1], AxisMap.get(props.axis))}
+                                fill={props.color}
+                                stroke={'currentColor'}
+                                style={{ opacity: 0.8/*, transition: 'cx 0.5s,cy 0.5s'*/ }}
+                            />
+                        )
+                    }
+                    )
+                    : null}
 
                 {(props.highlightHover ?? false) && !isNaN(highlight[0]) && !isNaN(highlight[1]) ?
-                    <circle r={5} cx={context.XTransformation(highlight[0])} cy={context.YTransformation(highlight[1], AxisMap.get(props.axis))} fill={props.color} stroke={'currentColor'} style={{ opacity: 0.8/*, transition: 'cx 0.5s,cy 0.5s'*/ }} />
+                    <circle
+                        r={5}
+                        cx={context.XTransformation(highlight[0])}
+                        cy={context.YTransformation(highlight[1], AxisMap.get(props.axis))}
+                        fill={props.color}
+                        stroke={'currentColor'}
+                        style={{ opacity: 0.8/*, transition: 'cx 0.5s,cy 0.5s'*/ }}
+                    />
                     : null}
             </g > : null
     );
