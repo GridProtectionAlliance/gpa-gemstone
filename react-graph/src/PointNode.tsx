@@ -282,8 +282,8 @@ export class PointNode {
 
         for (let index = 1; index < this.dim; index++) {
             const values = this.points.map(pt => pt[index]);
-            this.minV[index - 1] = computeMin(values);
-            this.maxV[index - 1] = computeMax(values);
+            this.minV[index - 1] = ComputeMin(values);
+            this.maxV[index - 1] = ComputeMax(values);
             this.sum[index - 1] = values.reduce((acc, val) => acc + val, 0);
         }
     }
@@ -294,12 +294,12 @@ export class PointNode {
     private AggregateChildStats(): void {
         if (this.children === null || this.children.length === 0) return;
 
-        this.minT = computeMin(this.children.map(node => node.minT));
-        this.maxT = computeMax(this.children.map(node => node.maxT));
+        this.minT = ComputeMin(this.children.map(node => node.minT));
+        this.maxT = ComputeMax(this.children.map(node => node.maxT));
 
         for (let index = 0; index < this.dim - 1; index++) {
-            this.minV[index] = computeMin(this.children.map(node => node.minV[index]));
-            this.maxV[index] = computeMax(this.children.map(node => node.maxV[index]));
+            this.minV[index] = ComputeMin(this.children.map(node => node.minV[index]));
+            this.maxV[index] = ComputeMax(this.children.map(node => node.maxV[index]));
             this.sum[index] = this.children.reduce((s, node) => s + node.sum[index], 0);
         }
         this.count = this.children.reduce((acc, node) => acc + node.count, 0);
@@ -312,13 +312,13 @@ export class PointNode {
      */
     private IncrementStatsForNewChild(newChild: PointNode): void {
         // Update the time range
-        this.minT = computeMin([this.minT, newChild.minT]);
-        this.maxT = computeMax([this.maxT, newChild.maxT]);
+        this.minT = ComputeMin([this.minT, newChild.minT]);
+        this.maxT = ComputeMax([this.maxT, newChild.maxT]);
 
         // Update value ranges and sums
         for (let i = 0; i < this.dim - 1; i++) {
-            this.minV[i] = computeMin([this.minV[i], newChild.minV[i]]);
-            this.maxV[i] = computeMax([this.maxV[i], newChild.maxV[i]]);
+            this.minV[i] = ComputeMin([this.minV[i], newChild.minV[i]]);
+            this.maxV[i] = ComputeMax([this.maxV[i], newChild.maxV[i]]);
             this.sum[i] += newChild.sum[i];
         }
 
@@ -337,8 +337,8 @@ export class PointNode {
         if (isNaN(this.maxT)) this.maxT = newPt[0];
 
         this.count += 1;
-        this.minT = computeMin([this.minT, newPt[0]]);
-        this.maxT = computeMax([this.maxT, newPt[0]]);
+        this.minT = ComputeMin([this.minT, newPt[0]]);
+        this.maxT = ComputeMax([this.maxT, newPt[0]]);
 
         for (let i = 0; i < this.dim - 1; i++) {
             // Initialize stats if they are NaN
@@ -354,8 +354,8 @@ export class PointNode {
                 this.maxV[i] = val;
                 this.sum[i] += val;
             } else {
-                this.minV[i] = computeMin([this.minV[i], val]);
-                this.maxV[i] = computeMax([this.maxV[i], val]);
+                this.minV[i] = ComputeMin([this.minV[i], val]);
+                this.maxV[i] = ComputeMax([this.maxV[i], val]);
                 this.sum[i] += val;
             }
         }
@@ -447,14 +447,14 @@ export class PointNode {
         if (this.points == null && !(Tstart <= this.minT && Tend > this.maxT)) {
             // Array represents all limits o nodes
             const limits = this.children!.filter(n => n.maxT > Tstart && n.minT < Tend).map(n => n.GetLimits(Tstart, Tend, currentIndex));
-            min = computeMin(limits.map(pt => pt[0]));
-            max = computeMax(limits.map(pt => pt[1]));
+            min = ComputeMin(limits.map(pt => pt[0]));
+            max = ComputeMax(limits.map(pt => pt[1]));
         }
         if (this.points != null && !(Tstart <= this.minT && Tend > this.maxT)) {
             // Array represents all numbers within this node that fall in range
             const limits = this.points!.filter(pt => pt[0] > Tstart && pt[0] < Tend).map(pt => pt[currentIndex + 1]);
-            min = computeMin(limits);
-            max = computeMax(limits);
+            min = ComputeMin(limits);
+            max = ComputeMax(limits);
         }
 
         return [min, max];
@@ -546,7 +546,7 @@ export class PointNode {
             const lowerSpillOver = lowerPoints - centerIndex;
             const lowerNeighborPoints = (lowerSpillOver > 0 && nodeLowerNeighbor !== undefined) ? nodeLowerNeighbor.PointBinarySearch(tVal, lowerSpillOver, undefined, this) : [];
 
-            return lowerNeighborPoints.concat(this.points.slice(computeMin([centerIndex - lowerPoints, 0]), computeMin([centerIndex + upperPoints + 1, this.points.length]))).concat(upperNeighborPoints);
+            return lowerNeighborPoints.concat(this.points.slice(ComputeMin([centerIndex - lowerPoints, 0]), ComputeMin([centerIndex + upperPoints + 1, this.points.length]))).concat(upperNeighborPoints);
 
         }
         else if (this.children !== null) {
