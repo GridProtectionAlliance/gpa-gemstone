@@ -290,10 +290,6 @@ export default function DateTimePickerBase<T>(props: IProps<T>) {
     );
 }
 
-export const ContextDateTimePicker = <T,>(props: IProps<T>) => {
-
-}
-
 export function getBoxFormat(type?: TimeUnit, accuracy?: Gemstone.TSX.Types.Accuracy) {
     const dateTime = type ?? 'date'
     const timeUnit = accuracy ?? 'second'
