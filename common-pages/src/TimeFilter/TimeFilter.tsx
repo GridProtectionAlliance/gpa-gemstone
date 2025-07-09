@@ -66,6 +66,23 @@ const TimeFilter = (props: IProps) => {
     const [activeQP, setActiveQP] = React.useState<number>(-1);
     const [filter, setFilter] = React.useState<ITimeWindow>(getTimeWindowFromFilter(props.filter, format));
 
+    const [showStartPopup, setShowStartPopup] = React.useState<boolean>(false);
+    const [showEndPopup, setShowEndPopup] = React.useState<boolean>(false);
+
+    const handleSetStartPopup = React.useCallback((show: boolean) => {
+        setShowStartPopup(show);
+        if (show && showEndPopup)
+            setShowEndPopup(false)
+
+    }, [showEndPopup])
+
+    const handleEndStartPopup = React.useCallback((show: boolean) => {
+        setShowEndPopup(show);
+        if (show && showStartPopup)
+            setShowStartPopup(false)
+
+    }, [showStartPopup])
+
     // Checks typing of ITimeFilter and then compares to ITimeWindow
     function isEqual(timeWindow: ITimeWindow, timeFilter: ITimeFilter) {
         const flt = getTimeWindowFromFilter(timeFilter, format);
@@ -108,6 +125,8 @@ const TimeFilter = (props: IProps) => {
                                 Valid={() => true}
                                 Format={format}
                                 Accuracy={props.accuracy}
+                                ShowOverlay={showStartPopup}
+                                SetShowOverlay={handleSetStartPopup}
                             />
                             {props.showQuickSelect && props.dateTimeSetting === 'startWindow' ?
                                 <StartWindowForm
@@ -143,6 +162,8 @@ const TimeFilter = (props: IProps) => {
                                 Valid={() => true}
                                 Format={format}
                                 Accuracy={props.accuracy}
+                                ShowOverlay={showEndPopup}
+                                SetShowOverlay={handleEndStartPopup}
                             />
                             {props.showQuickSelect && props.dateTimeSetting === 'endWindow' ?
                                 <EndWindowForm
