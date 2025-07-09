@@ -27,7 +27,7 @@
 export function ComputeMin(values: number[]): number {
     let min = Infinity;
     for (const v of values) {
-        if (Number.isNaN(v)) continue;
+        if (isNaN(Number(v))) continue;
         if (v < min) min = v;
     }
     return min === Infinity ? NaN : min;

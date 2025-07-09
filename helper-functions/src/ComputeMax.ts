@@ -27,7 +27,7 @@
 export function ComputeMax(values: number[]): number {
     let max = -Infinity;
     for (const v of values) {
-        if (Number.isNaN(v)) continue;
+        if (isNaN(Number(v))) continue;
         if (v > max) max = v;
     }
     return max === -Infinity ? NaN : max;
