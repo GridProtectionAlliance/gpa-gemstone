@@ -256,8 +256,8 @@ test('Count with empty data', () => {
 test('GetLimits with empty data', () => {
   const node = new PointNode([]);
   const limits = node.GetLimits(0, 1000000);
-  expect(limits[0]).toBe(Infinity);
-  expect(limits[1]).toBe(-Infinity);
+  expect(limits[0]).toBe(NaN);
+  expect(limits[1]).toBe(NaN);
 })
 
 test('GetPoint with empty data', () => {
