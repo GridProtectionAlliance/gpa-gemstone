@@ -1,5 +1,5 @@
 // ******************************************************************************************************
-//  IsBool.tsx - Gbtc
+//  ComputeMin.tsx - Gbtc
 //
 //  Copyright © 2025, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,21 +16,23 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  11/09/2023 - Preston Crawford
-//       Migrated code from GSF.
+//  07/08/2025 - Preston Crawford
+//       Generated original version of source code.
 //
 // ******************************************************************************************************
 
 /**
- * Checks whether a value is a string representing a boolean.
- *
- * @param val - The value to check, either a boolean or a string.
- * @returns `true` if the input string is a boolean.
+ * Returns the smallest non-NaN value in the array, or NaN if none.
  */
-export const IsBool = (val: string) => {
-    if (typeof val === "boolean")
-        return true;
+export function ComputeMin(values: number[]): number {
+   let min: number | undefined;
 
-    const lval = (val ?? '').toString().toLowerCase();
-    return lval === "true" || lval === "false";
+    for (const v of values) {
+        if (Number.isNaN(v)) continue;
+
+        if (min === undefined || v < min) 
+            min = v;
+    }
+
+    return min === undefined ? NaN : min;
 }

@@ -47,6 +47,8 @@ import { JoinKeyValuePairs } from './JoinKeyValuePairs';
 import { IsBool } from './IsBool';
 import { ReplaceAll } from './ReplaceAll';
 import { RegexEncode } from './RegexEncode';
+import { ComputeMax } from './ComputeMax';
+import { ComputeMin } from './ComputeMin';
 
 export {
     CreateGuid,
@@ -72,5 +74,7 @@ export {
     JoinKeyValuePairs,
     IsBool,
     ReplaceAll,
-    RegexEncode
+    RegexEncode,
+    ComputeMax,
+    ComputeMin
 }

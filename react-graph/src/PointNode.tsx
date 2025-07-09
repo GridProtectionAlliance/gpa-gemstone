@@ -20,9 +20,10 @@
 //       Generated original version of source code.
 //
 // ******************************************************************************************************
+import { ComputeMax, ComputeMin } from "@gpa-gemstone/helper-functions"
 
 const MaxPoints = 20;
-const DefaultMaxTotalPoints = 2000; // only used 
+const DefaultMaxTotalPoints = 2000;
 
 /**
  * 
@@ -281,9 +282,12 @@ export class PointNode {
 
         for (let index = 1; index < this.dim; index++) {
             const values = this.points.map(pt => pt[index]);
-            this.minV[index - 1] = Math.min(...values);
-            this.maxV[index - 1] = Math.max(...values);
-            this.sum[index - 1] = values.reduce((acc, val) => acc + val, 0);
+            this.minV[index - 1] = ComputeMin(values);
+            this.maxV[index - 1] = ComputeMax(values);
+            this.sum[index - 1] = values.reduce((sum, val) => {
+                if (isNaN(val)) return sum;
+                return sum + val;
+            }, 0);
         }
     }
 
@@ -293,13 +297,16 @@ export class PointNode {
     private AggregateChildStats(): void {
         if (this.children === null || this.children.length === 0) return;
 
-        this.minT = Math.min(...this.children.map(node => node.minT));
-        this.maxT = Math.max(...this.children.map(node => node.maxT));
+        this.minT = ComputeMin(this.children.map(node => node.minT));
+        this.maxT = ComputeMax(this.children.map(node => node.maxT));
 
         for (let index = 0; index < this.dim - 1; index++) {
-            this.minV[index] = Math.min(...this.children.map(node => node.minV[index]));
-            this.maxV[index] = Math.max(...this.children.map(node => node.maxV[index]));
-            this.sum[index] = this.children.reduce((s, node) => s + node.sum[index], 0);
+            this.minV[index] = ComputeMin(this.children.map(node => node.minV[index]));
+            this.maxV[index] = ComputeMax(this.children.map(node => node.maxV[index]));
+            this.sum[index] = this.children.reduce((s, node) => {
+                if (isNaN(node.sum[index])) return s;
+                return s + node.sum[index]
+            }, 0);
         }
         this.count = this.children.reduce((acc, node) => acc + node.count, 0);
     }
@@ -311,14 +318,14 @@ export class PointNode {
      */
     private IncrementStatsForNewChild(newChild: PointNode): void {
         // Update the time range
-        this.minT = Math.min(this.minT, newChild.minT);
-        this.maxT = Math.max(this.maxT, newChild.maxT);
+        this.minT = ComputeMin([this.minT, newChild.minT]);
+        this.maxT = ComputeMax([this.maxT, newChild.maxT]);
 
         // Update value ranges and sums
         for (let i = 0; i < this.dim - 1; i++) {
-            this.minV[i] = Math.min(this.minV[i], newChild.minV[i]);
-            this.maxV[i] = Math.max(this.maxV[i], newChild.maxV[i]);
-            this.sum[i] += newChild.sum[i];
+            this.minV[i] = ComputeMin([this.minV[i], newChild.minV[i]]);
+            this.maxV[i] = ComputeMax([this.maxV[i], newChild.maxV[i]]);
+            this.sum[i] += isNaN(newChild.sum[i]) ? 0 : newChild.sum[i];
         }
 
         this.count += newChild.count;
@@ -336,16 +343,20 @@ export class PointNode {
         if (isNaN(this.maxT)) this.maxT = newPt[0];
 
         this.count += 1;
-        this.minT = Math.min(this.minT, newPt[0]);
-        this.maxT = Math.max(this.maxT, newPt[0]);
+        this.minT = ComputeMin([this.minT, newPt[0]]);
+        this.maxT = ComputeMax([this.maxT, newPt[0]]);
 
         for (let i = 0; i < this.dim - 1; i++) {
+            const val = newPt[i + 1];
+
+            // 1) If the new value is NaN, don’t touch sum/minV/maxV for this dim
+            if (Number.isNaN(val))
+                continue;
+
             // Initialize stats if they are NaN
             if (isNaN(this.sum[i])) this.sum[i] = 0;
-            if (isNaN(this.minV[i])) this.minV[i] = newPt[i + 1];
-            if (isNaN(this.maxV[i])) this.maxV[i] = newPt[i + 1];
-
-            const val = newPt[i + 1];
+            if (isNaN(this.minV[i])) this.minV[i] = val;
+            if (isNaN(this.maxV[i])) this.maxV[i] = val;
 
             // Update 'minV[i]', 'maxV[i]', and 'sum[i]' based on the condition
             if (this.points !== null && this.points.length === 1) {
@@ -353,8 +364,8 @@ export class PointNode {
                 this.maxV[i] = val;
                 this.sum[i] += val;
             } else {
-                this.minV[i] = Math.min(this.minV[i], val);
-                this.maxV[i] = Math.max(this.maxV[i], val);
+                this.minV[i] = ComputeMin([this.minV[i], val]);
+                this.maxV[i] = ComputeMax([this.maxV[i], val]);
                 this.sum[i] += val;
             }
         }
@@ -446,14 +457,14 @@ export class PointNode {
         if (this.points == null && !(Tstart <= this.minT && Tend > this.maxT)) {
             // Array represents all limits o nodes
             const limits = this.children!.filter(n => n.maxT > Tstart && n.minT < Tend).map(n => n.GetLimits(Tstart, Tend, currentIndex));
-            min = Math.min(...limits.map(pt => pt[0]));
-            max = Math.max(...limits.map(pt => pt[1]));
+            min = ComputeMin(limits.map(pt => pt[0]));
+            max = ComputeMax(limits.map(pt => pt[1]));
         }
         if (this.points != null && !(Tstart <= this.minT && Tend > this.maxT)) {
             // Array represents all numbers within this node that fall in range
             const limits = this.points!.filter(pt => pt[0] > Tstart && pt[0] < Tend).map(pt => pt[currentIndex + 1]);
-            min = Math.min(...limits);
-            max = Math.max(...limits);
+            min = ComputeMin(limits);
+            max = ComputeMax(limits);
         }
 
         return [min, max];
@@ -545,8 +556,7 @@ export class PointNode {
             const lowerSpillOver = lowerPoints - centerIndex;
             const lowerNeighborPoints = (lowerSpillOver > 0 && nodeLowerNeighbor !== undefined) ? nodeLowerNeighbor.PointBinarySearch(tVal, lowerSpillOver, undefined, this) : [];
 
-            return lowerNeighborPoints.concat(this.points.slice(Math.max(centerIndex - lowerPoints, 0), Math.min(centerIndex + upperPoints + 1, this.points.length))).concat(upperNeighborPoints);
-
+            return lowerNeighborPoints.concat(this.points.slice(ComputeMax([centerIndex - lowerPoints, 0]), ComputeMin([centerIndex + upperPoints + 1, this.points.length]))).concat(upperNeighborPoints);
         }
         else if (this.children !== null) {
             let childIndex = -1;

@@ -37,9 +37,9 @@ export const JoinKeyValuePairs = (source: Record<string, string>, parameterDelim
 
     for (const key in source) {
         if (Object.prototype.hasOwnProperty.call(source, key)) {
-            let value: string = source[key];
+            let value: string | null | undefined = source[key];
 
-            if (IsBool(value))
+            if (IsBool(value ?? ''))
                 value = value.toString().toLowerCase();
             else
                 value = value != null ? (value?.toString() ?? '') : '';
