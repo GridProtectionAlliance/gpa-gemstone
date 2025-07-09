@@ -284,7 +284,10 @@ export class PointNode {
             const values = this.points.map(pt => pt[index]);
             this.minV[index - 1] = ComputeMin(values);
             this.maxV[index - 1] = ComputeMax(values);
-            this.sum[index - 1] = values.reduce((acc, val) => acc + val, 0);
+            this.sum[index - 1] = values.reduce((sum, val) => {
+                if (isNaN(val)) return sum;
+                return sum + val;
+            }, 0);
         }
     }
 
@@ -300,7 +303,10 @@ export class PointNode {
         for (let index = 0; index < this.dim - 1; index++) {
             this.minV[index] = ComputeMin(this.children.map(node => node.minV[index]));
             this.maxV[index] = ComputeMax(this.children.map(node => node.maxV[index]));
-            this.sum[index] = this.children.reduce((s, node) => s + node.sum[index], 0);
+            this.sum[index] = this.children.reduce((s, node) => {
+                if (isNaN(node.sum[index])) return s;
+                return s + node.sum[index]
+            }, 0);
         }
         this.count = this.children.reduce((acc, node) => acc + node.count, 0);
     }
@@ -319,7 +325,7 @@ export class PointNode {
         for (let i = 0; i < this.dim - 1; i++) {
             this.minV[i] = ComputeMin([this.minV[i], newChild.minV[i]]);
             this.maxV[i] = ComputeMax([this.maxV[i], newChild.maxV[i]]);
-            this.sum[i] += newChild.sum[i];
+            this.sum[i] += isNaN(newChild.sum[i]) ? 0 : newChild.sum[i];
         }
 
         this.count += newChild.count;
@@ -341,12 +347,16 @@ export class PointNode {
         this.maxT = ComputeMax([this.maxT, newPt[0]]);
 
         for (let i = 0; i < this.dim - 1; i++) {
+            const val = newPt[i + 1];
+
+            // 1) If the new value is NaN, don’t touch sum/minV/maxV for this dim
+            if (Number.isNaN(val))
+                continue;
+
             // Initialize stats if they are NaN
             if (isNaN(this.sum[i])) this.sum[i] = 0;
-            if (isNaN(this.minV[i])) this.minV[i] = newPt[i + 1];
-            if (isNaN(this.maxV[i])) this.maxV[i] = newPt[i + 1];
-
-            const val = newPt[i + 1];
+            if (isNaN(this.minV[i])) this.minV[i] = val;
+            if (isNaN(this.maxV[i])) this.maxV[i] = val;
 
             // Update 'minV[i]', 'maxV[i]', and 'sum[i]' based on the condition
             if (this.points !== null && this.points.length === 1) {
@@ -546,8 +556,7 @@ export class PointNode {
             const lowerSpillOver = lowerPoints - centerIndex;
             const lowerNeighborPoints = (lowerSpillOver > 0 && nodeLowerNeighbor !== undefined) ? nodeLowerNeighbor.PointBinarySearch(tVal, lowerSpillOver, undefined, this) : [];
 
-            return lowerNeighborPoints.concat(this.points.slice(ComputeMin([centerIndex - lowerPoints, 0]), ComputeMin([centerIndex + upperPoints + 1, this.points.length]))).concat(upperNeighborPoints);
-
+            return lowerNeighborPoints.concat(this.points.slice(ComputeMax([centerIndex - lowerPoints, 0]), ComputeMin([centerIndex + upperPoints + 1, this.points.length]))).concat(upperNeighborPoints);
         }
         else if (this.children !== null) {
             let childIndex = -1;
