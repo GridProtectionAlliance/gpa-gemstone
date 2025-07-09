@@ -25,10 +25,14 @@
  * Returns the smallest non-NaN value in the array, or NaN if none.
  */
 export function ComputeMin(values: number[]): number {
-    let min = Infinity;
+   let min: number | undefined;
+
     for (const v of values) {
-        if (isNaN(Number(v))) continue;
-        if (v < min) min = v;
+        if (Number.isNaN(v)) continue;
+
+        if (min === undefined || v < min) 
+            min = v;
     }
-    return min === Infinity ? NaN : min;
+
+    return min === undefined ? NaN : min;
 }

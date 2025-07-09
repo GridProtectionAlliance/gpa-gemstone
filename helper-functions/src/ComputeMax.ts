@@ -22,13 +22,17 @@
 // ******************************************************************************************************
 
 /**
- * Returns the smallest non-NaN value in the array, or NaN if none.
+ * Returns the largest non-NaN value in the array, or NaN if none.
  */
 export function ComputeMax(values: number[]): number {
-    let max = -Infinity;
+    let max: number | undefined;
+
     for (const v of values) {
-        if (isNaN(Number(v))) continue;
-        if (v > max) max = v;
+        if (Number.isNaN(v)) continue;
+
+        if (max === undefined || v > max)
+            max = v;
     }
-    return max === -Infinity ? NaN : max;
+
+    return max === undefined ? NaN : max;
 }
