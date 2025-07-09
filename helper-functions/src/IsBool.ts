@@ -31,6 +31,6 @@ export const IsBool = (val: string) => {
     if (typeof val === "boolean")
         return true;
 
-    const lval = val.toString().toLowerCase();
+    const lval = (val ?? '').toString().toLowerCase();
     return lval === "true" || lval === "false";
 }
