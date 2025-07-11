@@ -62,11 +62,11 @@ const ExternalPage: React.FunctionComponent<IExternalPageProps> = (props) => {
                     onMouseEnter={() => setHover(true)}
                     onMouseLeave={() => setHover(false)}
                 >
-                    {props.Icon}
-                    {!context.collapsed && <span>{props.Label}</span>}
+                    {props.Icon ?? null}
+                    {!context.collapsed ? <span>{props.Label}</span> : null}
                 </a>
             </li>
-            {context.collapsed ? 
+            {context.collapsed ?
                 <ToolTip Target={props.Label} Show={hover} Position={'right'}>
                     {props.Label}
                 </ToolTip>
