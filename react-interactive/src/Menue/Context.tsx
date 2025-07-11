@@ -29,8 +29,11 @@ export interface IContext {
     userRoles: Application.Types.SecurityRoleName[],
     collapsed: boolean,
     useSearchMatch: boolean,
+
     activeSection: string,
-    setActiveSection: (guid: string) => void
+    setActiveSection: (guid: string) => void,
+
+    setActivePageLabel: (label: string | null) => void
 }
 
 export const Context = React.createContext({
@@ -39,7 +42,8 @@ export const Context = React.createContext({
     collapsed: false,
     useSearchMatch: false,
     activeSection: '',
-    setActiveSection: () => {/*Do nothing*/}
+    setActiveSection: () => {/*Do nothing*/ },
+    setActivePageLabel: () => {/*Do nothing*/ }
 } as IContext);
 
 

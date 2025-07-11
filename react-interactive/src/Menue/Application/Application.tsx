@@ -117,6 +117,14 @@ const Applications: React.ForwardRefRenderFunction<IApplicationRefs, React.Props
     const mainDivRef = React.useRef<HTMLDivElement>(null);
     const { width } = useGetContainerPosition(mainDivRef);
 
+    const [activePageLabel, setActivePageLabel] = React.useState<string | null>(null);
+    const originalTitle = React.useMemo(() => document.title, []);
+    const pageTitle = React.useMemo(() => activePageLabel ?? originalTitle, [activePageLabel, originalTitle]);
+
+    React.useEffect(() => {
+        document.title = pageTitle;
+    }, [pageTitle]);
+
     const [_ignored, forceUpdate] = React.useReducer((x: number) => x + 1, 0); // integer state for resize renders
 
     const [navBarHeight, setNavBarHeight] = React.useState<number>(40);
@@ -171,7 +179,8 @@ const Applications: React.ForwardRefRenderFunction<IApplicationRefs, React.Props
             collapsed,
             useSearchMatch: props.UseLegacyNavigation ?? false,
             activeSection,
-            setActiveSection
+            setActiveSection,
+            setActivePageLabel
         }
     }
 

@@ -49,25 +49,32 @@ const Page: React.FunctionComponent<IProps> = (props) => {
     const sectionGuid = React.useContext(SectionContext);
     const location = useLocation();
 
+    //effect to set the className based on the current path and the props.Name and set activeSection
     React.useEffect(() => {
         // Use Name as the base check and see if the current path starts with this base.
         // React v6 will try to set active or not themselves, we need to not let them to support search matching
         let currentPage = location.pathname;
         if (context.useSearchMatch) currentPage += location.search;
-        
+
         const isOtherPathActive = () => {
             if (props.OtherActivePages == null)
                 return false;
-    
+
             for (const path of props.OtherActivePages) {
                 if (currentPage.includes(path))
                     return true;
             }
-    
+
             return false;
         }
+        
         const isPathActive = currentPage.startsWith(`${context.homePath}${props.Name}`) || isOtherPathActive();
-        if (isPathActive) context.setActiveSection(sectionGuid);
+        
+        if (isPathActive) {
+            context.setActivePageLabel(props.Label ?? null);
+            context.setActiveSection(sectionGuid);
+        }
+
         setClassName(`nav-link ${(isPathActive ? "active" : "")}`);
     }, [location.pathname, (context.useSearchMatch ? location.search : null), props.OtherActivePages, props.Name]);
 
