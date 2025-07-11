@@ -46,10 +46,10 @@ const ExternalPage: React.FunctionComponent<IExternalPageProps> = (props) => {
     const [hover, setHover] = React.useState<boolean>(false);
     const context = React.useContext(Context);
 
-    if (props.RequiredRoles && props.RequiredRoles.filter(r => context.userRoles.includes(r)).length === 0)
+    if (props.RequiredRoles != null && props.RequiredRoles.filter(r => context.userRoles.includes(r)).length === 0)
         return null;
 
-    if (!props.Label && !props.Icon)
+    if (props.Label == null)
         return null;
 
     return (
