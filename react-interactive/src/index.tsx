@@ -47,6 +47,7 @@ import Alert from './Alert'
 import Breadcrumb from './Breadcrumb';
 import { Gemstone } from './HelperAlerts/HelperAlerts';
 import StatusProgressBar from './StatusProgressBar';
+import ExternalPage from './Menue/ExternalPage';
 
 export {
   Modal,
@@ -78,5 +79,6 @@ export {
   Alert,
   Breadcrumb,
   Gemstone,
-  StatusProgressBar
+  StatusProgressBar,
+  ExternalPage
 };
