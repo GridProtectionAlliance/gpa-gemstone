@@ -1,7 +1,7 @@
 //******************************************************************************************************
 //  QuickSelects.tsx - Gbtc
 //
-//  Copyright © 2020, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2025, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -16,23 +16,94 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  09/16/2021 - Christoph Lackner
+//  07/14/2025 - Preston Crawford
 //       Generated original version of source code.
-//  06/20/2024 - Ali Karrar
-//       Moved QuickSelects from TimeFilter to new file
 //******************************************************************************************************
 
-import { ITimeFilter } from './TimeFilter';
+import * as React from 'react';
+import { getTimeWindowFromFilter, IDateTimeSetting, ITimeFilter, ITimeWindow } from './TimeFilter';
 import moment from 'moment';
 import momentTZ from 'moment-timezone';
+import { TimeUnit } from './TimeWindowUtils';
 
 export type DateUnit = ('datetime-local' | 'date' | 'time');
 
 interface IQuickSelect {
     label: string,
     hideQuickPick: (format?: DateUnit) => boolean,
-    createFilter: (timeZone: string, format?: DateUnit) => ITimeFilter
+    createFilter: (timeZone: string, format?: DateUnit) => ITimeFilter,
 }
+
+interface IProps {
+    DateTimeSetting: IDateTimeSetting,
+    Format?: "YYYY-MM-DD" | "HH:mm:ss.SSS" | "MM/DD/YYYY HH:mm:ss.SSS",
+    DateUnit?: DateUnit,
+    Timezone: string,
+    ActiveQP: number,
+    SetActiveQP: (qp: number) => void,
+    SetFilter: (start: string, end: string, unit: TimeUnit, duration: number) => void,
+}
+
+
+const QuickSelects = (props: IProps) => {
+    const CurrentQuickSelects = React.useMemo(() => AvailableQuickSelects.filter(qs => !qs.hideQuickPick(props.DateUnit)), [props.DateUnit]);
+
+    return (
+        <div className={`${props.DateTimeSetting !== 'startEnd' ? 'pt-3' : ''}`}>
+            <div className="row m-0 justify-content-center align-items-center">
+                {CurrentQuickSelects.map((qs, i) => {
+                    if (i % 3 !== 0)
+                        return null;
+                    return (
+                        <div key={i} className={props.DateTimeSetting === 'startEnd' ? 'col-2' : "col-4"}
+                            style={{
+                                paddingLeft: (props.DateTimeSetting === 'startEnd' ? 0 : (i % 9 == 0 ? 15 : 0)),
+                                paddingRight: (props.DateTimeSetting === 'startEnd' ? 2 : ((i % 18 == 6 || i % 18 == 15) ? 15 : 2)),
+                                marginTop: 10
+                            }}
+                        >
+                            <ul className="list-group" key={i}>
+                                <li key={i} style={{ cursor: 'pointer' }}
+                                    onClick={() => {
+                                        const flt = getTimeWindowFromFilter(CurrentQuickSelects[i].createFilter(props.Timezone, props.DateUnit), props.Format);
+                                        props.SetFilter(flt.start, flt.end, flt.unit, flt.duration);
+                                        props.SetActiveQP(i);
+                                    }}
+                                    className={"item badge badge-" + (i == props.ActiveQP ? "primary" : "secondary")}>{CurrentQuickSelects[i].label}
+                                </li>
+                                {i + 1 < CurrentQuickSelects.length ?
+                                    <li key={i + 1} style={{ marginTop: 3, cursor: 'pointer' }}
+                                        className={"item badge badge-" + (i + 1 == props.ActiveQP ? "primary" : "secondary")}
+                                        onClick={() => {
+                                            const flt = getTimeWindowFromFilter(CurrentQuickSelects[i + 1].createFilter(props.Timezone, props.DateUnit), props.Format);
+                                            props.SetFilter(flt.start, flt.end, flt.unit, flt.duration);
+                                            props.SetActiveQP(i + 1)
+                                        }}>
+                                        {CurrentQuickSelects[i + 1].label}
+                                    </li>
+                                    : null}
+                                {i + 2 < CurrentQuickSelects.length ?
+                                    <li key={i + 2}
+                                        style={{ marginTop: 3, cursor: 'pointer' }}
+                                        className={"item badge badge-" + (i + 2 == props.ActiveQP ? "primary" : "secondary")}
+                                        onClick={() => {
+                                            const flt = getTimeWindowFromFilter(CurrentQuickSelects[i + 2].createFilter(props.Timezone, props.DateUnit), props.Format);
+                                            props.SetFilter(flt.start, flt.end, flt.unit, flt.duration);
+                                            props.SetActiveQP(i + 2);
+                                        }}>
+                                        {CurrentQuickSelects[i + 2].label}
+                                    </li>
+                                    : null}
+                            </ul>
+                        </div>
+                    )
+                })}
+            </div>
+        </div>
+    )
+}
+
+export default QuickSelects;
 
 export function getFormat(format?: DateUnit) {
     if (format == 'date')
