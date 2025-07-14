@@ -105,6 +105,8 @@ const TimeFilter = (props: IProps) => {
         }
     }, [props.filter]);
 
+    const helpMessaage = (props.showHelpMessage ?? true) ? `All times shown are in system time (${props.timeZone}).` : undefined
+
     return (
         <fieldset className="border" style={{ padding: '10px', height: '100%', overflow: 'hidden' }}>
             <legend className="w-auto" style={{ fontSize: 'large' }}>Date/Time Filter:</legend>
@@ -123,6 +125,7 @@ const TimeFilter = (props: IProps) => {
                     Accuracy={props.accuracy}
                     Format={format}
                     ShowQuickSelects={props.showQuickSelect}
+                    HelpMessage={helpMessaage}
                 />
                 : props.dateTimeSetting === 'startWindow' ?
                     <StartWindowFilter
@@ -139,6 +142,7 @@ const TimeFilter = (props: IProps) => {
                         Accuracy={props.accuracy}
                         Format={format}
                         ShowQuickSelects={props.showQuickSelect}
+                        HelpMessage={helpMessaage}
                     />
                     :
                     <EndWindowFilter
@@ -155,6 +159,7 @@ const TimeFilter = (props: IProps) => {
                         Accuracy={props.accuracy}
                         Format={format}
                         ShowQuickSelects={props.showQuickSelect}
+                        HelpMessage={helpMessaage}
                     />
             }
         </fieldset >
