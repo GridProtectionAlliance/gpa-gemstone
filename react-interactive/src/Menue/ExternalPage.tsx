@@ -61,6 +61,7 @@ const ExternalPage: React.FunctionComponent<IExternalPageProps> = (props) => {
                     className="nav-link"
                     onMouseEnter={() => setHover(true)}
                     onMouseLeave={() => setHover(false)}
+                    style={{ cursor: 'pointer' }}
                 >
                     {props.Icon ?? null}
                     {!context.collapsed ? <span>{props.Label}</span> : null}
