@@ -21,7 +21,7 @@
 //******************************************************************************************************
 
 import * as React from 'react';
-import { getTimeWindowFromFilter, IDateTimeSetting, ITimeFilter, ITimeWindow } from './TimeFilter';
+import { getTimeWindowFromFilter, DateTimeSetting, ITimeFilter } from './TimeFilter';
 import moment from 'moment';
 import momentTZ from 'moment-timezone';
 import { TimeUnit } from './TimeWindowUtils';
@@ -35,71 +35,83 @@ interface IQuickSelect {
 }
 
 interface IProps {
-    DateTimeSetting: IDateTimeSetting,
+    DateTimeSetting: DateTimeSetting,
     Format?: "YYYY-MM-DD" | "HH:mm:ss.SSS" | "MM/DD/YYYY HH:mm:ss.SSS",
     DateUnit?: DateUnit,
     Timezone: string,
     ActiveQP: number,
     SetActiveQP: (qp: number) => void,
     SetFilter: (start: string, end: string, unit: TimeUnit, duration: number) => void,
+    AddRowContainer?: boolean,
+    SplitSelects?: boolean,
 }
-
 
 const QuickSelects = (props: IProps) => {
     const CurrentQuickSelects = React.useMemo(() => AvailableQuickSelects.filter(qs => !qs.hideQuickPick(props.DateUnit)), [props.DateUnit]);
 
     return (
-        <div className={`${props.DateTimeSetting !== 'startEnd' ? 'pt-3' : ''}`}>
-            <div className="row m-0 justify-content-center align-items-center">
-                {CurrentQuickSelects.map((qs, i) => {
-                    if (i % 3 !== 0)
-                        return null;
-                    return (
-                        <div key={i} className={props.DateTimeSetting === 'startEnd' ? 'col-2' : "col-4"}
-                            style={{
-                                paddingLeft: (props.DateTimeSetting === 'startEnd' ? 0 : (i % 9 == 0 ? 15 : 0)),
-                                paddingRight: (props.DateTimeSetting === 'startEnd' ? 2 : ((i % 18 == 6 || i % 18 == 15) ? 15 : 2)),
-                                marginTop: 10
-                            }}
-                        >
-                            <ul className="list-group" key={i}>
-                                <li key={i} style={{ cursor: 'pointer' }}
+        <Container AddRow={props.AddRowContainer ?? true}>
+            {CurrentQuickSelects.map((qs, i) => {
+
+                if (i % 3 !== 0)
+                    return null;
+
+                return (
+                    <div
+                        key={i}
+                        className={getColSize(props.DateTimeSetting, props.SplitSelects ?? false)}
+                        style={{
+                            paddingLeft: (props.DateTimeSetting === 'startEnd' ? 0 : (i % 9 == 0 ? 15 : 0)),
+                            paddingRight: (props.DateTimeSetting === 'startEnd' ? 2 : ((i % 18 == 6 || i % 18 == 15) ? 15 : 2)),
+                            marginTop: 10
+                        }}
+                    >
+                        <ul className="list-group" key={i}>
+                            <li
+                                key={i}
+                                style={{ cursor: 'pointer' }}
+                                onClick={() => {
+                                    const flt = getTimeWindowFromFilter(CurrentQuickSelects[i].createFilter(props.Timezone, props.DateUnit), props.Format);
+                                    props.SetFilter(flt.start, flt.end, flt.unit, flt.duration);
+                                    props.SetActiveQP(i);
+                                }}
+                                className={"item badge badge-" + (i == props.ActiveQP ? "primary" : "secondary")}
+                            >
+                                {CurrentQuickSelects[i].label}
+                            </li>
+                            {i + 1 < CurrentQuickSelects.length ?
+                                <li
+                                    key={i + 1}
+                                    style={{ marginTop: 3, cursor: 'pointer' }}
+                                    className={"item badge badge-" + (i + 1 == props.ActiveQP ? "primary" : "secondary")}
                                     onClick={() => {
-                                        const flt = getTimeWindowFromFilter(CurrentQuickSelects[i].createFilter(props.Timezone, props.DateUnit), props.Format);
+                                        const flt = getTimeWindowFromFilter(CurrentQuickSelects[i + 1].createFilter(props.Timezone, props.DateUnit), props.Format);
                                         props.SetFilter(flt.start, flt.end, flt.unit, flt.duration);
-                                        props.SetActiveQP(i);
+                                        props.SetActiveQP(i + 1)
                                     }}
-                                    className={"item badge badge-" + (i == props.ActiveQP ? "primary" : "secondary")}>{CurrentQuickSelects[i].label}
+                                >
+                                    {CurrentQuickSelects[i + 1].label}
                                 </li>
-                                {i + 1 < CurrentQuickSelects.length ?
-                                    <li key={i + 1} style={{ marginTop: 3, cursor: 'pointer' }}
-                                        className={"item badge badge-" + (i + 1 == props.ActiveQP ? "primary" : "secondary")}
-                                        onClick={() => {
-                                            const flt = getTimeWindowFromFilter(CurrentQuickSelects[i + 1].createFilter(props.Timezone, props.DateUnit), props.Format);
-                                            props.SetFilter(flt.start, flt.end, flt.unit, flt.duration);
-                                            props.SetActiveQP(i + 1)
-                                        }}>
-                                        {CurrentQuickSelects[i + 1].label}
-                                    </li>
-                                    : null}
-                                {i + 2 < CurrentQuickSelects.length ?
-                                    <li key={i + 2}
-                                        style={{ marginTop: 3, cursor: 'pointer' }}
-                                        className={"item badge badge-" + (i + 2 == props.ActiveQP ? "primary" : "secondary")}
-                                        onClick={() => {
-                                            const flt = getTimeWindowFromFilter(CurrentQuickSelects[i + 2].createFilter(props.Timezone, props.DateUnit), props.Format);
-                                            props.SetFilter(flt.start, flt.end, flt.unit, flt.duration);
-                                            props.SetActiveQP(i + 2);
-                                        }}>
-                                        {CurrentQuickSelects[i + 2].label}
-                                    </li>
-                                    : null}
-                            </ul>
-                        </div>
-                    )
-                })}
-            </div>
-        </div>
+                                : null}
+                            {i + 2 < CurrentQuickSelects.length ?
+                                <li
+                                    key={i + 2}
+                                    style={{ marginTop: 3, cursor: 'pointer' }}
+                                    className={"item badge badge-" + (i + 2 == props.ActiveQP ? "primary" : "secondary")}
+                                    onClick={() => {
+                                        const flt = getTimeWindowFromFilter(CurrentQuickSelects[i + 2].createFilter(props.Timezone, props.DateUnit), props.Format);
+                                        props.SetFilter(flt.start, flt.end, flt.unit, flt.duration);
+                                        props.SetActiveQP(i + 2);
+                                    }}
+                                >
+                                    {CurrentQuickSelects[i + 2].label}
+                                </li>
+                                : null}
+                        </ul>
+                    </div>
+                )
+            })}
+        </Container>
     )
 }
 
@@ -112,6 +124,20 @@ export function getFormat(format?: DateUnit) {
         return 'HH:mm:ss.SSS'
     else
         return 'MM/DD/YYYY HH:mm:ss.SSS'
+}
+
+const getColSize = (dateTimeSetting: DateTimeSetting, splitSelects: boolean) => {
+    if (dateTimeSetting === 'startEnd') {
+        if (splitSelects)
+            return 'col-4'
+        else
+            return 'col-2'
+    }
+
+    if (splitSelects)
+        return 'col-8'
+    else
+        return 'col-4'
 }
 
 //update all quick selects to use new timefilters
@@ -380,3 +406,14 @@ export const AvailableQuickSelects: IQuickSelect[] = [
         }
     }
 ]
+
+interface IContainerProps {
+    AddRow: boolean,
+}
+
+const Container = (props: React.PropsWithChildren<IContainerProps>) => {
+    if (props.AddRow)
+        return <div className='row m-0 align-items-center justify-content-center'>{props.children}</div>
+    else
+        return <>{props.children}</>
+}

@@ -31,9 +31,9 @@ import moment from 'moment';
 import { getFormat, DateUnit } from './QuickSelects';
 import _ from 'lodash';
 import { Gemstone } from '@gpa-gemstone/application-typings';
-import StartEndFilter from './StartEndFilter';
-import StartWindowFilter from './StartWindowFilter';
-import EndWindowFilter from './EndWindowFilter';
+import StartEndFilter from './StartEndFilter/StartEndFilter';
+import { useGetContainerPosition } from '@gpa-gemstone/helper-functions';
+import WindowFilter from './WindowFilter/WindowFilter';
 
 export interface ITimeWindow {
     start: string,
@@ -43,30 +43,55 @@ export interface ITimeWindow {
 }
 
 export type ITimeFilter = IStartEnd | IStartDuration | IEndDuration
-export type IDateTimeSetting = 'startWindow' | 'endWindow' | 'startEnd';
+export type DateTimeSetting = 'startWindow' | 'endWindow' | 'startEnd';
 
-/**
-*    filter: an interface of IStartEnd | IStartDuration | IEndDuration | ICenterDuration
-*    showQuickSelect: displays Quick Select component
-*    isHorizontal: displays Quick Selects in horizontal view 
-*/
 interface IProps {
+    /**
+     * Filter to be used in form
+     */
     filter: ITimeFilter;
+    /**
+     * Setter function to update filter
+     * @param start - Start Time
+     * @param end - End Time
+     * @param unit - Time Unit
+     * @param duration - Duration
+     * @returns 
+     */
     setFilter: (start: string, end: string, unit: TimeUnit, duration: number) => void,
+    /**
+     * Flag to toggle QuickSelects UI
+     */
     showQuickSelect: boolean;
-    dateTimeSetting: IDateTimeSetting;
+    /**
+     * Type of TimeFilter to render
+     */
+    dateTimeSetting: DateTimeSetting;
+    /**
+     * Time zone to use
+     */
     timeZone: string;
-    isHorizontal: boolean;
+    /**
+     * Format for date/time input
+     */
     format?: DateUnit;
+    /**
+     * Accuracy of the time input
+     */
     accuracy?: Gemstone.TSX.Types.Accuracy
-    showHelpMessage?: boolean
+    /**
+     * Flag to toggle usage of helper message
+     */
+    showHelpMessage?: boolean,
 }
 
 const TimeFilter = (props: IProps) => {
+    const containerRef = React.useRef<HTMLFieldSetElement | null>(null);
+    const { width } = useGetContainerPosition(containerRef as any);
+
     const format = getFormat(props.format);
 
     const [activeQuickSelect, setActiveQuickSelect] = React.useState<number>(-1);
-
     const [filter, setFilter] = React.useState<ITimeWindow>(getTimeWindowFromFilter(props.filter, format));
 
     const [showStartPopup, setShowStartPopup] = React.useState<boolean>(false);
@@ -108,7 +133,7 @@ const TimeFilter = (props: IProps) => {
     const helpMessaage = (props.showHelpMessage ?? true) ? `All times shown are in system time (${props.timeZone}).` : undefined
 
     return (
-        <fieldset className="border" style={{ padding: '10px', height: '100%', overflow: 'hidden' }}>
+        <fieldset className="border" style={{ padding: '10px', height: '100%', overflow: 'hidden' }} ref={containerRef}>
             <legend className="w-auto" style={{ fontSize: 'large' }}>Date/Time Filter:</legend>
             {props.dateTimeSetting === 'startEnd' ?
                 <StartEndFilter
@@ -124,11 +149,13 @@ const TimeFilter = (props: IProps) => {
                     SetFilter={props.setFilter}
                     Accuracy={props.accuracy}
                     Format={format}
+                    DateUnit={props.format ?? 'datetime-local'}
                     ShowQuickSelects={props.showQuickSelect}
+                    ContainerWidth={width}
                     HelpMessage={helpMessaage}
                 />
                 : props.dateTimeSetting === 'startWindow' ?
-                    <StartWindowFilter
+                    <WindowFilter
                         TimeWindowFilter={filter}
                         SetTimeWindowFilter={setFilter}
                         Timezone={props.timeZone}
@@ -141,11 +168,14 @@ const TimeFilter = (props: IProps) => {
                         SetFilter={props.setFilter}
                         Accuracy={props.accuracy}
                         Format={format}
+                        DateUnit={props.format ?? 'datetime-local'}
                         ShowQuickSelects={props.showQuickSelect}
+                        ContainerWidth={width}
                         HelpMessage={helpMessaage}
+                        Window={'start'}
                     />
                     :
-                    <EndWindowFilter
+                    <WindowFilter
                         TimeWindowFilter={filter}
                         SetTimeWindowFilter={setFilter}
                         Timezone={props.timeZone}
@@ -158,8 +188,11 @@ const TimeFilter = (props: IProps) => {
                         SetFilter={props.setFilter}
                         Accuracy={props.accuracy}
                         Format={format}
+                        DateUnit={props.format ?? 'datetime-local'}
                         ShowQuickSelects={props.showQuickSelect}
+                        ContainerWidth={width}
                         HelpMessage={helpMessaage}
+                        Window={'end'}
                     />
             }
         </fieldset >
