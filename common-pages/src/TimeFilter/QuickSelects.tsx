@@ -1,7 +1,7 @@
 //******************************************************************************************************
 //  QuickSelects.tsx - Gbtc
 //
-//  Copyright © 2025, Grid Protection Alliance.  All Rights Reserved.
+//  Copyright © 2020, Grid Protection Alliance.  All Rights Reserved.
 //
 //  Licensed to the Grid Protection Alliance (GPA) under one or more contributor license agreements. See
 //  the NOTICE file distributed with this work for additional information regarding copyright ownership.
@@ -16,8 +16,10 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  07/14/2025 - Preston Crawford
+//  09/16/2021 - Christoph Lackner
 //       Generated original version of source code.
+//  06/20/2024 - Ali Karrar
+//       Moved QuickSelects from TimeFilter to new file
 //******************************************************************************************************
 
 import * as React from 'react';
