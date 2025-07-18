@@ -25,7 +25,7 @@ import { Builder, By, until, WebDriver } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome';
 import chromedriver from 'chromedriver';
 
-const rootURL = `http://localhost:${global.PORT}`;
+const rootURL = `http://localhost:${global.PORT}/config-table`;
 let driver: WebDriver;
 const componentTestID = 'configtable-test-id';
 
@@ -184,13 +184,13 @@ describe.each(componentVariants)('%s', (desc, idSuffix) => {
         await driver.sleep(500); // removes flakieness. gives time for cols to fully adjust
 
         if (idSuffix == '1') {
-            expect(parseFloat(await titleCol.getCssValue('width'))).toBeCloseTo(275.5, 1);
+            expect(parseFloat(await titleCol.getCssValue('width'))).toBeCloseTo(324, 1);
             for (const col of tableCols.slice(1, 4)) {
-                expect(parseFloat(await col.getCssValue('width'))).toBeCloseTo(91.8281, 1);
+                expect(parseFloat(await col.getCssValue('width'))).toBeCloseTo(108, 1);
             }
         } else {
             for (const col of tableCols.slice(0, 4)) {
-                expect(parseFloat(await col.getCssValue('width'))).toBeCloseTo(137.75, 1);
+                expect(parseFloat(await col.getCssValue('width'))).toBeCloseTo(162, 1);
             }
         }
     });
@@ -200,13 +200,13 @@ describe.each(componentVariants)('%s', (desc, idSuffix) => {
         const firstCol = tableRows[0]; // should be 50% width
 
         if (idSuffix == '1') {
-            expect(parseFloat(await firstCol.getCssValue('width'))).toBeCloseTo(275.5, 1);
+            expect(parseFloat(await firstCol.getCssValue('width'))).toBeCloseTo(324, 1);
             for (const col of tableRows.slice(1, 4)) {
-                expect(parseFloat(await col.getCssValue('width'))).toBeCloseTo(91.8281, 1);
+                expect(parseFloat(await col.getCssValue('width'))).toBeCloseTo(108, 1);
             }
         } else {
             for (const col of tableRows.slice(0, 4)) {
-                expect(parseFloat(await col.getCssValue('width'))).toBeCloseTo(137.75, 1);
+                expect(parseFloat(await col.getCssValue('width'))).toBeCloseTo(162, 1);
             }
         }
     });
