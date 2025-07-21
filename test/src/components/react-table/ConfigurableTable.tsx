@@ -33,7 +33,11 @@ type Book = {
     Category: string;
 };
 
-const ConfigurableTableTestComponent: React.FC<{ ComponentTestID: string }> = (props) => {
+interface IProps {
+    ComponentTestID: string
+}
+
+const ConfigurableTableTestComponent = (props: IProps) => {
     const [data, setData] = React.useState<Book[]>([]);
     const [sortKey, setSortKey] = React.useState<keyof Book>('Title');
     const [asc, setAsc] = React.useState<boolean>(true);
@@ -54,7 +58,7 @@ const ConfigurableTableTestComponent: React.FC<{ ComponentTestID: string }> = (p
         const updatedCols = Object.keys(data[0]);
         if (!_.isEqual(updatedCols, cols))
             setCols(updatedCols);
-    }, [sortKey, data]);
+    }, [data]);
 
     React.useEffect(() => {
         if (data2.length == 0)
@@ -62,7 +66,7 @@ const ConfigurableTableTestComponent: React.FC<{ ComponentTestID: string }> = (p
         const updatedCols = Object.keys(data2[0]);
         if (!_.isEqual(updatedCols, cols2))
             setCols2(updatedCols);
-    }, [sortKey2, data2]);
+    }, [data2]);
 
     const handleRowClick = React.useCallback((rowClicked) => {
         alert(`${props.ComponentTestID}: ${rowClicked.row.Title}`);
@@ -73,31 +77,43 @@ const ConfigurableTableTestComponent: React.FC<{ ComponentTestID: string }> = (p
     const containerHeight = bodyHeight + headerHeight + 1;
     const containerWidth = 700;
 
-    const renderedColumns = cols2.map(col =>
-        col === 'Author' ?
-        <ConfigurableColumn Key={col} Default={true} Label={col} key={col}>
-            <Column<any> key={col}
-                Key={col} Field={col}
-                AllowSort={false} Adjustable={false}
-                HeaderStyle={{ width: 'auto', minWidth: '20%' }}
-                RowStyle={{ width: 'auto', minWidth: '20%' }}
-            >{col}
-            </Column>
-        </ConfigurableColumn>
-        : <ConfigurableColumn Key={col} Default={true} Label={col} key={col}>
-            <Column<any> key={col}
-                Key={col} Field={col}
-                AllowSort={true} Adjustable={false}
-                HeaderStyle={{ width: 'auto', minWidth: '20%' }}
-                RowStyle={{ width: 'auto', minWidth: '20%' }}
-            >{col}
-            </Column>
-        </ConfigurableColumn>
-    )
+    const renderedColumns = React.useMemo(() => {
+        return cols2.map(col =>
+            col === 'Author' ?
+                <ConfigurableColumn Key={col} Default={true} Label={col} key={col}>
+                    <Column<any>
+                        key={col}
+                        Key={col}
+                        Field={col}
+                        AllowSort={false}
+                        Adjustable={false}
+                        HeaderStyle={{ width: 'auto', minWidth: '20%' }}
+                        RowStyle={{ width: 'auto', minWidth: '20%' }}
+                    >
+                        {col}
+                    </Column>
+                </ConfigurableColumn>
+                : <ConfigurableColumn Key={col} Default={true} Label={col} key={col}>
+                    <Column<any>
+                        key={col}
+                        Key={col}
+                        Field={col}
+                        AllowSort={true}
+                        Adjustable={false}
+                        HeaderStyle={{ width: 'auto', minWidth: '20%' }}
+                        RowStyle={{ width: 'auto', minWidth: '20%' }}
+                    >
+                        {col}
+                    </Column>
+                </ConfigurableColumn>
+        )
+
+    }, [cols2])
 
     return (<>
         <div id={props.ComponentTestID + "-1"} className="border col p-0 m-0" style={{ maxHeight: `${containerHeight}px`, maxWidth: `${containerWidth}px` }}>
             <ConfigurableTable<Book>
+                key={'table1'}
                 TableClass={`table table-hover`}
                 RowStyle={{ fontSize: 'smaller', fontWeight: 'bolder' }}
                 TheadStyle={{ fontSize: 'smaller', fontWeight: 'lighter', maxHeight: `${headerHeight}px` }}
@@ -167,6 +183,7 @@ const ConfigurableTableTestComponent: React.FC<{ ComponentTestID: string }> = (p
         </div>
         <div id={props.ComponentTestID + "-2"} className="border col p-0 m-0 ml-3" style={{ maxHeight: `${containerHeight}px`, maxWidth: `${containerWidth}px` }}>
             <ConfigurableTable<Book>
+                key={'table2'}
                 TableClass={`table table-hover`}
                 RowStyle={{ fontSize: 'smaller', fontWeight: 'bolder' }}
                 TheadStyle={{ fontSize: 'smaller', fontWeight: 'lighter', maxHeight: `${headerHeight}px` }}
@@ -187,15 +204,15 @@ const ConfigurableTableTestComponent: React.FC<{ ComponentTestID: string }> = (p
                 KeySelector={(d) => `${d.Volume}-${d.Title}`}
                 ModalZIndex={30000}
                 //SettingsPortal={}
-                OnSettingsChange={() => {}}
+                OnSettingsChange={() => { }}
                 LocalStorageKey={props.ComponentTestID + '-2'}
             >
                 {renderedColumns}
-        </ConfigurableTable>
-    </div>
-    <p id='testing-col-state' className='d-none'>{...cols2}</p>
-    <p id='testing-localstorage-state' className='d-none'>{localStorage.getItem(props.ComponentTestID + '-2')}</p>
-    <p id='testing-renderedCols-state' className='d-none'>{renderedColumns}</p>
+            </ConfigurableTable>
+        </div>
+        <p id='testing-col-state' className='d-none'>{...cols2}</p>
+        <p id='testing-localstorage-state' className='d-none'>{localStorage.getItem(props.ComponentTestID + '-2')}</p>
+        <p id='testing-renderedCols-state' className='d-none'>{renderedColumns}</p>
     </>);
 }
 
