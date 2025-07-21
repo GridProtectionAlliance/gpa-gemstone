@@ -189,34 +189,16 @@ describe.each(componentVariants)('%s', (desc, idSuffix) => {
         if (idSuffix == '1') {
             expect(parseFloat(await titleCol.getCssValue('width'))).toBeCloseTo(324, 1);
             for (const col of tableCols.slice(1, 4)) {
-                expect(parseFloat(await col.getCssValue('width'))).toBeCloseTo(108, 1);
-            }
-        } else {
-            for (const col of tableCols.slice(0, 4)) {
-                expect(parseFloat(await col.getCssValue('width'))).toBeCloseTo(162, 1);
-            }
-        }
-    });
-
-    it('Renders col rowstyles correctly', async () => {
-        const tableRows = await driver.findElements(By.css(`${tableSelector} tbody tr td`)); // first row data elements
-        const firstCol = tableRows[0]; // should be 50% width
-        const firstColWidth = parseFloat(await firstCol.getCssValue('width'));
-
-        if (idSuffix == '1') {
-            expect(firstColWidth).toBeCloseTo(324, 1);
-            for (const col of tableRows.slice(1, 4)) {
                 const colWidth = parseFloat(await col.getCssValue('width'));
                 expect(colWidth).toBeCloseTo(108, 1);
             }
         } else {
-            for (const col of tableRows.slice(0, 4)) {
+            for (const col of tableCols.slice(0, 4)) {
                 const colWidth = parseFloat(await col.getCssValue('width'));
                 expect(colWidth).toBeCloseTo(162, 1);
             }
         }
     });
-
 
     it.each(expectedHeaders)('Shows sort icon after clicking %s header', async (expectedHeader) => {
         // Wait for the table to render with 5 columns
