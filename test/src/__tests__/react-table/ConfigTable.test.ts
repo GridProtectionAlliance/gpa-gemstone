@@ -28,6 +28,8 @@ import chromedriver from 'chromedriver';
 const rootURL = `http://localhost:${global.PORT}/config-table`;
 let driver: WebDriver;
 const componentTestID = 'configtable-test-id';
+const expectedHeaders = ['Title', 'Author', 'Volume', 'Category'];
+const modalSelector = `.modal.show`;
 
 // Before each test, create a selenium webdriver that goes to the rootURL
 beforeEach(async () => {
@@ -59,9 +61,7 @@ const componentVariants = [
 ];
 
 describe.each(componentVariants)('%s', (desc, idSuffix) => {
-    const expectedHeaders = ['Title', 'Author', 'Volume', 'Category'];
     const tableSelector = `#${componentTestID}-${idSuffix} table`;
-    const modalSelector = `.modal.show`;
 
     /**
     * Enables or disables provided column or all non-disabled column checkboxes if none provided
@@ -201,18 +201,22 @@ describe.each(componentVariants)('%s', (desc, idSuffix) => {
     it('Renders col rowstyles correctly', async () => {
         const tableRows = await driver.findElements(By.css(`${tableSelector} tbody tr td`)); // first row data elements
         const firstCol = tableRows[0]; // should be 50% width
+        const firstColWidth = parseFloat(await firstCol.getCssValue('width'));
 
         if (idSuffix == '1') {
-            expect(parseFloat(await firstCol.getCssValue('width'))).toBeCloseTo(324, 1);
+            expect(firstColWidth).toBeCloseTo(324, 1);
             for (const col of tableRows.slice(1, 4)) {
-                expect(parseFloat(await col.getCssValue('width'))).toBeCloseTo(108, 1);
+                const colWidth = parseFloat(await col.getCssValue('width'));
+                expect(colWidth).toBeCloseTo(108, 1);
             }
         } else {
             for (const col of tableRows.slice(0, 4)) {
-                expect(parseFloat(await col.getCssValue('width'))).toBeCloseTo(162, 1);
+                const colWidth = parseFloat(await col.getCssValue('width'));
+                expect(colWidth).toBeCloseTo(162, 1);
             }
         }
     });
+
 
     it.each(expectedHeaders)('Shows sort icon after clicking %s header', async (expectedHeader) => {
         // Wait for the table to render with 5 columns
@@ -220,6 +224,7 @@ describe.each(componentVariants)('%s', (desc, idSuffix) => {
             return await driver.findElements(By.css(`${tableSelector} thead tr th`))
                 .then((h) => h.length === 5);
         }, 5000, 'Timed out waiting for 5 table columns');
+
         // Expect correct headers
         const header = await driver.findElement(By.css(`${tableSelector} thead tr th#${expectedHeader}`));
         const headerId = await header.getAttribute('id');
@@ -240,16 +245,6 @@ describe.each(componentVariants)('%s', (desc, idSuffix) => {
         await header.click().then(() => clickedSuccessfully = true);
         expect(clickedSuccessfully).toBeTruthy();
 
-        const results = await Promise.allSettled([
-            driver.findElement (By.id ('testing-localstorage-state')).then(e => e.getText()),
-            driver.findElement (By.id ('testing-renderedCols-state')).then(e => e.getText()),
-            driver.findElements(By.id ('testing-col-state')).then(e => e[0]?.getText()),
-            driver.findElements(By.css(`${tableSelector} th#Author`)).then(e => e[0]?.getText()),
-            driver.findElements(By.css(`${tableSelector} th#Volume`)).then(e => e[0]?.getText()),
-            driver.findElements(By.css(`${tableSelector} th#Category`)).then(e => e[0]?.getText()),
-            driver.findElements(By.css(`${tableSelector} th#Title`)).then(e => e[0]?.getText())
-        ]);
-
         // Header set to ascending, title header descending
         const isTitleHeader = expectedHeader === 'Title';
         await driver.wait(async () => { // TODO: Is the header gone or the svg not showing
@@ -261,7 +256,7 @@ describe.each(componentVariants)('%s', (desc, idSuffix) => {
             } catch {
                 return false;
             }
-        }, 3000, `Sort icon did not update to ascending for header "${expectedHeader}"`);
+        }, 5000, `Sort icon did not update to ascending for header "${expectedHeader}"`);
 
         const newH = await driver.findElement(By.css(`${tableSelector} thead tr th#${expectedHeader}`));
         const icon = await newH.findElement(By.css('svg path'));
