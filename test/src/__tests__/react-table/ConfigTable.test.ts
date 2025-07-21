@@ -21,7 +21,7 @@
 //
 //******************************************************************************************************
 import { afterEach, beforeEach, expect, describe, it } from "@jest/globals";
-import { Builder, By, until, WebDriver } from 'selenium-webdriver';
+import { Builder, By, until, WebDriver, logging } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome';
 import chromedriver from 'chromedriver';
 
@@ -38,6 +38,11 @@ beforeEach(async () => {
     const options = new chrome.Options();
     // Ensure headless mode for sizing tests. Mimics Jenkins
     options.addArguments('--window-size=1600,760', '--headless=new', '--disable-gpu');
+
+    //Configure logging
+    const prefs = new logging.Preferences();
+    prefs.setLevel(logging.Type.BROWSER, logging.Level.ALL);
+    options.setLoggingPrefs(prefs);
 
     driver = await new Builder()
         .forBrowser('chrome')
