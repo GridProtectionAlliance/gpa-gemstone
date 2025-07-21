@@ -191,18 +191,29 @@ describe.each(componentVariants)('%s', (desc, idSuffix) => {
         const titleCol = tableCols[0];
         await driver.sleep(500); // removes flakieness. gives time for cols to fully adjust
 
+        const browserLogs = await driver.manage().logs().get(logging.Type.BROWSER);
+        console.log('---- Browser console logs ----');
+        browserLogs.forEach(entry => console.log(entry.timestamp, entry.level.name, entry.message));
+        console.log('-------------------------------');
+
+        const titleColWidth = parseFloat(await titleCol.getCssValue('width'))
+        console.log(`Tester: titleColWidth=${titleColWidth}px, expecting--${idSuffix === '1' ? 324 : 162}`);
+
         if (idSuffix == '1') {
-            expect(parseFloat(await titleCol.getCssValue('width'))).toBeCloseTo(324, 1);
-            for (const col of tableCols.slice(1, 4)) {
+            expect(titleColWidth).toBeCloseTo(324, 1);
+            for (const [i, col] of tableCols.slice(1, 4).entries()) {
                 const colWidth = parseFloat(await col.getCssValue('width'));
                 expect(colWidth).toBeCloseTo(108, 1);
+                console.log(`Tester: col ${i + 1} width=${colWidth}px, expecting-108`);
             }
         } else {
-            for (const col of tableCols.slice(0, 4)) {
+            for (const [i, col] of tableCols.slice(0, 4).entries()) {
                 const colWidth = parseFloat(await col.getCssValue('width'));
+                console.log(`Tester: col ${i + 1} width=${colWidth}px, expecting-162`);
                 expect(colWidth).toBeCloseTo(162, 1);
             }
         }
+
     });
 
     it.each(expectedHeaders)('Shows sort icon after clicking %s header', async (expectedHeader) => {
