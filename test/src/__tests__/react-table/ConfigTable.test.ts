@@ -153,13 +153,16 @@ describe.each(componentVariants)('%s', (desc, idSuffix) => {
 
     it('Renders the table with proper styles', async () => {
         const body = await driver.findElement(By.css(`${tableSelector} tbody`));
-        expect(await body.getCssValue('font-style')).toBe('italic');
+        const fontStyle = await body.getCssValue('font-style');
+        expect(fontStyle).toBe('italic');
 
         const head = await driver.findElement(By.css(`${tableSelector} thead`));
-        expect(await head.getCssValue('font-weight')).toBe('100');
+        const headerFontWeight = await head.getCssValue('font-weight')
+        expect(headerFontWeight).toBe('100');
 
         const row = await driver.findElement(By.css(`${tableSelector} tbody tr`));
-        expect(await row.getCssValue('font-weight')).toBe('700');
+        const bodyFontWeight = await row.getCssValue('font-weight')
+        expect(bodyFontWeight).toBe('700');
     });
 
     it('Renders the table with proper, default column titles', async () => {
@@ -232,9 +235,6 @@ describe.each(componentVariants)('%s', (desc, idSuffix) => {
             return;
         }
 
-        await header.getText()
-            .then((t) => console.log(t));
-
         // Expect header click to be functional
         let clickedSuccessfully = false;
         await header.click().then(() => clickedSuccessfully = true);
@@ -249,19 +249,6 @@ describe.each(componentVariants)('%s', (desc, idSuffix) => {
             driver.findElements(By.css(`${tableSelector} th#Category`)).then(e => e[0]?.getText()),
             driver.findElements(By.css(`${tableSelector} th#Title`)).then(e => e[0]?.getText())
         ]);
-
-        const format = (label, result) => {
-            `${label}: ${result.status === 'fulfilled' ? result.value : 'ERROR'}`;
-
-            console.log(
-                format(`${idSuffix} LocalStorage State`, results[0])    + `\n` +
-                format(`${idSuffix} Rendered Cols State`, results[1])   + `\n` +
-                format(`${idSuffix} Col State`, results[2])             + `\n` +
-                format(`${idSuffix} Header - Author`, results[3])       + `\n` +
-                format(`${idSuffix} Header - Volume`, results[4])       + `\n` +
-                format(`${idSuffix} Header - Category`, results[5])     + `\n` +
-                format(`${idSuffix} Header - Title`, results[6])
-        )};
 
         // Header set to ascending, title header descending
         const isTitleHeader = expectedHeader === 'Title';
