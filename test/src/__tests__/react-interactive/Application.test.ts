@@ -25,11 +25,14 @@ import { afterAll, beforeAll, describe, expect, it } from "@jest/globals";
 import { Builder, By, until, WebDriver } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome';
 import chromedriver from "chromedriver";
+import { AlertID1, AlertID2 } from '../../components/react-interactive/Alert';
+import { BTN_DROPDOWN_ID } from "../../components/react-interactive/DropdownButton";
+import { BREADCRUMB_TEST_ID } from "../../components/react-interactive/Breadcrumb";
+import { CHECKBOX_TEST_ID } from '../../components/react-forms/Checkbox';
 
 
 const rootURL = `http://localhost:${global.PORT}/`;
 let driver: WebDriver;
-const componentTestID = 'application-test-id';
 
 // Before each test, create a selenium webdriver that goes to the rootURL
 beforeAll(async () => {
@@ -69,35 +72,35 @@ describe('Application Component', () => {
     });
 
     it.each([
-        { tooltip: 'interactive', expectedPath: '/interactive', expectedElements: ['alert-test-id-2', 'btn-dropdown-test'] },
-        { tooltip: 'forms', expectedPath: '/forms', expectedElements: ['checkbox-test-text'] }
+        { tooltip: 'interactive', expectedPath: '/interactive', expectedElements: [AlertID1, AlertID2, BTN_DROPDOWN_ID, BREADCRUMB_TEST_ID] },
+        { tooltip: 'forms', expectedPath: '/forms', expectedElements: [CHECKBOX_TEST_ID] }
     ])('Goes to correct path, sets path active and loads page when $tooltip link is clicked',
-    async ({ tooltip, expectedPath, expectedElements }) => {
-        const navbar = await driver.findElement(By.css('div.navbar'));
-        const links = await navbar.findElements(By.css('a.nav-link'));
+        async ({ tooltip, expectedPath, expectedElements }) => {
+            const navbar = await driver.findElement(By.css('div.navbar'));
+            const links = await navbar.findElements(By.css('a.nav-link'));
 
-        let targetLink;
-        for (const link of links) {
-            const dataTooltip = await link.getAttribute('data-tooltip');
-            if (dataTooltip === tooltip) {
-                targetLink = link;
-                break;
+            let targetLink;
+            for (const link of links) {
+                const dataTooltip = await link.getAttribute('data-tooltip');
+                if (dataTooltip === tooltip) {
+                    targetLink = link;
+                    break;
+                }
             }
-        }
 
-        expect(targetLink).toBeDefined();
+            expect(targetLink).toBeDefined();
 
-        await targetLink.click();
-        await driver.wait(until.urlContains(expectedPath));
+            await targetLink.click();
+            await driver.wait(until.urlContains(expectedPath));
 
-        const classAttr = await targetLink.getAttribute('class');
-        expect(classAttr).toContain('active');
+            const classAttr = await targetLink.getAttribute('class');
+            expect(classAttr).toContain('active');
 
-        for (const id of expectedElements) {
-            const element = await driver.findElement(By.id(id));
-            expect(element).toBeDefined();
-        }
-    });
+            for (const id of expectedElements) {
+                const element = await driver.findElement(By.id(id));
+                expect(element).toBeDefined();
+            }
+        });
 
     it('Folds header on click and does not allow folding when in section', async () => {
         const navbarHeaders = await driver.findElements(By.css('h6.sidebar-heading'));

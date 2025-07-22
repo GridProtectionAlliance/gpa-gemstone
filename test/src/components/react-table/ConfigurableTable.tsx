@@ -25,32 +25,23 @@ import { ConfigurableTable, ConfigurableColumn, Column } from "@gpa-gemstone/rea
 import tableData from '../../test-data/table_test_data.json';
 import React from "react";
 import _ from "lodash";
-
-type Book = {
-    Title: string;
-    Author: string;
-    Volume: number;
-    Category: string;
-};
-
-interface IProps {
-    ComponentTestID: string
-}
+import { IBook } from "./Table";
 
 const headerHeight = 45;
 const bodyHeight = 300;
 const containerHeight = bodyHeight + headerHeight + 1;
 export const tableTestContainerWidth = 650;
+export const CONFIGTABLE_TEST_ID = 'configtable-test-id';
 
-const ConfigurableTableTestComponent = (props: IProps) => {
+const ConfigurableTableTestComponent = () => {
     const data = tableData.slice();
-    const [sortKey, setSortKey] = React.useState<keyof Book>('Title');
+    const [sortKey, setSortKey] = React.useState<keyof IBook>('Title');
     const [asc, setAsc] = React.useState<boolean>(true);
     const [cols, setCols] = React.useState<string[]>([]);
 
     const data2 = tableData.slice();
     const [cols2, setCols2] = React.useState<string[]>([]);
-    const [sortKey2, setSortKey2] = React.useState<keyof Book>('Title');
+    const [sortKey2, setSortKey2] = React.useState<keyof IBook>('Title');
     const [asc2, setAsc2] = React.useState<boolean>(true);
 
     React.useEffect(() => {
@@ -70,7 +61,7 @@ const ConfigurableTableTestComponent = (props: IProps) => {
     }, [data2]);
 
     const handleRowClick = React.useCallback((rowClicked) => {
-        alert(`${props.ComponentTestID}: ${rowClicked.row.Title}`);
+        alert(`${CONFIGTABLE_TEST_ID}: ${rowClicked.row.Title}`);
     }, []);
 
     const renderedColumns = React.useMemo(() => {
@@ -109,8 +100,8 @@ const ConfigurableTableTestComponent = (props: IProps) => {
     return (
         <>
             <div className="row m-0">
-                <div id={props.ComponentTestID + "-1"} className="col p-0" style={{ maxHeight: `${containerHeight}px`, maxWidth: `${tableTestContainerWidth}px` }}>
-                    <ConfigurableTable<Book>
+                <div id={CONFIGTABLE_TEST_ID + "-1"} className="col p-0" style={{ maxHeight: `${containerHeight}px`, maxWidth: `${tableTestContainerWidth}px` }}>
+                    <ConfigurableTable<IBook>
                         key={'table1'}
                         TableClass={`table table-hover`}
                         RowStyle={{ fontSize: 'smaller', fontWeight: 'bolder' }}
@@ -124,17 +115,17 @@ const ConfigurableTableTestComponent = (props: IProps) => {
                             if (clickedCol.colKey === sortKey)
                                 setAsc(!asc);
                             else
-                                setSortKey(clickedCol.colKey as keyof Book);
+                                setSortKey(clickedCol.colKey as keyof IBook);
                         }}
                         OnClick={handleRowClick}
                         KeySelector={(d) => `${d.Volume}-${d.Title}`}
                         ModalZIndex={30000}
                         //SettingsPortal={}
                         OnSettingsChange={() => { }}
-                        LocalStorageKey={props.ComponentTestID + '-1'}
+                        LocalStorageKey={CONFIGTABLE_TEST_ID + '-1'}
                     >
                         <ConfigurableColumn Key="Title" Default={true} Label={'Title'}>
-                            <Column<Book>
+                            <Column<IBook>
                                 Key="Title"
                                 AllowSort={true}
                                 Field="Title"
@@ -145,7 +136,7 @@ const ConfigurableTableTestComponent = (props: IProps) => {
                             </Column>
                         </ConfigurableColumn>
                         <ConfigurableColumn Key="Author" Default={true} Label={'Author'}>
-                            <Column<Book>
+                            <Column<IBook>
                                 Key="Author"
                                 AllowSort={false}
                                 Field="Author"
@@ -156,7 +147,7 @@ const ConfigurableTableTestComponent = (props: IProps) => {
                             </Column>
                         </ConfigurableColumn>
                         <ConfigurableColumn Key="Volume" Default={true} Label={'Vol.'}>
-                            <Column<Book>
+                            <Column<IBook>
                                 Key="Volume"
                                 AllowSort={true}
                                 Field="Volume"
@@ -167,7 +158,7 @@ const ConfigurableTableTestComponent = (props: IProps) => {
                             </Column>
                         </ConfigurableColumn>
                         <ConfigurableColumn Key="Category" Default={true} Label={'Category'}>
-                            <Column<Book>
+                            <Column<IBook>
                                 Key="Category"
                                 AllowSort={true}
                                 Field="Category"
@@ -181,8 +172,8 @@ const ConfigurableTableTestComponent = (props: IProps) => {
                 </div>
             </div>
             <div className="row m-0">
-                <div id={props.ComponentTestID + "-2"} className="col p-0" style={{ maxHeight: `${containerHeight}px`, maxWidth: `${tableTestContainerWidth}px` }}>
-                    <ConfigurableTable<Book>
+                <div id={CONFIGTABLE_TEST_ID + "-2"} className="col p-0" style={{ maxHeight: `${containerHeight}px`, maxWidth: `${tableTestContainerWidth}px` }}>
+                    <ConfigurableTable<IBook>
                         key={'table2'}
                         TableClass={`table table-hover`}
                         RowStyle={{ fontSize: 'smaller', fontWeight: 'bolder' }}
@@ -196,16 +187,16 @@ const ConfigurableTableTestComponent = (props: IProps) => {
                             if (clickedCol.colKey === sortKey2)
                                 setAsc2(!asc2);
                             else
-                                setSortKey2(clickedCol.colKey as keyof Book);
+                                setSortKey2(clickedCol.colKey as keyof IBook);
                         }}
                         OnClick={(rowClicked) => {
-                            alert(`${props.ComponentTestID}: ${rowClicked.row.Title}`);
+                            alert(`${CONFIGTABLE_TEST_ID}: ${rowClicked.row.Title}`);
                         }}
                         KeySelector={(d) => `${d.Volume}-${d.Title}`}
                         ModalZIndex={30000}
                         //SettingsPortal={}
                         OnSettingsChange={() => { }}
-                        LocalStorageKey={props.ComponentTestID + '-2'}
+                        LocalStorageKey={CONFIGTABLE_TEST_ID + '-2'}
                     >
                         {renderedColumns}
                     </ConfigurableTable>

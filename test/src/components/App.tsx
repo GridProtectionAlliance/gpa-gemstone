@@ -30,6 +30,9 @@ import ConfigurableTableTestComponent from './react-table/ConfigurableTable';
 
 declare const homePath: string;
 
+export const InteractiveLabel = "React Interactive";
+export const FormsLabel = 'React Forms';
+
 /** Test App Root */
 const App = () => {
     return (
@@ -39,21 +42,13 @@ const App = () => {
             AllowCollapsed={false}
         >
             <Section Label="Component Tests" >
-                <Page Name={`interactive`} Label="React Interactive">
-                    <div className="row">
-                        <div className="row p-0">
-                            <AlertTestComponent ComponentTestID="alert-test-id" />
-                        </div>
-                        <div className="row p-0">
-                            <BtnDropdownTestComponent ComponentTestID="btn-dropdown-test" />
-                        </div>
-                        <div className="row p-0 mt-3">
-                            <BreadcrumbTestComponent ComponentTestID='breadcrumb-test-id' />
-                        </div>
-                    </div>
+                <Page Name={`interactive`} Label={InteractiveLabel}>
+                    <AlertTestComponent />
+                    <BtnDropdownTestComponent />
+                    <BreadcrumbTestComponent />
                 </Page>
-                <Page Name={`forms`} Label="React Forms">
-                    <CheckBoxTestComponent ComponentTestID='checkbox-test-text' />
+                <Page Name={`forms`} Label={FormsLabel}>
+                    <CheckBoxTestComponent />
                 </Page>
                 <Page Name={`application-typings`} Label="Application Typings" />
                 <Page Name={`common-pages`} Label="Common Pages" />
@@ -63,13 +58,13 @@ const App = () => {
 
             <Section Label="Table Tests">
                 <Page Name={`react-table`} Label="React Table">
-                    <TableTestingComponent ComponentTestID="table-test-id" />
+                    <TableTestingComponent />
                 </Page>
                 <Page Name={`config-table`} Label="Configurable Table">
-                    <ConfigurableTableTestComponent ComponentTestID='configtable-test-id' />
+                    <ConfigurableTableTestComponent />
                 </Page>
             </Section>
-            
+
         </Application>
     );
 };

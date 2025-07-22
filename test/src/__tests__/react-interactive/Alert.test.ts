@@ -24,10 +24,11 @@ import { afterAll, beforeAll, describe, expect, it, test } from "@jest/globals";
 import { Builder, By, until, WebDriver } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome';
 import chromedriver from "chromedriver";
+import { InteractiveLabel } from "../../components/App";
+import { AlertID1, AlertID2 } from "../../components/react-interactive/Alert";
 
 const rootURL = `http://localhost:${global.PORT}/interactive`;
 let driver: WebDriver;
-const componentTestID = 'alert-test-id';
 
 // Before each test, create a selenium webdriver that goes to the rootURL
 beforeAll(async () => {
@@ -45,7 +46,7 @@ beforeAll(async () => {
 
     await driver.get(rootURL); // Navigate to the page
 
-    await driver.wait(until.titleIs('GPA Test'), 10000); // Wait until the page title is loaded
+    await driver.wait(until.titleIs(InteractiveLabel), 10000); // Wait until the page title is loaded
 });
 
 // close the driver after each test
@@ -55,7 +56,7 @@ afterAll(async () => {
 
 describe('Alert Component', () => {
     it('Applies Alert with X props', async () => {
-        const component = await driver.findElement(By.css(`#${componentTestID}-1 .alert`));
+        const component = await driver.findElement(By.css(`#${AlertID1} .alert`));
 
         const className = await component.getAttribute('class');
         const xButton = await component.findElements(By.css('button'));
@@ -65,7 +66,7 @@ describe('Alert Component', () => {
     });
 
     it(('Applies Alert without X props'), async () => {
-        const component = await driver.findElement(By.css(`#${componentTestID}-2 .alert`))
+        const component = await driver.findElement(By.css(`#${AlertID2} .alert`))
 
         const className = await component.getAttribute('class');
         const xButton = await component.findElements(By.css('.button'));
@@ -77,7 +78,7 @@ describe('Alert Component', () => {
     it(('Uses the callback'), async () => {
         // gets x button
         const button = await driver.wait(
-            until.elementLocated(By.css(`#${componentTestID}-1 .alert`)))
+            until.elementLocated(By.css(`#${AlertID1} .alert`)))
             .findElements(By.css('button'));
         expect(button.length).toBe(1);
 
@@ -89,15 +90,16 @@ describe('Alert Component', () => {
         await alert.accept();
 
         // verifies the alert is not displayed
-        const component = await driver.findElements(By.css(`#${componentTestID}-1 .alert`));
+        const component = await driver.findElements(By.css(`#${AlertID1} .alert`));
         expect(await component[0].isDisplayed()).toBe(false);
 
         // clicks "Bring Back Closed Alert" button
-        const bringBackButton = await driver.findElement(By.css(`#${componentTestID}-button`));
+        const bringBackButton = await driver.findElement(By.css(`#${AlertID1}-button`));
         await bringBackButton.click();
 
         // re-locate and verify the alert is visible again
-        const reappeared = await driver.findElements(By.css(`#${componentTestID}-1 .alert`));
-        expect(await reappeared[0].isDisplayed()).toBe(true);
+        const reappeared = await driver.wait(until.elementLocated(By.css(`#${AlertID1} .alert`)));
+        await driver.wait(until.elementIsVisible(reappeared));
+        expect(await reappeared.isDisplayed()).toBe(true);
     });
 });

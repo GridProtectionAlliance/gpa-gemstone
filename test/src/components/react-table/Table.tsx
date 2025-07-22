@@ -26,7 +26,7 @@ import tableData from '../../test-data/table_test_data.json';
 import React from "react";
 import { tableTestContainerWidth } from "./ConfigurableTable";
 
-interface IBook {
+export interface IBook {
     Title: string;
     Author: string;
     Volume: number;
@@ -37,10 +37,12 @@ const headerHeight = 45;
 const bodyHeight = 300;
 const containerHeight = bodyHeight + headerHeight + 1;
 
+export const TABLE_TEST_ID = 'table-test-id';
+
 /**
  * This is not a visually functional table (data sorting, etc. ) but it sets data like one
  */
-const TableTestingComponent: React.FC<{ ComponentTestID: string }> = (props) => {
+const TableTestingComponent = () => {
     const data = tableData.slice();
     const [sortKey, setSortKey] = React.useState<keyof IBook>('Title');
     const [asc, setAsc] = React.useState<boolean>(true);
@@ -48,7 +50,7 @@ const TableTestingComponent: React.FC<{ ComponentTestID: string }> = (props) => 
     return (
         <div className="row m-0">
             <div className="col p-0">
-                <div id={props.ComponentTestID} style={{ maxHeight: `${containerHeight}px`, maxWidth: `${tableTestContainerWidth}px` }}>
+                <div id={TABLE_TEST_ID} style={{ maxHeight: `${containerHeight}px`, maxWidth: `${tableTestContainerWidth}px` }}>
                     <Table<IBook>
                         TableClass={`table table-hover`}
                         RowStyle={{ fontSize: 'smaller', fontWeight: 'bolder' }}
@@ -65,7 +67,7 @@ const TableTestingComponent: React.FC<{ ComponentTestID: string }> = (props) => 
                                 setSortKey(clickedCol.colKey as keyof IBook);
                         }}
                         OnClick={(rowClicked) => {
-                            alert(`${props.ComponentTestID}: ${rowClicked.row.Title}`);
+                            alert(`${TABLE_TEST_ID}: ${rowClicked.row.Title}`);
                         }}
                         KeySelector={(d) => `${d.Volume}-${d.Title}`}
                     >
