@@ -66,7 +66,9 @@ afterEach(async () => {
     if (driver) await driver.quit();
 });
 
-describe.each([CONFIGTABLE1_TEST_ID, CONFIGTABLE2_TEST_ID])('%s', (testID) => {
+const testIDS = [['Config Table 1', CONFIGTABLE1_TEST_ID], ['Config Table 2',CONFIGTABLE2_TEST_ID]];
+
+describe.each(testIDS)('%s', (desc, testID) => {
     const tableSelector = `#${testID} table`;
 
     /**
