@@ -24,7 +24,7 @@ import { afterAll, beforeAll, describe, expect, it, test } from "@jest/globals";
 import { Builder, By, until, WebDriver } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome';
 import chromedriver from "chromedriver";
-import { InteractiveLabel } from "../../components/App";
+import { InteractivePageLabel } from "../../components/App";
 import { AlertID1, AlertID2 } from "../../components/react-interactive/Alert";
 
 const rootURL = `http://localhost:${global.PORT}/interactive`;
@@ -46,7 +46,7 @@ beforeAll(async () => {
 
     await driver.get(rootURL); // Navigate to the page
 
-    await driver.wait(until.titleIs(InteractiveLabel), 10000); // Wait until the page title is loaded
+    await driver.wait(until.titleIs(InteractivePageLabel), 10000); // Wait until the page title is loaded
 });
 
 // close the driver after each test

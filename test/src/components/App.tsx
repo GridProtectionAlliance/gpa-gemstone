@@ -27,11 +27,15 @@ import { AlertTestComponent, BreadcrumbTestComponent, BtnDropdownTestComponent }
 import CheckBoxTestComponent from './react-forms/Checkbox';
 import TableTestingComponent from './react-table/Table';
 import ConfigurableTableTestComponent from './react-table/ConfigurableTable';
+import TimeFilterTestComponent from './common-pages/TimeFilter';
 
 declare const homePath: string;
 
-export const InteractiveLabel = "React Interactive";
-export const FormsLabel = 'React Forms';
+export const InteractivePageLabel = "React Interactive";
+export const FormsPageLabel = 'React Forms';
+
+export const TimeFilterPageLabel = "Time Filter";
+export const TimeFilterRoute = "TimeFilter"
 
 /** Test App Root */
 const App = () => {
@@ -41,29 +45,34 @@ const App = () => {
             DefaultPath={"index.html"}
             AllowCollapsed={false}
         >
+            <Section Label="Common Pages">
+                <Page Name={TimeFilterRoute} Label={TimeFilterPageLabel}>
+                    <TimeFilterTestComponent />
+                </Page>
+            </Section>
             <Section Label="Component Tests" >
-                <Page Name={`interactive`} Label={InteractiveLabel}>
+                <Page Name={`interactive`} Label={InteractivePageLabel}>
                     <AlertTestComponent />
                     <BtnDropdownTestComponent />
                     <BreadcrumbTestComponent />
                 </Page>
-                <Page Name={`forms`} Label={FormsLabel}>
+                <Page Name={`forms`} Label={FormsPageLabel}>
                     <CheckBoxTestComponent />
                 </Page>
                 <Page Name={`application-typings`} Label="Application Typings" />
-                <Page Name={`common-pages`} Label="Common Pages" />
                 <Page Name={`symbols`} Label="GPA Symbols" />
                 <Page Name={`graph`} Label="React Graph" />
             </Section>
 
-            <Section Label="Table Tests">
-                <Page Name={`react-table`} Label="React Table">
+            <Section Label="React Table">
+                <Page Name={`react-table`} Label="Table">
                     <TableTestingComponent />
                 </Page>
                 <Page Name={`config-table`} Label="Configurable Table">
                     <ConfigurableTableTestComponent />
                 </Page>
             </Section>
+
 
         </Application>
     );
