@@ -24,7 +24,7 @@ import { afterEach, beforeEach, expect, describe, it } from "@jest/globals";
 import { Builder, By, until, WebDriver, logging } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome';
 import chromedriver from 'chromedriver';
-import { configTableTestContainerWidth } from '../../components/react-table/ConfigurableTable';
+import { tableTestContainerWidth } from '../../components/react-table/ConfigurableTable';
 
 const rootURL = `http://localhost:${global.PORT}/config-table`;
 let driver: WebDriver;
@@ -55,8 +55,6 @@ beforeEach(async () => {
         .setChromeOptions(options)
         .build();
 
-
-    //await driver.manage().window().setSize(1600, 760);
     await driver.executeScript('window.resizeTo(1600,760)')
 
     await driver.get(rootURL);
@@ -203,20 +201,20 @@ describe.each(componentVariants)('%s', (desc, idSuffix) => {
         const totalCols = 4;
         const settingsIconColWidth = 17;
 
-        const expectedTitleWidth = (configTableTestContainerWidth - settingsIconColWidth) * 0.5;
+        const expectedTitleWidth = (tableTestContainerWidth - settingsIconColWidth) * 0.5;
 
-        const expectedColWidthID1 = (configTableTestContainerWidth - expectedTitleWidth - settingsIconColWidth) / (totalCols - 1);
-        const expectedColWidthID2 = (configTableTestContainerWidth - settingsIconColWidth) / totalCols;
+        const expectedColWidthID1 = (tableTestContainerWidth - expectedTitleWidth - settingsIconColWidth) / (totalCols - 1);
+        const expectedColWidthID2 = (tableTestContainerWidth - settingsIconColWidth) / totalCols;
 
         if (idSuffix == '1') {
             const titleColWidth = parseFloat(await titleCol.getCssValue('width'));
             expect(titleColWidth).toBeCloseTo(expectedTitleWidth, 1);
-            for (const [i, col] of tableCols.slice(1, 4).entries()) {
+            for (const col of tableCols.slice(1, 4)) {
                 const colWidth = parseFloat(await col.getCssValue('width'));
                 expect(colWidth).toBeCloseTo(expectedColWidthID1, 1);
             }
         } else {
-            for (const [i, col] of tableCols.slice(0, 4).entries()) {
+            for (const col of tableCols.slice(0, 4)) {
                 const colWidth = parseFloat(await col.getCssValue('width'));
                 expect(colWidth).toBeCloseTo(expectedColWidthID2, 1);
             }

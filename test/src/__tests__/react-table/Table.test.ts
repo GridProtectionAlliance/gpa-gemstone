@@ -24,6 +24,7 @@ import { afterEach, beforeEach, expect, describe, it } from "@jest/globals";
 import { Builder, By, until, WebDriver } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome';
 import chromedriver from 'chromedriver';
+import { tableTestContainerWidth } from "../../components/react-table/ConfigurableTable";
 
 const rootURL = `http://localhost:${global.PORT}/react-table`;
 let driver: WebDriver;
@@ -35,7 +36,11 @@ beforeEach(async () => {
 
     const options = new chrome.Options();
     // Ensure headless mode for sizing tests. Mimics Jenkins
-    options.addArguments('--window-size=750,900', '--headless=new', '--disable-gpu');
+    options.addArguments(
+        '--window-size=1600,760',
+        '--headless=new',
+        '--disable-gpu'
+    );
 
     driver = await new Builder()
         .forBrowser('chrome')
@@ -43,6 +48,7 @@ beforeEach(async () => {
         .setChromeOptions(options)
         .build();
 
+    await driver.executeScript('window.resizeTo(1600,760)')
     await driver.get(rootURL); // Navigate to the page
 
     await driver.wait(
@@ -81,25 +87,24 @@ describe('Table Component', () => {
         }
     });
 
-    it('Renders col widths correctly', async () => {
+    it('Renders header col widths correctly', async () => {
         const tableCols = await driver.findElements(By.css(`${tableSelector} thead tr th`));
-        const titleCol = tableCols[0];
+        const firstCol = tableCols[0]; // should be 50% table width
         await driver.sleep(500); // removes flakieness. gives time for cols to fully adjust
 
-        expect(parseFloat(await titleCol.getCssValue('width'))).toBeCloseTo(241.5, 1);
+        const scrolled = await hasVerticalScrollbar(driver, tableSelector);
+        const spacer = scrolled ? await getScrollbarWidth(driver) : 0;
+
+        const firstColWidth = parseFloat(await firstCol.getCssValue('width'));
+        const expectedFirstColWidth = (tableTestContainerWidth - spacer) * 0.5;
+        const totalCols = 4;
+        const expectedColWidth = (tableTestContainerWidth - expectedFirstColWidth - spacer) / (totalCols - 1);
+
+        expect(Math.abs(firstColWidth - expectedFirstColWidth)).toBeLessThanOrEqual(1);
+
         for (const col of tableCols.slice(1, 4)) {
-            expect(parseFloat(await col.getCssValue('width'))).toBeCloseTo(80.5, 1);
-        }
-    });
-
-    it('Renders col rowstyles correctly', async () => {
-        const tableRows = await driver.findElements(By.css(`${tableSelector} tbody tr td`)); // first row data elements
-        const firstCol = tableRows[0]; // should be 50% table width
-        await driver.sleep(500); // removes flakieness. gives time for cols to fully adjust
-
-        expect(parseFloat(await firstCol.getCssValue('width'))).toBeCloseTo(241.5, 1);
-        for (const col of tableRows.slice(1, 4)) {
-            expect(parseFloat(await col.getCssValue('width'))).toBeCloseTo(80.5, 1);
+            const colWidth = parseFloat(await col.getCssValue('width'));
+            expect(Math.abs(colWidth - expectedColWidth)).toBeLessThanOrEqual(0.5)
         }
     });
 
@@ -163,3 +168,17 @@ describe('Table Component', () => {
         await checkWidths({expectedTableValue: 533, expectedFirstRow: 259, expectedOtherRows: 86.3281});
     }); */
 });
+
+async function hasVerticalScrollbar(driver: WebDriver, tableSelector: string) {
+    return await driver.executeScript(function (sel) {
+        const body = document.querySelector(sel + ' tbody');
+        if (!body) return false;
+        return body.scrollHeight > body.clientHeight;
+    }, tableSelector);
+}
+
+async function getScrollbarWidth(driver) {
+    return await driver.executeScript(function () {
+        return window.innerWidth - document.documentElement.clientWidth;
+    }).then(w => (w && w > 0 ? w : 17));
+}

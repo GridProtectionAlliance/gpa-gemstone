@@ -40,7 +40,7 @@ interface IProps {
 const headerHeight = 45;
 const bodyHeight = 300;
 const containerHeight = bodyHeight + headerHeight + 1;
-export const configTableTestContainerWidth = 650;
+export const tableTestContainerWidth = 650;
 
 const ConfigurableTableTestComponent = (props: IProps) => {
     const data = tableData.slice();
@@ -109,7 +109,7 @@ const ConfigurableTableTestComponent = (props: IProps) => {
     return (
         <>
             <div className="row m-0">
-                <div id={props.ComponentTestID + "-1"} className="col p-0" style={{ maxHeight: `${containerHeight}px`, maxWidth: `${configTableTestContainerWidth}px` }}>
+                <div id={props.ComponentTestID + "-1"} className="col p-0" style={{ maxHeight: `${containerHeight}px`, maxWidth: `${tableTestContainerWidth}px` }}>
                     <ConfigurableTable<Book>
                         key={'table1'}
                         TableClass={`table table-hover`}
@@ -181,7 +181,7 @@ const ConfigurableTableTestComponent = (props: IProps) => {
                 </div>
             </div>
             <div className="row m-0">
-                <div id={props.ComponentTestID + "-2"} className="col p-0" style={{ maxHeight: `${containerHeight}px`, maxWidth: `${configTableTestContainerWidth}px` }}>
+                <div id={props.ComponentTestID + "-2"} className="col p-0" style={{ maxHeight: `${containerHeight}px`, maxWidth: `${tableTestContainerWidth}px` }}>
                     <ConfigurableTable<Book>
                         key={'table2'}
                         TableClass={`table table-hover`}

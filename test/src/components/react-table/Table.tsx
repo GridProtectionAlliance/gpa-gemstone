@@ -24,6 +24,7 @@
 import { Column, Table } from "@gpa-gemstone/react-table";
 import tableData from '../../test-data/table_test_data.json';
 import React from "react";
+import { tableTestContainerWidth } from "./ConfigurableTable";
 
 interface IBook {
     Title: string;
@@ -34,7 +35,6 @@ interface IBook {
 
 const headerHeight = 45;
 const bodyHeight = 300;
-const containerWidth = 700;
 const containerHeight = bodyHeight + headerHeight + 1;
 
 /**
@@ -46,64 +46,68 @@ const TableTestingComponent: React.FC<{ ComponentTestID: string }> = (props) => 
     const [asc, setAsc] = React.useState<boolean>(true);
 
     return (
-        <div id={props.ComponentTestID} className="border" style={{ maxHeight: `${containerHeight}px`, maxWidth: `${containerWidth}px` }}>
-            <Table<IBook>
-                TableClass={`table table-hover`}
-                RowStyle={{ fontSize: 'smaller', fontWeight: 'bolder' }}
-                TheadStyle={{ fontSize: 'smaller', fontWeight: 'lighter', maxHeight: `${headerHeight}px` }}
-                TbodyStyle={{ fontStyle: 'italic', maxHeight: `${bodyHeight}px` }}
-                TfootStyle={{ fontStyle: 'bold' }}
-                Data={data}
-                SortKey={sortKey}
-                Ascending={asc}
-                OnSort={(clickedCol) => {
-                    if (clickedCol.colKey === sortKey)
-                        setAsc(!asc);
-                    else
-                        setSortKey(clickedCol.colKey as keyof IBook);
-                }}
-                OnClick={(rowClicked) => {
-                    alert(`${props.ComponentTestID}: ${rowClicked.row.Title}`);
-                }}
-                KeySelector={(d) => `${d.Volume}-${d.Title}`}
-            >
-                <Column<IBook>
-                    Key="Title"
-                    AllowSort={true}
-                    Field="Title"
-                    HeaderStyle={{ width: '50%' }}
-                    RowStyle={{ width: '50%' }}
-                >
-                    Title
-                </Column>
-                <Column<IBook>
-                    Key="Author"
-                    AllowSort={false}
-                    Field="Author"
-                    HeaderStyle={{ width: 'auto' }}
-                    RowStyle={{ width: 'auto' }}
-                >
-                    Author
-                </Column>
-                <Column<IBook>
-                    Key="Volume"
-                    AllowSort={true}
-                    Field="Volume"
-                    HeaderStyle={{ width: 'auto' }}
-                    RowStyle={{ width: 'auto' }}
-                >
-                    Vol.
-                </Column>
-                <Column<IBook>
-                    Key="Category"
-                    AllowSort={true}
-                    Field="Category"
-                    HeaderStyle={{ width: 'auto' }}
-                    RowStyle={{ width: 'auto' }}
-                >
-                    Category
-                </Column>
-            </Table>
+        <div className="row m-0">
+            <div className="col p-0">
+                <div id={props.ComponentTestID} style={{ maxHeight: `${containerHeight}px`, maxWidth: `${tableTestContainerWidth}px` }}>
+                    <Table<IBook>
+                        TableClass={`table table-hover`}
+                        RowStyle={{ fontSize: 'smaller', fontWeight: 'bolder' }}
+                        TheadStyle={{ fontSize: 'smaller', fontWeight: 'lighter', maxHeight: `${headerHeight}px` }}
+                        TbodyStyle={{ fontStyle: 'italic', maxHeight: `${bodyHeight}px` }}
+                        TfootStyle={{ fontStyle: 'bold' }}
+                        Data={data}
+                        SortKey={sortKey}
+                        Ascending={asc}
+                        OnSort={(clickedCol) => {
+                            if (clickedCol.colKey === sortKey)
+                                setAsc(!asc);
+                            else
+                                setSortKey(clickedCol.colKey as keyof IBook);
+                        }}
+                        OnClick={(rowClicked) => {
+                            alert(`${props.ComponentTestID}: ${rowClicked.row.Title}`);
+                        }}
+                        KeySelector={(d) => `${d.Volume}-${d.Title}`}
+                    >
+                        <Column<IBook>
+                            Key="Title"
+                            AllowSort={true}
+                            Field="Title"
+                            HeaderStyle={{ width: '50%' }}
+                            RowStyle={{ width: '50%' }}
+                        >
+                            Title
+                        </Column>
+                        <Column<IBook>
+                            Key="Author"
+                            AllowSort={false}
+                            Field="Author"
+                            HeaderStyle={{ width: 'auto' }}
+                            RowStyle={{ width: 'auto' }}
+                        >
+                            Author
+                        </Column>
+                        <Column<IBook>
+                            Key="Volume"
+                            AllowSort={true}
+                            Field="Volume"
+                            HeaderStyle={{ width: 'auto' }}
+                            RowStyle={{ width: 'auto' }}
+                        >
+                            Vol.
+                        </Column>
+                        <Column<IBook>
+                            Key="Category"
+                            AllowSort={true}
+                            Field="Category"
+                            HeaderStyle={{ width: 'auto' }}
+                            RowStyle={{ width: 'auto' }}
+                        >
+                            Category
+                        </Column>
+                    </Table>
+                </div>
+            </div>
         </div>
     );
 };

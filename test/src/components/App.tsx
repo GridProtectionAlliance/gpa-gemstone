@@ -38,7 +38,7 @@ const App = () => {
             DefaultPath={"index.html"}
             AllowCollapsed={false}
         >
-            <Section Label="Component Tests" Style={{ marginLeft: "10px" }}>
+            <Section Label="Component Tests" >
                 <Page Name={`interactive`} Label="React Interactive">
                     <div className="row">
                         <div className="row p-0">
@@ -60,7 +60,8 @@ const App = () => {
                 <Page Name={`symbols`} Label="GPA Symbols" />
                 <Page Name={`graph`} Label="React Graph" />
             </Section>
-            <Section Label="Table Tests" Style={{ marginLeft: "10px" }}>
+
+            <Section Label="Table Tests">
                 <Page Name={`react-table`} Label="React Table">
                     <TableTestingComponent ComponentTestID="table-test-id" />
                 </Page>
@@ -68,6 +69,7 @@ const App = () => {
                     <ConfigurableTableTestComponent ComponentTestID='configtable-test-id' />
                 </Page>
             </Section>
+            
         </Application>
     );
 };
