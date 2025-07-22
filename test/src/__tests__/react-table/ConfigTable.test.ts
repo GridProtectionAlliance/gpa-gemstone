@@ -24,6 +24,7 @@ import { afterEach, beforeEach, expect, describe, it } from "@jest/globals";
 import { Builder, By, until, WebDriver, logging } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome';
 import chromedriver from 'chromedriver';
+import { configTableTestContainerWidth } from '../../components/react-table/ConfigurableTable';
 
 const rootURL = `http://localhost:${global.PORT}/config-table`;
 let driver: WebDriver;
@@ -37,7 +38,11 @@ beforeEach(async () => {
 
     const options = new chrome.Options();
     // Ensure headless mode for sizing tests. Mimics Jenkins
-    options.addArguments('--window-size=1600,760', '--headless=new', '--disable-gpu');
+    options.addArguments(
+        '--window-size=1600,760',
+        '--headless=new',
+        '--disable-gpu'
+    );
 
     //Configure logging
     const prefs = new logging.Preferences();
@@ -49,6 +54,10 @@ beforeEach(async () => {
         .setChromeService(service)
         .setChromeOptions(options)
         .build();
+
+
+    //await driver.manage().window().setSize(1600, 760);
+    await driver.executeScript('window.resizeTo(1600,760)')
 
     await driver.get(rootURL);
     await driver.wait(until.elementIsVisible(driver.findElement(By.css(`#${componentTestID}-1 table thead tr th`))), 10000);
@@ -191,26 +200,25 @@ describe.each(componentVariants)('%s', (desc, idSuffix) => {
         const titleCol = tableCols[0];
         await driver.sleep(500); // removes flakieness. gives time for cols to fully adjust
 
-        const browserLogs = await driver.manage().logs().get(logging.Type.BROWSER);
-        console.log('---- Browser console logs ----');
-        browserLogs.forEach(entry => console.log(entry.timestamp, entry.level.name, entry.message));
-        console.log('-------------------------------');
+        const totalCols = 4;
+        const settingsIconColWidth = 17;
 
-        const titleColWidth = parseFloat(await titleCol.getCssValue('width'))
-        console.log(`Tester: titleColWidth=${titleColWidth}px, expecting--${idSuffix === '1' ? 324 : 162}`);
+        const expectedTitleWidth = (configTableTestContainerWidth - settingsIconColWidth) * 0.5;
+
+        const expectedColWidthID1 = (configTableTestContainerWidth - expectedTitleWidth - settingsIconColWidth) / (totalCols - 1);
+        const expectedColWidthID2 = (configTableTestContainerWidth - settingsIconColWidth) / totalCols;
 
         if (idSuffix == '1') {
-            expect(titleColWidth).toBeCloseTo(324, 1);
+            const titleColWidth = parseFloat(await titleCol.getCssValue('width'));
+            expect(titleColWidth).toBeCloseTo(expectedTitleWidth, 1);
             for (const [i, col] of tableCols.slice(1, 4).entries()) {
                 const colWidth = parseFloat(await col.getCssValue('width'));
-                expect(colWidth).toBeCloseTo(108, 1);
-                console.log(`Tester: col ${i + 1} width=${colWidth}px, expecting-108`);
+                expect(colWidth).toBeCloseTo(expectedColWidthID1, 1);
             }
         } else {
             for (const [i, col] of tableCols.slice(0, 4).entries()) {
                 const colWidth = parseFloat(await col.getCssValue('width'));
-                console.log(`Tester: col ${i + 1} width=${colWidth}px, expecting-162`);
-                expect(colWidth).toBeCloseTo(162, 1);
+                expect(colWidth).toBeCloseTo(expectedColWidthID2, 1);
             }
         }
 
