@@ -37,20 +37,21 @@ interface IProps {
     ComponentTestID: string
 }
 
+const headerHeight = 45;
+const bodyHeight = 300;
+const containerHeight = bodyHeight + headerHeight + 1;
+export const configTableTestContainerWidth = 650;
+
 const ConfigurableTableTestComponent = (props: IProps) => {
-    const [data, setData] = React.useState<Book[]>([]);
+    const data = tableData.slice();
     const [sortKey, setSortKey] = React.useState<keyof Book>('Title');
     const [asc, setAsc] = React.useState<boolean>(true);
     const [cols, setCols] = React.useState<string[]>([]);
+
+    const data2 = tableData.slice();
     const [cols2, setCols2] = React.useState<string[]>([]);
-    const [data2, setData2] = React.useState<Book[]>([]);
     const [sortKey2, setSortKey2] = React.useState<keyof Book>('Title');
     const [asc2, setAsc2] = React.useState<boolean>(true);
-
-    React.useEffect(() => {
-        setData(tableData.slice());
-        setData2(tableData.slice());
-    }, []);
 
     React.useEffect(() => {
         if (data.length == 0)
@@ -71,11 +72,6 @@ const ConfigurableTableTestComponent = (props: IProps) => {
     const handleRowClick = React.useCallback((rowClicked) => {
         alert(`${props.ComponentTestID}: ${rowClicked.row.Title}`);
     }, []);
-
-    const headerHeight = 45;
-    const bodyHeight = 300;
-    const containerHeight = bodyHeight + headerHeight + 1;
-    const containerWidth = 700;
 
     const renderedColumns = React.useMemo(() => {
         return cols2.map(col =>
@@ -112,104 +108,108 @@ const ConfigurableTableTestComponent = (props: IProps) => {
 
     return (
         <>
-            <div id={props.ComponentTestID + "-1"} className="col p-0 m-0" style={{ maxHeight: `${containerHeight}px`, maxWidth: `${containerWidth}px` }}>
-                <ConfigurableTable<Book>
-                    key={'table1'}
-                    TableClass={`table table-hover`}
-                    RowStyle={{ fontSize: 'smaller', fontWeight: 'bolder' }}
-                    TheadStyle={{ fontSize: 'smaller', fontWeight: 'lighter', maxHeight: `${headerHeight}px` }}
-                    TbodyStyle={{ fontStyle: 'italic', maxHeight: `${bodyHeight}px` }}
-                    TfootStyle={{ fontStyle: 'bold' }}
-                    Data={data}
-                    SortKey={sortKey}
-                    Ascending={asc}
-                    OnSort={(clickedCol) => {
-                        if (clickedCol.colKey === sortKey)
-                            setAsc(!asc);
-                        else
-                            setSortKey(clickedCol.colKey as keyof Book);
-                    }}
-                    OnClick={handleRowClick}
-                    KeySelector={(d) => `${d.Volume}-${d.Title}`}
-                    ModalZIndex={30000}
-                    //SettingsPortal={}
-                    OnSettingsChange={() => { }}
-                    LocalStorageKey={props.ComponentTestID + '-1'}
-                >
-                    <ConfigurableColumn Key="Title" Default={true} Label={'Title'}>
-                        <Column<Book>
-                            Key="Title"
-                            AllowSort={true}
-                            Field="Title"
-                            HeaderStyle={{ width: '50%' }}
-                            RowStyle={{ width: '50%' }}
-                        >
-                            Title
-                        </Column>
-                    </ConfigurableColumn>
-                    <ConfigurableColumn Key="Author" Default={true} Label={'Author'}>
-                        <Column<Book>
-                            Key="Author"
-                            AllowSort={false}
-                            Field="Author"
-                            HeaderStyle={{ width: 'auto' }}
-                            RowStyle={{ width: 'auto' }}
-                        >
-                            Author
-                        </Column>
-                    </ConfigurableColumn>
-                    <ConfigurableColumn Key="Volume" Default={true} Label={'Vol.'}>
-                        <Column<Book>
-                            Key="Volume"
-                            AllowSort={true}
-                            Field="Volume"
-                            HeaderStyle={{ width: 'auto' }}
-                            RowStyle={{ width: 'auto' }}
-                        >
-                            Volume
-                        </Column>
-                    </ConfigurableColumn>
-                    <ConfigurableColumn Key="Category" Default={true} Label={'Category'}>
-                        <Column<Book>
-                            Key="Category"
-                            AllowSort={true}
-                            Field="Category"
-                            HeaderStyle={{ width: 'auto' }}
-                            RowStyle={{ width: 'auto' }}
-                        >
-                            Category
-                        </Column>
-                    </ConfigurableColumn>
-                </ConfigurableTable>
+            <div className="row m-0">
+                <div id={props.ComponentTestID + "-1"} className="col p-0" style={{ maxHeight: `${containerHeight}px`, maxWidth: `${configTableTestContainerWidth}px` }}>
+                    <ConfigurableTable<Book>
+                        key={'table1'}
+                        TableClass={`table table-hover`}
+                        RowStyle={{ fontSize: 'smaller', fontWeight: 'bolder' }}
+                        TheadStyle={{ fontSize: 'smaller', fontWeight: 'lighter', maxHeight: `${headerHeight}px` }}
+                        TbodyStyle={{ fontStyle: 'italic', maxHeight: `${bodyHeight}px` }}
+                        TfootStyle={{ fontStyle: 'bold' }}
+                        Data={data}
+                        SortKey={sortKey}
+                        Ascending={asc}
+                        OnSort={(clickedCol) => {
+                            if (clickedCol.colKey === sortKey)
+                                setAsc(!asc);
+                            else
+                                setSortKey(clickedCol.colKey as keyof Book);
+                        }}
+                        OnClick={handleRowClick}
+                        KeySelector={(d) => `${d.Volume}-${d.Title}`}
+                        ModalZIndex={30000}
+                        //SettingsPortal={}
+                        OnSettingsChange={() => { }}
+                        LocalStorageKey={props.ComponentTestID + '-1'}
+                    >
+                        <ConfigurableColumn Key="Title" Default={true} Label={'Title'}>
+                            <Column<Book>
+                                Key="Title"
+                                AllowSort={true}
+                                Field="Title"
+                                HeaderStyle={{ width: '50%' }}
+                                RowStyle={{ width: '50%' }}
+                            >
+                                Title
+                            </Column>
+                        </ConfigurableColumn>
+                        <ConfigurableColumn Key="Author" Default={true} Label={'Author'}>
+                            <Column<Book>
+                                Key="Author"
+                                AllowSort={false}
+                                Field="Author"
+                                HeaderStyle={{ width: 'auto' }}
+                                RowStyle={{ width: 'auto' }}
+                            >
+                                Author
+                            </Column>
+                        </ConfigurableColumn>
+                        <ConfigurableColumn Key="Volume" Default={true} Label={'Vol.'}>
+                            <Column<Book>
+                                Key="Volume"
+                                AllowSort={true}
+                                Field="Volume"
+                                HeaderStyle={{ width: 'auto' }}
+                                RowStyle={{ width: 'auto' }}
+                            >
+                                Volume
+                            </Column>
+                        </ConfigurableColumn>
+                        <ConfigurableColumn Key="Category" Default={true} Label={'Category'}>
+                            <Column<Book>
+                                Key="Category"
+                                AllowSort={true}
+                                Field="Category"
+                                HeaderStyle={{ width: 'auto' }}
+                                RowStyle={{ width: 'auto' }}
+                            >
+                                Category
+                            </Column>
+                        </ConfigurableColumn>
+                    </ConfigurableTable>
+                </div>
             </div>
-            <div id={props.ComponentTestID + "-2"} className="col p-0 m-0 ml-3" style={{ maxHeight: `${containerHeight}px`, maxWidth: `${containerWidth}px` }}>
-                <ConfigurableTable<Book>
-                    key={'table2'}
-                    TableClass={`table table-hover`}
-                    RowStyle={{ fontSize: 'smaller', fontWeight: 'bolder' }}
-                    TheadStyle={{ fontSize: 'smaller', fontWeight: 'lighter', maxHeight: `${headerHeight}px` }}
-                    TbodyStyle={{ fontStyle: 'italic', maxHeight: `${bodyHeight}px` }}
-                    TfootStyle={{ fontStyle: 'bold' }}
-                    Data={data2}
-                    SortKey={sortKey2}
-                    Ascending={asc2}
-                    OnSort={(clickedCol) => {
-                        if (clickedCol.colKey === sortKey2)
-                            setAsc2(!asc2);
-                        else
-                            setSortKey2(clickedCol.colKey as keyof Book);
-                    }}
-                    OnClick={(rowClicked) => {
-                        alert(`${props.ComponentTestID}: ${rowClicked.row.Title}`);
-                    }}
-                    KeySelector={(d) => `${d.Volume}-${d.Title}`}
-                    ModalZIndex={30000}
-                    //SettingsPortal={}
-                    OnSettingsChange={() => { }}
-                    LocalStorageKey={props.ComponentTestID + '-2'}
-                >
-                    {renderedColumns}
-                </ConfigurableTable>
+            <div className="row m-0">
+                <div id={props.ComponentTestID + "-2"} className="col p-0" style={{ maxHeight: `${containerHeight}px`, maxWidth: `${configTableTestContainerWidth}px` }}>
+                    <ConfigurableTable<Book>
+                        key={'table2'}
+                        TableClass={`table table-hover`}
+                        RowStyle={{ fontSize: 'smaller', fontWeight: 'bolder' }}
+                        TheadStyle={{ fontSize: 'smaller', fontWeight: 'lighter', maxHeight: `${headerHeight}px` }}
+                        TbodyStyle={{ fontStyle: 'italic', maxHeight: `${bodyHeight}px` }}
+                        TfootStyle={{ fontStyle: 'bold' }}
+                        Data={data2}
+                        SortKey={sortKey2}
+                        Ascending={asc2}
+                        OnSort={(clickedCol) => {
+                            if (clickedCol.colKey === sortKey2)
+                                setAsc2(!asc2);
+                            else
+                                setSortKey2(clickedCol.colKey as keyof Book);
+                        }}
+                        OnClick={(rowClicked) => {
+                            alert(`${props.ComponentTestID}: ${rowClicked.row.Title}`);
+                        }}
+                        KeySelector={(d) => `${d.Volume}-${d.Title}`}
+                        ModalZIndex={30000}
+                        //SettingsPortal={}
+                        OnSettingsChange={() => { }}
+                        LocalStorageKey={props.ComponentTestID + '-2'}
+                    >
+                        {renderedColumns}
+                    </ConfigurableTable>
+                </div>
             </div>
         </>
     );

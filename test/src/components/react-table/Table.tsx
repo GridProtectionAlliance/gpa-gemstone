@@ -25,32 +25,29 @@ import { Column, Table } from "@gpa-gemstone/react-table";
 import tableData from '../../test-data/table_test_data.json';
 import React from "react";
 
-type Book = {
+interface IBook {
     Title: string;
     Author: string;
     Volume: number;
     Category: string;
 };
+
+const headerHeight = 45;
+const bodyHeight = 300;
+const containerWidth = 700;
+const containerHeight = bodyHeight + headerHeight + 1;
+
 /**
  * This is not a visually functional table (data sorting, etc. ) but it sets data like one
  */
 const TableTestingComponent: React.FC<{ ComponentTestID: string }> = (props) => {
-    const [data, setData] = React.useState<Book[]>([]);
-    const [sortKey, setSortKey] = React.useState<keyof Book>('Title');
+    const data = tableData.slice();
+    const [sortKey, setSortKey] = React.useState<keyof IBook>('Title');
     const [asc, setAsc] = React.useState<boolean>(true);
-
-    React.useEffect(() => {
-        setData(tableData.slice());
-    }, []);
-
-    const headerHeight = 45;
-    const bodyHeight = 300;
-    const containerHeight = bodyHeight + headerHeight + 1;
-    const containerWidth = 700;
 
     return (
         <div id={props.ComponentTestID} className="border" style={{ maxHeight: `${containerHeight}px`, maxWidth: `${containerWidth}px` }}>
-            <Table<Book>
+            <Table<IBook>
                 TableClass={`table table-hover`}
                 RowStyle={{ fontSize: 'smaller', fontWeight: 'bolder' }}
                 TheadStyle={{ fontSize: 'smaller', fontWeight: 'lighter', maxHeight: `${headerHeight}px` }}
@@ -63,14 +60,14 @@ const TableTestingComponent: React.FC<{ ComponentTestID: string }> = (props) => 
                     if (clickedCol.colKey === sortKey)
                         setAsc(!asc);
                     else
-                        setSortKey(clickedCol.colKey as keyof Book);
+                        setSortKey(clickedCol.colKey as keyof IBook);
                 }}
                 OnClick={(rowClicked) => {
                     alert(`${props.ComponentTestID}: ${rowClicked.row.Title}`);
                 }}
                 KeySelector={(d) => `${d.Volume}-${d.Title}`}
             >
-                <Column<Book>
+                <Column<IBook>
                     Key="Title"
                     AllowSort={true}
                     Field="Title"
@@ -79,7 +76,7 @@ const TableTestingComponent: React.FC<{ ComponentTestID: string }> = (props) => 
                 >
                     Title
                 </Column>
-                <Column<Book>
+                <Column<IBook>
                     Key="Author"
                     AllowSort={false}
                     Field="Author"
@@ -88,7 +85,7 @@ const TableTestingComponent: React.FC<{ ComponentTestID: string }> = (props) => 
                 >
                     Author
                 </Column>
-                <Column<Book>
+                <Column<IBook>
                     Key="Volume"
                     AllowSort={true}
                     Field="Volume"
@@ -97,7 +94,7 @@ const TableTestingComponent: React.FC<{ ComponentTestID: string }> = (props) => 
                 >
                     Vol.
                 </Column>
-                <Column<Book>
+                <Column<IBook>
                     Key="Category"
                     AllowSort={true}
                     Field="Category"
