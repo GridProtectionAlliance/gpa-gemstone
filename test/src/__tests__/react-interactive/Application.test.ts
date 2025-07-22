@@ -109,21 +109,21 @@ describe('Application Component', () => {
         let navSections = await driver.findElements(By.css('ul.navbar-nav.px-3'));
         const initNumOfSections = navSections.length;
 
-        // Locate the icon inside the span
-        const header = await navbarHeaders[1].findElement(By.css('span'));
+        // Locate the first icon inside the span
+        const header = await navbarHeaders[0].findElement(By.css('span'));
         const iconUp = await header.findElement(By.css('svg.feather'));
         expect(iconUp).toBeDefined();
 
         // Second header should not have a chevron (non-collapsible)
-        const secondHeaderIcons = await navbarHeaders[0].findElements(By.css('svg'));
+        const secondHeaderIcons = await navbarHeaders[1].findElements(By.css('svg'));
         expect(secondHeaderIcons.length).toBe(0);
 
         // Click first header to fold
-        await navbarHeaders[1].click();
+        await navbarHeaders[0].click();
 
         // Wait for icon flip
         await driver.wait(until.elementLocated(By.css('h6.sidebar-heading span svg')), 3000);
-        const chevronDown = await navbarHeaders[1].findElement(By.css('svg'));
+        const chevronDown = await navbarHeaders[0].findElement(By.css('svg'));
         expect(chevronDown).toBeDefined();
 
         // Check nav section count changed
@@ -131,8 +131,8 @@ describe('Application Component', () => {
         expect(navSections.length).toBeLessThan(initNumOfSections);
 
         // Click second header (should remain unchanged)
-        await navbarHeaders[0].click();
-        const secondHeaderIconsAfter = await navbarHeaders[0].findElements(By.css('svg'));
+        await navbarHeaders[1].click();
+        const secondHeaderIconsAfter = await navbarHeaders[1].findElements(By.css('svg'));
         expect(secondHeaderIconsAfter.length).toBe(0);
     });
 })

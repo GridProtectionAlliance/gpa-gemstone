@@ -82,7 +82,6 @@ describe('TimeFilter Component', () => {
         const tagName = await firstChild.getTagName();
 
         expect(tagName).toBe("fieldset");
-
     });
 
     it('renders startWindowFilter when dateTimeSetting="startEnd"', async () => {
