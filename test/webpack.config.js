@@ -3,7 +3,7 @@ const path = require('path');
 const CopyPlugin = require('copy-webpack-plugin');
 
 module.exports = {
-    entry: './src/App.tsx',
+    entry: './src/Index.tsx',
     mode: 'development',
     cache: true,
     resolve: {
@@ -18,6 +18,7 @@ module.exports = {
     devServer: {
         static: './dist',
         port: 8085,
+        historyApiFallback: true,
     },
     module: {
         rules: [

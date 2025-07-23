@@ -24,11 +24,14 @@
 import { BtnDropdown } from "@gpa-gemstone/react-interactive";
 import React from "react";
 
-const BtnDropdownTestComponent: React.FC<{ ComponentTestID: string }> = (props) => {
+export const BTN_DROPDOWN_ID = 'btn-dropdown-test';
+
+const BtnDropdownTestComponent = () => {
     const [message, setMessage] = React.useState<string>(``);
+
     const buttonOptions = [{
         Label: 'Option 1',
-        Callback: () => setMessage(`${props.ComponentTestID} option 1`),
+        Callback: () => setMessage(`${BTN_DROPDOWN_ID} option 1`),
         Group: 1,
         Disabled: false,
         ToolTipContent: <>Test content for option 1</>,
@@ -38,7 +41,7 @@ const BtnDropdownTestComponent: React.FC<{ ComponentTestID: string }> = (props) 
     },
     {
         Label: 'Option 2',
-        Callback: () => setMessage(`${props.ComponentTestID} option 2`),
+        Callback: () => setMessage(`${BTN_DROPDOWN_ID} option 2`),
         Group: 1,
         Disabled: false,
         ToolTipContent: <>Test content for option 2</>,
@@ -48,7 +51,7 @@ const BtnDropdownTestComponent: React.FC<{ ComponentTestID: string }> = (props) 
     },
     {
         Label: 'Option 3',
-        Callback: () => setMessage(`${props.ComponentTestID} option 3`),
+        Callback: () => setMessage(`${BTN_DROPDOWN_ID} option 3`),
         Group: 1,
         Disabled: false,
         ToolTipContent: <>Test content for option 3</>,
@@ -58,7 +61,7 @@ const BtnDropdownTestComponent: React.FC<{ ComponentTestID: string }> = (props) 
     },
     {
         Label: 'Option 4',
-        Callback: () => setMessage(`${props.ComponentTestID} option 4`),
+        Callback: () => setMessage(`${BTN_DROPDOWN_ID} option 4`),
         Group: 2,
         Disabled: true,
         ToolTipContent: <>Test content for option 4</>,
@@ -68,7 +71,7 @@ const BtnDropdownTestComponent: React.FC<{ ComponentTestID: string }> = (props) 
     },
     {
         Label: 'Option 5',
-        Callback: () => setMessage(`${props.ComponentTestID} option 5`),
+        Callback: () => setMessage(`${BTN_DROPDOWN_ID} option 5`),
         Group: 2,
         Disabled: false,
         ToolTipContent: <>Test content for option 5</>,
@@ -78,12 +81,12 @@ const BtnDropdownTestComponent: React.FC<{ ComponentTestID: string }> = (props) 
     }]
 
     return (
-        <div className="row g-2" id={props.ComponentTestID}>
-            <div className="col" id={`${props.ComponentTestID}-1`}>
-                <div id={`${props.ComponentTestID}-message`}>{message}</div>
+        <div className="row" id={BTN_DROPDOWN_ID}>
+            <div className="col" id={`${BTN_DROPDOWN_ID}-1`}>
+                <div id={`${BTN_DROPDOWN_ID}-message`}>{message}</div>
                 <BtnDropdown
-                    Label={`${props.ComponentTestID}Button-1`}
-                    Callback={() => setMessage(`${props.ComponentTestID}Button-1`)}
+                    Label={`${BTN_DROPDOWN_ID}Button-1`}
+                    Callback={() => setMessage(`${BTN_DROPDOWN_ID}Button-1`)}
                     Disabled={false}
                     Options={buttonOptions}
                     Size={'sm'}
@@ -93,10 +96,10 @@ const BtnDropdownTestComponent: React.FC<{ ComponentTestID: string }> = (props) 
                     ShowToolTip={true}
                 />
             </div>
-            <div className="col" id={`${props.ComponentTestID}-2`}>
+            <div className="col" id={`${BTN_DROPDOWN_ID}-2`}>
                 <BtnDropdown
-                    Label={`${props.ComponentTestID}Button-2`}
-                    Callback={() => setMessage(`${props.ComponentTestID}Button-2`)}
+                    Label={`${BTN_DROPDOWN_ID}Button-2`}
+                    Callback={() => setMessage(`${BTN_DROPDOWN_ID}Button-2`)}
                     Disabled={false}
                     Options={buttonOptions}
                     Size={'lg'}
@@ -106,10 +109,10 @@ const BtnDropdownTestComponent: React.FC<{ ComponentTestID: string }> = (props) 
                     ShowToolTip={true}
                 />
             </div>
-            <div className="col" id={`${props.ComponentTestID}-3`}>
+            <div className="col" id={`${BTN_DROPDOWN_ID}-3`}>
                 <BtnDropdown
-                    Label={`${props.ComponentTestID}Button-3`}
-                    Callback={() => setMessage(`${props.ComponentTestID}Button-3`)}
+                    Label={`${BTN_DROPDOWN_ID}Button-3`}
+                    Callback={() => setMessage(`${BTN_DROPDOWN_ID}Button-3`)}
                     Disabled={false}
                     Options={buttonOptions.map((o) => o)}
                     Size={'xlg'}
@@ -119,10 +122,10 @@ const BtnDropdownTestComponent: React.FC<{ ComponentTestID: string }> = (props) 
                     ShowToolTip={true}
                 />
             </div>
-            <div className="col" id={`${props.ComponentTestID}-4`}>
+            <div className="col" id={`${BTN_DROPDOWN_ID}-4`}>
                 <BtnDropdown
-                    Label={`${props.ComponentTestID}Button-4`}
-                    Callback={() => setMessage(`${props.ComponentTestID}Button-4`)}
+                    Label={`${BTN_DROPDOWN_ID}Button-4`}
+                    Callback={() => setMessage(`${BTN_DROPDOWN_ID}Button-4`)}
                     Options={[]}
                     TooltipLocation={'top'}
                     ShowToolTip={true}

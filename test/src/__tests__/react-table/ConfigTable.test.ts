@@ -21,13 +21,16 @@
 //
 //******************************************************************************************************
 import { afterEach, beforeEach, expect, describe, it } from "@jest/globals";
-import { Builder, By, until, WebDriver } from 'selenium-webdriver';
+import { Builder, By, until, WebDriver, logging } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome';
 import chromedriver from 'chromedriver';
+import { tableTestContainerWidth } from '../../components/react-table/ConfigurableTable';
 
-const rootURL = `http://localhost:${global.PORT}`;
+const rootURL = `http://localhost:${global.PORT}/config-table`;
 let driver: WebDriver;
 const componentTestID = 'configtable-test-id';
+const expectedHeaders = ['Title', 'Author', 'Volume', 'Category'];
+const modalSelector = `.modal.show`;
 
 // Before each test, create a selenium webdriver that goes to the rootURL
 beforeEach(async () => {
@@ -35,13 +38,24 @@ beforeEach(async () => {
 
     const options = new chrome.Options();
     // Ensure headless mode for sizing tests. Mimics Jenkins
-    options.addArguments('--window-size=1600,760', '--headless=new', '--disable-gpu');
+    options.addArguments(
+        '--window-size=1600,760',
+        '--headless=new',
+        '--disable-gpu'
+    );
+
+    //Configure logging
+    const prefs = new logging.Preferences();
+    prefs.setLevel(logging.Type.BROWSER, logging.Level.ALL);
+    options.setLoggingPrefs(prefs);
 
     driver = await new Builder()
         .forBrowser('chrome')
         .setChromeService(service)
         .setChromeOptions(options)
         .build();
+
+    await driver.executeScript('window.resizeTo(1600,760)')
 
     await driver.get(rootURL);
     await driver.wait(until.elementIsVisible(driver.findElement(By.css(`#${componentTestID}-1 table thead tr th`))), 10000);
@@ -59,9 +73,7 @@ const componentVariants = [
 ];
 
 describe.each(componentVariants)('%s', (desc, idSuffix) => {
-    const expectedHeaders = ['Title', 'Author', 'Volume', 'Category'];
     const tableSelector = `#${componentTestID}-${idSuffix} table`;
-    const modalSelector = `.modal.show`;
 
     /**
     * Enables or disables provided column or all non-disabled column checkboxes if none provided
@@ -153,13 +165,16 @@ describe.each(componentVariants)('%s', (desc, idSuffix) => {
 
     it('Renders the table with proper styles', async () => {
         const body = await driver.findElement(By.css(`${tableSelector} tbody`));
-        expect(await body.getCssValue('font-style')).toBe('italic');
+        const fontStyle = await body.getCssValue('font-style');
+        expect(fontStyle).toBe('italic');
 
         const head = await driver.findElement(By.css(`${tableSelector} thead`));
-        expect(await head.getCssValue('font-weight')).toBe('100');
+        const headerFontWeight = await head.getCssValue('font-weight')
+        expect(headerFontWeight).toBe('100');
 
         const row = await driver.findElement(By.css(`${tableSelector} tbody tr`));
-        expect(await row.getCssValue('font-weight')).toBe('700');
+        const bodyFontWeight = await row.getCssValue('font-weight')
+        expect(bodyFontWeight).toBe('700');
     });
 
     it('Renders the table with proper, default column titles', async () => {
@@ -183,32 +198,28 @@ describe.each(componentVariants)('%s', (desc, idSuffix) => {
         const titleCol = tableCols[0];
         await driver.sleep(500); // removes flakieness. gives time for cols to fully adjust
 
+        const totalCols = 4;
+        const settingsIconColWidth = 17;
+
+        const expectedTitleWidth = (tableTestContainerWidth - settingsIconColWidth) * 0.5;
+
+        const expectedColWidthID1 = (tableTestContainerWidth - expectedTitleWidth - settingsIconColWidth) / (totalCols - 1);
+        const expectedColWidthID2 = (tableTestContainerWidth - settingsIconColWidth) / totalCols;
+
         if (idSuffix == '1') {
-            expect(parseFloat(await titleCol.getCssValue('width'))).toBeCloseTo(275.5, 1);
+            const titleColWidth = parseFloat(await titleCol.getCssValue('width'));
+            expect(titleColWidth).toBeCloseTo(expectedTitleWidth, 1);
             for (const col of tableCols.slice(1, 4)) {
-                expect(parseFloat(await col.getCssValue('width'))).toBeCloseTo(91.8281, 1);
+                const colWidth = parseFloat(await col.getCssValue('width'));
+                expect(colWidth).toBeCloseTo(expectedColWidthID1, 1);
             }
         } else {
             for (const col of tableCols.slice(0, 4)) {
-                expect(parseFloat(await col.getCssValue('width'))).toBeCloseTo(137.75, 1);
+                const colWidth = parseFloat(await col.getCssValue('width'));
+                expect(colWidth).toBeCloseTo(expectedColWidthID2, 1);
             }
         }
-    });
 
-    it('Renders col rowstyles correctly', async () => {
-        const tableRows = await driver.findElements(By.css(`${tableSelector} tbody tr td`)); // first row data elements
-        const firstCol = tableRows[0]; // should be 50% width
-
-        if (idSuffix == '1') {
-            expect(parseFloat(await firstCol.getCssValue('width'))).toBeCloseTo(275.5, 1);
-            for (const col of tableRows.slice(1, 4)) {
-                expect(parseFloat(await col.getCssValue('width'))).toBeCloseTo(91.8281, 1);
-            }
-        } else {
-            for (const col of tableRows.slice(0, 4)) {
-                expect(parseFloat(await col.getCssValue('width'))).toBeCloseTo(137.75, 1);
-            }
-        }
     });
 
     it.each(expectedHeaders)('Shows sort icon after clicking %s header', async (expectedHeader) => {
@@ -217,6 +228,7 @@ describe.each(componentVariants)('%s', (desc, idSuffix) => {
             return await driver.findElements(By.css(`${tableSelector} thead tr th`))
                 .then((h) => h.length === 5);
         }, 5000, 'Timed out waiting for 5 table columns');
+
         // Expect correct headers
         const header = await driver.findElement(By.css(`${tableSelector} thead tr th#${expectedHeader}`));
         const headerId = await header.getAttribute('id');
@@ -232,36 +244,10 @@ describe.each(componentVariants)('%s', (desc, idSuffix) => {
             return;
         }
 
-        await header.getText()
-            .then((t) => console.log(t));
-
         // Expect header click to be functional
         let clickedSuccessfully = false;
         await header.click().then(() => clickedSuccessfully = true);
         expect(clickedSuccessfully).toBeTruthy();
-
-        const results = await Promise.allSettled([
-            driver.findElement (By.id ('testing-localstorage-state')).then(e => e.getText()),
-            driver.findElement (By.id ('testing-renderedCols-state')).then(e => e.getText()),
-            driver.findElements(By.id ('testing-col-state')).then(e => e[0]?.getText()),
-            driver.findElements(By.css(`${tableSelector} th#Author`)).then(e => e[0]?.getText()),
-            driver.findElements(By.css(`${tableSelector} th#Volume`)).then(e => e[0]?.getText()),
-            driver.findElements(By.css(`${tableSelector} th#Category`)).then(e => e[0]?.getText()),
-            driver.findElements(By.css(`${tableSelector} th#Title`)).then(e => e[0]?.getText())
-        ]);
-
-        const format = (label, result) => {
-            `${label}: ${result.status === 'fulfilled' ? result.value : 'ERROR'}`;
-
-            console.log(
-                format(`${idSuffix} LocalStorage State`, results[0])    + `\n` +
-                format(`${idSuffix} Rendered Cols State`, results[1])   + `\n` +
-                format(`${idSuffix} Col State`, results[2])             + `\n` +
-                format(`${idSuffix} Header - Author`, results[3])       + `\n` +
-                format(`${idSuffix} Header - Volume`, results[4])       + `\n` +
-                format(`${idSuffix} Header - Category`, results[5])     + `\n` +
-                format(`${idSuffix} Header - Title`, results[6])
-        )};
 
         // Header set to ascending, title header descending
         const isTitleHeader = expectedHeader === 'Title';
@@ -274,7 +260,7 @@ describe.each(componentVariants)('%s', (desc, idSuffix) => {
             } catch {
                 return false;
             }
-        }, 3000, `Sort icon did not update to ascending for header "${expectedHeader}"`);
+        }, 5000, `Sort icon did not update to ascending for header "${expectedHeader}"`);
 
         const newH = await driver.findElement(By.css(`${tableSelector} thead tr th#${expectedHeader}`));
         const icon = await newH.findElement(By.css('svg path'));

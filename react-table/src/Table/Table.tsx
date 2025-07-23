@@ -88,7 +88,6 @@ const IsColumnAdjustable = (props: unknown) => {
     return false;
 }
 
-const scrollBarWidth = GetScrollbarWidth();
 const lastColumnWidth = 17;
 
 export function Table<T>(props: React.PropsWithChildren<ReactTableProps.ITable<T>>) {
@@ -261,7 +260,7 @@ export function Table<T>(props: React.PropsWithChildren<ReactTableProps.ITable<T
         setScrolled(newScroll);
 
         // Pick whichever is larger so we dont double subtract
-        const scrollbar = newScroll ? scrollBarWidth : 0;
+        const scrollbar = newScroll ? GetScrollbarWidth() : 0;
         const last = props.LastColumn !== undefined ? lastColumnWidth : 0;
         const spacer = Math.max(scrollbar, last);
  

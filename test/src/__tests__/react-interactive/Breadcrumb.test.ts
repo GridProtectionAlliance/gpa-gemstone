@@ -24,11 +24,12 @@ import { afterAll, beforeAll, describe, expect, it } from "@jest/globals";
 import { Builder, By, until, WebDriver } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome';
 import chromedriver from "chromedriver";
+import { BREADCRUMB_TEST_ID } from "../../components/react-interactive/Breadcrumb";
+import { InteractiveLabel } from '../../components/App';
 
 
-const rootURL = `http://localhost:${global.PORT}`;
+const rootURL = `http://localhost:${global.PORT}/interactive`;
 let driver: WebDriver;
-const componentTestID = 'breadcrumb-test-id';
 
 // Before each test, create a selenium webdriver that goes to the rootURL
 beforeAll(async () => {
@@ -46,7 +47,7 @@ beforeAll(async () => {
 
     await driver.get(rootURL); // Navigate to the page
 
-    await driver.wait(until.titleIs('GPA Test'), 10000); // Wait until the page title is loaded
+    await driver.wait(until.titleIs(InteractiveLabel), 10000); // Wait until the page title is loaded
 });
 
 // close the driver after each test
@@ -55,8 +56,8 @@ afterAll(async () => {
 });
 
 describe('Breadcrumb Component', () => {
-    const breadcrumbSelector = By.css(`#${componentTestID} .breadcrumb`);
-    const stepItemsSelector = By.css(`#${componentTestID} .breadcrumb .breadcrumb-item`);
+    const breadcrumbSelector = By.css(`#${BREADCRUMB_TEST_ID} .breadcrumb`);
+    const stepItemsSelector = By.css(`#${BREADCRUMB_TEST_ID} .breadcrumb .breadcrumb-item`);
 
     it('Renders Breadcrumb as visible and props applied', async () => {
         // verify is rendered
@@ -71,7 +72,7 @@ describe('Breadcrumb Component', () => {
         expect(stepTexts).toEqual(['Step One', 'Step Two', 'Step Three', 'Step Four']);
 
         // verify the selected one is active
-        const activeStep = await driver.findElement(By.css(`#${componentTestID} .active`));
+        const activeStep = await driver.findElement(By.css(`#${BREADCRUMB_TEST_ID} .active`));
         const activeText = await activeStep.getText();
         expect(activeText).toBe('Step One');
     });
@@ -81,7 +82,7 @@ describe('Breadcrumb Component', () => {
         const stepItems = await driver.findElements(stepItemsSelector);
         const stepTwo = stepItems[1];
         await stepTwo.click();
-        let activeStep = await driver.findElement(By.css(`#${componentTestID} .active`)).getText();
+        let activeStep = await driver.findElement(By.css(`#${BREADCRUMB_TEST_ID} .active`)).getText();
         // Should remain unchanged
         expect(activeStep).toBe('Step One');
 
@@ -92,7 +93,7 @@ describe('Breadcrumb Component', () => {
         // Wait for breadcrumb to update
         await driver.sleep(500);
 
-        activeStep = await driver.findElement(By.css(`#${componentTestID} .active`)).getText();
+        activeStep = await driver.findElement(By.css(`#${BREADCRUMB_TEST_ID} .active`)).getText();
         expect(activeStep).toBe('Step Four');
     });
 });
