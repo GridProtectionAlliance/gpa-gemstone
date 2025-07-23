@@ -6,7 +6,7 @@
   "scripts": {
     "test": "jest --runInBand --detectOpenHandles --verbose",
     "build": "npm prune && webpack",
-    "serve": "webpack serve",
+    "serve": "npm run build && webpack serve",
     "builddebug": "npm prune && webpack && npm run serve",
     "tester": "start-server-and-test serve http-get://localhost:8085 test"
   },
