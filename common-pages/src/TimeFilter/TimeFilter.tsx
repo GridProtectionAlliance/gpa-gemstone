@@ -123,7 +123,6 @@ const TimeFilter = (props: IProps) => {
                     TimeWindowFilter={filter}
                     SetTimeWindowFilter={setFilter}
                     Timezone={props.timeZone}
-
                     ActiveQP={activeQuickSelect}
                     SetActiveQP={setActiveQuickSelect}
                     SetFilter={props.setFilter}

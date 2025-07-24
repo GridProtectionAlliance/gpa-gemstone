@@ -75,13 +75,16 @@ interface IProps {
     Accuracy?: Gemstone.TSX.Types.Accuracy
 }
 
-export default function DateTimePopup(props: IProps) {
+
+function DateTimePopup(props: IProps, ref: React.ForwardedRef<HTMLDivElement | null>) {
     const divRef = React.useRef<HTMLDivElement | null>(null);
 
     const [showTime, setShowTime] = React.useState<boolean>(props.Type !== 'date');
     const [showDate, setShowDate] = React.useState<boolean>(props.Type !== 'time');
 
-    const { width } = useGetContainerPosition(divRef);
+    const refToUse = ref ?? divRef;
+
+    const { width } = useGetContainerPosition(refToUse as any);
 
     const left = Math.max(props.Center - 0.5 * width, 0)
 
@@ -95,7 +98,7 @@ export default function DateTimePopup(props: IProps) {
 
     return (
         <Portal>
-            <WrapperDiv Top={props.Top} Left={left} Indicator={50} ref={divRef} className='gpa-gemstone-datetime'>
+            <WrapperDiv Top={props.Top} Left={left} Indicator={50} ref={refToUse} className='gpa-gemstone-datetime'>
                 {showDate ? <Calender DateTime={props.DateTime} Setter={props.Setter} /> : null}
                 {showTime ? <Clock DateTime={props.DateTime} Setter={props.Setter} Accuracy={props.Accuracy} /> : null}
             </WrapperDiv>
@@ -103,5 +106,4 @@ export default function DateTimePopup(props: IProps) {
     );
 }
 
-
-
+export default React.forwardRef<HTMLDivElement | null, IProps>(DateTimePopup);

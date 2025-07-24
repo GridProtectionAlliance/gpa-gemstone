@@ -46,6 +46,9 @@ export interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
 */
 export default function DateTimePickerBase<T>(props: IProps<T>) {
     const inputRef = React.useRef<HTMLInputElement | null>(null);
+    const popupRef = React.useRef<HTMLDivElement | null>(null);
+    const divRef = React.useRef<any | null>(null);
+
     const { width } = useGetContainerPosition(inputRef as any);
     const [isTextOverflowing, setIsTextOverflowing] = React.useState<boolean>(false);
     const [isInputHovered, setIsInputHovered] = React.useState<boolean>(false);
@@ -58,9 +61,6 @@ export default function DateTimePickerBase<T>(props: IProps<T>) {
 
     // Parse the date from the record.
     const parse = (r: T) => moment(props.Record[props.Field] as any, recordFormat);
-
-    // State and ref declarations.
-    const divRef = React.useRef<any | null>(null);
 
     const [helpGuid] = React.useState<string>(CreateGuid());
     const [showHelp, setShowHelp] = React.useState<boolean>(false);
@@ -140,7 +140,9 @@ export default function DateTimePickerBase<T>(props: IProps<T>) {
 
     // Handle clicks outside the component.
     function onWindowClick(evt: any) {
-        if (divRef.current == null || divRef.current?.contains(evt.target as Node)) return;
+        // if the click is inside the input-container or inside the popup, bail
+        if (divRef.current?.contains(evt.target as Node) || popupRef.current?.contains(evt.target as Node))
+            return;
 
         setShowOverlay(false);
 
@@ -272,6 +274,7 @@ export default function DateTimePickerBase<T>(props: IProps<T>) {
             </ToolTip>
 
             <DateTimePopup
+                ref={popupRef}
                 Setter={(d) => {
                     setPickerAndRecord(d);
                     if (props.Type === 'date') setShowOverlay(false);
