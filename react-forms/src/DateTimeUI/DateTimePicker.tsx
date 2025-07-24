@@ -47,7 +47,7 @@ export interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
 export default function DateTimePickerBase<T>(props: IProps<T>) {
     const inputRef = React.useRef<HTMLInputElement | null>(null);
     const popupRef = React.useRef<HTMLDivElement | null>(null);
-    const divRef = React.useRef<any | null>(null);
+    const divRef = React.useRef<HTMLDivElement | null>(null);
 
     const { width } = useGetContainerPosition(inputRef as any);
     const [isTextOverflowing, setIsTextOverflowing] = React.useState<boolean>(false);
