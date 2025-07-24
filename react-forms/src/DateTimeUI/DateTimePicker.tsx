@@ -141,7 +141,7 @@ export default function DateTimePickerBase<T>(props: IProps<T>) {
     // Handle clicks outside the component.
     function onWindowClick(evt: any) {
         // if the click is inside the input-container or inside the popup, bail
-        if (divRef.current?.contains(evt.target as Node) || popupRef.current?.contains(evt.target as Node))
+        if (divRef.current == null || popupRef.current == null || divRef.current?.contains(evt.target as Node) || popupRef.current?.contains(evt.target as Node))
             return;
 
         setShowOverlay(false);
