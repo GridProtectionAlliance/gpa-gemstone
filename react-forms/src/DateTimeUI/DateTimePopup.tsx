@@ -29,7 +29,7 @@ import Calender from './Calender';
 import Clock from './Clock';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 import { useGetContainerPosition } from '@gpa-gemstone/helper-functions';
-import { TimeUnit } from './DateTimePicker/DateTimePickerBase';
+import { TimeUnit } from './DateTimePicker';
 
 interface IWrapperProps {
     Top: number,

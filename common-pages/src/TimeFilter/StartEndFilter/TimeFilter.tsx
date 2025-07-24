@@ -63,8 +63,6 @@ const TimeFilter = (props: IFilterProps) => {
                         Valid={() => true}
                         Format={props.Format}
                         Accuracy={props.Accuracy}
-                        ShowOverlay={props.ShowStartOverlay}
-                        SetShowOverlay={props.SetShowStartOverlay}
                     />
                 </div>
                 <div className={startEndCol}>
@@ -78,8 +76,6 @@ const TimeFilter = (props: IFilterProps) => {
                         Valid={() => true}
                         Format={props.Format}
                         Accuracy={props.Accuracy}
-                        ShowOverlay={props.ShowEndOverlay}
-                        SetShowOverlay={props.SetShowEndOverlay}
                     />
                 </div>
                 {props.ShowQuickSelects ?
@@ -111,8 +107,6 @@ const TimeFilter = (props: IFilterProps) => {
                             Valid={() => true}
                             Format={props.Format}
                             Accuracy={props.Accuracy}
-                            ShowOverlay={props.ShowStartOverlay}
-                            SetShowOverlay={props.SetShowStartOverlay}
                         />
                     </div>
                     <div className={startEndCol}>
@@ -126,8 +120,6 @@ const TimeFilter = (props: IFilterProps) => {
                             Valid={() => true}
                             Format={props.Format}
                             Accuracy={props.Accuracy}
-                            ShowOverlay={props.ShowEndOverlay}
-                            SetShowOverlay={props.SetShowEndOverlay}
                         />
                     </div>
                 </div>

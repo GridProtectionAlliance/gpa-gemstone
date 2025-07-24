@@ -23,15 +23,15 @@
 
 import * as React from 'react';
 import * as moment from 'moment';
-import DateTimePopup from '../DateTimePopup';
+import DateTimePopup from './DateTimePopup';
 import { CreateGuid, GetNodeSize, useGetContainerPosition } from '@gpa-gemstone/helper-functions';
-import ToolTip from '../../ToolTip';
+import ToolTip from '../ToolTip';
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 
 export type TimeUnit = ('datetime-local' | 'date' | 'time');
 
-export interface IDateTimePickerProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
+export interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
     Valid: (field: keyof T) => boolean;
     Feedback?: string;
     Format?: string;
@@ -39,11 +39,6 @@ export interface IDateTimePickerProps<T> extends Gemstone.TSX.Interfaces.IBaseFo
     AllowEmpty?: boolean,
     Accuracy?: Gemstone.TSX.Types.Accuracy    //Default to second
     MinDate?: moment.Moment // Default to 01/01/1753 (SQL Database limit)
-}
-
-interface IProps<T> extends IDateTimePickerProps<T> {
-    ShowOverlay: boolean,
-    SetShowOverlay: (show: boolean) => void
 }
 
 /**
@@ -55,6 +50,7 @@ export default function DateTimePickerBase<T>(props: IProps<T>) {
     const [isTextOverflowing, setIsTextOverflowing] = React.useState<boolean>(false);
     const [isInputHovered, setIsInputHovered] = React.useState<boolean>(false);
     const [overflowGUID] = React.useState<string>(CreateGuid());
+    const [showOverlay, setShowOverlay] = React.useState<boolean>(false);
 
     // Formats for displaying dates in the input box and storing in the record.
     const boxFormat = getBoxFormat(props.Type, props.Accuracy)
@@ -125,11 +121,11 @@ export default function DateTimePickerBase<T>(props: IProps<T>) {
 
     //Effect to handle click events on the window
     React.useEffect(() => {
-        if (props.ShowOverlay) {
+        if (showOverlay) {
             window.addEventListener('click', onWindowClick);
             return () => { window.removeEventListener('click', onWindowClick); }
         }
-    }, [props.Record, props.Field, boxFormat, props.ShowOverlay]);
+    }, [props.Record, props.Field, boxFormat, showOverlay]);
 
     function setPickerAndRecord(arg: moment.Moment | undefined) {
         setPickerRecord(arg);
@@ -144,17 +140,18 @@ export default function DateTimePickerBase<T>(props: IProps<T>) {
 
     // Handle clicks outside the component.
     function onWindowClick(evt: any) {
-        if (evt.target.closest(`.gpa-gemstone-datetime`) == null) {
-            props.SetShowOverlay(false);
-            if (props.Record[props.Field] as any !== null) {
-                setPickerAndRecord(parse(props.Record));
-                setBoxRecord(parse(props.Record).format(boxFormat));
-            }
-            else {
-                setPickerAndRecord(undefined);
-                setBoxRecord('');
-            }
+        if (divRef.current == null || divRef.current?.contains(evt.target as Node)) return;
+
+        setShowOverlay(false);
+
+        if (props.Record[props.Field] !== null) {
+            setPickerAndRecord(parse(props.Record));
+            setBoxRecord(parse(props.Record).format(boxFormat));
+        } else {
+            setPickerAndRecord(undefined);
+            setBoxRecord('');
         }
+
     }
 
     function getFeedbackMessage() {
@@ -257,10 +254,10 @@ export default function DateTimePickerBase<T>(props: IProps<T>) {
                 onChange={(evt) => {
                     valueChange(evt.target.value);
                 }}
-                onFocus={() => { props.SetShowOverlay(true) }}
+                onFocus={() => setShowOverlay(true)}
                 value={boxRecord}
                 disabled={props.Disabled === undefined ? false : props.Disabled}
-                onClick={(e) => { e.preventDefault() }}
+                onClick={(e) => e.preventDefault()}
                 step={step}
                 ref={inputRef}
                 data-tooltip={overflowGUID}
@@ -277,9 +274,9 @@ export default function DateTimePickerBase<T>(props: IProps<T>) {
             <DateTimePopup
                 Setter={(d) => {
                     setPickerAndRecord(d);
-                    if (props.Type === 'date') props.SetShowOverlay(false);
+                    if (props.Type === 'date') setShowOverlay(false);
                 }}
-                Show={props.ShowOverlay}
+                Show={showOverlay}
                 DateTime={pickerRecord}
                 Top={top}
                 Center={left}

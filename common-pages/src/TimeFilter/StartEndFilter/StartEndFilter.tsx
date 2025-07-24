@@ -43,11 +43,6 @@ export interface IFilterProps {
     Timezone: string
     Accuracy?: Gemstone.TSX.Types.Accuracy,
 
-    ShowStartOverlay: boolean,
-    SetShowStartOverlay: (show: boolean) => void,
-    ShowEndOverlay: boolean,
-    SetShowEndOverlay: (show: boolean) => void,
-
     ActiveQP: number
     SetActiveQP: React.Dispatch<React.SetStateAction<number>>,
 

@@ -37,8 +37,6 @@ export interface IProps extends IFilterProps {
 const WindowFilter = (props: IProps) => {
     const DatePickerField = props.Window;
     const DatePickerLabel = props.Window.charAt(0).toUpperCase() + props.Window.slice(1);
-    const showOverlay = props.Window === 'start' ? props.ShowStartOverlay : props.ShowEndOverlay;
-    const setShowOverlay = props.Window === 'start' ? props.SetShowStartOverlay : props.SetShowEndOverlay;
     const filterType = props.Window === 'start' ? 'startWindow' : 'endWindow'
 
     const setter = React.useCallback((record: ITimeWindow) => {
@@ -68,8 +66,6 @@ const WindowFilter = (props: IProps) => {
                         Valid={() => true}
                         Format={props.Format}
                         Accuracy={props.Accuracy}
-                        ShowOverlay={showOverlay}
-                        SetShowOverlay={setShowOverlay}
                     />
                     <WindowForm
                         Filter={props.TimeWindowFilter}
@@ -97,8 +93,6 @@ const WindowFilter = (props: IProps) => {
                         Valid={() => true}
                         Format={props.Format}
                         Accuracy={props.Accuracy}
-                        ShowOverlay={showOverlay}
-                        SetShowOverlay={setShowOverlay}
                     />
                     <WindowForm
                         Filter={props.TimeWindowFilter}
@@ -137,8 +131,6 @@ const WindowFilter = (props: IProps) => {
                             Valid={() => true}
                             Format={props.Format}
                             Accuracy={props.Accuracy}
-                            ShowOverlay={showOverlay}
-                            SetShowOverlay={setShowOverlay}
                         />
                     </div>
                     <div className='col-6'>
@@ -183,8 +175,6 @@ const WindowFilter = (props: IProps) => {
                             Valid={() => true}
                             Format={props.Format}
                             Accuracy={props.Accuracy}
-                            ShowOverlay={showOverlay}
-                            SetShowOverlay={setShowOverlay}
                         />
                     </div>
                 </div>

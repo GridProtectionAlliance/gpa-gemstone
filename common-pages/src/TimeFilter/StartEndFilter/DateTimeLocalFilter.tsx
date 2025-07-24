@@ -29,9 +29,7 @@ import { IFilterProps } from './StartEndFilter';
 
 const DateTimeLocalFilter = (props: IFilterProps) => {
     const FirstFallbackBreakpointQS = 1768;
-    const SecondFallbackBreakpointQS = 612;
-
-    const FirstFallbackBreakpointNoQS = 611;
+    const SecondFallbackBreakpointQS = 612, FirstFallbacKBreakpointNoQS = 612;
 
     const [showQuickPickModal, setShowQuickPickModal] = React.useState<boolean>(false);
 
@@ -51,7 +49,7 @@ const DateTimeLocalFilter = (props: IFilterProps) => {
                 return 'col-12'
         }
 
-        if (props.ContainerWidth > FirstFallbackBreakpointNoQS)
+        if (props.ContainerWidth > FirstFallbacKBreakpointNoQS)
             return 'col-6'
         else
             return 'col-12';
@@ -78,8 +76,6 @@ const DateTimeLocalFilter = (props: IFilterProps) => {
                         Valid={() => true}
                         Format={props.Format}
                         Accuracy={props.Accuracy}
-                        ShowOverlay={props.ShowStartOverlay}
-                        SetShowOverlay={props.SetShowStartOverlay}
                     />
                 </div>
                 <div className={startEndCol}>
@@ -93,8 +89,6 @@ const DateTimeLocalFilter = (props: IFilterProps) => {
                         Valid={() => true}
                         Format={props.Format}
                         Accuracy={props.Accuracy}
-                        ShowOverlay={props.ShowEndOverlay}
-                        SetShowOverlay={props.SetShowEndOverlay}
                     />
                 </div>
                 {props.ShowQuickSelects ?
@@ -126,8 +120,6 @@ const DateTimeLocalFilter = (props: IFilterProps) => {
                         Valid={() => true}
                         Format={props.Format}
                         Accuracy={props.Accuracy}
-                        ShowOverlay={props.ShowStartOverlay}
-                        SetShowOverlay={props.SetShowStartOverlay}
                     />
                 </div>
                 <div className={startEndCol}>
@@ -141,8 +133,6 @@ const DateTimeLocalFilter = (props: IFilterProps) => {
                         Valid={() => true}
                         Format={props.Format}
                         Accuracy={props.Accuracy}
-                        ShowOverlay={props.ShowEndOverlay}
-                        SetShowOverlay={props.SetShowEndOverlay}
                     />
                 </div>
                 <div className='row m-0 w-100'>
@@ -177,8 +167,6 @@ const DateTimeLocalFilter = (props: IFilterProps) => {
                         Valid={() => true}
                         Format={props.Format}
                         Accuracy={props.Accuracy}
-                        ShowOverlay={props.ShowStartOverlay}
-                        SetShowOverlay={props.SetShowStartOverlay}
                     />
                 </div>
                 <div className={startEndCol}>
@@ -192,14 +180,12 @@ const DateTimeLocalFilter = (props: IFilterProps) => {
                         Valid={() => true}
                         Format={props.Format}
                         Accuracy={props.Accuracy}
-                        ShowOverlay={props.ShowEndOverlay}
-                        SetShowOverlay={props.SetShowEndOverlay}
                     />
                 </div>
                 {props.ShowQuickSelects ?
                     <div className='row m-0 w-100'>
                         <div className='col-12 d-flex align-items-center justify-content-center'>
-                            <button className='btn btn-primary' onClick={() => setShowQuickPickModal(true)}>
+                            <button className='btn btn-primary  w-100' onClick={() => setShowQuickPickModal(true)}>
                                 Quick Selects
                             </button>
                         </div>
@@ -210,7 +196,7 @@ const DateTimeLocalFilter = (props: IFilterProps) => {
                             ShowX={true}
                             ShowCancel={false}
                             ShowConfirm={false}
-                            Size='lg'
+                            Size='xlg'
                         >
                             <div className={quickSelectCol}>
                                 <QuickSelects
