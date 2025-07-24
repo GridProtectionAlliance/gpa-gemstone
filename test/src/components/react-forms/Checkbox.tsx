@@ -39,7 +39,8 @@ const CheckBoxTestComponent = () => {
 
     const [record, setRecord] = React.useState<FormType>(RecordForm);
 
-    return (<>
+    return (
+    <>
         <div id={CHECKBOX_TEST_ID}>This Record's boolean value is {record.FormBoolean.toString()}</div>
         <CheckBox
             Label={'Form Boolean'}  // Optional: Defaults to Field string
@@ -55,7 +56,9 @@ const CheckBoxTestComponent = () => {
             Field={'FormBoolean'}
             Setter={setRecord}
         />
-    </>);
+        
+    </>
+    );
 }
 
 export default CheckBoxTestComponent;

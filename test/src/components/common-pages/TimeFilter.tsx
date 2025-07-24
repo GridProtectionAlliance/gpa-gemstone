@@ -23,20 +23,29 @@
 
 import { TimeFilter } from "@gpa-gemstone/common-pages";
 import React from "react";
+import moment from 'moment';
 
 export const StartEndTimeFilterID = 'startEnd-timeFilter-id';
 export const StartWindowTimeFilterID = 'startWindow-timeFilter-id';
 export const EndWindowTimeFilterID = 'endWindow-timeFilter-id';
 
+export const NonUTCStartEndTimeFilterID = 'nonUTC-startEnd-timeFilter-id';
+export const NonUTCTimeZone = 'America/Chicago';
+
 const TimeFilterTestComponent = () => {
 
     const [timeFilter, setTimeFilter] = React.useState<{ start: string, end: string }>({
-        start: new Date().toUTCString(),
-        end: new Date().toUTCString(),
+        start: moment.utc().format("MM/DD/YYYY HH:mm:ss.SSS").toString(),
+        end: moment.utc().format("MM/DD/YYYY HH:mm:ss.SSS").toString()
+    });
+
+    const [nonUTCTimeFilter, setNonUTCTimeFilter] = React.useState<{ start: string, end: string }>({
+        start: moment().format("MM/DD/YYYY HH:mm:ss.SSS").toString(),
+        end: moment().format("MM/DD/YYYY HH:mm:ss.SSS").toString()
     });
 
     return (
-        <>
+        <div>
             <div className="row">
                 <div className="col-12">
                     <div className="w-100 h-100" id={StartEndTimeFilterID}>
@@ -44,7 +53,6 @@ const TimeFilterTestComponent = () => {
                             filter={timeFilter}
                             setFilter={(start, end) => setTimeFilter({ start: start, end: end })}
                             showQuickSelect={true}
-                            isHorizontal={true}
                             dateTimeSetting={'startEnd'}
                             timeZone={'UTC'}
                             format={'datetime-local'}
@@ -61,7 +69,6 @@ const TimeFilterTestComponent = () => {
                             filter={timeFilter}
                             setFilter={(start, end) => setTimeFilter({ start: start, end: end })}
                             showQuickSelect={true}
-                            isHorizontal={true}
                             dateTimeSetting={'startWindow'}
                             timeZone={'UTC'}
                             format={'datetime-local'}
@@ -78,7 +85,6 @@ const TimeFilterTestComponent = () => {
                             filter={timeFilter}
                             setFilter={(start, end) => setTimeFilter({ start: start, end: end })}
                             showQuickSelect={true}
-                            isHorizontal={true}
                             dateTimeSetting={'endWindow'}
                             timeZone={'UTC'}
                             format={'datetime-local'}
@@ -88,7 +94,23 @@ const TimeFilterTestComponent = () => {
                     </div>
                 </div>
             </div>
-        </>
+            <div className="row">
+                <div className="col-12">
+                    <div className="w-100 h-100" id={NonUTCStartEndTimeFilterID}>
+                        <TimeFilter
+                            filter={nonUTCTimeFilter}
+                            setFilter={(start, end) => setNonUTCTimeFilter({ start: start, end: end })}
+                            showQuickSelect={true}
+                            dateTimeSetting={'startEnd'}
+                            timeZone={NonUTCTimeZone}
+                            format={'datetime-local'}
+                            showHelpMessage={true}
+                            accuracy={'millisecond'}
+                        />
+                    </div>
+                </div>
+            </div>
+        </div>
     );
 }
 

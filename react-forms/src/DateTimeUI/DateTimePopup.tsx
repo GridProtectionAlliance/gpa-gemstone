@@ -37,6 +37,7 @@ interface IWrapperProps {
     Indicator: number
 }
 
+//TODO: this eventually should be moved into a css class
 const WrapperDiv = styled.div<IWrapperProps>`
   & {
     border-radius: 3px;
@@ -75,6 +76,8 @@ interface IProps {
     Accuracy?: Gemstone.TSX.Types.Accuracy
 }
 
+//This is merely used to provide a class name for the popup for indentification purposes
+const DateTimePopupClass = "gpa-gemstone-datetime-popup";
 
 function DateTimePopup(props: IProps, ref: React.ForwardedRef<HTMLDivElement | null>) {
     const divRef = React.useRef<HTMLDivElement | null>(null);
@@ -98,7 +101,7 @@ function DateTimePopup(props: IProps, ref: React.ForwardedRef<HTMLDivElement | n
 
     return (
         <Portal>
-            <WrapperDiv Top={props.Top} Left={left} Indicator={50} ref={refToUse} className='gpa-gemstone-datetime'>
+            <WrapperDiv Top={props.Top} Left={left} Indicator={50} ref={refToUse} className={DateTimePopupClass}>
                 {showDate ? <Calender DateTime={props.DateTime} Setter={props.Setter} /> : null}
                 {showTime ? <Clock DateTime={props.DateTime} Setter={props.Setter} Accuracy={props.Accuracy} /> : null}
             </WrapperDiv>
