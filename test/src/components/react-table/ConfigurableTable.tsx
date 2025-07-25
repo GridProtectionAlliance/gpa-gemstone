@@ -31,7 +31,8 @@ const headerHeight = 45;
 const bodyHeight = 300;
 const containerHeight = bodyHeight + headerHeight + 1;
 export const tableTestContainerWidth = 650;
-export const CONFIGTABLE_TEST_ID = 'configtable-test-id';
+export const CONFIGTABLE1_TEST_ID = 'configtable-test-id-1';
+export const CONFIGTABLE2_TEST_ID = 'configtable-test-id-2';
 
 const ConfigurableTableTestComponent = () => {
     const data = tableData.slice();
@@ -61,7 +62,7 @@ const ConfigurableTableTestComponent = () => {
     }, [data2]);
 
     const handleRowClick = React.useCallback((rowClicked) => {
-        alert(`${CONFIGTABLE_TEST_ID}: ${rowClicked.row.Title}`);
+        alert(`${CONFIGTABLE1_TEST_ID}: ${rowClicked.row.Title}`);
     }, []);
 
     const renderedColumns = React.useMemo(() => {
@@ -100,7 +101,7 @@ const ConfigurableTableTestComponent = () => {
     return (
         <>
             <div className="row m-0">
-                <div id={CONFIGTABLE_TEST_ID + "-1"} className="col p-0" style={{ maxHeight: `${containerHeight}px`, maxWidth: `${tableTestContainerWidth}px` }}>
+                <div id={CONFIGTABLE1_TEST_ID} className="col p-0" style={{ maxHeight: `${containerHeight}px`, maxWidth: `${tableTestContainerWidth}px` }}>
                     <ConfigurableTable<IBook>
                         key={'table1'}
                         TableClass={`table table-hover`}
@@ -122,7 +123,7 @@ const ConfigurableTableTestComponent = () => {
                         ModalZIndex={30000}
                         //SettingsPortal={}
                         OnSettingsChange={() => { }}
-                        LocalStorageKey={CONFIGTABLE_TEST_ID + '-1'}
+                        LocalStorageKey={CONFIGTABLE1_TEST_ID}
                     >
                         <ConfigurableColumn Key="Title" Default={true} Label={'Title'}>
                             <Column<IBook>
@@ -172,7 +173,7 @@ const ConfigurableTableTestComponent = () => {
                 </div>
             </div>
             <div className="row m-0">
-                <div id={CONFIGTABLE_TEST_ID + "-2"} className="col p-0" style={{ maxHeight: `${containerHeight}px`, maxWidth: `${tableTestContainerWidth}px` }}>
+                <div id={CONFIGTABLE2_TEST_ID} className="col p-0" style={{ maxHeight: `${containerHeight}px`, maxWidth: `${tableTestContainerWidth}px` }}>
                     <ConfigurableTable<IBook>
                         key={'table2'}
                         TableClass={`table table-hover`}
@@ -190,13 +191,13 @@ const ConfigurableTableTestComponent = () => {
                                 setSortKey2(clickedCol.colKey as keyof IBook);
                         }}
                         OnClick={(rowClicked) => {
-                            alert(`${CONFIGTABLE_TEST_ID}: ${rowClicked.row.Title}`);
+                            alert(`${CONFIGTABLE2_TEST_ID}: ${rowClicked.row.Title}`);
                         }}
                         KeySelector={(d) => `${d.Volume}-${d.Title}`}
                         ModalZIndex={30000}
                         //SettingsPortal={}
                         OnSettingsChange={() => { }}
-                        LocalStorageKey={CONFIGTABLE_TEST_ID + '-2'}
+                        LocalStorageKey={CONFIGTABLE2_TEST_ID}
                     >
                         {renderedColumns}
                     </ConfigurableTable>

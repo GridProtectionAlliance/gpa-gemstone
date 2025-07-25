@@ -44,7 +44,6 @@ export default function Calender(props: IProps) {
   const [month, setMonth] = React.useState<number>(props.DateTime?.month() ?? 0);
   const [year, setYear] = React.useState<number>(props.DateTime?.year() ?? moment.utc().year());
   const [mode, setMode] = React.useState<('month'|'year'|'dozenYear')>('month')
-  const [hover, setHover] = React.useState<('None'|'Center'|'Next'|'Previous')>('None')
 
   React.useEffect(() => {
     setMonth(isNaN(props.DateTime?.month() ?? NaN)? 0 : (props.DateTime?.month() ?? 0));
@@ -115,12 +114,10 @@ export default function Calender(props: IProps) {
   const headerWidth = (mode === 'month'? 5 : 2)
   return (
     <div style={{ background: '#f0f0f0', opacity: 1}}>
-      <table style={{textAlign: 'center'}}>
+      <table style={{textAlign: 'center', width: '100%'}}>
         <thead style={{verticalAlign: 'middle', fontWeight: 'bold'}}>
           <tr style={{height: 20, lineHeight: '20px'}}>
             <th style={{width: 20, padding: 5, cursor: 'pointer' }}
-            onMouseEnter={() => setHover('Previous')}
-            onMouseLeave={() => setHover('None')}
             onClick={toPrev}
             >{'<'}</th>
             <th style={{width: 145, padding: 5, cursor: 'pointer'}} colSpan={headerWidth}
@@ -128,8 +125,6 @@ export default function Calender(props: IProps) {
                evt.stopPropagation();
                if (mode==='month') setMode('year')
                }}
-               onMouseEnter={() => setHover('Center')}
-               onMouseLeave={() => setHover('None')}
                >
               {mode === 'month' ? moment([year, month, 1]).format('MMMM YYYY') : ''}
               {mode === 'year' ? year : ''}
@@ -137,8 +132,6 @@ export default function Calender(props: IProps) {
               </th>
             <th style={{width: 20, padding: 5, cursor: 'pointer'}}
              onClick={toNext}
-             onMouseEnter={() => setHover('Next')}
-             onMouseLeave={() => setHover('None')}
              >{'>'}</th>
           </tr>
           {mode === 'month'? <tr style={{height: 20, lineHeight: '20px'}}>

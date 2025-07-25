@@ -23,7 +23,7 @@
 
 import CheckBox from './CheckBox';
 import Input from './Input';
-import DatePicker from './DatePicker';
+import DatePicker from './DateTimeUI/DateTimePicker';
 import Select from './Select';
 import TextArea from './TextArea';
 import DateRangePicker from './DateRangePicker';

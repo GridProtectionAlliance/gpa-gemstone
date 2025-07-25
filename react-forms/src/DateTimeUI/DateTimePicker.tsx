@@ -1,5 +1,5 @@
 // ******************************************************************************************************
-//  DatePicker.tsx - Gbtc
+//  DateTimePickerBase.tsx - Gbtc
 //
 //  Copyright © 2020, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,22 +16,22 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  02/05/2020 - Billy Ernest
+//  07/02/2025 - Preston Crawford
 //       Generated original version of source code.
 //
 // ******************************************************************************************************
 
 import * as React from 'react';
 import * as moment from 'moment';
-import DateTimePopup from './DateTimeUI/DateTimePopup';
+import DateTimePopup from './DateTimePopup';
 import { CreateGuid, GetNodeSize, useGetContainerPosition } from '@gpa-gemstone/helper-functions';
-import ToolTip from './ToolTip';
+import ToolTip from '../ToolTip';
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 
 export type TimeUnit = ('datetime-local' | 'date' | 'time');
 
-interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
+export interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
     Valid: (field: keyof T) => boolean;
     Feedback?: string;
     Format?: string;
@@ -44,12 +44,16 @@ interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
 /**
  * Component that allows a user to pick a date or datetime.
 */
-export default function DateTimePicker<T>(props: IProps<T>) {
+export default function DateTimePickerBase<T>(props: IProps<T>) {
     const inputRef = React.useRef<HTMLInputElement | null>(null);
+    const popupRef = React.useRef<HTMLDivElement | null>(null);
+    const divRef = React.useRef<HTMLDivElement | null>(null);
+
     const { width } = useGetContainerPosition(inputRef as any);
     const [isTextOverflowing, setIsTextOverflowing] = React.useState<boolean>(false);
     const [isInputHovered, setIsInputHovered] = React.useState<boolean>(false);
     const [overflowGUID] = React.useState<string>(CreateGuid());
+    const [showOverlay, setShowOverlay] = React.useState<boolean>(false);
 
     // Formats for displaying dates in the input box and storing in the record.
     const boxFormat = getBoxFormat(props.Type, props.Accuracy)
@@ -57,9 +61,6 @@ export default function DateTimePicker<T>(props: IProps<T>) {
 
     // Parse the date from the record.
     const parse = (r: T) => moment(props.Record[props.Field] as any, recordFormat);
-
-    // State and ref declarations.
-    const divRef = React.useRef<any | null>(null);
 
     const [helpGuid] = React.useState<string>(CreateGuid());
     const [showHelp, setShowHelp] = React.useState<boolean>(false);
@@ -69,8 +70,6 @@ export default function DateTimePicker<T>(props: IProps<T>) {
     const [pickerRecord, setPickerRecord] = React.useState<moment.Moment | undefined>(parse(props.Record));
 
     const [feedbackMessage, setFeedbackMessage] = React.useState("");
-
-    const [showOverlay, setShowOverlay] = React.useState<boolean>(false);
 
     const [top, setTop] = React.useState<number>(0);
     const [left, setLeft] = React.useState<number>(0);
@@ -141,17 +140,20 @@ export default function DateTimePicker<T>(props: IProps<T>) {
 
     // Handle clicks outside the component.
     function onWindowClick(evt: any) {
-        if (evt.target.closest(`.gpa-gemstone-datetime`) == null) {
-            setShowOverlay(false);
-            if (props.Record[props.Field] as any !== null) {
-                setPickerAndRecord(parse(props.Record));
-                setBoxRecord(parse(props.Record).format(boxFormat));
-            }
-            else {
-                setPickerAndRecord(undefined);
-                setBoxRecord('');
-            }
+        // if the click is inside the input-container or inside the popup, bail
+        if (divRef.current == null || popupRef.current == null || divRef.current?.contains(evt.target as Node) || popupRef.current?.contains(evt.target as Node))
+            return;
+
+        setShowOverlay(false);
+
+        if (props.Record[props.Field] !== null) {
+            setPickerAndRecord(parse(props.Record));
+            setBoxRecord(parse(props.Record).format(boxFormat));
+        } else {
+            setPickerAndRecord(undefined);
+            setBoxRecord('');
         }
+
     }
 
     function getFeedbackMessage() {
@@ -254,10 +256,10 @@ export default function DateTimePicker<T>(props: IProps<T>) {
                 onChange={(evt) => {
                     valueChange(evt.target.value);
                 }}
-                onFocus={() => { setShowOverlay(true) }}
+                onFocus={() => setShowOverlay(true)}
                 value={boxRecord}
                 disabled={props.Disabled === undefined ? false : props.Disabled}
-                onClick={(e) => { e.preventDefault() }}
+                onClick={(e) => e.preventDefault()}
                 step={step}
                 ref={inputRef}
                 data-tooltip={overflowGUID}
@@ -272,13 +274,13 @@ export default function DateTimePicker<T>(props: IProps<T>) {
             </ToolTip>
 
             <DateTimePopup
+                ref={popupRef}
                 Setter={(d) => {
                     setPickerAndRecord(d);
                     if (props.Type === 'date') setShowOverlay(false);
                 }}
                 Show={showOverlay}
                 DateTime={pickerRecord}
-                Valid={props.Valid(props.Field)}
                 Top={top}
                 Center={left}
                 Type={props.Type === undefined ? 'date' : props.Type}
@@ -288,8 +290,7 @@ export default function DateTimePicker<T>(props: IProps<T>) {
     );
 }
 
-
-function getBoxFormat(type?: TimeUnit, accuracy?: Gemstone.TSX.Types.Accuracy) {
+export function getBoxFormat(type?: TimeUnit, accuracy?: Gemstone.TSX.Types.Accuracy) {
     const dateTime = type ?? 'date'
     const timeUnit = accuracy ?? 'second'
 
@@ -314,7 +315,7 @@ function getBoxFormat(type?: TimeUnit, accuracy?: Gemstone.TSX.Types.Accuracy) {
     }
 }
 
-const getInputWidth = (inputRef: HTMLInputElement, currentValue: string, currentStep: string) => {
+export const getInputWidth = (inputRef: HTMLInputElement, currentValue: string, currentStep: string) => {
     const computedStyle = window.getComputedStyle(inputRef);
 
     const dummyInput = document.createElement('input');

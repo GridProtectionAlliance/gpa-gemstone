@@ -24,11 +24,10 @@ import { afterEach, beforeEach, expect, describe, it } from "@jest/globals";
 import { Builder, By, until, WebDriver, logging } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome';
 import chromedriver from 'chromedriver';
-import { tableTestContainerWidth } from '../../components/react-table/ConfigurableTable';
+import { CONFIGTABLE1_TEST_ID, CONFIGTABLE2_TEST_ID, tableTestContainerWidth } from '../../components/react-table/ConfigurableTable';
 
 const rootURL = `http://localhost:${global.PORT}/config-table`;
 let driver: WebDriver;
-const componentTestID = 'configtable-test-id';
 const expectedHeaders = ['Title', 'Author', 'Volume', 'Category'];
 const modalSelector = `.modal.show`;
 
@@ -58,8 +57,8 @@ beforeEach(async () => {
     await driver.executeScript('window.resizeTo(1600,760)')
 
     await driver.get(rootURL);
-    await driver.wait(until.elementIsVisible(driver.findElement(By.css(`#${componentTestID}-1 table thead tr th`))), 10000);
-    await driver.wait(until.elementIsVisible(driver.findElement(By.css(`#${componentTestID}-2 table tbody tr`))), 10000);
+    await driver.wait(until.elementIsVisible(driver.findElement(By.css(`#${CONFIGTABLE1_TEST_ID} table thead tr th`))), 10000);
+    await driver.wait(until.elementIsVisible(driver.findElement(By.css(`#${CONFIGTABLE2_TEST_ID} table tbody tr`))), 10000);
 });
 
 // close the driver after each test
@@ -67,13 +66,10 @@ afterEach(async () => {
     if (driver) await driver.quit();
 });
 
-const componentVariants = [
-    ['ConfigTable Component 1', '1'],
-    ['ConfigTable Component 2: Children Load Columns', '2'],
-];
+const testIDS = [['Config Table 1', CONFIGTABLE1_TEST_ID], ['Config Table 2',CONFIGTABLE2_TEST_ID]];
 
-describe.each(componentVariants)('%s', (desc, idSuffix) => {
-    const tableSelector = `#${componentTestID}-${idSuffix} table`;
+describe.each(testIDS)('%s', (desc, testID) => {
+    const tableSelector = `#${testID} table`;
 
     /**
     * Enables or disables provided column or all non-disabled column checkboxes if none provided
@@ -206,7 +202,7 @@ describe.each(componentVariants)('%s', (desc, idSuffix) => {
         const expectedColWidthID1 = (tableTestContainerWidth - expectedTitleWidth - settingsIconColWidth) / (totalCols - 1);
         const expectedColWidthID2 = (tableTestContainerWidth - settingsIconColWidth) / totalCols;
 
-        if (idSuffix == '1') {
+        if (testID === CONFIGTABLE1_TEST_ID) {
             const titleColWidth = parseFloat(await titleCol.getCssValue('width'));
             expect(titleColWidth).toBeCloseTo(expectedTitleWidth, 1);
             for (const col of tableCols.slice(1, 4)) {
@@ -276,7 +272,7 @@ describe.each(componentVariants)('%s', (desc, idSuffix) => {
         await driver.wait(until.alertIsPresent(), 5000);
         let alert = await driver.switchTo().alert();
 
-        expect(await alert.getText()).toContain(`${componentTestID}: The Great Conversation`);
+        expect(await alert.getText()).toContain(`${testID}: The Great Conversation`);
         await alert.accept();
         // Ensure no more alerts
         await driver.sleep(500); // brief delay to let any unexpected alerts appear
@@ -298,7 +294,7 @@ describe.each(componentVariants)('%s', (desc, idSuffix) => {
 
         // check localStorage
         let storage = await driver.executeScript(
-            `return window.localStorage.getItem('${componentTestID}-${idSuffix}');`
+            `return window.localStorage.getItem('${testID}');`
         );
         expect(storage).not.toContain('Author');
 
@@ -311,7 +307,7 @@ describe.each(componentVariants)('%s', (desc, idSuffix) => {
 
         // check localStorage
         storage = await driver.executeScript(
-            `return window.localStorage.getItem('${componentTestID}-${idSuffix}');`
+            `return window.localStorage.getItem('${testID}');`
         );
         expect(storage).toContain('Author');
     });

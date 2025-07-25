@@ -3,7 +3,7 @@ import { Builder, By, until, WebDriver } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome';
 import chromedriver from "chromedriver";
 import { BTN_DROPDOWN_ID } from "../../components/react-interactive/DropdownButton";
-import { InteractiveLabel } from "../../components/App";
+import { InteractivePageLabel } from "../../components/App";
 
 const rootURL = `http://localhost:${global.PORT}/interactive`;
 let driver: WebDriver;
@@ -24,7 +24,7 @@ beforeAll(async () => {
 
     await driver.get(rootURL); // Navigate to the page
 
-    await driver.wait(until.titleIs(InteractiveLabel), 10000); // Wait until the page title is loaded
+    await driver.wait(until.titleIs(InteractivePageLabel), 10000); // Wait until the page title is loaded
 });
 
 // close the driver after each test

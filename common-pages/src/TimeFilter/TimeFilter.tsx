@@ -23,18 +23,19 @@
 //******************************************************************************************************
 
 import * as React from 'react';
-import { DatePicker, Select, Input } from '@gpa-gemstone/react-forms'
 import {
-    units, IStartEnd, IStartDuration, IEndDuration,
-    readableUnit, TimeUnit, findAppropriateUnit,
-    addDuration
+    IStartEnd, IStartDuration, IEndDuration,
+    TimeUnit, findAppropriateUnit, addDuration
 } from './TimeWindowUtils';
 import moment from 'moment';
-import { AvailableQuickSelects, getFormat, DateUnit } from './QuickSelects';
+import { getFormat, DateUnit } from './QuickSelects';
 import _ from 'lodash';
 import { Gemstone } from '@gpa-gemstone/application-typings';
+import StartEndFilter from './StartEndFilter/StartEndFilter';
+import { useGetContainerPosition } from '@gpa-gemstone/helper-functions';
+import WindowFilter from './WindowFilter/WindowFilter';
 
-interface ITimeWindow {
+export interface ITimeWindow {
     start: string,
     end: string,
     unit: TimeUnit,
@@ -42,28 +43,55 @@ interface ITimeWindow {
 }
 
 export type ITimeFilter = IStartEnd | IStartDuration | IEndDuration
+export type DateTimeSetting = 'startWindow' | 'endWindow' | 'startEnd';
 
-/**
-*    filter: an interface of IStartEnd | IStartDuration | IEndDuration | ICenterDuration
-*    showQuickSelect: displays Quick Select component
-*    isHorizontal: displays Quick Selects in horizontal view 
-*/
 interface IProps {
+    /**
+     * Filter to be used in form
+     */
     filter: ITimeFilter;
+    /**
+     * Setter function to update filter
+     * @param start - Start Time
+     * @param end - End Time
+     * @param unit - Time Unit
+     * @param duration - Duration
+     * @returns 
+     */
     setFilter: (start: string, end: string, unit: TimeUnit, duration: number) => void,
+    /**
+     * Flag to toggle QuickSelects UI
+     */
     showQuickSelect: boolean;
-    dateTimeSetting: 'startWindow' | 'endWindow' | 'startEnd';
+    /**
+     * Type of TimeFilter to render
+     */
+    dateTimeSetting: DateTimeSetting;
+    /**
+     * Time zone to use
+     */
     timeZone: string;
-    isHorizontal: boolean;
+    /**
+     * Format for date/time input
+     */
     format?: DateUnit;
+    /**
+     * Accuracy of the time input
+     */
     accuracy?: Gemstone.TSX.Types.Accuracy
-    showHelpMessage?: boolean
+    /**
+     * Flag to toggle usage of helper message
+     */
+    showHelpMessage?: boolean,
 }
 
 const TimeFilter = (props: IProps) => {
+    const containerRef = React.useRef<HTMLFieldSetElement | null>(null);
+    const { width } = useGetContainerPosition(containerRef as any);
+
     const format = getFormat(props.format);
-    const QuickSelects = React.useMemo(() => AvailableQuickSelects.filter(qs => !qs.hideQuickPick(props.format)), [props.format]);
-    const [activeQP, setActiveQP] = React.useState<number>(-1);
+
+    const [activeQuickSelect, setActiveQuickSelect] = React.useState<number>(-1);
     const [filter, setFilter] = React.useState<ITimeWindow>(getTimeWindowFromFilter(props.filter, format));
 
     // Checks typing of ITimeFilter and then compares to ITimeWindow
@@ -85,238 +113,61 @@ const TimeFilter = (props: IProps) => {
         }
     }, [props.filter]);
 
+    const helpMessaage = (props.showHelpMessage ?? true) ? `All times shown are in system time (${props.timeZone}).` : undefined
+
     return (
-        <fieldset className="border" style={{ padding: '10px', height: '100%', overflow: 'hidden' }}>
+        <fieldset className="border" style={{ padding: '10px', height: '100%', overflow: 'hidden' }} ref={containerRef}>
             <legend className="w-auto" style={{ fontSize: 'large' }}>Date/Time Filter:</legend>
-            <Row addRow={props.isHorizontal} class='m-0'>
-                {props.dateTimeSetting === 'startWindow' || props.dateTimeSetting === 'startEnd' ?
-                    <Row addRow={!props.isHorizontal} class='m-0'>
-                        <div className={props.isHorizontal ? (props.showQuickSelect ? props.dateTimeSetting === 'startEnd' ? 'col-2' : 'col-4' : 'col-6') : 'col-12 p-0'}>
-                            <DatePicker<ITimeWindow>
-                                Record={filter}
-                                Field="start"
-                                Help={(props.showHelpMessage ?? true) ? `All times shown are in system time (${props.timeZone}).` : undefined}
-                                Setter={(r) => {
-                                    const flt = props.dateTimeSetting === 'startWindow' ?
-                                        getTimeWindowFromFilter({ start: r.start, duration: r.duration, unit: r.unit }, format) :
-                                        getTimeWindowFromFilter({ start: r.start, end: r.end }, format);
-                                    setFilter(flt);
-                                    setActiveQP(-1);
-                                }}
-                                Label='Start'
-                                Type={props.format ?? 'datetime-local'}
-                                Valid={() => true}
-                                Format={format}
-                                Accuracy={props.accuracy}
-                            />
-                            {props.showQuickSelect && props.dateTimeSetting === 'startWindow' ?
-                                <StartWindowForm
-                                    IsHorizontal={props.isHorizontal}
-                                    Filter={filter}
-                                    SetFilter={setFilter}
-                                    SetActiveQP={setActiveQP}
-                                    Format={format}
-                                    ShowQuickSelect={props.showQuickSelect}
-                                />
-                                : null
-                            }
-                        </div>
-                    </Row>
-                    : null
-                }
-                {props.dateTimeSetting === 'endWindow' || props.dateTimeSetting === 'startEnd' ?
-                    <Row addRow={!props.isHorizontal} class='m-0'>
-                        <div className={props.isHorizontal ? (props.showQuickSelect ? props.dateTimeSetting === 'startEnd' ? 'col-2' : 'col-4' : 'col-6') : 'col-12 p-0'}>
-                            <DatePicker<ITimeWindow>
-                                Record={filter}
-                                Field="end"
-                                Help={(props.showHelpMessage ?? true) ? `All times shown are in system time (${props.timeZone}).` : undefined}
-                                Setter={(r) => {
-                                    const flt = props.dateTimeSetting === 'endWindow' ?
-                                        getTimeWindowFromFilter({ end: r.end, duration: r.duration, unit: r.unit }, format) :
-                                        getTimeWindowFromFilter({ start: r.start, end: r.end }, format);
-                                    setFilter(flt);
-                                    setActiveQP(-1);
-                                }}
-                                Label='End'
-                                Type={props.format ?? 'datetime-local'}
-                                Valid={() => true}
-                                Format={format}
-                                Accuracy={props.accuracy}
-                            />
-                            {props.showQuickSelect && props.dateTimeSetting === 'endWindow' ?
-                                <EndWindowForm
-                                    IsHorizontal={props.isHorizontal}
-                                    Filter={filter}
-                                    SetFilter={setFilter}
-                                    SetActiveQP={setActiveQP}
-                                    Format={format}
-                                    ShowQuickSelect={props.showQuickSelect}
-                                />
-                                : null
-                            }
-                        </div>
-                    </Row>
-                    : null
-                }
-                {props.dateTimeSetting === 'startWindow' && !props.showQuickSelect ?
-                    <StartWindowForm
-                        IsHorizontal={props.isHorizontal}
-                        Filter={filter}
-                        SetFilter={setFilter}
-                        SetActiveQP={setActiveQP}
+            {props.dateTimeSetting === 'startEnd' ?
+                <StartEndFilter
+                    TimeWindowFilter={filter}
+                    SetTimeWindowFilter={setFilter}
+                    Timezone={props.timeZone}
+                    ActiveQP={activeQuickSelect}
+                    SetActiveQP={setActiveQuickSelect}
+                    SetFilter={props.setFilter}
+                    Accuracy={props.accuracy}
+                    Format={format}
+                    DateUnit={props.format ?? 'datetime-local'}
+                    ShowQuickSelects={props.showQuickSelect}
+                    ContainerWidth={width}
+                    HelpMessage={helpMessaage}
+                />
+                : props.dateTimeSetting === 'startWindow' ?
+                    <WindowFilter
+                        TimeWindowFilter={filter}
+                        SetTimeWindowFilter={setFilter}
+                        Timezone={props.timeZone}
+                        ActiveQP={activeQuickSelect}
+                        SetActiveQP={setActiveQuickSelect}
+                        SetFilter={props.setFilter}
+                        Accuracy={props.accuracy}
                         Format={format}
-                        ShowQuickSelect={props.showQuickSelect}
+                        DateUnit={props.format ?? 'datetime-local'}
+                        ShowQuickSelects={props.showQuickSelect}
+                        ContainerWidth={width}
+                        HelpMessage={helpMessaage}
+                        Window={'start'}
                     />
-                    : null
-                }
-                {props.dateTimeSetting === 'endWindow' && !props.showQuickSelect ?
-                    <EndWindowForm
-                        IsHorizontal={props.isHorizontal}
-                        Filter={filter}
-                        SetFilter={setFilter}
-                        SetActiveQP={setActiveQP}
+                    :
+                    <WindowFilter
+                        TimeWindowFilter={filter}
+                        SetTimeWindowFilter={setFilter}
+                        Timezone={props.timeZone}
+                        ActiveQP={activeQuickSelect}
+                        SetActiveQP={setActiveQuickSelect}
+                        SetFilter={props.setFilter}
+                        Accuracy={props.accuracy}
                         Format={format}
-                        ShowQuickSelect={props.showQuickSelect}
+                        DateUnit={props.format ?? 'datetime-local'}
+                        ShowQuickSelects={props.showQuickSelect}
+                        ContainerWidth={width}
+                        HelpMessage={helpMessaage}
+                        Window={'end'}
                     />
-                    : null
-                }
-
-                {props.showQuickSelect ?
-                    <div className={props.isHorizontal ? `col-8 ${props.dateTimeSetting !== 'startEnd' ? 'pt-3' : ''}` : 'row m-0 flex-grow-1'}>
-                        <Row addRow={props.isHorizontal} class="m-0 justify-content-center align-items-center">
-                            {QuickSelects.map((qs, i) => {
-                                if (i % 3 !== 0)
-                                    return null;
-                                return (
-                                    <div key={i} className={props.isHorizontal && props.dateTimeSetting === 'startEnd' ? 'col-2' : "col-4"}
-                                        style={{
-                                            paddingLeft: (props.isHorizontal && props.dateTimeSetting === 'startEnd' ? 0 : (i % 9 == 0 ? 15 : 0)),
-                                            paddingRight: (props.isHorizontal && props.dateTimeSetting === 'startEnd' ? 2 : ((i % 18 == 6 || i % 18 == 15) ? 15 : 2)),
-                                            marginTop: 10
-                                        }}
-                                    >
-                                        <ul className="list-group" key={i}>
-                                            <li key={i} style={{ cursor: 'pointer' }}
-                                                onClick={() => {
-                                                    const flt = getTimeWindowFromFilter(QuickSelects[i].createFilter(props.timeZone, props.format), format);
-                                                    props.setFilter(flt.start, flt.end, flt.unit, flt.duration);
-                                                    setActiveQP(i);
-                                                }}
-                                                className={"item badge badge-" + (i == activeQP ? "primary" : "secondary")}>{QuickSelects[i].label}
-                                            </li>
-                                            {i + 1 < QuickSelects.length ?
-                                                <li key={i + 1} style={{ marginTop: 3, cursor: 'pointer' }}
-                                                    className={"item badge badge-" + (i + 1 == activeQP ? "primary" : "secondary")}
-                                                    onClick={() => {
-                                                        const flt = getTimeWindowFromFilter(QuickSelects[i + 1].createFilter(props.timeZone, props.format), format);
-                                                        props.setFilter(flt.start, flt.end, flt.unit, flt.duration);
-                                                        setActiveQP(i + 1)
-                                                    }}>
-                                                    {QuickSelects[i + 1].label}
-                                                </li>
-                                                : null}
-                                            {i + 2 < QuickSelects.length ?
-                                                <li key={i + 2}
-                                                    style={{ marginTop: 3, cursor: 'pointer' }}
-                                                    className={"item badge badge-" + (i + 2 == activeQP ? "primary" : "secondary")}
-                                                    onClick={() => {
-                                                        const flt = getTimeWindowFromFilter(QuickSelects[i + 2].createFilter(props.timeZone, props.format), format);
-                                                        props.setFilter(flt.start, flt.end, flt.unit, flt.duration);
-                                                        setActiveQP(i + 2);
-                                                    }}>
-                                                    {QuickSelects[i + 2].label}
-                                                </li>
-                                                : null}
-                                        </ul>
-                                    </div>
-                                )
-                            })}
-                        </Row>
-                    </div>
-                    : null}
-
-            </Row>
-        </fieldset>
+            }
+        </fieldset >
     );
-}
-
-interface IStartEndWindowProps {
-    IsHorizontal: boolean,
-    Filter: ITimeWindow,
-    SetFilter: (filter: ITimeWindow) => void,
-    SetActiveQP: (qp: number) => void,
-    Format: string,
-    ShowQuickSelect: boolean
-}
-
-const StartWindowForm = (props: IStartEndWindowProps) => {
-    return (
-        <Row addRow={!props.IsHorizontal} class='m-0'>
-            <div className={props.IsHorizontal ? props.ShowQuickSelect ? 'col-12 p-0' : 'col-6' : 'col-12 p-0'}>
-                <div className='form-group'>
-                    <label style={{ width: '100%', position: 'relative', float: "left" }}>
-                        Span(+)
-                    </label>
-                    <div className='row'>
-                        <div className={'col-6'}>
-                            <Input<ITimeWindow> Record={props.Filter} Field='duration' Label='' Valid={() => true} Type='number'
-                                Setter={(r) => {
-                                    props.SetFilter(getTimeWindowFromFilter({ start: r.start, duration: r.duration, unit: r.unit }, props.Format));
-                                    props.SetActiveQP(-1);
-                                }} />
-                        </div>
-                        <div className={'col-6'}>
-                            <Select<ITimeWindow> Record={props.Filter} Label='' Field='unit' Options={units.map((unit) => ({ Value: unit, Label: readableUnit(unit) }))}
-                                Setter={(r) => {
-                                    props.SetFilter(getTimeWindowFromFilter({ start: r.start, duration: r.duration, unit: r.unit }, props.Format));
-                                    props.SetActiveQP(-1);
-                                }} />
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </Row>
-    )
-}
-
-const EndWindowForm = (props: IStartEndWindowProps) => {
-    return (
-        <Row addRow={!props.IsHorizontal} class='m-0'>
-            <div className={props.IsHorizontal ? props.ShowQuickSelect ? 'col-12 p-0' : 'col-6' : 'col-12 p-0'}>
-                <div className='form-group'>
-                    <label style={{ width: '100%', position: 'relative', float: "left" }}>
-                        Span(-)
-                    </label>
-                    <div className='row'>
-                        <div className={'col-6'}>
-                            <Input<ITimeWindow> Record={props.Filter} Field='duration' Label='' Valid={() => true} Type='number'
-                                Setter={(r) => {
-                                    props.SetFilter(getTimeWindowFromFilter({ end: r.end, duration: r.duration, unit: r.unit }, props.Format));
-                                    props.SetActiveQP(-1);
-                                }} />
-                        </div>
-                        <div className={'col-6'}>
-                            <Select<ITimeWindow> Record={props.Filter} Label='' Field='unit' Options={units.map((unit) => ({ Value: unit, Label: readableUnit(unit) }))}
-                                Setter={(r) => {
-                                    props.SetFilter(getTimeWindowFromFilter({ end: r.end, duration: r.duration, unit: r.unit }, props.Format));
-                                    props.SetActiveQP(-1);
-                                }} />
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </Row>
-
-    )
-}
-
-// Returns a row div element with props as children of row 
-function Row(props: React.PropsWithChildren<{ addRow: boolean, class?: string }>) {
-    if (props.addRow) {
-        return <div className={`row ${props.class ?? ''}`}>{props.children}</div>
-    }
-    return <>{props.children}</>
 }
 
 // Converts ITimeFilter to an ITimeWindow filter
@@ -330,12 +181,13 @@ export function getTimeWindowFromFilter(flt: ITimeFilter, format?: string): ITim
         start: moment.Moment,
         end: moment.Moment,
         unit: TimeUnit,
-        duration: number) => ({
-            start: start.format(format),
-            end: end.format(format),
-            unit: unit,
-            duration: duration,
-        });
+        duration: number
+    ) => ({
+        start: start.format(format),
+        end: end.format(format),
+        unit: unit,
+        duration: duration,
+    });
 
     if ('start' in flt && 'duration' in flt) {     // type is IStartDuration
         start = moment(flt.start, format);
