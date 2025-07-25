@@ -96,7 +96,9 @@ function MultiInput<T>(props: IProps<T>) {
                                 <ReactIcons.QuestionMark Color="var(--info)" Size={20} />
                             </span>
                             : null}
-                        <button className='btn' onClick={() => props.Setter({ ...props.Record, [props.Field]: [props.DefaultValue] })}> <ReactIcons.CirclePlus /> </button>
+                        <button className='btn' onClick={() => props.Setter({ ...props.Record, [props.Field]: [props.DefaultValue] })}>
+                            <ReactIcons.CirclePlus />
+                        </button>
                     </label>
                     <ToolTip Show={showHelp && props.Help != null} Target={guid} Class="info" Position="bottom">
                         {props.Help}
@@ -105,10 +107,20 @@ function MultiInput<T>(props: IProps<T>) {
                 : null}
 
             {fieldArray.map((r, index) => (
-                <div className='row align-items-center' key={index}>
-                    <div className='col'>
-                        <Input Record={fieldArray} Field={index} Label={index === 0 ? props.Label : ''} AllowNull={props.AllowNull} Type={props.Type} Help={index === 0 ? props.Help : undefined} Feedback={props.Feedback}
-                            Valid={() => props.Valid(props.Field)} Style={props.Style} Disabled={props.Disabled} Setter={(record) => {
+                <div className='row' key={index}>
+                    <div className='col-10'>
+                        <Input
+                            Record={fieldArray}
+                            Field={index}
+                            Label={index === 0 ? props.Label : ''}
+                            AllowNull={props.AllowNull}
+                            Type={props.Type}
+                            Help={index === 0 ? props.Help : undefined}
+                            Feedback={props.Feedback}
+                            Valid={() => props.Valid(props.Field)}
+                            Style={props.Style}
+                            Disabled={props.Disabled}
+                            Setter={(record) => {
                                 const newArray = [...fieldArray];
                                 if (!(props.AllowNull ?? true) && record[index] === null)
                                     newArray[index] = props.DefaultValue;
@@ -116,22 +128,31 @@ function MultiInput<T>(props: IProps<T>) {
                                     newArray[index] = record[index];
 
                                 props.Setter({ ...props.Record, [props.Field]: newArray });
-                            }} />
+                            }}
+                        />
                     </div>
-                    <div className='col-auto'>
-                        <button className='btn' style={(props.Disabled ?? false) ? { display: 'none' } : undefined} onClick={() => {
-                            const newRecords = [...fieldArray].filter((_, i) => i !== index);
-                            props.Setter({ ...props.Record, [props.Field]: newRecords });
-                        }}>
+                    <div className={`col-${index === [...fieldArray].length - 1 ? 1 : 2} ${index === 0 ? 'd-flex align-items-center' : ''}`}>
+                        <button
+                            className='btn'
+                            style={(props.Disabled ?? false) ? { display: 'none' } : undefined}
+                            onClick={() => {
+                                const newRecords = [...fieldArray].filter((_, i) => i !== index);
+                                props.Setter({ ...props.Record, [props.Field]: newRecords });
+                            }}
+                        >
                             <ReactIcons.TrashCan Color='red' />
                         </button>
                     </div>
                     {index === [...fieldArray].length - 1 ?
-                        <div className='col-auto'>
-                            <button className='btn' style={(props.Disabled ?? false) ? { display: 'none' } : undefined} onClick={() => {
-                                const newRecords = [...[...fieldArray], props.DefaultValue];
-                                props.Setter({ ...props.Record, [props.Field]: newRecords });
-                            }}>
+                        <div className={`col-1 ${index === 0 ? 'd-flex align-items-center' : ''}`}>
+                            <button
+                                className='btn'
+                                style={(props.Disabled ?? false) ? { display: 'none' } : undefined}
+                                onClick={() => {
+                                    const newRecords = [...[...fieldArray], props.DefaultValue];
+                                    props.Setter({ ...props.Record, [props.Field]: newRecords });
+                                }}
+                            >
                                 <ReactIcons.CirclePlus />
                             </button>
                         </div>
