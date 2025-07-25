@@ -256,7 +256,7 @@ const EventCharacteristicFilter = (props: IProps) => {
                     <MultiCheckBoxSelect
                         Options={newPhases}
                         Label={'Phases'}
-                        ItemTooltip={'dark'}
+                        ShowToolTip={true}
                         OnChange={(evt, Options) => {
                                 const phaseList: React.SetStateAction<{ Value: number; Label: string; Selected: boolean; }[]> = [];
                                 const phaseFilter: IPhaseFilters = { ...newEventCharacteristicFilter.phases };
