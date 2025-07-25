@@ -367,7 +367,7 @@ function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProp
     return (
         <>
             <div className="container-fluid d-flex flex-column p-0 h-100">
-                <ErrorBoundary Height={'100%'} Width={'100%'} BodyErrorMessage='Error loading page.' HeaderErrorMessage='Error'>
+                <ErrorBoundary ClassName="row h-100" ErrorMessage='Error loading page.'>
                     <div className='row h-100'>
                         <div className='col-12 d-flex flex-column h-100'>
                             {pagedData.length !== 0 ?

@@ -23,6 +23,7 @@
 
 import * as React from 'react';
 import { ServerErrorIcon } from '@gpa-gemstone/react-interactive';
+import { CSSProperties } from 'styled-components';
 
 interface IError {
     name: string,
@@ -30,10 +31,9 @@ interface IError {
 }
 
 interface IProps {
-    HeaderErrorMessage: string,
-    BodyErrorMessage: string,
-    Height: number | string,
-    Width: number | string,
+    ErrorMessage: string,
+    Style?: CSSProperties,
+    ClassName?: string,
     ErrorIconSize?: number
 }
 
@@ -54,13 +54,8 @@ export default class ErrorBoundary extends React.Component<IProps, IError> {
     render() {
         if (this.state.name.length > 0) {
             return (
-                <div className="card" style={{ width: this.props.Width, height: this.props.Height }}>
-                    <div className="card-header">
-                        {this.props.HeaderErrorMessage}
-                    </div>
-                    <div className="card-body" style={{ overflowY: 'auto' }}>
-                        <ServerErrorIcon Show={true} Label={this.props.BodyErrorMessage} Size={this.props.ErrorIconSize ?? 150} />
-                    </div>
+                <div className={this.props.ClassName} style={this.props.Style}>
+                    <ServerErrorIcon Show={true} Label={this.props.ErrorMessage} Size={this.props.ErrorIconSize ?? 150} />
                 </div>
             );
         } else
