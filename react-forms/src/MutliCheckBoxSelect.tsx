@@ -61,11 +61,10 @@ interface IProps {
   */
   Help?: string | JSX.Element;
   /**
-    * Tooltip style for the items
-    * @type {'no-tip' | 'dark' | 'light'}
+    * Flag to show or hide the selected options tooltip
     * @optional
   */
-  ItemTooltip?: 'no-tip' | 'dark' | 'light';
+  ShowToolTip?: boolean;
 }
 
 const MultiSelect = (props: IProps) => {
@@ -167,7 +166,7 @@ const MultiSelect = (props: IProps) => {
           {props.Help}
         </ToolTip>
         : null}
-      {(props.ItemTooltip ?? 'no-tip') !== 'no-tip' ?
+      {(props.ShowToolTip ?? false) ?
         <ToolTip Show={showItems} Target={guid} Position="bottom">
           <p>Selected Options:</p>
           {selectedOptions.slice(0, 10).map((opt, i) => <p key={i}>{opt.Label}</p>)}
