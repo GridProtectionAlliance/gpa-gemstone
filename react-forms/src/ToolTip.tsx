@@ -121,7 +121,7 @@ export const Tooltip = (props: React.PropsWithChildren<IProps>) => {
   React.useEffect(() => {
     
     function handleMouseMove(e: MouseEvent) {
-      if (toolTip.current?.contains(e.target as Node)) {
+      if (toolTip.current?.contains(e.target as Node) ?? false) {
         clearTimeout(closeTimer.current);
         setIsTooltipHovered(true);
       } else 
