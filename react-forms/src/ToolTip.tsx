@@ -32,7 +32,7 @@ interface IProps {
   Position?: ('top' | 'bottom' | 'left' | 'right'),
   Target?: string,
   Zindex?: number,
-  Class?: 'primary' | 'secondary' | 'success' | 'danger' | 'info' 
+  Class?: 'primary' | 'secondary' | 'success' | 'danger' | 'info'
 }
 
 // Props to style wrapper div around tooltip content.
@@ -51,7 +51,7 @@ const PopoverDiv = styled.div<IPopoverProps>`
     display: inline-block;
     font-size: 13px;
     position: fixed;
-    pointer-events: none;
+    pointer-events: ${props => props.Show ? 'auto' : 'none'};
     transition: opacity 0.3s ease-out;
     z-index: ${props => props.Zindex};
     opacity: ${props => props.Show ? "0.9" : "0"};
@@ -93,10 +93,12 @@ const Arrow = styled.div<IArrowProps>`
 const defaultTargetPosition = { Top: -999, Left: -999, Width: 0, Height: 0 }
 
 // The other element needs to have data-tooltip attribute equal the target prop used for positioning
-export const Tooltip: React.FunctionComponent<IProps> = (props) => {
+export const Tooltip = (props: React.PropsWithChildren<IProps>) => {
   const position = props.Position ?? 'top'
 
   const toolTip = React.useRef<HTMLDivElement | null>(null);
+
+  const [isTooltipHovered, setIsTooltipHovered] = React.useState(false);
 
   const [top, setTop] = React.useState<number>(0);
   const [left, setLeft] = React.useState<number>(0);
@@ -110,6 +112,37 @@ export const Tooltip: React.FunctionComponent<IProps> = (props) => {
   const [color, setColor] = React.useState<string>('red');
 
   const alarmClass = React.useMemo(() => props.Class != null ? `alert-${props.Class} d-none` : 'popover d-none', [props.Class])
+
+  const closeTimer = React.useRef<number>();
+  const [delayedShow, setDelayedShow] = React.useState(props.Show);
+  const shouldShow = delayedShow || isTooltipHovered;
+
+  //Effect to handle mouse hover state
+  React.useEffect(() => {
+    
+    function handleMouseMove(e: MouseEvent) {
+      if (toolTip.current?.contains(e.target as Node)) {
+        clearTimeout(closeTimer.current);
+        setIsTooltipHovered(true);
+      } else 
+        setIsTooltipHovered(false);
+      
+    }
+
+    document.addEventListener('mousemove', handleMouseMove);
+    return () => document.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
+  // Effect to handle delayed hiding of tooltip to allow for hover logic
+  React.useEffect(() => {
+    if (props.Show) {
+      clearTimeout(closeTimer.current);
+      setDelayedShow(true);
+    } else if (!isTooltipHovered) {
+      //delay closing by a quarter of a second to allow for hover
+      closeTimer.current = window.setTimeout(() => setDelayedShow(false), .25);
+    }
+  }, [props.Show, isTooltipHovered]);
 
   React.useLayoutEffect(() => {
     if (alertRef.current == null) return;
@@ -130,7 +163,7 @@ export const Tooltip: React.FunctionComponent<IProps> = (props) => {
     const newPosition = { Height: targetLocation.height, Top: targetLocation.top, Left: targetLocation.left, Width: targetLocation.width }
     if (!isEqual(newPosition, targetPosition))
       setTargetPosition(newPosition)
-  }, [props.Show, props.Target, targetPosition]);
+  }, [shouldShow, props.Target, targetPosition]);
 
   React.useLayoutEffect(() => {
     const [t, l, arrowLeft] = getPosition(toolTip, targetPosition, position);
@@ -147,7 +180,7 @@ export const Tooltip: React.FunctionComponent<IProps> = (props) => {
       <Portal>
         <PopoverDiv
           className={`popover bs-popover-${position}`}
-          Show={props.Show}
+          Show={shouldShow}
           Top={top}
           Left={left}
           ref={toolTip}
