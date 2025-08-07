@@ -197,11 +197,11 @@ namespace Gemstone {
             }
 
             export interface IDecisionTreeNode {
-                Prompt: string;
+                Prompt: string | JSX.Element;
                 /** Branch options (if absent or empty, this will be treated as a result node) */
                 Options?: IDecisionNodeOption[];
-                /** Final outcome (only for result nodes) */
-                Result?: string;
+                /** RecommendedValue (only for result nodes) */
+                RecommendedValue?: any;
             }
 
             export interface IDecisionTreeData {
