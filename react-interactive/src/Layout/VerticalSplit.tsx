@@ -229,9 +229,9 @@ const VerticalSplit: React.FunctionComponent<IProps> = (props) => {
             else if(section != null)
                 result.push(<div style={{ width: isNaN(w) ? 0 : w, float: 'left', minHeight: 1, height: '100%' }} key={'sec-'+ section.key}>{section}</div>)
 
-            if (e.IsDrawer)
+            if (e.IsDrawer && dwr != null)
                 result.push(
-                    <div style={{ width: 35, float: 'left', minHeight: 1, height: '100%' }} key={dwr.key}>
+                    <div style={{ width: 35, float: 'left', minHeight: 1, height: '100%' }} key={dwr?.key}>
                         <DrawerHeader
                             title={e.Label} symbol={(e.ShowClosed === undefined || e.ShowClosed)? 'Close' : 'X'}
                             onClick={() => ToggleDrawer(e.Index)} showTooltip={false}
@@ -241,9 +241,11 @@ const VerticalSplit: React.FunctionComponent<IProps> = (props) => {
 
             // need to rescope otherwhise i will be max at time of callback.
             const scopedI = i*1;
-            result.push(<VerticalSplitDivider style={props.sliderStyle}
-                onClick={(x) => { setSliderOriginal(x); setActiveSlider(scopedI)}}
-                key={'split-' + (e.IsDrawer? dwr.key : section.key)} />);
+
+            if((e.IsDrawer && dwr != null) || (!e.IsDrawer && section != null))
+                result.push(<VerticalSplitDivider style={props.sliderStyle}
+                    onClick={(x) => { setSliderOriginal(x); setActiveSlider(scopedI)}}
+                    key={'split-' + (e.IsDrawer? dwr.key : section.key)} />);
 
             i = i+1;
         });
