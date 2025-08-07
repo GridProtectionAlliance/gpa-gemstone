@@ -123,20 +123,25 @@ export const Tooltip = (props: React.PropsWithChildren<IProps>) => {
 
   //Effect to handle mouse hover state
   React.useEffect(() => {
+    if (!toolTip.current) return;
+    const tootipDiv = toolTip.current;
 
-    function handleMouseMove(e: MouseEvent) {
-
-      if (toolTip.current?.contains(e.target as Node) ?? false) {
-        clearTimeout(closeTimer.current);
-        setIsTooltipHovered(true);
-      } else
-        setIsTooltipHovered(false);
-
+    function onMouseMoveInside() {
+      clearTimeout(closeTimer.current);
+      setIsTooltipHovered(true);
     }
 
-    if (!props.Show) return;
-    document.addEventListener('mousemove', handleMouseMove);
-    return () => document.removeEventListener('mousemove', handleMouseMove);
+    function onMouseLeave() {
+      setIsTooltipHovered(false);
+    }
+
+    tootipDiv.addEventListener('mousemove', onMouseMoveInside);
+    tootipDiv.addEventListener('mouseleave', onMouseLeave);
+
+    return () => {
+      tootipDiv.removeEventListener('mousemove', onMouseMoveInside);
+      tootipDiv.removeEventListener('mouseleave', onMouseLeave);
+    };
   }, [props.Show]);
 
   // Effect to handle delayed hiding of tooltip to allow for hover logic
