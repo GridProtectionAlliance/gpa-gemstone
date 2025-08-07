@@ -162,12 +162,12 @@ const MultiSelect = (props: IProps) => {
       }
 
       {showHelpIcon ?
-        <ToolTip Show={showHelp} Target={helperGuid} Class="info" Position="bottom">
+        <ToolTip Show={showHelp} Target={helperGuid} Class="info" Position="top">
           {props.Help}
         </ToolTip>
         : null}
       {(props.ShowToolTip ?? false) ?
-        <ToolTip Show={showItems} Target={guid} Position="bottom">
+        <ToolTip Show={showItems} Target={guid} Position="top">
           <p>Selected Options:</p>
           {selectedOptions.slice(0, 10).map((opt, i) => <p key={i}>{opt.Label}</p>)}
           {selectedOptions.length > 10 ? <p>{`and ${selectedOptions.length - 10} other(s)`}</p> : null}

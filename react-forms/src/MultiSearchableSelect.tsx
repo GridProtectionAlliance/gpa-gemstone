@@ -68,7 +68,7 @@ function MultiSearchableSelect<T>(props: IProps<T>) {
                             : null}
                         <button className='btn' onClick={() => props.Setter({ ...props.Record, [props.Field]: [props.DefaultValue] })}> <ReactIcons.CirclePlus /> </button>
                     </label>
-                    <ToolTip Show={showHelp && props.Help != null} Target={guid} Class="info" Position="bottom">
+                    <ToolTip Show={showHelp && props.Help != null} Target={guid} Class="info" Position="top">
                         {props.Help}
                     </ToolTip>
                 </>

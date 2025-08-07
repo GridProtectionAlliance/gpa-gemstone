@@ -103,7 +103,7 @@ export default function TextArea<T>(props: IProps<T>) {
 
       {/* Help message component */}
       {showHelpIcon ?
-        <ToolTip Show={showHelp} Target={guid} Class="info" Position="bottom">
+        <ToolTip Show={showHelp} Target={guid} Class="info" Position="top">
           {props.Help}
         </ToolTip>
         : null}

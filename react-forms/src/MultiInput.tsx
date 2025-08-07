@@ -100,7 +100,7 @@ function MultiInput<T>(props: IProps<T>) {
                             <ReactIcons.CirclePlus />
                         </button>
                     </label>
-                    <ToolTip Show={showHelp && props.Help != null} Target={guid} Class="info" Position="bottom">
+                    <ToolTip Show={showHelp && props.Help != null} Target={guid} Class="info" Position="top">
                         {props.Help}
                     </ToolTip>
                 </>
