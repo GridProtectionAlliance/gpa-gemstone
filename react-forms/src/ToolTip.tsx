@@ -123,7 +123,7 @@ export const Tooltip = (props: React.PropsWithChildren<IProps>) => {
 
   //Effect to handle mouse hover state
   React.useEffect(() => {
-    if (!toolTip.current) return;
+    if (toolTip.current == null) return;
     const tootipDiv = toolTip.current;
 
     function onMouseMoveInside() {
