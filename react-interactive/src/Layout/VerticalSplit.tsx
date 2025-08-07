@@ -221,12 +221,12 @@ const VerticalSplit: React.FunctionComponent<IProps> = (props) => {
             const section = sections[e.Index];
             const dwr = drawer[e.Index];
 
-            if ((e.IsDrawer && e.Open !== true) || section == null || dwr == null)
+            if (e.IsDrawer && e.Open !== true)
                 return;
 
-            if (e.IsDrawer)
+            if (e.IsDrawer && dwr != null)
                 result.push(<div style={{ width: isNaN(w) ? 0 : w, float: 'left', minHeight: 1, height: '100%' }} key={'draw-'+ dwr.key}>{dwr}</div>)
-            else
+            else if(section != null)
                 result.push(<div style={{ width: isNaN(w) ? 0 : w, float: 'left', minHeight: 1, height: '100%' }} key={'sec-'+ section.key}>{section}</div>)
 
             if (e.IsDrawer)
