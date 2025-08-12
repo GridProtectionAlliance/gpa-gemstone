@@ -27,13 +27,40 @@ import ToolTip from './ToolTip';
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import { CreateGuid } from '@gpa-gemstone/helper-functions';
 import { IProps as ISearchableSelectProps } from './SearchableSelect';
+import { Gemstone } from '@gpa-gemstone/application-typings';
 
-interface IProps<T> extends ISearchableSelectProps<T> {
+interface IBaseProps<T> extends Omit<ISearchableSelectProps<T>, 'Valid' | 'Feedback' | 'GetLabel'> { }
+
+interface IProps<T> extends IBaseProps<T> {
     /**
       * Default value to use when adding an item and when value is null
       * @type {number}
     */
-    DefaultValue: number | string
+    DefaultValue: number | string,
+    /**
+     * Function to determine the validity of a field
+     * @param field - Field of the record to check
+     * @returns {boolean}
+    */
+    ItemValid?: (value: string | number, index: number, arr: Array<string | number>) => boolean;
+    /**
+      * Feedback message to show when input is invalid
+      * @type {string}
+      * @optional
+    */
+    ItemFeedback?: (value: string | number, index: number, arr: Array<string | number>) => string | undefined;
+    /**
+     * 
+    */
+    GetLabel?: (value: string | number | null, index: number) => Gemstone.TSX.Interfaces.AbortablePromise<string>,
+    /**
+     * Flag to disable add button
+     */
+    DisableAdd?: boolean;
+    /**
+     * Flag to disable all input fields
+     */
+    Disabled?: boolean; //redeclared for better jsdoc
 }
 
 //Only supporting string/number arrays for now
@@ -76,14 +103,14 @@ function MultiSearchableSelect<T>(props: IProps<T>) {
 
             {fieldArray.map((r, index) => (
                 <div className='row align-items-center' key={index}>
-                    <div className='col'>
+                    <div className='col-10'>
                         <SearchableSelect<(string | number)[]>
                             Record={fieldArray}
                             Field={index}
                             Label={index === 0 ? props.Label : ''}
                             Help={index === 0 ? props.Help : undefined}
-                            Feedback={props.Feedback}
-                            Valid={() => props.Valid != null ? props.Valid(props.Field) : true}
+                            Feedback={props.ItemFeedback?.(r, index, fieldArray) ?? undefined}
+                            Valid={() => props.ItemValid?.(r, index, fieldArray) ?? true}
                             Style={props.Style}
                             Disabled={props.Disabled}
                             Setter={(record) => {
@@ -93,12 +120,12 @@ function MultiSearchableSelect<T>(props: IProps<T>) {
                             }}
                             Search={props.Search}
                             BtnStyle={props.BtnStyle}
-                            GetLabel={props.GetLabel}
+                            GetLabel={props.GetLabel != null ? () => props.GetLabel!(fieldArray[index], index) : undefined}
                             ResetSearchOnSelect={props.ResetSearchOnSelect}
                             AllowCustom={props.AllowCustom}
                         />
                     </div>
-                    <div className='col-auto'>
+                    <div className={`col-${index === [...fieldArray].length - 1 ? 1 : 2} ${index === 0 ? 'd-flex align-items-center' : ''}`}>
                         <button className='btn' style={(props.Disabled ?? false) ? { display: 'none' } : undefined}
                             onClick={() => {
                                 const newRecords = [...fieldArray].filter((_, i) => i !== index);
@@ -108,8 +135,10 @@ function MultiSearchableSelect<T>(props: IProps<T>) {
                         </button>
                     </div>
                     {index === [...fieldArray].length - 1 ?
-                        <div className='col-auto'>
-                            <button className='btn' style={(props.Disabled ?? false) ? { display: 'none' } : undefined}
+                        <div className={`col-1 ${index === 0 ? 'd-flex align-items-center' : ''}`}>
+                            <button
+                                className='btn'
+                                style={((props.DisableAdd || props.Disabled) ?? false) ? { display: 'none' } : undefined}
                                 onClick={() => {
                                     const newRecords = [...[...fieldArray], props.DefaultValue];
                                     props.Setter({ ...props.Record, [props.Field]: newRecords });
