@@ -29,9 +29,7 @@ import { CreateGuid } from '@gpa-gemstone/helper-functions';
 import { IProps as ISearchableSelectProps } from './SearchableSelect';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 
-interface IBaseProps<T> extends Omit<ISearchableSelectProps<T>, 'Valid' | 'Feedback' | 'GetLabel'> { }
-
-interface IProps<T> extends IBaseProps<T> {
+interface IProps<T> extends Omit<ISearchableSelectProps<T>, 'Valid' | 'Feedback' | 'GetLabel'> {
     /**
       * Default value to use when adding an item and when value is null
       * @type {number}
@@ -138,7 +136,7 @@ function MultiSearchableSelect<T>(props: IProps<T>) {
                         <div className={`col-1 ${index === 0 ? 'd-flex align-items-center' : ''}`}>
                             <button
                                 className='btn'
-                                style={((props.DisableAdd || props.Disabled) ?? false) ? { display: 'none' } : undefined}
+                                style={(((props.DisableAdd ?? false) || (props.Disabled ?? false)) ?? false) ? { display: 'none' } : undefined}
                                 onClick={() => {
                                     const newRecords = [...[...fieldArray], props.DefaultValue];
                                     props.Setter({ ...props.Record, [props.Field]: newRecords });

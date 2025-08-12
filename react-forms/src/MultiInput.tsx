@@ -28,10 +28,7 @@ import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import { CreateGuid } from '@gpa-gemstone/helper-functions';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 
-interface IBaseProps<T> extends Omit<Gemstone.TSX.Interfaces.IBaseFormProps<T>, 'Valid' | 'Feedback'> { }
-
-
-interface IProps<T> extends IBaseProps<T> {
+interface IProps<T> extends Omit<Gemstone.TSX.Interfaces.IBaseFormProps<T>, 'Valid' | 'Feedback'> {
     /**
       * Type of the input field
       * @type {'number' | 'text' | 'password' | 'email' | 'color' | 'integer'}
@@ -88,7 +85,7 @@ function MultiInput<T>(props: IProps<T>) {
         console.warn(`MultiInput: ${props.Field.toString()} is not of type array.`)
         return <></>
     }
-    
+
     return (
         <>
             {fieldArray.length === 0 ?
@@ -158,7 +155,7 @@ function MultiInput<T>(props: IProps<T>) {
                         <div className={`col-1 ${index === 0 ? 'd-flex align-items-center' : ''}`}>
                             <button
                                 className='btn'
-                                style={((props.DisableAdd || props.Disabled) ?? false) ? { display: 'none' } : undefined}
+                                style={(((props.DisableAdd ?? false) || (props.Disabled ?? false)) ?? false) ? { display: 'none' } : undefined}
                                 onClick={() => {
                                     const newRecords = [...[...fieldArray], props.DefaultValue];
                                     props.Setter({ ...props.Record, [props.Field]: newRecords });
