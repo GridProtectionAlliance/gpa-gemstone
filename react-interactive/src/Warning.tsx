@@ -44,7 +44,11 @@ interface IProps {
     /**
      * Optional flag to show a cancel button
      */
-    ShowCancel?: boolean
+    ShowCancel?: boolean,
+    /**
+     * Optional zIndex for the modal
+     */
+    ZIndex?: number
 }
 
 // Usage:
@@ -55,10 +59,20 @@ interface IProps {
 // CallBack => Function to be called when closing the Modal either through Cancel (confirmed=false) or Confirm Button (confirmed=true)
 // Show => Whether to show the modal
 const Warning: React.FunctionComponent<IProps> = (props) => {
-
-
     return (
-        <Modal Title={props.Title} Show={props.Show} CancelBtnClass={'btn-danger'} CancelText={'Cancel'} ConfirmBtnClass={'btn-success'} ConfirmText={'Confirm'} ShowX={false} ShowCancel={props.ShowCancel ?? true} Size={'sm'} CallBack={(confirmed) => props.CallBack(confirmed)} >
+        <Modal
+            Title={props.Title}
+            Show={props.Show}
+            CancelBtnClass={'btn-danger'}
+            CancelText={'Cancel'}
+            ConfirmBtnClass={'btn-success'}
+            ConfirmText={'Confirm'}
+            ShowX={false}
+            ShowCancel={props.ShowCancel ?? true}
+            Size={'sm'}
+            CallBack={(confirmed) => props.CallBack(confirmed)}
+            ZIndex={props.ZIndex}
+        >
             <p>{props.Message}</p>
         </Modal>
     )
