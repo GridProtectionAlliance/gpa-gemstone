@@ -31,6 +31,11 @@ namespace PQBrowser {
 			MeterID: number, MeterKey: string, MeterName: string, MeterShortName: string, 
 			Phase: string, ChannelGroup: string, ChannelGroupType: string, Unit: string
 		}
+
+		export interface Series {
+			ID: number, ChannelID: number, 
+			TypeName: string, TypeDescription: string, 
+		}
 	}
 }
 
