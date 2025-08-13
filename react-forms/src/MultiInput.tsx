@@ -28,13 +28,7 @@ import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import { CreateGuid } from '@gpa-gemstone/helper-functions';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 
-interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
-    /**
-      * Function to determine the validity of a field
-      * @param field - Field of the record to check
-      * @returns {boolean}
-    */
-    Valid: (field: keyof T) => boolean;
+interface IProps<T> extends Omit<Gemstone.TSX.Interfaces.IBaseFormProps<T>, 'Valid' | 'Feedback'> {
     /**
       * Type of the input field
       * @type {'number' | 'text' | 'password' | 'email' | 'color' | 'integer'}
@@ -59,11 +53,25 @@ interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
     */
     AllowNull?: boolean,
     /**
+      * Function to determine the validity of a field
+      * @param field - Field of the record to check
+      * @returns {boolean}
+    */
+    ItemValid?: (value: string | number, index: number, arr: Array<string | number>) => boolean;
+    /**
       * Feedback message to show when input is invalid
       * @type {string}
       * @optional
     */
-    Feedback?: string,
+    ItemFeedback?: (value: string | number, index: number, arr: Array<string | number>) => string | undefined;
+    /**
+     * Flag to disable add button
+     */
+    DisableAdd?: boolean;
+    /**
+     * Flag to disable all input fields
+     */
+    Disabled?: boolean; //redeclared for better jsdoc
 }
 
 //Only supporting string/number arrays for now
@@ -100,7 +108,7 @@ function MultiInput<T>(props: IProps<T>) {
                             <ReactIcons.CirclePlus />
                         </button>
                     </label>
-                    <ToolTip Show={showHelp && props.Help != null} Target={guid} Class="info" Position="bottom">
+                    <ToolTip Show={showHelp && props.Help != null} Target={guid} Class="info" Position="top">
                         {props.Help}
                     </ToolTip>
                 </>
@@ -116,8 +124,8 @@ function MultiInput<T>(props: IProps<T>) {
                             AllowNull={props.AllowNull}
                             Type={props.Type}
                             Help={index === 0 ? props.Help : undefined}
-                            Feedback={props.Feedback}
-                            Valid={() => props.Valid(props.Field)}
+                            Feedback={props.ItemFeedback?.(r, index, fieldArray) ?? undefined}
+                            Valid={() => props.ItemValid?.(r, index, fieldArray) ?? true}
                             Style={props.Style}
                             Disabled={props.Disabled}
                             Setter={(record) => {
@@ -147,7 +155,7 @@ function MultiInput<T>(props: IProps<T>) {
                         <div className={`col-1 ${index === 0 ? 'd-flex align-items-center' : ''}`}>
                             <button
                                 className='btn'
-                                style={(props.Disabled ?? false) ? { display: 'none' } : undefined}
+                                style={(((props.DisableAdd ?? false) || (props.Disabled ?? false)) ?? false) ? { display: 'none' } : undefined}
                                 onClick={() => {
                                     const newRecords = [...[...fieldArray], props.DefaultValue];
                                     props.Setter({ ...props.Record, [props.Field]: newRecords });

@@ -461,4 +461,11 @@ export namespace ReactIcons {
             <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
             <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
         </svg>
+
+    export const Refresh = (props: IProps) =>
+        <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-refresh-ccw">
+            <polyline points="1 4 1 10 7 10"></polyline>
+            <polyline points="23 20 23 14 17 14"></polyline>
+            <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path>
+        </svg>
 }

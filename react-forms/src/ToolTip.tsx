@@ -29,10 +29,10 @@ import { Gemstone } from '@gpa-gemstone/application-typings';
 
 interface IProps {
   Show: boolean,
-  Position?: ('top' | 'bottom' | 'left' | 'right'),
+  Position?: Position,
   Target?: string,
   Zindex?: number,
-  Class?: 'primary' | 'secondary' | 'success' | 'danger' | 'info' 
+  Class?: 'primary' | 'secondary' | 'success' | 'danger' | 'info'
 }
 
 // Props to style wrapper div around tooltip content.
@@ -51,7 +51,7 @@ const PopoverDiv = styled.div<IPopoverProps>`
     display: inline-block;
     font-size: 13px;
     position: fixed;
-    pointer-events: none;
+    pointer-events: ${props => props.Show ? 'auto' : 'none'};
     transition: opacity 0.3s ease-out;
     z-index: ${props => props.Zindex};
     opacity: ${props => props.Show ? "0.9" : "0"};
@@ -65,10 +65,12 @@ const PopoverDiv = styled.div<IPopoverProps>`
   }
 `;
 
+type Position = 'top' | 'bottom' | 'left' | 'right';
+
 interface IArrowProps {
   BackgroundColor: string,
   Color: string
-  Position: 'top' | 'bottom' | 'left' | 'right',
+  Position: Position,
   ArrowPositionPercent: number
 }
 
@@ -93,16 +95,20 @@ const Arrow = styled.div<IArrowProps>`
 const defaultTargetPosition = { Top: -999, Left: -999, Width: 0, Height: 0 }
 
 // The other element needs to have data-tooltip attribute equal the target prop used for positioning
-export const Tooltip: React.FunctionComponent<IProps> = (props) => {
-  const position = props.Position ?? 'top'
+export const Tooltip = (props: React.PropsWithChildren<IProps>) => {
+  const targetPosition = props.Position ?? 'top';
 
   const toolTip = React.useRef<HTMLDivElement | null>(null);
+
+  const [isTooltipHovered, setIsTooltipHovered] = React.useState(false);
+
+  const [activePosition, setActivePosition] = React.useState<'top' | 'bottom' | 'left' | 'right'>(targetPosition);
 
   const [top, setTop] = React.useState<number>(0);
   const [left, setLeft] = React.useState<number>(0);
 
   const [arrowPositionPercent, setArrowPositionPercent] = React.useState<number>(50);
-  const [targetPosition, setTargetPosition] = React.useState<Gemstone.TSX.Interfaces.IElementPosition>(defaultTargetPosition)
+  const [targetElementPosition, setTargetElementPosition] = React.useState<Gemstone.TSX.Interfaces.IElementPosition>(defaultTargetPosition)
 
   const alertRef = React.useRef<HTMLDivElement | null>(null);
 
@@ -110,6 +116,44 @@ export const Tooltip: React.FunctionComponent<IProps> = (props) => {
   const [color, setColor] = React.useState<string>('red');
 
   const alarmClass = React.useMemo(() => props.Class != null ? `alert-${props.Class} d-none` : 'popover d-none', [props.Class])
+
+  const closeTimer = React.useRef<number>();
+  const [delayedShow, setDelayedShow] = React.useState(props.Show);
+  const shouldShow = delayedShow || isTooltipHovered;
+
+  //Effect to handle mouse hover state
+  React.useEffect(() => {
+    if (toolTip.current == null) return;
+    const tootipDiv = toolTip.current;
+
+    function onMouseMoveInside() {
+      clearTimeout(closeTimer.current);
+      setIsTooltipHovered(true);
+    }
+
+    function onMouseLeave() {
+      setIsTooltipHovered(false);
+    }
+
+    tootipDiv.addEventListener('mousemove', onMouseMoveInside);
+    tootipDiv.addEventListener('mouseleave', onMouseLeave);
+
+    return () => {
+      tootipDiv.removeEventListener('mousemove', onMouseMoveInside);
+      tootipDiv.removeEventListener('mouseleave', onMouseLeave);
+    };
+  }, [props.Show]);
+
+  // Effect to handle delayed hiding of tooltip to allow for hover logic
+  React.useEffect(() => {
+    if (props.Show) {
+      clearTimeout(closeTimer.current);
+      setDelayedShow(true);
+    } else if (!isTooltipHovered) {
+      //delay closing by a quarter of a second to allow for hover
+      closeTimer.current = window.setTimeout(() => setDelayedShow(false), 250);
+    }
+  }, [props.Show, isTooltipHovered]);
 
   React.useLayoutEffect(() => {
     if (alertRef.current == null) return;
@@ -122,22 +166,23 @@ export const Tooltip: React.FunctionComponent<IProps> = (props) => {
   React.useEffect(() => {
     const target = document.querySelectorAll(`[data-tooltip${props.Target === undefined ? '' : `="${props.Target}"`}]`)
     if (target.length === 0) {
-      setTargetPosition(defaultTargetPosition)
+      setTargetElementPosition(defaultTargetPosition)
       return;
     }
 
     const targetLocation = GetNodeSize(target[0] as HTMLElement);
     const newPosition = { Height: targetLocation.height, Top: targetLocation.top, Left: targetLocation.left, Width: targetLocation.width }
-    if (!isEqual(newPosition, targetPosition))
-      setTargetPosition(newPosition)
-  }, [props.Show, props.Target, targetPosition]);
+    if (!isEqual(newPosition, targetElementPosition))
+      setTargetElementPosition(newPosition)
+  }, [shouldShow, props.Target, targetElementPosition]);
 
   React.useLayoutEffect(() => {
-    const [t, l, arrowLeft] = getPosition(toolTip, targetPosition, position);
+    const [t, l, arrowLeft, actPosition] = getPosition(toolTip, targetElementPosition, targetPosition);
     setTop(t);
     setLeft(l);
     setArrowPositionPercent(arrowLeft);
-  }, [targetPosition, props?.children, position]);
+    setActivePosition(actPosition as Position);
+  }, [targetElementPosition, props?.children, targetPosition]);
 
   const zIndex = (props.Zindex === undefined ? 9999 : props.Zindex);
 
@@ -146,8 +191,8 @@ export const Tooltip: React.FunctionComponent<IProps> = (props) => {
       <div className={alarmClass} ref={alertRef} />
       <Portal>
         <PopoverDiv
-          className={`popover bs-popover-${position}`}
-          Show={props.Show}
+          className={`popover bs-popover-${activePosition}`}
+          Show={shouldShow}
           Top={top}
           Left={left}
           ref={toolTip}
@@ -157,7 +202,7 @@ export const Tooltip: React.FunctionComponent<IProps> = (props) => {
         >
           <Arrow
             className='arrow'
-            Position={position}
+            Position={activePosition}
             ArrowPositionPercent={arrowPositionPercent}
             BackgroundColor={backgroundColor}
             Color={color}
@@ -180,7 +225,10 @@ const getPosition = (toolTip: React.MutableRefObject<HTMLDivElement | null>, tar
   const offset = 5;
   let top = 0;
   let left = 0;
+
   const windowWidth = window.innerWidth;
+  const windowHeight = window.innerHeight;
+  let effectivePosition = position;
 
   if (position === 'left') {
     top = targetPosition.Top + 0.5 * targetPosition.Height - 0.5 * tipLocation.height;
@@ -191,7 +239,14 @@ const getPosition = (toolTip: React.MutableRefObject<HTMLDivElement | null>, tar
     left = targetPosition.Left + targetPosition.Width + offset;
   }
   else if (position === 'top' || position === undefined) {
-    top = targetPosition.Top - tipLocation.height - offset;
+    // if not enough room above, flip to bottom
+    if (targetPosition.Top >= tipLocation.height + offset) {
+      effectivePosition = 'top';
+      top = targetPosition.Top - tipLocation.height - offset;
+    } else {
+      effectivePosition = 'bottom';
+      top = targetPosition.Top + targetPosition.Height + offset;
+    }
     left = targetPosition.Left + 0.5 * targetPosition.Width - 0.5 * tipLocation.width;
 
     // If tooltip goes beyond right viewport boundary adjust left position to fit
@@ -203,7 +258,13 @@ const getPosition = (toolTip: React.MutableRefObject<HTMLDivElement | null>, tar
       left = offset;
   }
   else if (position === 'bottom') {
-    top = targetPosition.Top + targetPosition.Height + offset;
+    if (windowHeight - (targetPosition.Top + targetPosition.Height) >= tipLocation.height + offset) {
+      effectivePosition = 'bottom';
+      top = targetPosition.Top + targetPosition.Height + offset;
+    } else {
+      effectivePosition = 'top';
+      top = targetPosition.Top - tipLocation.height - offset;
+    }
     left = targetPosition.Left + 0.5 * targetPosition.Width - 0.5 * tipLocation.width;
 
     //If tooltip goes beyond right viewport boundary adjust left position to fit
@@ -225,7 +286,7 @@ const getPosition = (toolTip: React.MutableRefObject<HTMLDivElement | null>, tar
     arrowPositionPercent = ((targetCenter - top) / tipLocation.height) * 100;
   }
 
-  return [top, left, arrowPositionPercent];
+  return [top, left, arrowPositionPercent, effectivePosition] as [number, number, number, 'top' | 'bottom' | 'left' | 'right'];
 }
 
 export default Tooltip;

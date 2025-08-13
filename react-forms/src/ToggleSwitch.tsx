@@ -73,7 +73,7 @@ export default function ToggleSwitch<T>(props: IProps<T>) {
             >
               <ReactIcons.QuestionMark Color="var(--info)" Size={20} />
             </span>
-            <ToolTip Show={showHelp} Target={helpID} Zindex={9999} Class="info" Position="bottom">
+            <ToolTip Show={showHelp} Target={helpID} Zindex={9999} Class="info" Position="top">
               {props.Help}
             </ToolTip>
           </>

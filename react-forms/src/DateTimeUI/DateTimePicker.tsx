@@ -245,7 +245,7 @@ export default function DateTimePickerBase<T>(props: IProps<T>) {
                 : null}
 
             {showHelpIcon ?
-                <ToolTip Show={showHelp} Target={helpGuid} Class="info" Position="bottom">
+                <ToolTip Show={showHelp} Target={helpGuid} Class="info" Position="top">
                     {props.Help}
                 </ToolTip>
                 : null}

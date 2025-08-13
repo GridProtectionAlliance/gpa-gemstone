@@ -218,16 +218,20 @@ const VerticalSplit: React.FunctionComponent<IProps> = (props) => {
         let i = 0;
         _.orderBy(elements,(e) => e.Order).forEach((e,index) => {
             const w = Math.floor(scaling * e.Width);
-            if (e.IsDrawer && e.Open !== true)
-                    return;
-            if (e.IsDrawer)
-                result.push(<div style={{ width: isNaN(w) ? 0 : w, float: 'left', minHeight: 1, height: '100%' }} key={'draw-'+ drawer[e.Index].key}>{drawer[e.Index]}</div>)
-            else
-                result.push(<div style={{ width: isNaN(w) ? 0 : w, float: 'left', minHeight: 1, height: '100%' }} key={'sec-'+ sections[e.Index].key}>{sections[e.Index]}</div>)
+            const section = sections[e.Index];
+            const dwr = drawer[e.Index];
 
-            if (e.IsDrawer)
+            if (e.IsDrawer && e.Open !== true)
+                return;
+
+            if (e.IsDrawer && dwr != null)
+                result.push(<div style={{ width: isNaN(w) ? 0 : w, float: 'left', minHeight: 1, height: '100%' }} key={'draw-'+ dwr.key}>{dwr}</div>)
+            else if(section != null)
+                result.push(<div style={{ width: isNaN(w) ? 0 : w, float: 'left', minHeight: 1, height: '100%' }} key={'sec-'+ section.key}>{section}</div>)
+
+            if (e.IsDrawer && dwr != null)
                 result.push(
-                    <div style={{ width: 35, float: 'left', minHeight: 1, height: '100%' }} key={drawer[e.Index].key}>
+                    <div style={{ width: 35, float: 'left', minHeight: 1, height: '100%' }} key={dwr?.key}>
                         <DrawerHeader
                             title={e.Label} symbol={(e.ShowClosed === undefined || e.ShowClosed)? 'Close' : 'X'}
                             onClick={() => ToggleDrawer(e.Index)} showTooltip={false}
@@ -237,9 +241,11 @@ const VerticalSplit: React.FunctionComponent<IProps> = (props) => {
 
             // need to rescope otherwhise i will be max at time of callback.
             const scopedI = i*1;
-            result.push(<VerticalSplitDivider style={props.sliderStyle}
-                onClick={(x) => { setSliderOriginal(x); setActiveSlider(scopedI)}}
-                key={'split-' + (e.IsDrawer? drawer[e.Index].key : sections[e.Index].key)} />);
+
+            if((e.IsDrawer && dwr != null) || (!e.IsDrawer && section != null))
+                result.push(<VerticalSplitDivider style={props.sliderStyle}
+                    onClick={(x) => { setSliderOriginal(x); setActiveSlider(scopedI)}}
+                    key={'split-' + (e.IsDrawer? dwr.key : section.key)} />);
 
             i = i+1;
         });

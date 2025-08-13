@@ -48,6 +48,7 @@ import Breadcrumb from './Breadcrumb';
 import { Gemstone } from './HelperAlerts/HelperAlerts';
 import StatusProgressBar from './StatusProgressBar';
 import ExternalPage from './Menue/ExternalPage';
+import DecisionHelpTree from './DecisionHelpTree';
 
 export {
   Modal,
@@ -80,5 +81,6 @@ export {
   Breadcrumb,
   Gemstone,
   StatusProgressBar,
-  ExternalPage
+  ExternalPage,
+  DecisionHelpTree
 };

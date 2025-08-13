@@ -72,7 +72,7 @@ export default function CheckBox<T>(props: Gemstone.TSX.Interfaces.IBaseFormProp
         : null}
 
       {showHelpIcon ?
-        <ToolTip Show={showHelp} Target={guid} Class="info" Position="bottom">
+        <ToolTip Show={showHelp} Target={guid} Class="info" Position="top">
           {props.Help}
         </ToolTip>
         : null}
