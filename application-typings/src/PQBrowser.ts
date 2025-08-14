@@ -1,5 +1,5 @@
 // ******************************************************************************************************
-//  index.ts - Gbtc
+//  PQBrowser.ts - Gbtc
 //
 //  Copyright © 2021, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,18 +16,30 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  09/30/2020 - Billy Ernest
+//  08/01/2025 - G. Santos
 //       Generated original version of source code.
 //
 // ******************************************************************************************************
-import PqDiff from './PqDiff'
-import OpenHistorian from './OpenHistorian';
-import SOETools from './SOETools';
-import SystemCenter from './SystemCenter';
-import Application from './Application';
-import OpenXDA from './OpenXDA';
-import PQI from './PQI';
-import Gemstone from './Gemstone';
-import PQBrowser from './PQBrowser';
 
-export { PqDiff, SOETools, OpenHistorian, SystemCenter, Application, OpenXDA, PQI, Gemstone, PQBrowser }
+
+namespace PQBrowser {
+    export namespace Types {
+		// Types
+		export interface TrendChannel { 
+			ID: number, Name: string, Description: string, 
+			AssetID: number, AssetKey: string, AssetName: string, 
+			MeterID: number, MeterKey: string, MeterName: string, MeterShortName: string, 
+			Phase: string, ChannelGroup: string, ChannelGroupType: string, Unit: string
+		}
+
+		export interface Series {
+			ID: number, ChannelID: number, 
+			TypeName: string, TypeDescription: string, 
+		}
+	}
+}
+
+export default PQBrowser;
+
+
+
