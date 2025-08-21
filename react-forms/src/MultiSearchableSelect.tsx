@@ -29,7 +29,7 @@ import { CreateGuid } from '@gpa-gemstone/helper-functions';
 import { IProps as ISearchableSelectProps } from './SearchableSelect';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 
-interface IProps<T> extends Omit<ISearchableSelectProps<T>, 'Valid' | 'Feedback' | 'GetLabel'> {
+interface IProps<T> extends Omit<ISearchableSelectProps<T>, 'Valid' | 'Feedback' | 'GetLabel' | 'Setter'> {
     /**
       * Default value to use when adding an item and when value is null
       * @type {number}
@@ -59,6 +59,11 @@ interface IProps<T> extends Omit<ISearchableSelectProps<T>, 'Valid' | 'Feedback'
      * Flag to disable all input fields
      */
     Disabled?: boolean; //redeclared for better jsdoc
+    /**
+    * Setter function to update the Record
+    * @param record - Updated Record
+    */
+    Setter: (record: T, selectedOption?: Gemstone.TSX.Interfaces.ILabelValue<string | number>) => void;
 }
 
 //Only supporting string/number arrays for now
@@ -91,7 +96,10 @@ function MultiSearchableSelect<T>(props: IProps<T>) {
                                 <ReactIcons.QuestionMark Color="var(--info)" Size={20} />
                             </span>
                             : null}
-                        <button className='btn' onClick={() => props.Setter({ ...props.Record, [props.Field]: [props.DefaultValue] })}> <ReactIcons.CirclePlus /> </button>
+                        <button className='btn'
+                            onClick={() => props.Setter({ ...props.Record, [props.Field]: [props.DefaultValue] }, { Label: props.DefaultValue.toString(), Value: props.DefaultValue })}>
+                            <ReactIcons.CirclePlus />
+                        </button>
                     </label>
                     <ToolTip Show={showHelp && props.Help != null} Target={guid} Class="info" Position="top">
                         {props.Help}
@@ -111,10 +119,10 @@ function MultiSearchableSelect<T>(props: IProps<T>) {
                             Valid={() => props.ItemValid?.(r, index, fieldArray) ?? true}
                             Style={props.Style}
                             Disabled={props.Disabled}
-                            Setter={(record) => {
+                            Setter={(record, option) => {
                                 const newArray = [...fieldArray];
                                 newArray[index] = record[index];
-                                props.Setter({ ...props.Record, [props.Field]: newArray });
+                                props.Setter({ ...props.Record, [props.Field]: newArray }, option);
                             }}
                             Search={props.Search}
                             BtnStyle={props.BtnStyle}

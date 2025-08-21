@@ -29,7 +29,7 @@ import { CreateGuid } from '@gpa-gemstone/helper-functions'
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 
-interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
+interface IProps<T> extends Omit<Gemstone.TSX.Interfaces.IBaseFormProps<T>, 'Setter'> {
   /**
     * Options for the select dropdown
     * @type {{ Value: string; Label: string }[]}
@@ -47,6 +47,12 @@ interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
     * @optional
   */
   EmptyLabel?: string;
+
+  /**
+    * Setter function to update the Record
+    * @param record - Updated Record
+  */
+  Setter: (record: T, selectedOption: Gemstone.TSX.Interfaces.ILabelValue<string | number>) => void;
 }
 
 
@@ -58,7 +64,8 @@ export default function Select<T>(props: IProps<T>) {
   React.useEffect(() => {
     const currentValue = GetRecordValue();
     if (!(props.EmptyOption ?? false) && props.Options.length > 0 && props.Options.findIndex((option) => option.Value == currentValue) === -1) {
-      SetRecord(props.Options[0].Value);
+      const option = props.Options[0];
+      SetRecord(option.Value, option);
       // tslint:disable-next-line
       console.warn("The current value is not available as an option. Specify EmptyOption=true if the value should be allowed.")
     }
@@ -66,7 +73,7 @@ export default function Select<T>(props: IProps<T>) {
   }, [props.Options]);
 
   // Update the parent component's state with the new value.
-  function SetRecord(value: string | number): void {
+  function SetRecord(value: string | number, option: Gemstone.TSX.Interfaces.ILabelValue<string | number>): void {
     const record: T = { ...props.Record };
     if (value !== '') {
       const val = props.Options.find(op => op.Value == value)?.Value ?? value
@@ -76,7 +83,7 @@ export default function Select<T>(props: IProps<T>) {
       record[props.Field] = null as unknown as T[keyof T];
 
     if (record[props.Field] != props.Record[props.Field])
-      props.Setter(record);
+      props.Setter(record, option);
   }
 
   // Rretrieve the current value of the select field from the record.
@@ -116,7 +123,11 @@ export default function Select<T>(props: IProps<T>) {
       {/* Rendering the select input */}
       <select
         className="form-control"
-        onChange={(evt) => SetRecord(evt.target.value)}
+        onChange={(evt) => {
+          const val = evt.target.value;
+          const option = props.Options.find(op => op.Value == val)!;
+          SetRecord(val, option);
+        }}
         value={GetRecordValue() as string | number}
         disabled={props.Disabled == null ? false : props.Disabled}
       >
