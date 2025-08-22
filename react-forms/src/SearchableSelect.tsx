@@ -26,7 +26,7 @@ import StylableSelect, { IOption as IStylableOption } from './StylableSelect';
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 
-export interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
+export interface IProps<T> extends Omit<Gemstone.TSX.Interfaces.IBaseFormProps<T>, 'Setter'> {
     /**
     * Function to determine the validity of a field
     * @param field - Field of the record to check
@@ -70,7 +70,13 @@ export interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
     /**
      * Flag to reset search text to an empty string when a user selects an option or when the element loses focus. Defaulting to false
      */
-    ResetSearchOnSelect?: boolean
+    ResetSearchOnSelect?: boolean,
+
+    /**
+    * Setter function to update the Record
+    * @param record - Updated Record
+    */
+    Setter: (record: T, selectedOption: Gemstone.TSX.Interfaces.ILabelValue<string | number>) => void;
 }
 
 const getInitialSearchText = (useBlankString: boolean, recordValue: any) => {
@@ -87,7 +93,7 @@ export default function SearchableSelect<T>(props: IProps<T>) {
 
     const setter = React.useCallback((record: T, selectedOption: IStylableOption) => {
         handleSetSearch(selectedOption);
-        props.Setter(record);
+        props.Setter(record, {Label: selectedOption.Element as string, Value: selectedOption.Value}); //we know Element is a string as we set this ourselves
     }, [props.Setter, props.Field]);
 
     const handleSetSearch = React.useCallback((selectedOption?: IStylableOption) => {
