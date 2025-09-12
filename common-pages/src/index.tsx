@@ -38,7 +38,7 @@ import { useCSVFieldEditContext, CSVFieldEditContext } from './Pipelines/CSVPipe
 import { ITimeFilter } from './TimeFilter/TimeFilter';
 import { IStartDuration, IStartEnd, } from './TimeFilter/TimeWindowUtils';
 import { IEndDuration } from '../lib/TimeFilter/TimeWindowUtils';
-
+import { Gemstone } from './Gemstone/Gemstone';
 
 const Pipelines = {
   CSV: useCSVPipeline
@@ -63,5 +63,6 @@ export {
   ITimeFilter,
   IStartEnd,
   IStartDuration,
-  IEndDuration
+  IEndDuration,
+  Gemstone
 };
