@@ -35,6 +35,10 @@ import * as TimeWindowUtils from './TimeFilter/TimeWindowUtils';
 import BulkUpload from './BulkUpload';
 import RoleAccessErrorPage from './RoleAcessErrorPage';
 import { useCSVFieldEditContext, CSVFieldEditContext } from './Pipelines/CSVPipeline/CSVFieldContext';
+import { ITimeFilter } from './TimeFilter/TimeFilter';
+import { IStartDuration, IStartEnd, } from './TimeFilter/TimeWindowUtils';
+import { IEndDuration } from '../lib/TimeFilter/TimeWindowUtils';
+
 
 const Pipelines = {
   CSV: useCSVPipeline
@@ -55,5 +59,9 @@ export {
   useCSVFieldEditContext,
   CSVFieldEditContext,
   BulkUpload,
-  RoleAccessErrorPage
+  RoleAccessErrorPage,
+  ITimeFilter,
+  IStartEnd,
+  IStartDuration,
+  IEndDuration
 };
