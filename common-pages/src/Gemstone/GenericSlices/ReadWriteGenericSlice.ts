@@ -56,7 +56,7 @@ export default class ReadWriteGenericSlice<T> extends ReadOnlyGenericSlice<T> {
 
     private initializeReadWriteSlice() {
         this.Add = createAsyncThunk(`${this.Name}/Add${this.Name}`, async (record, { signal }) => {
-            if (this.addHandle?.abort)
+            if (this.addHandle?.abort != null)
                 this.addHandle.abort('Prev');
 
             this.addHandle = this.readWriteController.Add(record);
@@ -68,7 +68,7 @@ export default class ReadWriteGenericSlice<T> extends ReadOnlyGenericSlice<T> {
         });
 
         this.Update = createAsyncThunk(`${this.Name}/Update${this.Name}`, async (record, { signal }) => {
-            if (this.updateHandle?.abort)
+            if (this.updateHandle?.abort != null)
                 this.updateHandle.abort('Prev');
 
             this.updateHandle = this.readWriteController.Update(record);
@@ -80,7 +80,7 @@ export default class ReadWriteGenericSlice<T> extends ReadOnlyGenericSlice<T> {
         });
 
         this.Delete = createAsyncThunk(`${this.Name}/Delete${this.Name}`, async (record, { signal }) => {
-            if (this.deleteHandle?.abort)
+            if (this.deleteHandle?.abort != null)
                 this.deleteHandle.abort('Prev');
 
             if (typeof record === 'string' || typeof record === 'number')

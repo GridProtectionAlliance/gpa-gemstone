@@ -22,8 +22,6 @@
 //******************************************************************************************************
 
 import { Search } from "@gpa-gemstone/react-interactive";
-import { ReadOnlyControllerFunctions, ReadWriteControllerFunctions } from "./ControllerFunctions";
-import useInitializeWithFetch from "./GenericSlices/useInitializeData";
 
 export namespace Gemstone {
     export namespace Types {
@@ -57,19 +55,5 @@ export namespace Gemstone {
                 return { FieldName: s.FieldName, SearchParameter: searchText, Operator: s.Operator };
             }) as Types.ISearchFilter<T>[];
         }
-    }
-
-    export namespace Utilities {
-        export const ControllerFunctions = {
-            ReadOnly: ReadOnlyControllerFunctions,
-            ReadWrite: ReadWriteControllerFunctions
-        }
-
-        export const Slices = {
-            ReadOnly: ReadOnlyControllerFunctions,
-            ReadWrite: ReadWriteControllerFunctions,
-            useInitializeWithFetch
-        }
-
     }
 }

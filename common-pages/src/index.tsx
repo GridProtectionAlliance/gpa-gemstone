@@ -36,9 +36,12 @@ import BulkUpload from './BulkUpload';
 import RoleAccessErrorPage from './RoleAcessErrorPage';
 import { useCSVFieldEditContext, CSVFieldEditContext } from './Pipelines/CSVPipeline/CSVFieldContext';
 import { ITimeFilter } from './TimeFilter/TimeFilter';
-import { IStartDuration, IStartEnd, } from './TimeFilter/TimeWindowUtils';
-import { IEndDuration } from '../lib/TimeFilter/TimeWindowUtils';
+import { IStartDuration, IStartEnd, IEndDuration } from './TimeFilter/TimeWindowUtils';
 import { Gemstone } from './Gemstone/Gemstone';
+import ReadOnlyGenericSlice from './Gemstone/GenericSlices/ReadOnlyGenericSlice';
+import ReadWriteGenericSlice from './Gemstone/GenericSlices/ReadWriteGenericSlice';
+import { useInitializeWithFetch } from './Gemstone/GenericSlices/useInitializeData';
+import { ReadOnlyControllerFunctions, ReadWriteControllerFunctions } from './Gemstone/ControllerFunctions';
 
 const Pipelines = {
   CSV: useCSVPipeline
@@ -64,5 +67,12 @@ export {
   IStartEnd,
   IStartDuration,
   IEndDuration,
-  Gemstone
+  Gemstone,
+
+  //.NET Gemstone related exports
+  ReadOnlyGenericSlice as ReadOnlyGenericSlice_Gemstone,
+  ReadWriteGenericSlice as ReadWriteGenericSlice_Gemstone,
+  useInitializeWithFetch as useInitializeWithFetch_Gemstone,
+  ReadOnlyControllerFunctions as ReadOnlyControllerFunctions_Gemstone,
+  ReadWriteControllerFunctions as ReadWriteControllerFunctions_Gemstone
 };

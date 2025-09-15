@@ -31,7 +31,7 @@ import ReadOnlyGenericSlice from './ReadOnlyGenericSlice';
  * @param parentID - The optional parent ID for the data fetch.
  * @returns The current fetch status.
  */
-export default function useInitializeWithFetch<T>(slice: ReadOnlyGenericSlice<T>, dispatch: (action: any) => void, useSelector: any, parentID?: string | number) {
+export function useInitializeWithFetch<T>(slice: ReadOnlyGenericSlice<T>, dispatch: (action: any) => void, useSelector: any, parentID?: string | number) {
   const status = useSelector(slice.FetchStatus);
   const ParentID = useSelector(slice.ParentID);
 

@@ -114,9 +114,9 @@ export class ReadOnlyControllerFunctions<T> {
             }
 
             // Combine all page requests.
-            $.when.apply($, pageRequests).done(function () {
+            $.when(...pageRequests).done(function (...results) {
                 // If there's only one page, 'arguments' is not an array of arrays.
-                const responses = pageRequests.length === 1 ? [arguments] : $.makeArray(arguments);
+                const responses = pageRequests.length === 1 ? [results] : $.makeArray(results);
                 const pages: T[][] = responses.map((result: any) => result[0]);
                 const allData = ([] as T[]).concat(...pages);
                 deferred.resolve(allData);
