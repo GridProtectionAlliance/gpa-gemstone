@@ -83,27 +83,32 @@ const getInitialSearchText = (useBlankString: boolean, recordValue: any) => {
     return useBlankString ? '' : recordValue
 }
 
+interface IStylableOptionOverride extends IStylableOption {
+    Label: string
+}
+
 export default function SearchableSelect<T>(props: IProps<T>) {
     const [search, setSearch] = React.useState<string>(() =>
         getInitialSearchText(props.ResetSearchOnSelect ?? false, (props.Record[props.Field] as any)?.toString() ?? '')
     );
 
-    const [searchOptions, setSearchOptions] = React.useState<IStylableOption[]>([]);
+    const [searchOptions, setSearchOptions] = React.useState<IStylableOptionOverride[]>([]);
     const [loading, setLoading] = React.useState<boolean>(false);
 
     const setter = React.useCallback((record: T, selectedOption: IStylableOption) => {
-        handleSetSearch(selectedOption);
-        props.Setter(record, {Label: selectedOption.Element as string, Value: selectedOption.Value}); //we know Element is a string as we set this ourselves
+        const selectedOptionCasted = selectedOption as IStylableOptionOverride; //we can safely cast here because we control the options going in.. 
+        handleSetSearch(selectedOptionCasted);
+        props.Setter(record, { Label: selectedOptionCasted.Label, Value: selectedOptionCasted.Value });
     }, [props.Setter, props.Field]);
 
-    const handleSetSearch = React.useCallback((selectedOption?: IStylableOption) => {
+    const handleSetSearch = React.useCallback((selectedOption?: IStylableOptionOverride) => {
         if (props.ResetSearchOnSelect ?? false) {
             setSearch('')
             return
         }
 
         if (props.GetLabel === undefined) {
-            const newSearch: string = selectedOption ?? (props.Record[props.Field] as any)?.toString() ?? '';
+            const newSearch: string = (selectedOption?.Label as string) ?? (props.Record[props.Field] as any)?.toString() ?? '';
             setSearch(newSearch);
             return
         }
@@ -130,7 +135,7 @@ export default function SearchableSelect<T>(props: IProps<T>) {
         const timeoutHandle = setTimeout(() => {
             searchHandle = props.Search(search);
             searchHandle.then((d: Gemstone.TSX.Interfaces.ILabelValue<string | number>[]) => {
-                setSearchOptions(d.map(o => ({ Value: o.Value, Element: o.Label })));
+                setSearchOptions(d.map(o => ({ Value: o.Value, Element: o.Label, Label: o.Label })));
                 setLoading(false);
             }, () => {
                 setLoading(false);
@@ -144,10 +149,11 @@ export default function SearchableSelect<T>(props: IProps<T>) {
     }, [search]);
 
     const options = React.useMemo(() => {
-        const ops = [] as IStylableOption[];
+        const ops = [] as IStylableOptionOverride[];
 
         ops.push({
             Value: props.Record[props.Field],
+            Label: "", //Label doesnt matter in this case because you cant select this option
             Element: <div className='input-group'>
                 <input
                     type="text"
@@ -160,14 +166,16 @@ export default function SearchableSelect<T>(props: IProps<T>) {
                 />
                 {loading ?
                     <div className="input-group-append">
-                        <span className="input-group-text"><ReactIcons.SpiningIcon /></span>
+                        <span className="input-group-text">
+                            <ReactIcons.SpiningIcon />
+                        </span>
                     </div>
                     : null}
             </div>
         })
 
         if (props.AllowCustom ?? false)
-            ops.push({ Value: search, Element: <>{search} (Entered Value)</> });
+            ops.push({ Value: search, Element: <>{search} (Entered Value)</>, Label: search });
 
         ops.push(...searchOptions.filter(f => f.Value !== search && f.Value !== props.Record[props.Field]));
 
