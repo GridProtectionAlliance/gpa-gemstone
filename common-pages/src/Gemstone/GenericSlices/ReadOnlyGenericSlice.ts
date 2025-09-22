@@ -108,7 +108,7 @@ export default class ReadOnlyGenericSlice<T> {
 
             this.fetchHandle = fetchHandle;
 
-            const paginationHandle = this.controller.GetPagination();
+            const paginationHandle = this.controller.GetPageInfo();
 
             signal.addEventListener('abort', () => {
                 if (fetchHandle.abort !== undefined) fetchHandle.abort();
