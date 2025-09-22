@@ -94,7 +94,7 @@ namespace Application{
 			Name: string
 		}
 
-		export type Status = 'loading' | 'idle' | 'error' | 'changed' | 'unintiated';
+		export type Status = 'loading' | 'idle' | 'error' | 'changed' | 'uninitiated';
 		export type NewEdit = 'New' | 'Edit'
 
 		export type SecurityRoleName = 'Administrator' | 'Transmission SME' | 'PQ Data Viewer' | 'DataPusher' | 'Developer' | 'Viewer' | 'Engineer';

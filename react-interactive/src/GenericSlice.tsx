@@ -349,8 +349,8 @@ export default class GenericSlice<T extends U> {
         const slice = createSlice({
             name: this.Name,
             initialState: {
-                Status: 'unintiated',
-                SearchStatus: 'unintiated',
+                Status: 'uninitiated',
+                SearchStatus: 'uninitiated',
                 Error: null,
                 Data: [],
                 SortField: defaultSort,
@@ -360,7 +360,7 @@ export default class GenericSlice<T extends U> {
 				Filter: [],
                 ActiveFetchID: [],
                 ActiveSearchID: [],
-                PagedStatus: 'unintiated',
+                PagedStatus: 'uninitiated',
                 ActivePagedID: [],
                 CurrentPage: 0,
                 TotalPages: 0,

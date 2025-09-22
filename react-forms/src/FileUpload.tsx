@@ -45,11 +45,11 @@ const FileUpload = (props: IProps) => {
     const [fileName, setFileName] = React.useState<string | null>(null);
     const [fileSize, setFileSize] = React.useState<number | null>(null);
     const [isFileUpload, setIsFileUploaded] = React.useState<boolean>(false);
-    const [uploadStatus, setUploadStatus] = React.useState<Application.Types.Status>('unintiated');
+    const [uploadStatus, setUploadStatus] = React.useState<Application.Types.Status>('uninitiated');
 
     const handleFileUpload = (evt: React.ChangeEvent<HTMLInputElement>) => {
         if (evt.target == null || evt.target.files == null || evt.target.files.length === 0) {
-            setUploadStatus('unintiated');
+            setUploadStatus('uninitiated');
             return;
         }
 
@@ -77,7 +77,7 @@ const FileUpload = (props: IProps) => {
     }
 
     const handleOnClear = () => {
-        setUploadStatus('unintiated');
+        setUploadStatus('uninitiated');
         setIsFileUploaded(false);
         setFileName(null);
         setFileSize(null);

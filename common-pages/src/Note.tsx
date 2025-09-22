@@ -73,7 +73,7 @@ function Note(props: React.PropsWithChildren<IProps>)  {
     const [notes, setNotes] = React.useState<OpenXDA.Types.Note[]>([]);
 
     React.useEffect(() => {
-                    if (dataStatus === 'unintiated' || dataStatus === 'changed' || parentID !== props.ReferenceTableID)
+                    if (dataStatus === 'uninitiated' || dataStatus === 'changed' || parentID !== props.ReferenceTableID)
                         dispatch(props.NoteSlice.Fetch(props.ReferenceTableID));
         }, [props.ReferenceTableID, dispatch, dataStatus]);
 
