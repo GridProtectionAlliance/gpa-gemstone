@@ -31,8 +31,7 @@ export class ReadOnlyControllerFunctions<T> {
         this.APIPath = APIPath;
     }
 
-    //Rename to GetPageInfo,
-    public GetPagination: (filter?: Gemstone.Types.ISearchFilter<T>[], parentID?: string | number) => JQuery.jqXHR<Gemstone.Types.IPageInfo> = (filter, parentID?) => {
+    public GetPageInfo: (filter?: Gemstone.Types.ISearchFilter<T>[], parentID?: string | number) => JQuery.jqXHR<Gemstone.Types.IPageInfo> = (filter, parentID?) => {
         const route = parentID == null ? `${this.APIPath}/PageInfo` : `${this.APIPath}/PageInfo/${parentID}`
 
         if (filter === undefined || filter.length === 0)
@@ -67,9 +66,30 @@ export class ReadOnlyControllerFunctions<T> {
         });
     }
 
-    //this needs to be reworked so that the only required parameters is page.
-    //all other paramerters are optional just create a simple helper func to get the route.
-    GetPage: (page: number, sortField: keyof T, asc: boolean, parentID?: string | number) => JQuery.jqXHR<T[]> = (page, sortField, asc, parentID?) => {
+    GetPage: (page: number, sortField?: keyof T, asc?: boolean, parentID?: string | number) => JQuery.jqXHR<T[]> = (page, sortField, asc, parentID?) => {
+        if (sortField == null || asc == null) {
+            if (parentID != null) {
+                return $.ajax({
+                    type: 'GET',
+                    url: `${this.APIPath}/${page}/${parentID}`,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: 'json',
+                    cache: false,
+                    async: true
+                });
+            }
+
+            return $.ajax({
+                type: 'GET',
+                url: `${this.APIPath}/${page}`,
+                contentType: "application/json; charset=utf-8",
+                dataType: 'json',
+                cache: false,
+                async: true
+            });
+
+        }
+
         if (parentID != null)
             return $.ajax({
                 type: 'GET',
@@ -98,7 +118,7 @@ export class ReadOnlyControllerFunctions<T> {
         const pending: JQuery.jqXHR<any>[] = [];
 
         // First, determine the number of pages.
-        const pagReq = this.GetPagination(filter ?? [], parentID).done((pageInfo: Gemstone.Types.IPageInfo) => {
+        const pagReq = this.GetPageInfo(filter ?? [], parentID).done((pageInfo: Gemstone.Types.IPageInfo) => {
             const pageCount = pageInfo.PageCount;
             if (pageCount <= 0) {
                 deferred.resolve([]);
