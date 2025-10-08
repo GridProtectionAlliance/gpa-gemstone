@@ -43,6 +43,10 @@ interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
         * @type {IOption[]}
     */
     Options: IOption[];
+    /**
+     * Optional Style to be applied to the form-group container div
+    */
+    Style?: React.CSSProperties;
 }
 
 export default function RadioButtons<T>(props: IProps<T>) {
@@ -54,7 +58,7 @@ export default function RadioButtons<T>(props: IProps<T>) {
     const label = props.Label === undefined ? props.Field : props.Label;
 
     return (
-        <div className="form-group">
+        <div className="form-group" style={props.Style}>
             <label className="form-check-label w-100 d-flex align-items-center">
                 <span>
                     {label}
