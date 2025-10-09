@@ -23,6 +23,7 @@
 
 import * as React from 'react';
 import leaflet from 'leaflet';
+import { useGetContainerPosition } from '@gpa-gemstone/helper-functions';
 
 interface IProps {
     Map: React.MutableRefObject<leaflet.Map | null>,
@@ -33,6 +34,12 @@ interface IProps {
 
 const Map = (props: IProps) => {
     const mapDivRef = React.useRef<HTMLDivElement | null>(null);
+    const { width, height } = useGetContainerPosition(mapDivRef);
+
+    React.useEffect(() => {
+        if (props.Map.current == null) return
+        props.Map.current.invalidateSize();
+    }, [width, height])
 
     // Initialize map
     React.useEffect(() => {
