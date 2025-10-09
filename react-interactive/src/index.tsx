@@ -49,6 +49,7 @@ import { Gemstone } from './HelperAlerts/HelperAlerts';
 import StatusProgressBar from './StatusProgressBar';
 import ExternalPage from './Menue/ExternalPage';
 import DecisionHelpTree from './DecisionHelpTree';
+import Map from './Map';
 
 export {
   Modal,
@@ -82,5 +83,6 @@ export {
   Gemstone,
   StatusProgressBar,
   ExternalPage,
-  DecisionHelpTree
+  DecisionHelpTree,
+  Map
 };
