@@ -88,6 +88,10 @@ interface IProps {
      * Optional Flag to enable collapsing of TimeFilter
      */
     enableCollapse?: boolean
+    /**
+     * Optional setter to push collapse state to parent 
+    */
+    setCollapsed?: (collapsed: boolean) => void
 }
 
 const TimeFilter = (props: IProps) => {
@@ -101,24 +105,32 @@ const TimeFilter = (props: IProps) => {
 
     const [collapsed, setCollapsed] = React.useState(false);
 
-    // Checks typing of ITimeFilter and then compares to ITimeWindow
-    const isEqual = (timeWindow: ITimeWindow, timeFilter: ITimeFilter) => {
-        const flt = getTimeWindowFromFilter(timeFilter, format);
-        return _.isEqual(timeWindow, flt)
-    }
-
+    //Effect to set parent filter when internal filter changes
     React.useEffect(() => {
         if (!isEqual(filter, props.filter)) {
             props.setFilter(filter.start, filter.end, filter.unit, filter.duration);
         }
     }, [filter])
 
+    //Effect to sync filter if external filter changes
     React.useEffect(() => {
         if (!isEqual(filter, props.filter)) {
             const flt = getTimeWindowFromFilter(props.filter, format);
             setFilter(flt);
         }
     }, [props.filter]);
+
+    //Effect to push collapse state to parent
+    React.useEffect(() => {
+        if (props.setCollapsed == null) return;
+        props.setCollapsed(collapsed);
+    }, [collapsed])
+
+    // Checks typing of ITimeFilter and then compares to ITimeWindow
+    const isEqual = (timeWindow: ITimeWindow, timeFilter: ITimeFilter) => {
+        const flt = getTimeWindowFromFilter(timeFilter, format);
+        return _.isEqual(timeWindow, flt)
+    }
 
     const helpMessaage = (props.showHelpMessage ?? true) ? `All times shown are in system time (${props.timeZone}).` : undefined
 
