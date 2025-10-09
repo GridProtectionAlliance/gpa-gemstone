@@ -34,6 +34,7 @@ import { Gemstone } from '@gpa-gemstone/application-typings';
 import StartEndFilter from './StartEndFilter/StartEndFilter';
 import { useGetContainerPosition } from '@gpa-gemstone/helper-functions';
 import WindowFilter from './WindowFilter/WindowFilter';
+import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 
 export interface ITimeWindow {
     start: string,
@@ -83,6 +84,10 @@ interface IProps {
      * Flag to toggle usage of helper message
      */
     showHelpMessage?: boolean,
+    /**
+     * Optional Flag to enable collapsing of TimeFilter
+     */
+    enableCollapse?: boolean
 }
 
 const TimeFilter = (props: IProps) => {
@@ -94,8 +99,10 @@ const TimeFilter = (props: IProps) => {
     const [activeQuickSelect, setActiveQuickSelect] = React.useState<number>(-1);
     const [filter, setFilter] = React.useState<ITimeWindow>(getTimeWindowFromFilter(props.filter, format));
 
+    const [collapsed, setCollapsed] = React.useState(false);
+
     // Checks typing of ITimeFilter and then compares to ITimeWindow
-    function isEqual(timeWindow: ITimeWindow, timeFilter: ITimeFilter) {
+    const isEqual = (timeWindow: ITimeWindow, timeFilter: ITimeFilter) => {
         const flt = getTimeWindowFromFilter(timeFilter, format);
         return _.isEqual(timeWindow, flt)
     }
@@ -117,24 +124,22 @@ const TimeFilter = (props: IProps) => {
 
     return (
         <fieldset className="border" style={{ padding: '10px', height: '100%', overflow: 'hidden' }} ref={containerRef}>
-            <legend className="w-auto" style={{ fontSize: 'large' }}>Date/Time Filter:</legend>
-            {props.dateTimeSetting === 'startEnd' ?
-                <StartEndFilter
-                    TimeWindowFilter={filter}
-                    SetTimeWindowFilter={setFilter}
-                    Timezone={props.timeZone}
-                    ActiveQP={activeQuickSelect}
-                    SetActiveQP={setActiveQuickSelect}
-                    SetFilter={props.setFilter}
-                    Accuracy={props.accuracy}
-                    Format={format}
-                    DateUnit={props.format ?? 'datetime-local'}
-                    ShowQuickSelects={props.showQuickSelect}
-                    ContainerWidth={width}
-                    HelpMessage={helpMessaage}
-                />
-                : props.dateTimeSetting === 'startWindow' ?
-                    <WindowFilter
+            <legend className="w-auto" style={{ fontSize: 'large' }}>
+                <div className="d-flex align-items-center">
+                    <span className="mr-2">Date/Time Filter:</span>
+                    {(props.enableCollapse ?? false) ?
+                        <button
+                            type="button"
+                            className="btn p-0 ml-auto"
+                            onClick={() => setCollapsed(x => !x)}
+                        >
+                            {collapsed ? <ReactIcons.ArrowDropDown /> : <ReactIcons.ArrowDropUp />}
+                        </button> : null}
+                </div>
+            </legend>
+            {collapsed ? null :
+                props.dateTimeSetting === 'startEnd' ?
+                    <StartEndFilter
                         TimeWindowFilter={filter}
                         SetTimeWindowFilter={setFilter}
                         Timezone={props.timeZone}
@@ -147,24 +152,39 @@ const TimeFilter = (props: IProps) => {
                         ShowQuickSelects={props.showQuickSelect}
                         ContainerWidth={width}
                         HelpMessage={helpMessaage}
-                        Window={'start'}
                     />
-                    :
-                    <WindowFilter
-                        TimeWindowFilter={filter}
-                        SetTimeWindowFilter={setFilter}
-                        Timezone={props.timeZone}
-                        ActiveQP={activeQuickSelect}
-                        SetActiveQP={setActiveQuickSelect}
-                        SetFilter={props.setFilter}
-                        Accuracy={props.accuracy}
-                        Format={format}
-                        DateUnit={props.format ?? 'datetime-local'}
-                        ShowQuickSelects={props.showQuickSelect}
-                        ContainerWidth={width}
-                        HelpMessage={helpMessaage}
-                        Window={'end'}
-                    />
+                    : props.dateTimeSetting === 'startWindow' ?
+                        <WindowFilter
+                            TimeWindowFilter={filter}
+                            SetTimeWindowFilter={setFilter}
+                            Timezone={props.timeZone}
+                            ActiveQP={activeQuickSelect}
+                            SetActiveQP={setActiveQuickSelect}
+                            SetFilter={props.setFilter}
+                            Accuracy={props.accuracy}
+                            Format={format}
+                            DateUnit={props.format ?? 'datetime-local'}
+                            ShowQuickSelects={props.showQuickSelect}
+                            ContainerWidth={width}
+                            HelpMessage={helpMessaage}
+                            Window={'start'}
+                        />
+                        :
+                        <WindowFilter
+                            TimeWindowFilter={filter}
+                            SetTimeWindowFilter={setFilter}
+                            Timezone={props.timeZone}
+                            ActiveQP={activeQuickSelect}
+                            SetActiveQP={setActiveQuickSelect}
+                            SetFilter={props.setFilter}
+                            Accuracy={props.accuracy}
+                            Format={format}
+                            DateUnit={props.format ?? 'datetime-local'}
+                            ShowQuickSelects={props.showQuickSelect}
+                            ContainerWidth={width}
+                            HelpMessage={helpMessaage}
+                            Window={'end'}
+                        />
             }
         </fieldset >
     );
