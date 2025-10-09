@@ -8,6 +8,9 @@ module.exports = {
     cache: true,
     resolve: {
         extensions: ['.webpack.js', 'web.js', '.css', '.tsx', '.ts', '.js'],
+        alias: {
+            leaflet_css: require.resolve("leaflet/dist/leaflet.css"),
+        }
     },
     output: {
         path: path.resolve(__dirname, 'dist'),
