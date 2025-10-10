@@ -34,7 +34,7 @@ interface IProps {
  * Functional component for rendering loading screen.
  * @param props Properties for the loading screen component.
  */
-const LoadingScreen: React.FunctionComponent<IProps> = (props) => {
+const LoadingScreen = (props: IProps) => {
 
   const x = window.innerHeight /2 - 20;
   return (props.Show ? < div style={{

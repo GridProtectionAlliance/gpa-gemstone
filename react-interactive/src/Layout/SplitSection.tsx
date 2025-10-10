@@ -32,7 +32,7 @@ interface IProps {
 // Min Windth: minimum width (in % of total)
 // Max Width: maximum Width (in % of total)
 // Width: Default Width (in % of total) 
-const SplitSection: React.FunctionComponent<IProps> = (props) => {
+const SplitSection = (props: React.PropsWithChildren<IProps>) => {
 
     return <>{props.children}</>
 }

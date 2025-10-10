@@ -50,7 +50,7 @@ const SidebarBodyStyle: React.CSSProperties = {
     overflowX: 'hidden'
 };
 
-const SideBarContent: React.FC<IProps> = (props) => {
+const SideBarContent = (props: React.PropsWithChildren<IProps>) => {
     const sideBarRef = React.useRef<HTMLDivElement | null>(null);
 
     const additionalUIRef = React.useRef<HTMLDivElement | null>(null);

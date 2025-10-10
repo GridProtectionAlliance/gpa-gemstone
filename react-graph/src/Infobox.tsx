@@ -42,7 +42,7 @@ interface IProps {
   onMouseMove?: (x: number, y: number) => void
 }
 
-const Infobox: React.FunctionComponent<IProps> = (props) => {
+const Infobox = (props: React.PropsWithChildren<IProps>) => {
   const context = React.useContext(GraphContext);
   const [isSelected, setSelected] = React.useState<boolean>(false);
   const [position, setPosition] = React.useState<{x: number, y: number}>({x: props.x, y: props.y});
@@ -195,7 +195,7 @@ interface IGraphicProps {
   height: number,
   opacity?: number
 }
-const InfoGraphic: React.FunctionComponent<IGraphicProps> = (props) => {
+const InfoGraphic = (props: IGraphicProps) => {
   return (
     <path d={`M ${props.x} ${props.y} h ${props.width} v ${props.height} h -${props.width} v -${props.height}`} stroke={'black'} style={{opacity: props.opacity ?? 1}} />
   );

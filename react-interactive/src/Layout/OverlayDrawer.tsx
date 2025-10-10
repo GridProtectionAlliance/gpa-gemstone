@@ -113,7 +113,7 @@ const ClosedOverlayDiv = styled.div<IClosedOverlayProps>`
     ${props => !props.Open? 'pointer-events: none;' : ''}
   }`
 
-const OverlayDrawer: React.FunctionComponent<IProps> = (props) => {
+const OverlayDrawer = (props: React.PropsWithChildren<IProps>) => {
     const divRef = React.useRef<any>(null);
  
     const [top, setTop] = React.useState<number>(0);

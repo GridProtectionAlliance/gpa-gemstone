@@ -58,7 +58,7 @@ interface IProps {
 // Props Description:
 // CallBack => Function to be called when closing the Modal either through Cancel (confirmed=false) or Confirm Button (confirmed=true)
 // Show => Whether to show the modal
-const Warning: React.FunctionComponent<IProps> = (props) => {
+const Warning = (props: React.PropsWithChildren<IProps>) => {
     return (
         <Modal
             Title={props.Title}

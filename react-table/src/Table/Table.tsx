@@ -492,7 +492,8 @@ function Header<T>(props: React.PropsWithChildren<IHeaderProps<T>>) {
 
     const getLeftKey = React.useCallback((key: string, colWidthsRef: React.MutableRefObject<Map<string, width>>) => {
         // Filtering down to shown adjustables only
-        const keys = React.Children.map(props.children ?? [], (element) => {
+
+        const mapCallback = (element: React.ReactNode) => {
             if (!React.isValidElement(element))
                 return null;
             const keyWidth = colWidthsRef.current.get(key)?.width;
@@ -501,7 +502,11 @@ function Header<T>(props: React.PropsWithChildren<IHeaderProps<T>>) {
             if (IsColumnProps(element.props) && IsColumnAdjustable(element.props))
                 return (element.props as ReactTableProps.IColumn<T>).Key;
             return null;
-        }).filter((item) => item !== null);
+        }
+
+        const children = props.children ?? [];
+
+        const keys = (React.Children.map(children, mapCallback) ?? []).filter((item) => item !== null);
 
         const index = keys.indexOf(key);
         if (index <= 0) return undefined;

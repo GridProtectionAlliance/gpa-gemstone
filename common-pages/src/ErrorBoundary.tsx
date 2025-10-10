@@ -37,7 +37,7 @@ interface IProps {
     ErrorIconSize?: number
 }
 
-export default class ErrorBoundary extends React.Component<IProps, IError> {
+export default class ErrorBoundary extends React.Component<React.PropsWithChildren<IProps>, IError> {
     constructor(props: IProps) {
         super(props);
         this.state = { name: "", message: "" };

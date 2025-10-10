@@ -49,11 +49,11 @@ export function ColumnHeaderWrapper(props: React.PropsWithChildren<IHeaderWrappe
     const onHover = React.useCallback(() => { setShowBorder(true); }, []);
     const onLeave = React.useCallback(() => { setShowBorder(false); }, []);
 
-    const onClickBorder = React.useCallback((e) => {
+    const onClickBorder = React.useCallback((e: React.MouseEvent<HTMLDivElement>) => {
         if (props.startAdjustment != null) props.startAdjustment(e);
     }, [props.startAdjustment]);
 
-    const onClick = React.useCallback((e) => {
+    const onClick = React.useCallback((e: React.MouseEvent<HTMLTableCellElement>) => {
         if (props.allowSort ?? true) props.onSort(e);
     }, [props.onSort, props.allowSort]);
     

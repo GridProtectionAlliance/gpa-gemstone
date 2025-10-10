@@ -55,7 +55,7 @@ interface ISection {
 // Props Description:
 // style => style of the encompasing div
 
-const VerticalSplit: React.FunctionComponent<IProps> = (props) => {
+const VerticalSplit = (props: React.PropsWithChildren<IProps>) => {
     const divRef = React.useRef<any>(null);
 
     const [currentWidth, setCurrentWidth] = React.useState<number>(0);
@@ -378,7 +378,7 @@ interface IDividerProps {
     style?: any,
     onClick: (position: number) => void
 }
-const VerticalSplitDivider: React.FunctionComponent<IDividerProps> = (props) => {
+const VerticalSplitDivider = (props: IDividerProps) => {
 
     const style = props.style === undefined? {float: 'left', background: '#6c757d', cursor: 'col-resize'} : props.style;
 
@@ -394,7 +394,7 @@ interface IDrawerHeaderProps {
     symbol: 'Open'|'Close'|'X',
     showTooltip: boolean
 }
-const DrawerHeader: React.FunctionComponent<IDrawerHeaderProps> = (props) => {
+const DrawerHeader = (props: IDrawerHeaderProps) => {
     const [hover, setHover] = React.useState<boolean>(false);
     const [guid, setGuid] = React.useState<string>(CreateGuid());
     return <>

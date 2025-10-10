@@ -42,7 +42,7 @@ export interface IExternalPageProps {
     Icon?: React.ReactNode;
 }
 
-const ExternalPage: React.FunctionComponent<IExternalPageProps> = (props) => {
+const ExternalPage = (props: React.PropsWithChildren<IExternalPageProps>) => {
     const [hover, setHover] = React.useState<boolean>(false);
     const context = React.useContext(Context);
 

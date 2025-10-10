@@ -150,7 +150,7 @@ interface IProps {
 // Confirm text => Text on Confirm button
 // ConfirmBtnClass => Class of the Confirm Button
 // CancelBtnClass =>> Class of the Cancel Button
-const Modal: React.FunctionComponent<IProps> = (props) => {
+const Modal = (props: React.PropsWithChildren<IProps>) => {
     const [hover, setHover] = React.useState<'confirm'|'cancel'|'tertiary'|'none'>('none');
     const [guid, setGuid] = React.useState<string>('');
 

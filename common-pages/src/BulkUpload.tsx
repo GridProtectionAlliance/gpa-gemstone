@@ -34,27 +34,23 @@ interface IProps<T> {
     FileTypeAttribute: string,
     /** 
     * Array of available pipelines to use
-    * @type {IPipeline[]}
     * */
     Pipelines: Gemstone.TSX.Interfaces.IPipeline<T, any>[]
     /** 
     * React Component to be used in the Review Step
-    * @type {React.FC<IReviewProps<T>>}
     * */
     ReviewUI: (props: { Data: T[] }) => JSX.Element
     /** 
     * React Component to be used in the Complete Step
-    * @type {React.FC<IReviewProps<T>>}
     * */
     CompleteUI?: JSX.Element
     /** 
     * Index of the steps array in the current pipline
-    * @type {React.FC<IReviewProps<T>>}
+    * @type {number}
     * */
     CurrentPipelineStep: number;
     /** 
     * Setter to pass into the pipeline UI Components
-    * @type {React.FC<IReviewProps<T>>}
     * */
     SetCurrentPipelineStep: (step: number) => void;
     /** 

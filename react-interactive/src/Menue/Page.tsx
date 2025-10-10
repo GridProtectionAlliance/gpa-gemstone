@@ -42,7 +42,7 @@ export interface IProps {
     OtherActivePages?: string[]
 }
 
-const Page: React.FunctionComponent<IProps> = (props) => {
+const Page = (props: React.PropsWithChildren<IProps>) => {
     const [hover, setHover] = React.useState<boolean>(false);
     const [className, setClassName] = React.useState<string>("nav-link");
     const context = React.useContext(Context);

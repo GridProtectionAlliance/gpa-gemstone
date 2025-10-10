@@ -172,7 +172,7 @@ interface IContextWrapperProps extends IHandlerRegistration, IDataRegistration {
   SetYDomain: (y: [number, number][]) => void
 }
 
-export const ContextWrapper: React.FC<IContextWrapperProps> = (props) => {
+export const ContextWrapper = (props: React.PropsWithChildren<IContextWrapperProps>) => {
 
   const context = React.useMemo(GetContext, [
     props.XDomain,
