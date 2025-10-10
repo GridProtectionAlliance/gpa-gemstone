@@ -43,7 +43,7 @@ export interface IProps {
     AllowCollapse?: boolean
 }
 
-const Section: React.FunctionComponent<IProps> = (props) => {
+const Section = (props: React.PropsWithChildren<IProps>) => {
     const context = React.useContext(Context);
     const [show, setShow] = React.useState<boolean>(true);
     const [collapsable, setCollapsable] = React.useState<boolean>(true);

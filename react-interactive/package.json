@@ -42,6 +42,7 @@
     "@types/react-portal": "4.0.4",
     "@types/styled-components": "^5.1.11",
     "@types/leaflet": "1.9.2",
+    "@types/react": "18.2.0",
     "@typescript-eslint/eslint-plugin": "^5.60.0",
     "@typescript-eslint/parser": "^5.60.0",
     "eslint": "^8.43.0",

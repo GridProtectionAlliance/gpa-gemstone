@@ -37,7 +37,7 @@ interface IProps {
 interface ICategory { label: string, height: number }
 
 
-const EventTypeFilter: React.FC<IProps> = (props: IProps) => {
+const EventTypeFilter = (props: IProps) => {
     const [evtTypeCategories, setEvtTypeCategories] = React.useState<ICategory[]>([]);
     const [nCol, setnCol] = React.useState<number>(1);
 

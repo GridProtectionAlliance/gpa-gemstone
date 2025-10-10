@@ -30,7 +30,7 @@ interface IProps {
     Logo?: string
 }
 
-const RoleAccessErrorPage: React.FunctionComponent<IProps> = (props) => 
+const RoleAccessErrorPage = (props: IProps) => 
 (
     <div style={props.Style ?? { width: '100%', height: '100%' }} className={props.ClassName ?? undefined}>
         <div className="col" style={{ height: "100%", width: "100%" }}>

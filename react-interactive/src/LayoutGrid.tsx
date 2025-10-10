@@ -45,7 +45,7 @@ interface IRow {
     NumOfCols: number
 }
 
-const LayoutGrid: React.FC<React.PropsWithChildren<IProps>> = (props) => {
+const LayoutGrid = (props: React.PropsWithChildren<IProps>) => {
     const [rows, setRows] = React.useState<IRow[]>([]);
     const totalNumOfItems = React.Children.count(props.children);
 

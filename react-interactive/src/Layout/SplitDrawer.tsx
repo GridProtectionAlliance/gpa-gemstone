@@ -58,7 +58,7 @@ interface IProps {
     ShowClosed?: boolean
 }
 
-const SplitDrawer: React.FunctionComponent<IProps> = (props) => {
+const SplitDrawer = (props: React.PropsWithChildren<IProps>) => {
     return <>{props.children}</>
 }
 

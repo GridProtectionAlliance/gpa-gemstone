@@ -115,7 +115,7 @@ const SvgStyle: React.CSSProperties = {
 const defaultLegendHeight = 50;
 const defaultLegendWidth = 100;
 
-const Plot: React.FunctionComponent<IProps> = (props) => {
+const Plot = (props: React.PropsWithChildren<IProps>) => {
   // Type correcting functions to convert props into something usable
   const typeCorrect: <T>(arg: T | T[] | undefined, arrayIndex: number) => T | undefined = React.useCallback((arg, arrayIndex) => {
     if (arg == null) return undefined;
