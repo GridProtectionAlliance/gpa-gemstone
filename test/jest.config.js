@@ -6,5 +6,8 @@ module.exports = {
     transform: {
         "^.+\.tsx?$": ["ts-jest", {}],
     },
-    bail: true
+    bail: true,
+    moduleNameMapper: { 
+        "\\.(css|less)$": "<rootDir>/assets/css/__mocks__/styleMock.js"
+     }
 };
