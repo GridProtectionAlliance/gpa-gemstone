@@ -8,6 +8,6 @@ module.exports = {
     },
     bail: true,
     moduleNameMapper: { 
-        "\\.(css|less)$": "<rootDir>/assets/css/__mocks__/styleMock.js"
+        "\\.(css|less)$": "identity-obj-proxy"
      }
 };
