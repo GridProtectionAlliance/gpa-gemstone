@@ -6,5 +6,8 @@ module.exports = {
     transform: {
         "^.+\.tsx?$": ["ts-jest", {}],
     },
-    bail: true
+    bail: true,
+    moduleNameMapper: { 
+        "\\.(css|less)$": "identity-obj-proxy"
+     }
 };

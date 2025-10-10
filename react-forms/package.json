@@ -4,8 +4,10 @@
   "description": "React Form modules for gpa webapps",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
-  "files": ["lib/**/*"],
-  "scripts":   {
+  "files": [
+    "lib/**/*"
+  ],
+  "scripts": {
     "test": "jest --config jestconfig.json",
     "build": "tsc",
     "format": "prettier --write \"src/**/*.tsx\"",
@@ -16,11 +18,11 @@
     "version": "npm run format && git add -A src",
     "postversion": "git push && git push --tags"
   },
-  "repository":   {
+  "repository": {
     "type": "git",
     "url": "https://github.com/GridProtectionAlliance/gpa-gemstone.git"
   },
-  "keywords":   [
+  "keywords": [
     "React",
     "Table",
     "GSF",
@@ -29,9 +31,11 @@
   ],
   "author": "GridProtectionAlliance",
   "license": "MIT",
-  "bugs": {"url": "https://github.com/GridProtectionAlliance/gpa-gemstone/issues"},
+  "bugs": {
+    "url": "https://github.com/GridProtectionAlliance/gpa-gemstone/issues"
+  },
   "homepage": "https://github.com/GridProtectionAlliance/gpa-gemstone#readme",
-  "devDependencies":   {
+  "devDependencies": {
     "@types/jest": "^27.0.0",
     "@types/lodash": "^4.14.171",
     "@types/react-color": "^3.0.12",
@@ -44,7 +48,7 @@
     "ts-jest": "^29.0.0",
     "typescript": "5.5.3"
   },
-  "dependencies":   {
+  "dependencies": {
     "@gpa-gemstone/application-typings": "0.0.89",
     "@gpa-gemstone/gpa-symbols": "0.0.56",
     "@gpa-gemstone/helper-functions": "0.0.47",
@@ -52,10 +56,14 @@
     "@types/styled-components": "^5.1.11",
     "lodash": "^4.17.21",
     "moment": "2.29.4",
-    "react": "^18.2.0",
     "react-color": "^2.19.3",
     "react-portal": "4.2.2",
     "styled-components": "5.3.3"
   },
-  "publishConfig": {"access": "public"}
+  "peerDependencies": {
+    "react": "18.2.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
 }

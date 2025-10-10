@@ -22,10 +22,10 @@ module.exports = {
     },
     module: {
         rules: [
-            {
-                test: /\.css$/i,
-                use: ['style-loader', 'css-loader'],
-            },
+        {
+          test: /\.css$/,
+          use: [{ loader: 'style-loader' }, { loader: 'css-loader' }],
+        },
             {
                 test: /\.tsx?$/,
                 use: 'ts-loader',
