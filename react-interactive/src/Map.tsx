@@ -22,13 +22,16 @@
 //******************************************************************************************************
 
 import * as React from 'react';
-import leaflet from 'leaflet';
+import { map, tileLayer, Map as LeafletMap, MapOptions, TileLayerOptions  } from 'leaflet';
 import { useGetContainerPosition } from '@gpa-gemstone/helper-functions';
 
+// Import Leaflet's CSS so consumers don't have to.
+import 'leaflet/dist/leaflet.css';
+
 interface IProps {
-    Map: React.MutableRefObject<leaflet.Map | null>,
-    MapOptions: leaflet.MapOptions,
-    TileLayerOptions: leaflet.TileLayerOptions,
+    Map: React.MutableRefObject<LeafletMap | null>,
+    MapOptions: MapOptions,
+    TileLayerOptions: TileLayerOptions,
     TileLayerURL: string,
 }
 
@@ -45,9 +48,9 @@ const Map = (props: IProps) => {
     React.useEffect(() => {
         if (mapDivRef.current == null) return;
 
-        props.Map.current = leaflet.map(mapDivRef.current, props.MapOptions);
+        props.Map.current = map(mapDivRef.current, props.MapOptions);
 
-        leaflet.tileLayer(props.TileLayerURL, props.TileLayerOptions).addTo(props.Map.current);
+        tileLayer(props.TileLayerURL, props.TileLayerOptions).addTo(props.Map.current);
 
         return () => {
             if (props.Map.current == null) return;

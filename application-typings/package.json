@@ -4,19 +4,21 @@
   "description": "Application typings for GPA products",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
-  "files": ["lib/**/*"],
-  "scripts":   {
+  "files": [
+    "lib/**/*"
+  ],
+  "scripts": {
     "build": "tsc",
     "prepare": "npm run build",
     "version": "npm run format && git add -A src",
     "postversion": "git push && git push --tags",
     "lint": "eslint . --ext .ts,.tsx"
   },
-  "repository":   {
+  "repository": {
     "type": "git",
     "url": "https://github.com/GridProtectionAlliance/gpa-gemstone.git"
   },
-  "keywords":   [
+  "keywords": [
     "Symbols",
     "Interactive",
     "GSF",
@@ -25,18 +27,23 @@
   ],
   "author": "GridProtectionAlliance",
   "license": "MIT",
-  "bugs": {"url": "https://github.com/GridProtectionAlliance/gpa-gemstone/issues"},
+  "bugs": {
+    "url": "https://github.com/GridProtectionAlliance/gpa-gemstone/issues"
+  },
   "homepage": "https://github.com/GridProtectionAlliance/gpa-gemstone#readme",
-  "devDependencies":   {
+  "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.60.0",
     "@typescript-eslint/parser": "^5.60.0",
+    "@types/react": "18.2.0",
+    "@types/webpack": "^5.28.0",
     "eslint": "^8.43.0",
     "typescript": "5.5.3"
   },
-  "dependencies":   {
-    "@types/webpack": "^5.28.0",
-    "react": "^18.2.0",
-    "@types/react": "^17.0.14"
+  "dependencies": {},
+  "peerDependencies": {
+    "react": "18.2.0"
   },
-  "publishConfig": {"access": "public"}
+  "publishConfig": {
+    "access": "public"
+  }
 }
