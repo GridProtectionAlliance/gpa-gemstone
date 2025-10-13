@@ -28,7 +28,7 @@ export interface IProps {
     isSelect?: boolean
 }
 
-const Button: React.FunctionComponent<IProps> = (props) => {
+const Button = (props: React.PropsWithChildren<IProps>) => {
   /*
     Button that can be pressed.
   */

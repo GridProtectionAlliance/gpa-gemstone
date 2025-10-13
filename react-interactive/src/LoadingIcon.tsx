@@ -60,11 +60,9 @@ const Icon = styled.div<IconProps>`
 /**
 * Functional component for rendering a loading icon
 */
-const LoadingIcon: React.FunctionComponent<IProps> = (props) => {
+const LoadingIcon = (props: IProps) => {
 
 const h = (props.Size === undefined? 25 : props.Size);
-
-
 
     return (
       <div>
