@@ -45,14 +45,43 @@ export namespace Gemstone {
     export namespace HelperFunctions {
         export const getSearchFilter = <T,>(searchFilter: Search.IFilter<T>[]) => {
             return searchFilter.map(s => {
+
+                const castValue = (val: string): string | number | boolean => {
+                    switch (s.Type) {
+                        case 'number':
+                        case 'integer':
+                            return Number(val);
+                        case 'boolean':
+                            return val === '1';
+                        default:
+                            return val;
+                    }
+                };
+
                 let searchText: string | string[] = s.SearchText;
 
                 if (s.Operator === 'IN' || s.Operator === 'NOT IN') {
                     if (searchText.startsWith('(') && searchText.endsWith(')'))
-                        searchText = searchText.slice(1, -1).split(',').map(v => v.trim())
+                        searchText = searchText
+                            .slice(1, -1)
+                            .split(',')
+                            .map(v => v.trim())
 
                 }
-                return { FieldName: s.FieldName, SearchParameter: searchText, Operator: s.Operator };
+
+                let searchParameter;
+                
+                if (Array.isArray(searchText)) {
+                    searchParameter = searchText.map(v => castValue(v));
+                } else {
+                    searchParameter = castValue(searchText);
+                }
+
+                return {
+                    FieldName: s.FieldName as keyof T,
+                    SearchParameter: searchParameter,
+                    Operator: s.Operator
+                };
             }) as Types.ISearchFilter<T>[];
         }
     }
