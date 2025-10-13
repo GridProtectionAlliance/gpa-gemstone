@@ -1,13 +1,11 @@
 {
   "name": "@gpa-gemstone/common-pages",
-  "version": "0.0.152",
+  "version": "0.0.153",
   "description": "Common UI pages for GPA products",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
-  "files": [
-    "lib/**/*"
-  ],
-  "scripts": {
+  "files": ["lib/**/*"],
+  "scripts":   {
     "test": "jest --config jestconfig.json",
     "build": "tsc",
     "format": "prettier --write \"src/**/*.tsx\"",
@@ -18,11 +16,11 @@
     "version": "npm run format && git add -A src",
     "postversion": "git push && git push --tags"
   },
-  "repository": {
+  "repository":   {
     "type": "git",
     "url": "https://github.com/GridProtectionAlliance/gpa-gemstone.git"
   },
-  "keywords": [
+  "keywords":   [
     "React",
     "Interactive",
     "GSF",
@@ -31,11 +29,9 @@
   ],
   "author": "GridProtectionAlliance",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/GridProtectionAlliance/gpa-gemstone/issues"
-  },
+  "bugs": {"url": "https://github.com/GridProtectionAlliance/gpa-gemstone/issues"},
   "homepage": "https://github.com/GridProtectionAlliance/gpa-gemstone#readme",
-  "devDependencies": {
+  "devDependencies":   {
     "@types/crypto-js": "^4.2.0",
     "@types/jest": "^27.0.0",
     "@types/jquery": "3.5.6",
@@ -49,7 +45,7 @@
     "ts-jest": "^29.0.0",
     "typescript": "5.5.3"
   },
-  "dependencies": {
+  "dependencies":   {
     "@gpa-gemstone/application-typings": "0.0.90",
     "@gpa-gemstone/gpa-symbols": "0.0.57",
     "@gpa-gemstone/helper-functions": "0.0.48",
@@ -63,11 +59,9 @@
     "react-redux": "8.0.2",
     "styled-components": "5.3.3"
   },
-  "peerDependencies": {
+  "peerDependencies":   {
     "react": "18.2.0",
     "react-dom": "18.2.0"
   },
-  "publishConfig": {
-    "access": "public"
-  }
+  "publishConfig": {"access": "public"}
 }
