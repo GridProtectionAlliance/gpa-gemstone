@@ -29,7 +29,6 @@ import { FileUpload } from '@gpa-gemstone/react-forms';
 interface IProps<T> {
     /** 
     * Attribute used to control what type of files are filtered by default in file explorer
-    * @type {string}
     * */
     FileTypeAttribute: string,
     /** 
@@ -46,7 +45,6 @@ interface IProps<T> {
     CompleteUI?: JSX.Element
     /** 
     * Index of the steps array in the current pipline
-    * @type {number}
     * */
     CurrentPipelineStep: number;
     /** 
@@ -55,7 +53,6 @@ interface IProps<T> {
     SetCurrentPipelineStep: (step: number) => void;
     /** 
     * Step to represent current stage of component
-    * @type {'Upload' | 'Process' | 'Review' | 'Complete'}
     * */
     Step: Gemstone.TSX.Types.BulkUploadStep
     /**
@@ -70,12 +67,10 @@ interface IProps<T> {
     SetErrors: (errors: string[]) => void;
     /**
      * Optional Progress Bar component to replace internal Progress Bar. 
-     * @type {JSX.Element} 
      */
     ProgressBar?: JSX.Element,
     /**
      * Optional flag to call OnComplete handler when the review step is hit.
-     * @type {boolean}
      */
     CompleteOnReview?: boolean
 }
