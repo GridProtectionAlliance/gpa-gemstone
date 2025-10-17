@@ -55,6 +55,7 @@ beforeEach(async () => {
 afterEach(async () => {
     if (driver) await driver.quit();
 });
+
 describe('Checkbox Component', () => {
     it('Uses checkbox label prop', async () => {
         const component = await driver.findElements(checkboxSelector);

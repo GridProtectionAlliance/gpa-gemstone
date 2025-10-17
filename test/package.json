@@ -8,8 +8,7 @@
     "build": "npm prune && webpack",
     "serve": "npm run build && webpack serve",
     "builddebug": "npm prune && webpack && npm run serve",
-    "tester": "start-server-and-test serve http-get://localhost:8085 test",
-    "test:single": "start-server-and-test serve http-get://localhost:8085 jest --runInBand --detectOpenHandles --verbose"
+    "tester": "start-server-and-test serve http-get://localhost:8085 test"
   },
   "keywords": [
     "Gemstone",
