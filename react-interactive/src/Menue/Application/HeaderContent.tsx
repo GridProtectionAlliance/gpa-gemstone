@@ -37,16 +37,16 @@ interface IProps {
 const HeaderContent = React.forwardRef<HTMLDivElement, IProps>((props, ref) => {
     return <>
         <nav className="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow" ref={ref}>
-            {props.ShowOpen ? <a style={{ color: 'var(--light)', marginLeft: 15 }} onClick={() => props.SetCollapsed(false)} >
+            {props.ShowOpen ? <a style={{ color: 'var(--light)', marginLeft: 15, cursor: 'pointer' }} onClick={() => props.SetCollapsed(false)} >
                 <ReactIcons.ArrowForward />
             </a> : null}
-            {props.ShowClose ? <a style={{ color: 'var(--light)', marginLeft: 15 }} onClick={() => props.SetCollapsed(true)}>
+            {props.ShowClose ? <a style={{ color: 'var(--light)', marginLeft: 15, cursor: 'pointer' }} onClick={() => props.SetCollapsed(true)}>
                 <ReactIcons.ArrowBackward />
             </a> : null}
             {props.Logo !== undefined ?
                 < a className="navbar-brand col-sm-2 col-md-1 mr-0 mr-auto" href={props.HomePath} ><img style={{ maxHeight: 35, margin: -5 }} src={props.Logo} /></a> : null}
             <ul className="navbar-nav px-3 ml-auto">
-                <li className="nav-item text-nowrap">
+                <li className="nav-item text-nowrap" style={{ cursor: props.OnSignOut !== undefined ? 'pointer' : 'default' }}>
                     {props.OnSignOut !== undefined ? <a className="nav-link" onClick={props.OnSignOut} >Sign out</a> : null}
                 </li>
             </ul>
