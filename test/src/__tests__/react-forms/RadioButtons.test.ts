@@ -24,6 +24,7 @@ import { afterEach, beforeEach, describe, expect, it } from "@jest/globals";
 import { Builder, By, until, WebDriver } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome';
 import chromedriver from "chromedriver";
+import { FormsPageLabel } from "../../components/App";
 
 const rootURL = `http://localhost:${global.PORT}/forms`;
 let driver: WebDriver;
@@ -41,7 +42,7 @@ beforeEach(async () => {
         .build();
 
     await driver.get(rootURL);
-    await driver.wait(until.titleIs('GPA Test'), 10000);
+    await driver.wait(until.titleIs(FormsPageLabel), 10000);
 });
 
 afterEach(async () => {
