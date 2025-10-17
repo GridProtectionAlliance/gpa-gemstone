@@ -70,13 +70,15 @@ const options: {
     },
 ];
 
-const RadioButtonsTestComponent: React.FC<{ ComponentTestID: string }> = (props) => {
+export const RadioButtonsTestID = "RadioButtonsTestID";
+
+const RadioButtonsTestComponent = () => {
     const [text, setText] = React.useState<ITestRecord>({ textValue: 'blank' });
 
     return (
-        <div id={props.ComponentTestID}>
-            <div id={`${props.ComponentTestID}-text`}>The record is {text.textValue}</div>
-            <div id={`${props.ComponentTestID}-buttons`}>
+        <div id={RadioButtonsTestID}>
+            <div id={`${RadioButtonsTestID}-text`}>The record is {text.textValue}</div>
+            <div id={`${RadioButtonsTestID}-buttons`}>
                 <RadioButtons
                     Options={options}
                     Record={text}
