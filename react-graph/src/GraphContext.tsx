@@ -20,7 +20,6 @@
 //       Generated original version of source code.
 //
 // ******************************************************************************************************
-import { map } from 'lodash';
 import * as React from 'react';
 
 export interface IGraphContext extends IHandlerRegistration, IDataRegistration {

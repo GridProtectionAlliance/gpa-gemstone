@@ -31,6 +31,7 @@ import TimeAxis from './TimeAxis';
 import LogAxis from './LogAxis';
 import YValueAxis from './YValueAxis';
 import Legend from './Legend';
+import LegendEntry from './LegendEntry';
 import LineWithThreshold from './LineWithThreshold';
 import Line from './Line';
 import Button from './Button';
@@ -323,20 +324,26 @@ const Plot = (props: React.PropsWithChildren<IProps>) => {
       const dataAxis = AxisMap.get(series.axis);
       if (axis === dataAxis) {
         const value = func([Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER]);
-        if (value !== undefined) result.push(value);
+
+        // Only add if it's a valid number
+        if (value !== undefined && !isNaN(value) && isFinite(value))
+          result.push(value);
       }
       return result;
     }
 
     const newDefaultDomain: [number, number][] = defaultYdomain.map((yDomain, axis) => {
-      const yMin = Math.min(...[...data.current.values()].reduce((result: number[], series: IDataSeries) => dataReducerFunc(result, series, series.getMin, axis), []));
-      const yMax = Math.max(...[...data.current.values()].reduce((result: number[], series: IDataSeries) => dataReducerFunc(result, series, series.getMax, axis), []));
+      const values = [...data.current.values()];
+      const yMin = Math.min(...values.reduce((result: number[], series: IDataSeries) => dataReducerFunc(result, series, series.getMin, axis), []));
+      const yMax = Math.max(...values.reduce((result: number[], series: IDataSeries) => dataReducerFunc(result, series, series.getMax, axis), []));
+
       if (!isNaN(yMin) && !isNaN(yMax) && isFinite(yMin) && isFinite(yMax)) {
         if (props.yDomain === 'AutoValue') return [yMin, yMax];
         // If this condition is satisfied, it means our series is mostly positive range
         else if (Math.abs(yMax) >= Math.abs(yMin)) return [0, yMax];
         else return [yMin, 0];
       }
+
       return [0, 1];
     });
 
@@ -945,7 +952,8 @@ const Plot = (props: React.PropsWithChildren<IProps>) => {
                 if ((element as React.ReactElement<any>).type === Line || (element as React.ReactElement<any>).type === LineWithThreshold || (element as React.ReactElement<any>).type === Infobox ||
                   (element as React.ReactElement<any>).type === HorizontalMarker || (element as React.ReactElement<any>).type === VerticalMarker || (element as React.ReactElement<any>).type === SymbolicMarker
                   || (element as React.ReactElement<any>).type === Circle || (element as React.ReactElement<any>).type === AggregatingCircles || (element as React.ReactElement<any>).type === HeatMapChart ||
-                  (element as React.ReactElement<any>).type === Pill || (element as React.ReactElement<any>).type === HighlightBox || (element as React.ReactElement<any>).type === StreamingLine)
+                  (element as React.ReactElement<any>).type === Pill || (element as React.ReactElement<any>).type === HighlightBox || (element as React.ReactElement<any>).type === StreamingLine ||
+                  (element as React.ReactElement<any>).type === LegendEntry)
                   return element;
                 return null;
               })}
