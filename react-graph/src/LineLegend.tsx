@@ -28,10 +28,12 @@ import { Warning } from '@gpa-gemstone/gpa-symbols';
 import { ILegendRequiredProps, LegendContext } from './LegendContext';
 import { fontFamily } from './Legend'
 
+type LegendStyle = LineStyle | 'none';
+
 export interface IProps extends ILegendRequiredProps {
     color: string,
-    lineStyle: LineStyle,
-    setEnabled: (arg: boolean) => void,
+    lineStyle: LegendStyle,
+    setEnabled: (arg: boolean, e: React.MouseEvent<HTMLDivElement>) => void,
     hasNoData: boolean,
     label: string
 }
@@ -48,14 +50,15 @@ function LineLegend(props: IProps) {
 
     return (
         <div style={{ height: context.SmHeight, width: context.SmWidth }} ref={containerRef}>
-            <div 
+            <div
                 onClick={(evt) => {
                     if (evt.ctrlKey && context.SendMassEnable != null) context.SendMassEnable.current(props.id)
-                    else props.setEnabled(!props.enabled)
-                }} 
+                    else props.setEnabled(!props.enabled, evt)
+                }}
                 style={{ width: '100%', display: 'flex', alignItems: 'center', marginRight: '5px', height: '100%' }}
             >
-                {(props.lineStyle === '-' ?
+
+                {props.lineStyle === 'none' ? null : props.lineStyle === '-' ?
                     <div
                         style={{
                             width: '10px',
@@ -82,7 +85,7 @@ function LineLegend(props: IProps) {
                             opacity: (props.enabled ? 1 : 0.5)
                         }}
                     />
-                )}
+                }
                 <label
                     style={{
                         fontFamily: fontFamily,

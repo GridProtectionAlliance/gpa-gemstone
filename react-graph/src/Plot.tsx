@@ -31,6 +31,7 @@ import TimeAxis from './TimeAxis';
 import LogAxis from './LogAxis';
 import YValueAxis from './YValueAxis';
 import Legend from './Legend';
+import LegendEntry from './LegendEntry';
 import LineWithThreshold from './LineWithThreshold';
 import Line from './Line';
 import Button from './Button';
@@ -951,7 +952,8 @@ const Plot = (props: React.PropsWithChildren<IProps>) => {
                 if ((element as React.ReactElement<any>).type === Line || (element as React.ReactElement<any>).type === LineWithThreshold || (element as React.ReactElement<any>).type === Infobox ||
                   (element as React.ReactElement<any>).type === HorizontalMarker || (element as React.ReactElement<any>).type === VerticalMarker || (element as React.ReactElement<any>).type === SymbolicMarker
                   || (element as React.ReactElement<any>).type === Circle || (element as React.ReactElement<any>).type === AggregatingCircles || (element as React.ReactElement<any>).type === HeatMapChart ||
-                  (element as React.ReactElement<any>).type === Pill || (element as React.ReactElement<any>).type === HighlightBox || (element as React.ReactElement<any>).type === StreamingLine)
+                  (element as React.ReactElement<any>).type === Pill || (element as React.ReactElement<any>).type === HighlightBox || (element as React.ReactElement<any>).type === StreamingLine ||
+                  (element as React.ReactElement<any>).type === LegendEntry)
                   return element;
                 return null;
               })}

@@ -68,9 +68,15 @@ export const InternalLine = React.forwardRef<PointNode | null, IInteralProps>((p
         if ((props.highlightHover ?? false) && !isNaN(highlight[0]) && !isNaN(highlight[1]))
             txt = txt + ` (${moment.utc(highlight[0]).format('MM/DD/YY hh:mm:ss')}: ${highlight[1].toPrecision(6)})`
 
-        return <LineLegend id={guid}
-            label={txt} color={props.color} lineStyle={props.lineStyle}
-            setEnabled={setEnabled} enabled={enabled} hasNoData={data == null} />;
+        return <LineLegend
+            id={guid}
+            label={txt}
+            color={props.color}
+            lineStyle={props.lineStyle}
+            setEnabled={setEnabled}
+            enabled={enabled}
+            hasNoData={data == null}
+        />;
     }, [props.color, props.lineStyle, enabled, data, props.legend, guid]);
 
     const createContextData = React.useCallback(() => {
