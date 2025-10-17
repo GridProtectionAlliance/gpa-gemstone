@@ -8,7 +8,8 @@
     "build": "npm prune && webpack",
     "serve": "npm run build && webpack serve",
     "builddebug": "npm prune && webpack && npm run serve",
-    "tester": "start-server-and-test serve http-get://localhost:8085 test"
+    "tester": "start-server-and-test serve http-get://localhost:8085 test",
+    "test:single": "start-server-and-test serve http-get://localhost:8085 jest --runInBand --detectOpenHandles --verbose"
   },
   "keywords": [
     "Gemstone",
@@ -52,14 +53,14 @@
     "webpack-dev-server": "5.2.1"
   },
   "dependencies": {
-    "@gpa-gemstone/application-typings": "0.0.89",
-    "@gpa-gemstone/common-pages": "0.0.152",
-    "@gpa-gemstone/gpa-symbols": "0.0.56",
-    "@gpa-gemstone/helper-functions": "0.0.47",
-    "@gpa-gemstone/react-forms": "1.1.101",
-    "@gpa-gemstone/react-graph": "1.0.84",
-    "@gpa-gemstone/react-interactive": "1.0.163",
-    "@gpa-gemstone/react-table": "1.2.86",
+    "@gpa-gemstone/application-typings": "0.0.90",
+    "@gpa-gemstone/common-pages": "0.0.155",
+    "@gpa-gemstone/gpa-symbols": "0.0.57",
+    "@gpa-gemstone/helper-functions": "0.0.48",
+    "@gpa-gemstone/react-forms": "1.1.102",
+    "@gpa-gemstone/react-graph": "1.0.86",
+    "@gpa-gemstone/react-interactive": "1.0.166",
+    "@gpa-gemstone/react-table": "1.2.88",
     "@types/react": "^17.0.14",
     "@types/webpack": "^5.28.0",
     "jest-environment-jsdom": "^30.0.5",
