@@ -91,6 +91,12 @@ describe('Application Component', () => {
             await targetLink.click();
             await driver.wait(until.urlContains(expectedPath));
 
+            // wait for active class to be set
+            await driver.wait(async () => {
+                const classAttr = await targetLink!.getAttribute('class');
+                return classAttr.includes('active');
+            }, 3000);
+
             const classAttr = await targetLink.getAttribute('class');
             expect(classAttr).toContain('active');
 
