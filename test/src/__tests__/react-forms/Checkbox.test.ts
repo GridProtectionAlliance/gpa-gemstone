@@ -21,13 +21,13 @@
 //
 //******************************************************************************************************
 
-import { afterEach, beforeEach, describe, expect, it, test } from "@jest/globals";
+import { afterEach, beforeEach, describe, expect, it } from "@jest/globals";
 import { Builder, By, until, WebDriver } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome';
 import chromedriver from "chromedriver";
-import { FormsPageLabel } from "../../components/App";
+import { CheckboxPageRoute } from "../../components/App";
 
-const rootURL = `http://localhost:${global.PORT}/forms`;
+const rootURL = `http://localhost:${global.PORT}/${CheckboxPageRoute}`;
 let driver: WebDriver;
 const checkboxSelector = By.xpath(`//*[@id="window"]//span[text()="Form Boolean"]/ancestor::label/preceding-sibling::input[@type="checkbox"]`);
 const disabledCheckboxSelector = By.xpath(`//*[@id="window"]//span[text()="Disabled Form Boolean"]/ancestor::label/preceding-sibling::input[@type="checkbox"]`);
@@ -48,7 +48,7 @@ beforeEach(async () => {
 
     await driver.get(rootURL); // Navigate to the page
 
-    await driver.wait(until.titleIs(FormsPageLabel), 10000); // Wait until the page title is loaded
+    await driver.wait(until.titleIs(CheckboxPageRoute), 10000); // Wait until the page title is loaded
 });
 
 // close the driver after

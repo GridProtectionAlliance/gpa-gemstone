@@ -25,10 +25,10 @@ import { Builder, By, until, WebDriver } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome';
 import chromedriver from "chromedriver";
 import { BREADCRUMB_TEST_ID } from "../../components/react-interactive/Breadcrumb";
-import { InteractivePageLabel } from '../../components/App';
+import { BreadcrumbPageRoute } from '../../components/App';
 
 
-const rootURL = `http://localhost:${global.PORT}/interactive`;
+const rootURL = `http://localhost:${global.PORT}/${BreadcrumbPageRoute}`;
 let driver: WebDriver;
 
 // Before each test, create a selenium webdriver that goes to the rootURL
@@ -47,7 +47,7 @@ beforeAll(async () => {
 
     await driver.get(rootURL); // Navigate to the page
 
-    await driver.wait(until.titleIs(InteractivePageLabel), 10000); // Wait until the page title is loaded
+    await driver.wait(until.titleIs(BreadcrumbPageRoute), 10000); // Wait until the page title is loaded
 });
 
 // close the driver after each test

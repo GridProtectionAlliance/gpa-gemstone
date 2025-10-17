@@ -24,7 +24,7 @@ import { afterAll, beforeAll, describe, expect, it } from "@jest/globals";
 import { Builder, By, until, WebDriver, logging, WebElement } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome';
 import chromedriver from "chromedriver";
-import { TimeFilterPageLabel, TimeFilterRoute } from "../../components/App";
+import { TimeFilterRoute } from "../../components/App";
 import moment from 'moment';
 import 'moment-timezone';
 import { NonUTCStartEndTimeFilterID, NonUTCTimeZone, StartEndTimeFilterID, StartWindowTimeFilterID } from "../../components/common-pages/TimeFilter";
@@ -40,7 +40,6 @@ const allAvailableQuickSelectLabels = [
     'This Quarter', 'Last Quarter', 'Last 90 Days',
     'This Year', 'Last Year', 'Last 365 Days'
 ];
-
 
 // Before each test, create a selenium webdriver that goes to the rootURL
 beforeAll(async () => {
@@ -68,7 +67,7 @@ beforeAll(async () => {
     await driver.executeScript(`window.resizeTo(1600,800)`)
     await driver.get(rootURL); // Navigate to the page
 
-    await driver.wait(until.titleIs(TimeFilterPageLabel), 10000); // Wait until the page title is loaded
+    await driver.wait(until.titleIs(TimeFilterRoute), 10000); // Wait until the page title is loaded
 });
 
 // close the driver after each test
