@@ -32,11 +32,17 @@ import { RadioButtonsTestComponent } from './react-forms';
 
 declare const homePath: string;
 
-export const InteractivePageLabel = "React Interactive";
-export const FormsPageLabel = 'React Forms';
+// React Forms Page Routes/Labels
+export const CheckboxPageRoute = "Checkbox";
+export const RadioButtonsPageRoute = "RadioButtons";
 
-export const TimeFilterPageLabel = "Time Filter";
+// Common Pages Page Routes/Labels
 export const TimeFilterRoute = "TimeFilter"
+
+// React Interactive Page Routes/Labels
+export const AlertPageRoute = "Alerts";
+export const BtnDropdownPageRoute = "DropdownButton";
+export const BreadcrumbPageRoute = "Breadcrumbs";
 
 /** Test App Root */
 const App = () => {
@@ -47,23 +53,30 @@ const App = () => {
             AllowCollapsed={false}
         >
             <Section Label="Common Pages">
-                <Page Name={TimeFilterRoute} Label={TimeFilterPageLabel}>
+                <Page Name={TimeFilterRoute} Label={TimeFilterRoute}>
                     <TimeFilterTestComponent />
                 </Page>
             </Section>
-            <Section Label="Component Tests" >
-                <Page Name={`interactive`} Label={InteractivePageLabel}>
+
+            <Section Label={'React Interactive'}>
+                <Page Name={AlertPageRoute} Label={AlertPageRoute}>
                     <AlertTestComponent />
+                </Page>
+                <Page Name={BtnDropdownPageRoute} Label={BtnDropdownPageRoute}>
                     <BtnDropdownTestComponent />
+                </Page>
+                <Page Name={BreadcrumbPageRoute} Label={BreadcrumbPageRoute}>
                     <BreadcrumbTestComponent />
                 </Page>
-                <Page Name={`forms`} Label={FormsPageLabel}>
+            </Section>
+
+            <Section Label="Component Tests" >
+                <Page Name={CheckboxPageRoute} Label={CheckboxPageRoute}>
                     <CheckBoxTestComponent />
+                </Page>
+                <Page Name={RadioButtonsPageRoute} Label={RadioButtonsPageRoute} >
                     <RadioButtonsTestComponent />
                 </Page>
-                <Page Name={`application-typings`} Label="Application Typings" />
-                <Page Name={`symbols`} Label="GPA Symbols" />
-                <Page Name={`graph`} Label="React Graph" />
             </Section>
 
             <Section Label="React Table">

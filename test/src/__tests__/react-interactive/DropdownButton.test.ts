@@ -3,9 +3,9 @@ import { Builder, By, until, WebDriver } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome';
 import chromedriver from "chromedriver";
 import { BTN_DROPDOWN_ID } from "../../components/react-interactive/DropdownButton";
-import { InteractivePageLabel } from "../../components/App";
+import { BtnDropdownPageRoute } from "../../components/App";
 
-const rootURL = `http://localhost:${global.PORT}/interactive`;
+const rootURL = `http://localhost:${global.PORT}/${BtnDropdownPageRoute}`;
 let driver: WebDriver;
 
 // Before each test, create a selenium webdriver that goes to the rootURL
@@ -24,7 +24,7 @@ beforeAll(async () => {
 
     await driver.get(rootURL); // Navigate to the page
 
-    await driver.wait(until.titleIs(InteractivePageLabel), 10000); // Wait until the page title is loaded
+    await driver.wait(until.titleIs(BtnDropdownPageRoute), 10000); // Wait until the page title is loaded
 });
 
 // close the driver after each test
