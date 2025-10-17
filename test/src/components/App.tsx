@@ -29,6 +29,7 @@ import TableTestingComponent from './react-table/Table';
 import ConfigurableTableTestComponent from './react-table/ConfigurableTable';
 import TimeFilterTestComponent from './common-pages/TimeFilter';
 import { RadioButtonsTestComponent } from './react-forms';
+import MapTestComponent from './react-interactive/Map';
 
 declare const homePath: string;
 
@@ -43,6 +44,7 @@ export const TimeFilterRoute = "TimeFilter"
 export const AlertPageRoute = "Alerts";
 export const BtnDropdownPageRoute = "DropdownButton";
 export const BreadcrumbPageRoute = "Breadcrumbs";
+export const MapPageRoute = "Map";
 
 /** Test App Root */
 const App = () => {
@@ -68,9 +70,12 @@ const App = () => {
                 <Page Name={BreadcrumbPageRoute} Label={BreadcrumbPageRoute}>
                     <BreadcrumbTestComponent />
                 </Page>
+                <Page Name={MapPageRoute} Label={MapPageRoute}>
+                    <MapTestComponent />
+                </Page>
             </Section>
 
-            <Section Label="Component Tests" >
+            <Section Label="React Forms" >
                 <Page Name={CheckboxPageRoute} Label={CheckboxPageRoute}>
                     <CheckBoxTestComponent />
                 </Page>
