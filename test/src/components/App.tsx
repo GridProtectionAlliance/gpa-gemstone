@@ -30,6 +30,7 @@ import ConfigurableTableTestComponent from './react-table/ConfigurableTable';
 import TimeFilterTestComponent from './common-pages/TimeFilter';
 import { RadioButtonsTestComponent } from './react-forms';
 import MapTestComponent from './react-interactive/Map';
+import LegendEntryTestComponent from './react-graph/LegendEntry';
 
 declare const homePath: string;
 
@@ -45,6 +46,9 @@ export const AlertPageRoute = "Alerts";
 export const BtnDropdownPageRoute = "DropdownButton";
 export const BreadcrumbPageRoute = "Breadcrumbs";
 export const MapPageRoute = "Map";
+
+// React Graph Page Routes/Labels
+export const LegendEntryPageRoute = "LegendEntry";
 
 /** Test App Root */
 const App = () => {
@@ -93,6 +97,11 @@ const App = () => {
                 </Page>
             </Section>
 
+            <Section Label="React Graph">
+                <Page Name={LegendEntryPageRoute} Label={LegendEntryPageRoute}>
+                    <LegendEntryTestComponent />
+                </Page>
+            </Section>
 
         </Application>
     );
