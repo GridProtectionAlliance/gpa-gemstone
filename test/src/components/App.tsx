@@ -28,6 +28,7 @@ import CheckBoxTestComponent from './react-forms/Checkbox';
 import TableTestingComponent from './react-table/Table';
 import ConfigurableTableTestComponent from './react-table/ConfigurableTable';
 import TimeFilterTestComponent from './common-pages/TimeFilter';
+import { RadioButtonsTestComponent } from './react-forms';
 
 declare const homePath: string;
 
@@ -58,6 +59,7 @@ const App = () => {
                 </Page>
                 <Page Name={`forms`} Label={FormsPageLabel}>
                     <CheckBoxTestComponent />
+                    <RadioButtonsTestComponent />
                 </Page>
                 <Page Name={`application-typings`} Label="Application Typings" />
                 <Page Name={`symbols`} Label="GPA Symbols" />
