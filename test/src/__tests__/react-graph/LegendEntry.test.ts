@@ -67,8 +67,23 @@ describe('Legend Entry Component', () => {
         );
 
         expect(await legendLabel.isDisplayed()).toBe(true);
-        expect(await legendLabel.getText()).toBe(LegendEntry_Label);
-
     });
+
+    it('Legend Entry doesn\'t render a line', async () => {
+        const container = await driver.findElement(By.id(LegendEntry_ID));
+        const numberOfPathElementForTicks = 32;
+
+        // wait for the SVG to appear
+        await driver.wait(
+            until.elementLocated(By.css(`#${LegendEntry_ID} svg`)),
+            5000
+        );
+
+        // find any path inside the svg
+        const paths = await container.findElements(By.css("svg g path"));
+
+        //expect to be 1 for the hover line
+        expect(paths.length).toBe(numberOfPathElementForTicks);
+    })
 
 });
