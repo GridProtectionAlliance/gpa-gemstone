@@ -26,9 +26,12 @@ import { Plot, LegendEntry } from "@gpa-gemstone/react-graph";
 
 export const LegendEntry_ID = `legend-entry-test-id`;
 export const LegendEntry_Label = `Test Legend Entry`; //This is needed as a way to identify the component in testing
+export const LegendEntry_P_ID = `legend-entry-p-test-id`;
+export const LegendEntry_Starting_Click_Count = 0;
 
 /* NOTE: dont change the limits on the plot as we depend on them for the # of ticks displayed in the jest test */
 const LegendEntryTestComponent = () => {
+    const [onClickCounter, setOnClickCounter] = React.useState<number>(LegendEntry_Starting_Click_Count);
 
     return (
         <div className="container-fluid h-100 p-0 d-flex flex-column">
@@ -43,14 +46,18 @@ const LegendEntryTestComponent = () => {
                     >
                         <LegendEntry
                             Label={LegendEntry_Label}
-                            OnClick={() => { }}
-                        />                  
+                            OnClick={() => setOnClickCounter(prev => prev + 1)}
+                        />
                     </Plot>
+                </div>
+            </div>
+            <div className="row">
+                <div className="col-12">
+                    <p id={LegendEntry_P_ID}>{onClickCounter}</p>
                 </div>
             </div>
         </div>
     )
-
 }
 
 export default LegendEntryTestComponent;

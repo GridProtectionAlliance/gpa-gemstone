@@ -26,7 +26,7 @@ import { Builder, By, until, WebDriver } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome';
 import chromedriver from "chromedriver";
 import { LegendEntryPageRoute } from "../../components/App";
-import { LegendEntry_ID, LegendEntry_Label } from "../../components/react-graph/LegendEntry";
+import { LegendEntry_ID, LegendEntry_Label, LegendEntry_P_ID, LegendEntry_Starting_Click_Count } from "../../components/react-graph/LegendEntry";
 
 const rootURL = `http://localhost:${global.PORT}/${LegendEntryPageRoute}`;
 let driver: WebDriver;
@@ -82,8 +82,37 @@ describe('Legend Entry Component', () => {
         // find any path inside the svg
         const paths = await container.findElements(By.css("svg g path"));
 
-        //expect to be 1 for the hover line
+        //expect to be num of ticks
         expect(paths.length).toBe(numberOfPathElementForTicks);
-    })
+    });
+
+    it('increments click count by 1 when Legend Entry is clicked', async () => {
+        const container = await driver.findElement(By.id(LegendEntry_ID));
+
+        // Find the legend entry
+        const legendLabel = await container.findElement(
+            By.xpath(`.//label[normalize-space(text())="${LegendEntry_Label}"]`)
+        );
+
+        const readCounterVal = async (): Promise<number> => {
+            const p = await driver.findElement(By.id(LegendEntry_P_ID));
+            const text = await p.getText();
+            return parseInt(text);
+        };
+
+        const beforeCountVal = await readCounterVal();
+
+        await legendLabel.click();
+
+        const expected = beforeCountVal + 1;
+
+        await driver.wait(async () => {
+            const current = await readCounterVal();
+            return current === expected;
+        }, 2000);
+
+        const afterCountVal = await readCounterVal();
+        expect(afterCountVal).toBe(expected);
+    });
 
 });
