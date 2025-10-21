@@ -115,7 +115,7 @@ function MultiInput<T>(props: IProps<T>) {
                 : null}
 
             {fieldArray.map((r, index) => (
-                <div className='row' key={index}>
+                <div className='row no-gutters' key={index}>
                     <div className='col-10'>
                         <Input
                             Record={fieldArray}
@@ -139,7 +139,7 @@ function MultiInput<T>(props: IProps<T>) {
                             }}
                         />
                     </div>
-                    <div className={`col-${index === [...fieldArray].length - 1 ? 1 : 2} ${index === 0 ? 'd-flex align-items-center' : ''}`}>
+                    <div className={`col-${index === [...fieldArray].length - 1 ? 1 : 2} ${index === 0 ? 'd-flex align-items-center justify-content-center' : ''}`}>
                         <button
                             className='btn'
                             style={(props.Disabled ?? false) ? { display: 'none' } : undefined}
@@ -152,7 +152,7 @@ function MultiInput<T>(props: IProps<T>) {
                         </button>
                     </div>
                     {index === [...fieldArray].length - 1 ?
-                        <div className={`col-1 ${index === 0 ? 'd-flex align-items-center' : ''}`}>
+                        <div className={`col-1 ${index === 0 ? 'd-flex align-items-center justify-content-center' : ''}`}>
                             <button
                                 className='btn'
                                 style={(((props.DisableAdd ?? false) || (props.Disabled ?? false)) ?? false) ? { display: 'none' } : undefined}
