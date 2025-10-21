@@ -26,10 +26,8 @@ import { Builder, By, until, WebDriver } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome';
 import chromedriver from "chromedriver";
 import { AlertID1, AlertID2 } from '../../components/react-interactive/Alert';
-import { BTN_DROPDOWN_ID } from "../../components/react-interactive/DropdownButton";
-import { BREADCRUMB_TEST_ID } from "../../components/react-interactive/Breadcrumb";
 import { CHECKBOX_TEST_ID } from '../../components/react-forms/Checkbox';
-
+import { AlertPageRoute, CheckboxPageRoute } from "../../components/App";
 
 const rootURL = `http://localhost:${global.PORT}/`;
 let driver: WebDriver;
@@ -72,8 +70,8 @@ describe('Application Component', () => {
     });
 
     it.each([
-        { tooltip: 'interactive', expectedPath: '/interactive', expectedElements: [AlertID1, AlertID2, BTN_DROPDOWN_ID, BREADCRUMB_TEST_ID] },
-        { tooltip: 'forms', expectedPath: '/forms', expectedElements: [CHECKBOX_TEST_ID] }
+        { tooltip: AlertPageRoute, expectedPath: AlertPageRoute, expectedElements: [AlertID1, AlertID2] },
+        { tooltip: CheckboxPageRoute, expectedPath: CheckboxPageRoute, expectedElements: [CHECKBOX_TEST_ID] }
     ])('Goes to correct path, sets path active and loads page when $tooltip link is clicked',
         async ({ tooltip, expectedPath, expectedElements }) => {
             const navbar = await driver.findElement(By.css('div.navbar'));
@@ -93,6 +91,12 @@ describe('Application Component', () => {
             await targetLink.click();
             await driver.wait(until.urlContains(expectedPath));
 
+            // wait for active class to be set
+            await driver.wait(async () => {
+                const classAttr = await targetLink!.getAttribute('class');
+                return classAttr.includes('active');
+            }, 3000);
+
             const classAttr = await targetLink.getAttribute('class');
             expect(classAttr).toContain('active');
 
@@ -109,14 +113,24 @@ describe('Application Component', () => {
         let navSections = await driver.findElements(By.css('ul.navbar-nav.px-3'));
         const initNumOfSections = navSections.length;
 
-        // Locate the first icon inside the span
+        //Click into last section to know where we are
+        const firstLinkOfLastHeader = await navSections[navSections.length - 1].findElement(By.css('a.nav-link'));
+        await firstLinkOfLastHeader.click();
+
+        // Since we are in the last section, clicking this header should do nothing
+        // Click second header (should remain unchanged)
+        await navbarHeaders[navbarHeaders.length - 1].click();
+        const secondHeaderIconsAfter = await navbarHeaders[navbarHeaders.length - 1].findElements(By.css('svg'));
+        expect(secondHeaderIconsAfter.length).toBe(0);
+
+        // Locate the first icon inside the span, this should be chevron-up as we are not in this section
         const header = await navbarHeaders[0].findElement(By.css('span'));
         const iconUp = await header.findElement(By.css('svg.feather'));
         expect(iconUp).toBeDefined();
 
-        // Second header should not have a chevron (non-collapsible)
-        const secondHeaderIcons = await navbarHeaders[1].findElements(By.css('svg'));
-        expect(secondHeaderIcons.length).toBe(0);
+        // Last header should not have a chevron (non-collapsible), as we are in this section
+        const lastHeaderIcons = await navbarHeaders[navbarHeaders.length - 1].findElements(By.css('svg'));
+        expect(lastHeaderIcons.length).toBe(0);
 
         // Click first header to fold
         await navbarHeaders[0].click();
@@ -129,10 +143,5 @@ describe('Application Component', () => {
         // Check nav section count changed
         navSections = await driver.findElements(By.css('ul.navbar-nav.px-3'));
         expect(navSections.length).toBeLessThan(initNumOfSections);
-
-        // Click second header (should remain unchanged)
-        await navbarHeaders[1].click();
-        const secondHeaderIconsAfter = await navbarHeaders[1].findElements(By.css('svg'));
-        expect(secondHeaderIconsAfter.length).toBe(0);
     });
 })

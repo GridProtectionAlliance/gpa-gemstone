@@ -24,10 +24,10 @@ import { afterEach, beforeEach, describe, expect, it } from "@jest/globals";
 import { Builder, By, until, WebDriver } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome';
 import chromedriver from "chromedriver";
-import { FormsPageLabel } from "../../components/App";
+import { RadioButtonsPageRoute } from "../../components/App";
 import { RadioButtonsTestID } from "../../components/react-forms/RadioButtons";
 
-const rootURL = `http://localhost:${global.PORT}/forms`;
+const rootURL = `http://localhost:${global.PORT}/${RadioButtonsPageRoute}`;
 let driver: WebDriver;
 
 beforeEach(async () => {
@@ -42,7 +42,7 @@ beforeEach(async () => {
         .build();
 
     await driver.get(rootURL);
-    await driver.wait(until.titleIs(FormsPageLabel), 10000);
+    await driver.wait(until.titleIs(RadioButtonsPageRoute), 10000);
 });
 
 afterEach(async () => {

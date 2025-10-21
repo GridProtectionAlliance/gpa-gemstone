@@ -26,7 +26,7 @@ import { GraphContext, IDataSeries } from './GraphContext';
 import LineLegend from './LineLegend';
 
 interface IProps {
-    OnClick: (e: React.MouseEvent<HTMLDivElement>) => void,
+    OnClick?: (e: React.MouseEvent<HTMLDivElement>) => void,
     Label: string
 }
 
@@ -41,7 +41,7 @@ const LegendEntry = (props: IProps) => {
                 label={props.Label}
                 color={'' /* Color doesnt matter here */}
                 lineStyle={'none' /* No line shown in legend */}
-                setEnabled={(_, e) => props.OnClick(e)}
+                setEnabled={(_, e) => props.OnClick?.(e)}
                 enabled={true}
                 hasNoData={false}
             />,

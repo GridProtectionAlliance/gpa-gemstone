@@ -29,14 +29,26 @@ import TableTestingComponent from './react-table/Table';
 import ConfigurableTableTestComponent from './react-table/ConfigurableTable';
 import TimeFilterTestComponent from './common-pages/TimeFilter';
 import { RadioButtonsTestComponent } from './react-forms';
+import MapTestComponent from './react-interactive/Map';
+import LegendEntryTestComponent from './react-graph/LegendEntry';
 
 declare const homePath: string;
 
-export const InteractivePageLabel = "React Interactive";
-export const FormsPageLabel = 'React Forms';
+// React Forms Page Routes/Labels
+export const CheckboxPageRoute = "Checkbox";
+export const RadioButtonsPageRoute = "RadioButtons";
 
-export const TimeFilterPageLabel = "Time Filter";
+// Common Pages Page Routes/Labels
 export const TimeFilterRoute = "TimeFilter"
+
+// React Interactive Page Routes/Labels
+export const AlertPageRoute = "Alerts";
+export const BtnDropdownPageRoute = "DropdownButton";
+export const BreadcrumbPageRoute = "Breadcrumbs";
+export const MapPageRoute = "Map";
+
+// React Graph Page Routes/Labels
+export const LegendEntryPageRoute = "LegendEntry";
 
 /** Test App Root */
 const App = () => {
@@ -47,23 +59,33 @@ const App = () => {
             AllowCollapsed={false}
         >
             <Section Label="Common Pages">
-                <Page Name={TimeFilterRoute} Label={TimeFilterPageLabel}>
+                <Page Name={TimeFilterRoute} Label={TimeFilterRoute}>
                     <TimeFilterTestComponent />
                 </Page>
             </Section>
-            <Section Label="Component Tests" >
-                <Page Name={`interactive`} Label={InteractivePageLabel}>
+
+            <Section Label={'React Interactive'}>
+                <Page Name={AlertPageRoute} Label={AlertPageRoute}>
                     <AlertTestComponent />
+                </Page>
+                <Page Name={BtnDropdownPageRoute} Label={BtnDropdownPageRoute}>
                     <BtnDropdownTestComponent />
+                </Page>
+                <Page Name={BreadcrumbPageRoute} Label={BreadcrumbPageRoute}>
                     <BreadcrumbTestComponent />
                 </Page>
-                <Page Name={`forms`} Label={FormsPageLabel}>
+                <Page Name={MapPageRoute} Label={MapPageRoute}>
+                    <MapTestComponent />
+                </Page>
+            </Section>
+
+            <Section Label="React Forms" >
+                <Page Name={CheckboxPageRoute} Label={CheckboxPageRoute}>
                     <CheckBoxTestComponent />
+                </Page>
+                <Page Name={RadioButtonsPageRoute} Label={RadioButtonsPageRoute} >
                     <RadioButtonsTestComponent />
                 </Page>
-                <Page Name={`application-typings`} Label="Application Typings" />
-                <Page Name={`symbols`} Label="GPA Symbols" />
-                <Page Name={`graph`} Label="React Graph" />
             </Section>
 
             <Section Label="React Table">
@@ -75,6 +97,11 @@ const App = () => {
                 </Page>
             </Section>
 
+            <Section Label="React Graph">
+                <Page Name={LegendEntryPageRoute} Label={LegendEntryPageRoute}>
+                    <LegendEntryTestComponent />
+                </Page>
+            </Section>
 
         </Application>
     );
