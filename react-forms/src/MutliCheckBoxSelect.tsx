@@ -76,8 +76,8 @@ const MultiSelect = (props: IProps) => {
   const [show, setShow] = React.useState<boolean>(false);
   const [showHelp, setShowHelp] = React.useState<boolean>(false);
   const [showItems, setShowItems] = React.useState<boolean>(false);
-  const [guid, setGuid] = React.useState<string>("");
-  const [helperGuid] = React.useState<string>("");
+  const [guid] = React.useState<string>(CreateGuid());
+  const [helperGuid] = React.useState<string>(CreateGuid());
   const showLabel = React.useMemo(() => props.Label !== "", [props.Label]);
   const showHelpIcon = React.useMemo(() => props.Help !== undefined, [props.Help]);
   const selectedOptions = React.useMemo(() => props.Options.filter(opt => opt.Selected), [props.Options]);
@@ -113,11 +113,6 @@ const MultiSelect = (props: IProps) => {
     }
 
   }, [show]);
-
-  // Effect to generate a unique ID for the component.
-  React.useEffect(() => {
-    setGuid(CreateGuid());
-  }, []);
 
   // Handle showing and hiding of the dropdown.
   function HandleShow(evt: React.MouseEvent<HTMLButtonElement, MouseEvent> | MouseEvent) {
