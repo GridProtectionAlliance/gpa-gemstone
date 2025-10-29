@@ -29,12 +29,13 @@ namespace PQBrowser {
 			ID: number, Name: string, Description: string, 
 			AssetID: number, AssetKey: string, AssetName: string, 
 			MeterID: number, MeterKey: string, MeterName: string, MeterShortName: string, 
-			Phase: string, ChannelGroup: string, ChannelGroupType: string, Unit: string
+			Phase: string, ChannelGroup: string, ChannelGroupType: string, Unit: string,
+			Series: Series[]
 		}
 
 		export interface Series {
 			ID: number, ChannelID: number, 
-			TypeName: string, TypeDescription: string, 
+			TypeName: string, TypeDescription: string
 		}
 	}
 }
