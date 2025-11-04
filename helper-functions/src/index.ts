@@ -49,6 +49,7 @@ import { ReplaceAll } from './ReplaceAll';
 import { RegexEncode } from './RegexEncode';
 import { ComputeMax } from './ComputeMax';
 import { ComputeMin } from './ComputeMin';
+import { FormatDuration } from './DisplayDur';
 
 export {
     CreateGuid,
@@ -76,5 +77,6 @@ export {
     ReplaceAll,
     RegexEncode,
     ComputeMax,
-    ComputeMin
+    ComputeMin,
+    FormatDuration
 }
