@@ -50,10 +50,10 @@ function FormatDuration(duration: number): string {
 
     //Display 0y 0d
     if (years >= 1)
-        return duration;
+        return display;
 
     adjustment = adjustment +  Math.floor(days) * secondsPerDay;
-    const hours = (seconds - adjustement) /  secondsPerHour;
+    const hours = (seconds - adjustment) /  secondsPerHour;
 
     if (hours >= 1)
        display = display + ' ' + Math.floor(hours).toFixed(0) + ' hour' + (hours >=2? 's' : '');
@@ -63,7 +63,7 @@ function FormatDuration(duration: number): string {
         return display;
 
     adjustment = adjustment +  Math.floor(hours) * secondsPerHour;
-    const minutes = (seconds - adjustement) /  secondsPerMinute;
+    const minutes = (seconds - adjustment) /  secondsPerMinute;
 
     if (minutes >= 1)
        display = display + ' ' + Math.floor(minutes).toFixed(0) + ' minute' + (minutes >=2? 's' : '');
@@ -73,7 +73,7 @@ function FormatDuration(duration: number): string {
         return display;
 
     adjustment = adjustment +  Math.floor(minutes) * secondsPerMinute;
-    const remainingSeconds = (seconds -  adjustement) /  secondsPerMinute;
+    const remainingSeconds = (seconds -  adjustment) /  secondsPerMinute;
 
     if (remainingSeconds >= 1)
        display = display + ' ' + Math.floor(remainingSeconds).toFixed(0) + ' second' + (remainingSeconds >=2? 's' : '');
@@ -83,10 +83,10 @@ function FormatDuration(duration: number): string {
         return display;
 
     adjustment = adjustment +  Math.floor(remainingSeconds);
-    const milliSeconds = duration - adjustement*1000
+    const milliSeconds = duration - adjustment*1000
 
     if (milliSeconds >= 1)
-       display = display + ' ' + Math.foor(milliSeconds).toFixed(0) + ' milliseconds' + (milliSeconds >=2? 's' : '');
+       display = display + ' ' + Math.floor(milliSeconds).toFixed(0) + ' milliseconds' + (milliSeconds >=2? 's' : '');
 
     // Display 0m 0s 0ms
     return display;
