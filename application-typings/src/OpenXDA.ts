@@ -52,6 +52,7 @@ namespace OpenXDA {
 
         // Tables
         export interface EventType { ID: number, Name: EventTypeName, Description: string, Selected?: boolean, ShowInFilter: boolean, Category?: string  }
+        export interface EventSearch { ID: number, StartTime: string, EndTime: string, Phase: string, MeterID: number, MeterName: string, EventType: string, EventTypeID: number, PerUnitMagnitude: number, DurationSeconds: number }
         export interface Meter { ID: number, AssetKey: string, Alias: string, Make: string, Model: string, Name: string, ShortName: string, TimeZone: string, LocationID: number, Description: string, Selected?: boolean }
         export interface Location { ID: number, LocationKey: string, Name: string, Alias: string, ShortName: string, Latitude: number, Longitude: number, Description: string }
         export interface Disturbance { ID: number, EventID: number, PhaseID: number, Magnitude: number, PerUnitMagnitude: number, DurationSeconds: number }
@@ -137,6 +138,9 @@ namespace OpenXDA {
         export interface RemoteXDAMeter extends MetersToDataPush { LocalAlias: string, LocalMeterName: string, LocalAssetKey: string, RemoteAlias: string }
         export interface AssetsToDataPush { ID: number, RemoteXDAInstanceID: number, LocalXDAAssetID: number, RemoteXDAAssetID: number, RemoteXDAAssetKey: string, Obsfucate: boolean, Synced: boolean, RemoteAssetCreatedByDataPusher: boolean}
         export interface RemoteXDAAsset extends AssetsToDataPush { LocalAssetName: string, LocalAssetKey: string, RemoteAssetName: string, RemoteAssetKey: string }
+    }
+    export namespace Consts {
+        export const DateTimeFormat = "YYYY-MM-DD[T]HH:mm:ss";
     }
 }
 export default OpenXDA;
