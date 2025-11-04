@@ -33,6 +33,10 @@ namespace PQI {
     
     export namespace Lists{
     }
+
+    export namespace Consts{
+        export const DateTimeFormat = "M/D/YYYY";
+    }
 }
 
 export default PQI;
