@@ -38,10 +38,10 @@ import { useEffectWithPrevious } from './React/useEffectWithPrevious';
 import { findLastIndex } from './FindLastIndex'
 import { IsRegex } from './IsRegex';
 import { CsvStringToArray } from './CSVStringToArray';
-import { useGetContainerPosition } from './useGetContainerPosition';
+import { useGetContainerPosition } from './React/useGetContainerPosition';
 import GetScrollbarWidth from './GetScrollBarWidth';
-import useMediaQuery from './useMediaQuery';
-import useGetScreenSize from './useGetScreenSize';
+import useMediaQuery from './React/useMediaQuery';
+import useGetScreenSize from './React/useGetScreenSize';
 import { ParseKeyValuePairs } from './ParseKeyValuePairs';
 import { JoinKeyValuePairs } from './JoinKeyValuePairs';
 import { IsBool } from './IsBool';
