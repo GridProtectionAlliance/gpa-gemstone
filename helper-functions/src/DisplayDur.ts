@@ -46,7 +46,7 @@ function FormatDuration(duration: number): string {
     const days = (seconds - adjustment) / secondsPerDay;
 
     if (days >= 1)
-        display = display + ' ' + Math.floor(days).toFixed(0) + ' day' + (days >=2? 's' : '');
+        display = display + (display.length > 0? ' ' : '') + Math.floor(days).toFixed(0) + ' day' + (days >=2? 's' : '');
 
     //Display 0y 0d
     if (years >= 1)
@@ -56,7 +56,7 @@ function FormatDuration(duration: number): string {
     const hours = (seconds - adjustment) /  secondsPerHour;
 
     if (hours >= 1)
-       display = display + ' ' + Math.floor(hours).toFixed(0) + ' hour' + (hours >=2? 's' : '');
+       display = display + (display.length > 0? ' ' : '') + Math.floor(hours).toFixed(0) + ' hour' + (hours >=2? 's' : '');
 
     // Display 0d 0h
     if (days >= 50)
@@ -66,7 +66,7 @@ function FormatDuration(duration: number): string {
     const minutes = (seconds - adjustment) /  secondsPerMinute;
 
     if (minutes >= 1)
-       display = display + ' ' + Math.floor(minutes).toFixed(0) + ' minute' + (minutes >=2? 's' : '');
+       display = display + (display.length > 0? ' ' : '') + Math.floor(minutes).toFixed(0) + ' minute' + (minutes >=2? 's' : '');
 
     // Display 0d 0h 0m
     if (days >= 1)
@@ -76,7 +76,7 @@ function FormatDuration(duration: number): string {
     const remainingSeconds = (seconds -  adjustment) /  secondsPerMinute;
 
     if (remainingSeconds >= 1)
-       display = display + ' ' + Math.floor(remainingSeconds).toFixed(0) + ' second' + (remainingSeconds >=2? 's' : '');
+       display = display + (display.length > 0? ' ' : '') + Math.floor(remainingSeconds).toFixed(0) + ' second' + (remainingSeconds >=2? 's' : '');
 
      // Display 0h 0m 0s
     if (hours >= 1)
@@ -86,7 +86,7 @@ function FormatDuration(duration: number): string {
     const milliSeconds = duration - adjustment*1000
 
     if (milliSeconds >= 1)
-       display = display + ' ' + Math.floor(milliSeconds).toFixed(0) + ' milliseconds' + (milliSeconds >=2? 's' : '');
+       display = display + (display.length > 0? ' ' : '') + Math.floor(milliSeconds).toFixed(0) + ' milliseconds' + (milliSeconds >=2? 's' : '');
 
     // Display 0m 0s 0ms
     return display;
