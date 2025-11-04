@@ -62,8 +62,9 @@ export interface IProps {
   tDomain?: [number, number]
   defaultMouseMode?: SelectType,
   yDomain?: 'Manual' | 'AutoValue' | 'HalfAutoValue',
-  hideYAxis?: boolean
-  limitZoom?: boolean
+  hideYAxis?: boolean,
+  hideXAxis?: boolean,
+  limitZoom?: boolean,
   height: number,
   width: number,
 
@@ -907,13 +908,15 @@ const Plot = (props: React.PropsWithChildren<IProps>) => {
           <svg ref={SVGref} width={svgWidth < 0 ? 0 : svgWidth} height={svgHeight < 0 ? 0 : svgHeight}
             style={SvgStyle} viewBox={`0 0 ${svgWidth < 0 ? 0 : svgWidth} ${svgHeight < 0 ? 0 : svgHeight}`}>
             {props.showBorder !== undefined && props.showBorder ? < path stroke='currentColor' d={`M ${offsetLeft} ${offsetTop} H ${svgWidth - offsetRight} V ${svgHeight - offsetBottom} H ${offsetLeft} Z`} /> : null}
-            {props.XAxisType === 'time' || props.XAxisType === undefined ?
-              <TimeAxis label={props.Tlabel} offsetBottom={offsetBottom} offsetLeft={offsetLeft} offsetRight={offsetRight} width={svgWidth} height={svgHeight} setHeight={setHeightXLabel}
-                heightAxis={heightXLabel} showLeftMostTick={!yHasData[0]} showRightMostTick={!yHasData[1]} showDate={props.showDateOnTimeAxis} /> :
-              props.XAxisType === 'value' ? <XValueAxis offsetBottom={offsetBottom} offsetLeft={offsetLeft} offsetRight={offsetRight} width={svgWidth} height={svgHeight} setHeight={setHeightXLabel} heightAxis={heightXLabel}
-                label={props.Tlabel} showLeftMostTick={!yHasData[0]} showRightMostTick={!yHasData[1]} /> :
-                <LogAxis offsetTop={offsetTop} showGrid={props.showGrid} label={props.Tlabel} offsetBottom={offsetBottom} offsetLeft={offsetLeft} offsetRight={offsetRight} width={svgWidth}
-                  height={svgHeight} setHeight={setHeightXLabel} heightAxis={heightXLabel} showLeftMostTick={!yHasData[0]} showRightMostTick={!yHasData[1]} />}
+            {(props.hideXAxis ?? false) ? null : 
+              (props.XAxisType === 'time' || props.XAxisType === undefined ?
+                <TimeAxis label={props.Tlabel} offsetBottom={offsetBottom} offsetLeft={offsetLeft} offsetRight={offsetRight} width={svgWidth} height={svgHeight} setHeight={setHeightXLabel}
+                  heightAxis={heightXLabel} showLeftMostTick={!yHasData[0]} showRightMostTick={!yHasData[1]} showDate={props.showDateOnTimeAxis} /> :
+                props.XAxisType === 'value' ? <XValueAxis offsetBottom={offsetBottom} offsetLeft={offsetLeft} offsetRight={offsetRight} width={svgWidth} height={svgHeight} setHeight={setHeightXLabel} heightAxis={heightXLabel}
+                  label={props.Tlabel} showLeftMostTick={!yHasData[0]} showRightMostTick={!yHasData[1]} /> :
+                  <LogAxis offsetTop={offsetTop} showGrid={props.showGrid} label={props.Tlabel} offsetBottom={offsetBottom} offsetLeft={offsetLeft} offsetRight={offsetRight} width={svgWidth}
+                    height={svgHeight} setHeight={setHeightXLabel} heightAxis={heightXLabel} showLeftMostTick={!yHasData[0]} showRightMostTick={!yHasData[1]} />)
+            }
             {(props.hideYAxis ?? false) ? null : (
               <>
                 {yHasData[0] ? (
