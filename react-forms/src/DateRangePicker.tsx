@@ -75,6 +75,7 @@ type Duration = ('Custom' | '1 Day' | '7 Days' | '30 Days' | '90 Days' | '180 Da
 /**
  * DateRangePicker Component.
  * Allows users to select a date range either by choosing predefined durations or by specifying custom dates.
+ * @deprecated Use TimeFilter in common-pages instead
  */
 export default function DateRangePicker<T>(props: IProps<T>) {
   // Range box vars, need a secondary var to avoid looping react hooks
