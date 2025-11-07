@@ -50,11 +50,13 @@ import { RegexEncode } from './RegexEncode';
 import { ComputeMax } from './ComputeMax';
 import { ComputeMin } from './ComputeMin';
 import { FormatDuration } from './DisplayDur';
+import { GetColor } from './GetColor';
 
 export {
     CreateGuid,
     GetTextWidth,
     GetNodeSize,
+    GetColor,
     RandomColor,
     GetTextHeight,
     IsNumber,
