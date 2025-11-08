@@ -25,7 +25,7 @@ import * as React from 'react';
 import * as moment from 'moment';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 
-interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
+interface IExtendedProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
   /**
     * Field representing the start date in the record
     * @type {keyof T}
@@ -67,12 +67,15 @@ interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
   Type?: ('datetime-local' | 'date');
 }
 
+type IProps<T> = Omit<IExtendedProps<T>, "Field">;
+
 // Duration options 
 type Duration = ('Custom' | '1 Day' | '7 Days' | '30 Days' | '90 Days' | '180 Days' | '365 Days')
 
 /**
  * DateRangePicker Component.
  * Allows users to select a date range either by choosing predefined durations or by specifying custom dates.
+ * @deprecated Use TimeFilter in common-pages instead
  */
 export default function DateRangePicker<T>(props: IProps<T>) {
   // Range box vars, need a secondary var to avoid looping react hooks

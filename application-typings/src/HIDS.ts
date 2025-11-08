@@ -20,23 +20,24 @@
 //       Generated original version of source code.
 //
 // ******************************************************************************************************
-namespace PQI {
+namespace HIDS {
     export namespace Types {
-       // Types
-
-       // Tables
-       export interface Facility { Name: string, Voltage: string, UtilitySupplyVoltage: string, Path: string, Address: string }
-       export interface Equipment { Facility: string, Area: string, SectionTitle: string, SectionRank: number, ComponentModel: string, Manufacturer: string, Series: string, ComponentType: string }
-       export interface Address { Path: string, Company: string, Facilities: string, AddressLine1: string, AdressLine2: string, City: string, StateOrProvince: string, PostalCode: string, Country: string, Primary: boolean}
-       export interface Company { Addresses: string, Path: string, Type: string, Name: string, Industry: string }
+        export interface IPQData {
+            Tag: string,
+            Minimum: number,
+            Maximum: number,
+            Average: number,
+            QualityFlags: number,
+            Timestamp: string
+        }
     }
     
-    export namespace Lists{
+    export namespace Lists {
     }
 
-    export namespace Consts{
-        export const DateTimeFormat = "M/D/YYYY";
+    export namespace Consts {
+        export const DateTimeFormat = "YYYY-MM-DD[T]HH:mm:ss.SSSZ";
     }
 }
 
-export default PQI;
+export default HIDS;

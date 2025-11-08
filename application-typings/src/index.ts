@@ -29,5 +29,6 @@ import OpenXDA from './OpenXDA';
 import PQI from './PQI';
 import Gemstone from './Gemstone';
 import PQBrowser from './PQBrowser';
+import HIDS from './HIDS';
 
-export { PqDiff, SOETools, OpenHistorian, SystemCenter, Application, OpenXDA, PQI, Gemstone, PQBrowser }
+export { PqDiff, SOETools, OpenHistorian, SystemCenter, Application, OpenXDA, PQI, Gemstone, PQBrowser, HIDS }
