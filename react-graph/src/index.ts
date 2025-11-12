@@ -16,6 +16,8 @@ import { PointNode } from './PointNode';
 import StreamingLine from './StreamingLine';
 import PlotGroup from './PlotGroup';
 import LegendEntry from './LegendEntry';
+import Legend from './Legend';
+import LineLegend from './LineLegend';
 
 export { 
     Plot,
@@ -35,5 +37,7 @@ export {
     HighlightBox,
     PointNode,
     StreamingLine,
-    LegendEntry
+    LegendEntry,
+    Legend,
+    LineLegend
  };

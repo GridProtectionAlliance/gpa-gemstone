@@ -30,7 +30,7 @@ import { isEqual } from 'lodash';
 import TimeAxis from './TimeAxis';
 import LogAxis from './LogAxis';
 import YValueAxis from './YValueAxis';
-import Legend from './Legend';
+import LegendWithContext from './LegendWithContext';
 import LegendEntry from './LegendEntry';
 import LineWithThreshold from './LineWithThreshold';
 import Line from './Line';
@@ -1019,7 +1019,7 @@ const Plot = (props: React.PropsWithChildren<IProps>) => {
           </svg>
         </div>
         {props.legend !== undefined && props.legend !== 'hidden' ?
-          <Legend
+          <LegendWithContext
             location={props.legend}
             height={legendHeight}
             width={legendWidthToUse}
