@@ -32,12 +32,18 @@ interface IProps {
     Map: React.MutableRefObject<LeafletMap | null>,
     MapOptions: MapOptions,
     TileLayerOptions: TileLayerOptions,
-    TileLayerURL: string,
+    TileLayerURL: string
 }
 
 const Map = (props: IProps) => {
     const mapDivRef = React.useRef<HTMLDivElement | null>(null);
     const { width, height } = useGetContainerPosition(mapDivRef);
+
+    const stringifiedMapOptions = React.useMemo(() => JSON.stringify(props.MapOptions), [props.MapOptions]);
+    const stringifiedTileLayerOptions = React.useMemo(() => JSON.stringify(props.TileLayerOptions), [props.TileLayerOptions]);
+
+    const memoizedMapOptions = React.useMemo(() => JSON.parse(stringifiedMapOptions) as MapOptions, [stringifiedMapOptions]);
+    const memoizedTileLayerOptions = React.useMemo(() => JSON.parse(stringifiedTileLayerOptions) as TileLayerOptions, [stringifiedTileLayerOptions]);
 
     React.useEffect(() => {
         if (props.Map.current == null) return
@@ -48,16 +54,16 @@ const Map = (props: IProps) => {
     React.useEffect(() => {
         if (mapDivRef.current == null) return;
 
-        props.Map.current = map(mapDivRef.current, props.MapOptions);
+        props.Map.current = map(mapDivRef.current, memoizedMapOptions);
 
-        tileLayer(props.TileLayerURL, props.TileLayerOptions).addTo(props.Map.current);
+        tileLayer(props.TileLayerURL, memoizedTileLayerOptions).addTo(props.Map.current);
 
         return () => {
             if (props.Map.current == null) return;
             props.Map.current.remove();
             props.Map.current = null;
         };
-    }, [props.MapOptions, props.TileLayerURL, props.TileLayerOptions]);
+    }, [memoizedMapOptions, props.TileLayerURL, memoizedTileLayerOptions]);
 
     return (
         <div className='h-100 w-100' ref={mapDivRef} />
