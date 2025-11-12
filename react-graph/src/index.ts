@@ -18,6 +18,8 @@ import PlotGroup from './PlotGroup';
 import LegendEntry from './LegendEntry';
 import Legend from './Legend';
 import LineLegend from './LineLegend';
+import Bar from './Bar';
+import BarAggregate from './BarAggregate';
 
 export { 
     Plot,
@@ -39,5 +41,7 @@ export {
     StreamingLine,
     LegendEntry,
     Legend,
-    LineLegend
+    LineLegend,
+    Bar,
+    BarAggregate
  };
