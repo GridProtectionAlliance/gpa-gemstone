@@ -176,7 +176,7 @@ export const Legend = React.memo((props: IProps) => {
           width: props.width,
           paddingLeft: `${leftPad}px`,
           position: (props.orientation === 'horizontal' ? 'absolute' : 'relative'),
-          float: (props.orientation as any),
+          float: ((props.orientation === 'horizontal' ? 'bottom' : 'right') as any),
           display: 'flex',
           flexWrap: 'wrap',
           bottom: 0,
