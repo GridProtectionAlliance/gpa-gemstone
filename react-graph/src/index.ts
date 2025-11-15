@@ -20,6 +20,7 @@ import Legend from './Legend';
 import LineLegend from './LineLegend';
 import Bar from './Bar';
 import BarAggregate from './BarAggregate';
+import CircleGroup from './CircleGroups';
 
 export { 
     Plot,
@@ -43,5 +44,6 @@ export {
     Legend,
     LineLegend,
     Bar,
-    BarAggregate
+    BarAggregate,
+    CircleGroup
  };
