@@ -29,11 +29,13 @@ export interface IProps {
     offsetLeft: number;
     offsetRight: number;
     offsetBottom: number;
+    offsetTop: number;
     heightAxis: number;
     height: number;
     width: number;
     setHeight: (h: number) => void;
     label?: string;
+    showGrid?: boolean;
     showRightMostTick?: boolean;
     showLeftMostTick?: boolean;
 }
@@ -113,6 +115,15 @@ function XValueAxis(props: IProps) {
                             {formatNumber(l, decimalPlaces)}
                         </text>
                     ))}
+                    {tick.map((l, i) => 
+                        <path 
+                            key={(l.toFixed(50))} 
+                            stroke='lightgrey' 
+                            strokeOpacity={(props.showGrid ?? false) ? '0.8' : '0.0'} 
+                            style={{ strokeWidth: 1, transition: 'd 0.5s' }} 
+                            d={`M ${context.XTransformation(l)} ${props.height - props.offsetBottom} V ${props.offsetTop}`} 
+                        />
+                    )}
                 </>
             )}
             {title != null ? (
