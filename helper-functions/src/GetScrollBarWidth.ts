@@ -33,9 +33,11 @@ const GetScrollbarWidth = () => {
     // Creating inner element and placing it in the container
     const inner = document.createElement('div');
     outer.appendChild(inner);
-    
+    const outerWidth = outer.getBoundingClientRect().width;
+    const innerWidth = inner.getBoundingClientRect().width;
+
     // Calculating difference between container's full width and the child width
-    const scrollbarWidth = (outer.offsetWidth - inner.offsetWidth);
+    const scrollbarWidth = (outerWidth - innerWidth);
   
     // Removing temporary elements from the DOM
     outer.parentNode!.removeChild(outer);
