@@ -28,10 +28,25 @@ import { isEqual } from 'lodash';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 
 interface IProps {
+  /**
+   * Flag to show or hide the tooltip.
+   */
   Show: boolean,
+  /**
+   * Optional position for the tooltip. If not provided, 'top' is used.
+   */
   Position?: Position,
+  /**
+   * If provided, the tooltip will look for an element with a matching data-tooltip attribute to position itself to.
+   */
   Target?: string,
+  /**
+   * Optional z-index for the tooltip. Defaults to 9999.
+   */
   Zindex?: number,
+  /**
+   * Optional class to style the tooltip. Uses Bootstrap alert classes if provided.
+   */
   Class?: 'primary' | 'secondary' | 'success' | 'danger' | 'info'
 }
 

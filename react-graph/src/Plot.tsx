@@ -56,6 +56,10 @@ const html2canvas: any = _html2canvas;
 export interface IProps {
   defaultTdomain: [number, number],
   defaultYdomain?: [number, number] | [number, number][],
+  /**
+   * Optional, allows for external control of the time domain.
+   */
+  tDomain?: [number, number]
   defaultMouseMode?: SelectType,
   yDomain?: 'Manual' | 'AutoValue' | 'HalfAutoValue',
   hideYAxis?: boolean
@@ -97,6 +101,7 @@ export interface IProps {
   onCapture?: (legendHeightRequired: number) => string | undefined,
   onCaptureComplete?: () => void,
   onDataInspect?: (tDomain: [number, number]) => void,
+  onTDomainChange?: (tDomain: [number, number]) => void,
   Ymin?: number | number[],
   Ymax?: number | number[],
   snapMouse?: boolean
@@ -117,17 +122,6 @@ const defaultLegendHeight = 50;
 const defaultLegendWidth = 100;
 
 const Plot = (props: React.PropsWithChildren<IProps>) => {
-  // Type correcting functions to convert props into something usable
-  const typeCorrect: <T>(arg: T | T[] | undefined, arrayIndex: number) => T | undefined = React.useCallback((arg, arrayIndex) => {
-    if (arg == null) return undefined;
-    if (!(arg instanceof Object) || !Object.prototype.hasOwnProperty.call(arg, 'length')) return (arrayIndex === 0 ? arg : undefined);
-    return (arg as any)[arrayIndex];
-  }, []);
-  const typeCorrectDomain = React.useCallback((arg: [number, number] | [number, number][] | undefined): [number, number][] => {
-    if (arg === undefined || arg.length === 0) return [[0, 1], [0, 1]];
-    if (typeof (arg[0]) === 'number') return [arg, [0, 1]] as [number, number][];
-    return (arg as [number, number][]);
-  }, []);
   /*
     Actual plot that will handle Axis etc.
   */
@@ -193,7 +187,6 @@ const Plot = (props: React.PropsWithChildren<IProps>) => {
     return groupContext.HasConsumer ? groupContext.LegendWidth : legendWidth
   }, [groupContext.HasConsumer, legendWidth, groupContext.LegendWidth])
 
-
   //NOTE: zoom-horizontal really is zooming on the y-axis and zoom-vertical is zooming on the x-axis
   const showZoomButton = props.yDomain !== 'AutoValue' && (props.zoom ?? true);
   const showHorizontalZoomButton = props.yDomain !== 'AutoValue' && ((props.zoom ?? true) || (props.yZoom ?? true));
@@ -201,6 +194,26 @@ const Plot = (props: React.PropsWithChildren<IProps>) => {
 
   const showPan = props.pan === undefined || props.pan
   const showReset = showPan || showZoomButton || showHorizontalZoomButton || showVerticalZoomButton;
+
+  //Effect to push tDomain to parent
+  React.useEffect(() => {
+    if (props.onTDomainChange == null) return
+
+    const handle = setTimeout(() => {
+      if (props.onTDomainChange != null)
+        props.onTDomainChange([tDomain[0], tDomain[1]]);
+    }, 250);
+
+    return () => clearTimeout(handle);
+  }, [tDomain[0], tDomain[1], props.onTDomainChange]);
+
+  //Effect to sync external tDomain changes
+  React.useEffect(() => {
+    if (props.tDomain == null) return
+
+    //assume that external tDomain is valid as they provided the bounds
+    setTdomain([props.tDomain[0], props.tDomain[1]]);
+  }, [props.tDomain?.[0], props.tDomain?.[1]])
 
   React.useEffect(() => {
     if (!groupContext.HasConsumer) return
@@ -238,22 +251,15 @@ const Plot = (props: React.PropsWithChildren<IProps>) => {
     if (props.legendWidth !== undefined) setLegendWidth(props.legendWidth);
   }, [props.legendWidth]);
 
-  // Recompute height and width
+  // Recompute svg height
   React.useEffect(() => {
     setSVGheight(props.height - (props.legend === 'bottom' ? legendHeight : 0));
   }, [props.height, props.legend, legendHeight]);
 
+  // recompute svg width
   React.useEffect(() => {
     setSVGwidth(props.width - (props.legend === 'right' ? legendWidthToUse : 0));
   }, [props.width, props.legend, legendWidthToUse]);
-
-  // enforce T limits
-  React.useEffect(() => {
-    if (props.Tmin !== undefined && tDomain[0] < props.Tmin)
-      setTdomain((t) => ([props.Tmin ?? 0, t[1]]));
-    if (props.Tmax !== undefined && tDomain[1] > props.Tmax)
-      setTdomain((t) => ([t[0], props.Tmax ?? 0]));
-  }, [tDomain]);
 
   // enforce Y limits
   React.useEffect(() => {
@@ -275,20 +281,24 @@ const Plot = (props: React.PropsWithChildren<IProps>) => {
     applyToYDomain(mutateDomain);
   }, [yDomain])
 
+  //Effect to set defaultTDomain changes
   React.useEffect(() => {
     if (!isEqual(defaultTdomain, props.defaultTdomain))
       setDefaultTdomain(props.defaultTdomain);
   }, [props.defaultTdomain])
 
+  //Effect to set defaultYDomain changes
   React.useEffect(() => {
     if (!isEqual(defaultYdomain, props.defaultYdomain))
       setDefaultYdomain(typeCorrectDomain(props.defaultYdomain));
   }, [props.defaultYdomain])
 
+  // if default domains change, update NOTE: not using updateXDomain here to avoid circular dependency we assume the defaults are valid
   React.useEffect(() => {
     setTdomain(defaultTdomain);
   }, [defaultTdomain])
 
+  //Effect to set YDomain when defaultYDomain changes
   React.useEffect(() => {
     setYdomain(defaultYdomain);
   }, [defaultYdomain])
@@ -350,6 +360,7 @@ const Plot = (props: React.PropsWithChildren<IProps>) => {
     if (!_.isEqual(newDefaultDomain, defaultYdomain)) setDefaultYdomain(newDefaultDomain);
   }, [dataGuid, props.yDomain]);
 
+  // Effect to Adjust which y axes have data
   React.useEffect(() => {
     const newHasData: boolean[] = Array<boolean>(2);
     const hasFunc = (axis: AxisIdentifier) => [...data.current.values()].some(series => AxisMap.get(axis) === AxisMap.get(series.axis));
@@ -454,6 +465,23 @@ const Plot = (props: React.PropsWithChildren<IProps>) => {
     }, 50);
   });
 
+  // Function to update x domain with tmin/tmax enforcement
+  const updateXDomain = React.useCallback((x: [number, number]) => {
+    if (x[0] === tDomain[0] && x[1] === tDomain[1])
+      return;
+
+    if (props.Tmin !== undefined && x[0] < props.Tmin)
+      x[0] = props.Tmin;
+
+    if (props.Tmax !== undefined && x[1] > props.Tmax)
+      x[1] = props.Tmax;
+
+    if (x[0] < x[1])
+      setTdomain(x);
+    else
+      setTdomain([x[1], x[0]]);
+  }, [props.Tmin, props.Tmax, tDomain[0], tDomain[1]]);
+
   // requests new legend height/width upto a defined maximum set by props
   const requestLegendHeightChange = React.useCallback((newHeight: number) => {
     const heightLimit = props.legend !== 'bottom' ? svgHeight : (props.legendHeight ?? defaultLegendHeight);
@@ -485,9 +513,9 @@ const Plot = (props: React.PropsWithChildren<IProps>) => {
   }, [yOffset, yScale]);
 
   const Reset = React.useCallback(() => {
-    setTdomain(defaultTdomain);
+    updateXDomain(defaultTdomain);
     setYdomain(defaultYdomain);
-  }, [defaultYdomain, defaultTdomain]);
+  }, [defaultYdomain, defaultTdomain, updateXDomain]);
 
   // new X transformation from x value into Pixels
   const xTransform = React.useCallback((value: number) => {
@@ -606,9 +634,7 @@ const Plot = (props: React.PropsWithChildren<IProps>) => {
   }, [dataGuid, yDomain]);
 
   function handleMouseWheel(evt: any) {
-    if (!selectedMode.includes('zoom'))
-      return;
-    if (!mouseIn)
+    if (!selectedMode.includes('zoom') || !mouseIn)
       return;
 
     // while wheel is moving, do not release the lock
@@ -648,7 +674,7 @@ const Plot = (props: React.PropsWithChildren<IProps>) => {
           if (!_.isEqual(newYDomain, yDomain))
             setYdomain(newYDomain);
         }
-        setTdomain(newTDomain);
+        updateXDomain(newTDomain);
       }
     }
 
@@ -706,7 +732,7 @@ const Plot = (props: React.PropsWithChildren<IProps>) => {
       if (
         (props.Tmin === undefined || Tmin > props.Tmin) &&
         (props.Tmax === undefined || Tmax < props.Tmax))
-        setTdomain([Tmin, Tmax]);
+        updateXDomain([Tmin, Tmax]);
 
       const zoomYAxis = (domain: [number, number], axis: number, allDomains: [number, number][]): boolean => {
         const dY = yInvTransform(mousePosition[1], axis) - yInvTransform(ptTransform.y, axis);
@@ -798,7 +824,7 @@ const Plot = (props: React.PropsWithChildren<IProps>) => {
           if (!_.isEqual(newYDomain, yDomain) && isAutoY)
             setYdomain(newYDomain);
         }
-        setTdomain(newTDomain);
+        updateXDomain(newTDomain);
       }
 
       if (mouseMode !== 'zoom-vertical') {
@@ -831,16 +857,6 @@ const Plot = (props: React.PropsWithChildren<IProps>) => {
 
   function handleMouseIn(_: any) {
     setMouseIn(true);
-  }
-
-  function updateXDomain(x: [number, number]) {
-    if (x[0] === tDomain[0] && x[1] === tDomain[1])
-      return;
-
-    if (x[0] < x[1])
-      setTdomain(x);
-    else
-      setTdomain([x[1], x[0]]);
   }
 
   function updateYDomain(y: [number, number][]) {
@@ -1018,6 +1034,7 @@ const Plot = (props: React.PropsWithChildren<IProps>) => {
 
 }
 
+//Helper Functions
 function getDefaultMouseMode(defaultMouseMode?: SelectType, yDomain?: 'Manual' | 'AutoValue' | 'HalfAutoValue', zoom?: boolean, xZoom?: boolean, yZoom?: boolean): SelectType {
   if (defaultMouseMode != null) return defaultMouseMode;
 
@@ -1036,5 +1053,18 @@ function getDefaultMouseMode(defaultMouseMode?: SelectType, yDomain?: 'Manual' |
 
   return 'pan';
 }
+
+// Type correcting functions to convert props into something usable
+const typeCorrect: <T>(arg: T | T[] | undefined, arrayIndex: number) => T | undefined = (arg, arrayIndex) => {
+  if (arg == null) return undefined;
+  if (!(arg instanceof Object) || !Object.prototype.hasOwnProperty.call(arg, 'length')) return (arrayIndex === 0 ? arg : undefined);
+  return (arg as any)[arrayIndex];
+}
+
+const typeCorrectDomain = (arg: [number, number] | [number, number][] | undefined): [number, number][] => {
+  if (arg === undefined || arg.length === 0) return [[0, 1], [0, 1]];
+  if (typeof (arg[0]) === 'number') return [arg, [0, 1]] as [number, number][];
+  return (arg as [number, number][]);
+};
 
 export default Plot;
