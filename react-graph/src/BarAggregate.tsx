@@ -32,11 +32,12 @@ const BarAggregate = (props: IProps) => {
     const data = React.useMemo(() => {
         switch (props.AggregationType){
             default:
-            case "min_max_avg":
+            case "min_max_avg": {
                 const max = Math.max(...props.Data);
                 const avg = props.Data.reduce((a, b) => a + b) / props.Data.length;
                 const min = Math.min(...props.Data);
                 return [min, avg, max];
+            }
         }
     }, [props.Data, props.AggregationType])
 

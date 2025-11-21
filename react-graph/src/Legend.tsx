@@ -56,7 +56,7 @@ export const Legend = React.memo((props: IProps) => {
   const [nLegendsSm, nLegendsLg] = React.useMemo(() => {
     const newNLegends = props.LegendElements.reduce((s, c) => {
       if (c === undefined) return s;
-      if (props.HideDisabled && !(c?.props?.enabled as boolean ?? true)) return s;
+      if ((props.HideDisabled ?? false) && !(c?.props?.enabled as boolean ?? true)) return s;
       if ((c as React.ReactElement<any>)?.type === LineLegend) s.sm = s.sm + 1;
       else if ((c as React.ReactElement<any>)?.type === HeatLegend) s.lg = s.lg + 1;
       else {
@@ -117,7 +117,7 @@ export const Legend = React.memo((props: IProps) => {
       }
 
     const lineLegendArray = _.orderBy(legendArray.filter(legend => 
-      (!props.HideDisabled || ((legend?.props?.enabled as boolean) ?? false)) &&
+      (!(props.HideDisabled ?? false) || ((legend?.props?.enabled as boolean) ?? false)) &&
       (legend as React.ReactElement<any>)?.type === LineLegend
     ),(item) => item?.props?.label?.length ?? 0, ['desc']);
 
@@ -125,7 +125,7 @@ export const Legend = React.memo((props: IProps) => {
 
     // Find if we have a heat legend
     const heatIndex = legendArray.findIndex(legend => 
-      (props.HideDisabled && !((legend?.props?.enabled as boolean)  ?? false)) &&
+      ((props.HideDisabled ?? false) && !((legend?.props?.enabled as boolean)  ?? false)) &&
       (legend as React.ReactElement<any>)?.type === HeatLegend
     );
     // HeatLegend is considered a "large" element
@@ -185,7 +185,7 @@ export const Legend = React.memo((props: IProps) => {
           cursor: 'default'
         }}
       >
-        {props.LegendElements.map((element, index) => (element !== undefined && (!props.HideDisabled || (element.props.enabled as boolean ?? true)) ?
+        {props.LegendElements.map((element, index) => (element !== undefined && (!(props.HideDisabled ?? false) || (element.props.enabled as boolean ?? true)) ?
           <div
             key={index}
             data-html2canvas-ignore={!(element.props.enabled as boolean ?? true)}
