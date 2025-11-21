@@ -40,6 +40,7 @@ export interface ICircleStyle {
   ColorOverride?: string,
   Opacity?: number,
   Radius?: number,
+  BorderColor?: string
 }
 
 const CircleGroup = React.memo((props: IProps) => {
@@ -69,6 +70,7 @@ const CircleGroup = React.memo((props: IProps) => {
 				opacity={style.Opacity ?? 1}
 				axis={props.Axis}
 				onClick={() => props.OnClick == null ? null : props.OnClick(c, i)}
+				borderColor={style.BorderColor}
 			/>)
 		}).filter(item => item != null) : []
 	, [context.YDomain[axis], context.XDomain, props.GetCircleStyle, props.Axis, props.OnClick, props.Data, enabled]);
