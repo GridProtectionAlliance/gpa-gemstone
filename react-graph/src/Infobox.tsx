@@ -31,7 +31,7 @@ interface IProps {
   usePixelPositioning?: boolean,
   disallowSnapping?: boolean,
   axis?: AxisIdentifier,
-  origin?: "upper-right" | "upper-left" | "upper-center" | "lower-right" | "lower-left" | "lower-center",
+  origin?: "upper-right" | "upper-left" | "upper-center" | "lower-right" | "lower-left" | "lower-center" | 'left' | 'right',
   // Specifies the offset of the pox from the origin point, In pixels
   offset?: number,
   // Dom ID of child, used for sizing of child
@@ -55,6 +55,7 @@ const Infobox = (props: React.PropsWithChildren<IProps>) => {
     let x: number = (props.usePixelPositioning ?? false) ? context.XApplyPixelOffset(xArg) : context.XTransformation(xArg);
     // Convert x/y to upper-left corner
     switch(props.origin) {
+      case "right":
       case "lower-right":
       case "upper-right": {
         x -= (dimension.width + (props.offset ?? offsetDefault));
@@ -67,6 +68,7 @@ const Infobox = (props: React.PropsWithChildren<IProps>) => {
       }
       // Do-nothing case
       case undefined: 
+      case "left":
       case "lower-left":
       case "upper-left":
         x += props.offset ?? offsetDefault;
@@ -89,6 +91,10 @@ const Infobox = (props: React.PropsWithChildren<IProps>) => {
       case "lower-right":
       case "lower-center":
         y -= (dimension.height + (props.offset ?? offsetDefault));
+        break;
+      case "left":
+      case "right":
+        y -= Math.floor(dimension.height / 2);
         break;
     }
     return y;
