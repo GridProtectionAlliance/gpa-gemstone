@@ -22,7 +22,7 @@
 //******************************************************************************************************
 
 import * as React from 'react';
-import { BlockPicker, Color } from 'react-color';
+import { BlockPicker, Color, ColorResult } from 'react-color';
 import styled from "styled-components";
 import { CreateGuid, GetNodeSize } from '@gpa-gemstone/helper-functions'
 import { Portal } from 'react-portal';
@@ -31,7 +31,14 @@ import { Gemstone } from '@gpa-gemstone/application-typings';
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import ToolTip from './ToolTip';
 
-interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
+interface IProps<T> extends Omit<Gemstone.TSX.Interfaces.IBaseFormProps<T>, "Setter"> {
+  /**
+    * Setter function to update the Record
+    * @param record - Updated record of type T
+    * @param color - Color result from the picker
+    * @returns {void}
+  */
+  Setter: (record: T, color: ColorResult) => void;
   /**
     * Function to determine the validity of a field
     * @param field - Field of the record to check
@@ -179,7 +186,7 @@ export default function ColorPicker<T>(props: IProps<T>) {
               onChangeComplete={(updatedColor) => {
                 const record: T = { ...props.Record };
                 record[props.Field] = updatedColor.hex as any
-                props.Setter(record);
+                props.Setter(record, updatedColor);
               }}
               triangle={props.Triangle ?? 'hide'}
             />
