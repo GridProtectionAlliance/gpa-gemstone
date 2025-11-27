@@ -116,7 +116,7 @@ const FileUpload = (props: IProps) => {
                 {props.OnClearHandler == null ? <></> : 
                     <div className='col-auto pl-0'>
                         <button className='btn' onClick={handleOnClear}>
-                            <ReactIcons.CircledX Color={'--bs-danger'} />
+                            <ReactIcons.CircledX Color={'var(--danger)'} />
                         </button>
                     </div>
                 }
