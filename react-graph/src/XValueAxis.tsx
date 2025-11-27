@@ -115,15 +115,15 @@ function XValueAxis(props: IProps) {
                             {formatNumber(l, decimalPlaces)}
                         </text>
                     ))}
-                    {tick.map((l, i) => 
+                    {(props.showGrid ?? false) ? tick.map((l, i) => 
                         <path 
                             key={(l.toFixed(50))} 
                             stroke='lightgrey' 
-                            strokeOpacity={(props.showGrid ?? false) ? '0.8' : '0.0'} 
+                            strokeOpacity={'0.8'} 
                             style={{ strokeWidth: 1, transition: 'd 0.5s' }} 
                             d={`M ${context.XTransformation(l)} ${props.height - props.offsetBottom} V ${props.offsetTop}`} 
                         />
-                    )}
+                    ): <></>}
                 </>
             )}
             {title != null ? (
