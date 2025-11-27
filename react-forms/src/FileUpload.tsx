@@ -33,7 +33,7 @@ interface IProps {
     /** 
         * Callback function that will be called when clear button is clicked
     * */
-    OnClearHandler: () => void,
+    OnClearHandler?: () => void,
     /** 
         * Attribute used to control what type of files are filtered by default in file explorer
         * @type {string}
@@ -81,7 +81,7 @@ const FileUpload = (props: IProps) => {
         setIsFileUploaded(false);
         setFileName(null);
         setFileSize(null);
-        props.OnClearHandler();
+        if (props.OnClearHandler != null) props.OnClearHandler();
     }
 
     const setMetaData = (file: File) => {
@@ -113,11 +113,13 @@ const FileUpload = (props: IProps) => {
                         />
                     </label>
                 </div>
-                <div className='col-auto pl-0'>
-                    <button className='btn' onClick={handleOnClear}>
-                        <ReactIcons.CircledX Color='red' />
-                    </button>
-                </div>
+                {props.OnClearHandler == null ? <></> : 
+                    <div className='col-auto pl-0'>
+                        <button className='btn' onClick={handleOnClear}>
+                            <ReactIcons.CircledX Color={'var(--danger)'} />
+                        </button>
+                    </div>
+                }
             </div>
             {uploadStatus === 'error' ?
                 <div className={`alert alert-danger fade show`}>

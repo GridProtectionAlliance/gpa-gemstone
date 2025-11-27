@@ -66,6 +66,7 @@ namespace OpenXDA {
         export interface CompanyMeter { ID: number, CompanyID: number, MeterID: number, DisplayName: string, Enabled: boolean }
         export interface Customer { ID: number, CustomerKey: string, Name: string, Phone: string, Description: string, LSCVS: boolean, PQIFacilityID: number   }
         export interface EventTag { ID: number, Name: string, Description: string, ShowInFilter: boolean }
+        export interface EventEventTag { ID: number, EventID: number, EventTagID: number, TagData: string, TagName: string }
         export interface MATLABAnalytic { ID: number, AssemblyName: string, MethodName: string, SettingSQL: string, LoadOrder: number }
         export interface MATLABAnalyticEventType { ID: number, MATLABAnalyticID: number, EventTypeID: number }
         export interface MATLABAnalyticAssetType { ID: number, MATLABAnalyticID: number, AssetTypeID: number }

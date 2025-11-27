@@ -16,6 +16,11 @@ import { PointNode } from './PointNode';
 import StreamingLine from './StreamingLine';
 import PlotGroup from './PlotGroup';
 import LegendEntry from './LegendEntry';
+import Legend from './Legend';
+import LineLegend from './LineLegend';
+import Bar from './Bar';
+import BarAggregate from './BarAggregate';
+import CircleGroup from './CircleGroups';
 
 export { 
     Plot,
@@ -35,5 +40,10 @@ export {
     HighlightBox,
     PointNode,
     StreamingLine,
-    LegendEntry
+    LegendEntry,
+    Legend,
+    LineLegend,
+    Bar,
+    BarAggregate,
+    CircleGroup
  };

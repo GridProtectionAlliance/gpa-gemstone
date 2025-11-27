@@ -30,7 +30,7 @@ import { isEqual } from 'lodash';
 import TimeAxis from './TimeAxis';
 import LogAxis from './LogAxis';
 import YValueAxis from './YValueAxis';
-import Legend from './Legend';
+import LegendWithContext from './LegendWithContext';
 import LegendEntry from './LegendEntry';
 import LineWithThreshold from './LineWithThreshold';
 import Line from './Line';
@@ -48,6 +48,9 @@ import HighlightBox from './HighlightBox';
 import XValueAxis from './XValueAxis';
 import StreamingLine from './StreamingLine';
 import PlotGroupContext from './PlotGroupContext';
+import Bar from './Bar';
+import BarAggregate from './BarAggregate';
+import CircleGroup from './CircleGroups';
 const html2canvas: any = _html2canvas;
 
 // A yDomain of AutoValue means it will zoom on time, and auto Adjust the Value to fit the data.
@@ -62,8 +65,9 @@ export interface IProps {
   tDomain?: [number, number]
   defaultMouseMode?: SelectType,
   yDomain?: 'Manual' | 'AutoValue' | 'HalfAutoValue',
-  hideYAxis?: boolean
-  limitZoom?: boolean
+  hideYAxis?: boolean,
+  hideXAxis?: boolean,
+  limitZoom?: boolean,
   height: number,
   width: number,
 
@@ -907,13 +911,15 @@ const Plot = (props: React.PropsWithChildren<IProps>) => {
           <svg ref={SVGref} width={svgWidth < 0 ? 0 : svgWidth} height={svgHeight < 0 ? 0 : svgHeight}
             style={SvgStyle} viewBox={`0 0 ${svgWidth < 0 ? 0 : svgWidth} ${svgHeight < 0 ? 0 : svgHeight}`}>
             {props.showBorder !== undefined && props.showBorder ? < path stroke='currentColor' d={`M ${offsetLeft} ${offsetTop} H ${svgWidth - offsetRight} V ${svgHeight - offsetBottom} H ${offsetLeft} Z`} /> : null}
-            {props.XAxisType === 'time' || props.XAxisType === undefined ?
-              <TimeAxis label={props.Tlabel} offsetBottom={offsetBottom} offsetLeft={offsetLeft} offsetRight={offsetRight} width={svgWidth} height={svgHeight} setHeight={setHeightXLabel}
-                heightAxis={heightXLabel} showLeftMostTick={!yHasData[0]} showRightMostTick={!yHasData[1]} showDate={props.showDateOnTimeAxis} /> :
-              props.XAxisType === 'value' ? <XValueAxis offsetBottom={offsetBottom} offsetLeft={offsetLeft} offsetRight={offsetRight} width={svgWidth} height={svgHeight} setHeight={setHeightXLabel} heightAxis={heightXLabel}
-                label={props.Tlabel} showLeftMostTick={!yHasData[0]} showRightMostTick={!yHasData[1]} /> :
-                <LogAxis offsetTop={offsetTop} showGrid={props.showGrid} label={props.Tlabel} offsetBottom={offsetBottom} offsetLeft={offsetLeft} offsetRight={offsetRight} width={svgWidth}
-                  height={svgHeight} setHeight={setHeightXLabel} heightAxis={heightXLabel} showLeftMostTick={!yHasData[0]} showRightMostTick={!yHasData[1]} />}
+            {(props.hideXAxis ?? false) ? null : 
+              (props.XAxisType === 'time' || props.XAxisType === undefined ?
+                <TimeAxis label={props.Tlabel} offsetBottom={offsetBottom} offsetLeft={offsetLeft} offsetRight={offsetRight} width={svgWidth} height={svgHeight} setHeight={setHeightXLabel}
+                  heightAxis={heightXLabel} showLeftMostTick={!yHasData[0]} showRightMostTick={!yHasData[1]} showDate={props.showDateOnTimeAxis} /> :
+                props.XAxisType === 'value' ? <XValueAxis offsetBottom={offsetBottom} offsetLeft={offsetLeft} offsetRight={offsetRight} offsetTop={offsetTop} width={svgWidth} height={svgHeight} setHeight={setHeightXLabel} heightAxis={heightXLabel}
+                  label={props.Tlabel} showLeftMostTick={!yHasData[0]} showRightMostTick={!yHasData[1]} showGrid={props.showGrid}/> :
+                  <LogAxis offsetTop={offsetTop} showGrid={props.showGrid} label={props.Tlabel} offsetBottom={offsetBottom} offsetLeft={offsetLeft} offsetRight={offsetRight} width={svgWidth}
+                    height={svgHeight} setHeight={setHeightXLabel} heightAxis={heightXLabel} showLeftMostTick={!yHasData[0]} showRightMostTick={!yHasData[1]} />)
+            }
             {(props.hideYAxis ?? false) ? null : (
               <>
                 {yHasData[0] ? (
@@ -969,7 +975,8 @@ const Plot = (props: React.PropsWithChildren<IProps>) => {
                   (element as React.ReactElement<any>).type === HorizontalMarker || (element as React.ReactElement<any>).type === VerticalMarker || (element as React.ReactElement<any>).type === SymbolicMarker
                   || (element as React.ReactElement<any>).type === Circle || (element as React.ReactElement<any>).type === AggregatingCircles || (element as React.ReactElement<any>).type === HeatMapChart ||
                   (element as React.ReactElement<any>).type === Pill || (element as React.ReactElement<any>).type === HighlightBox || (element as React.ReactElement<any>).type === StreamingLine ||
-                  (element as React.ReactElement<any>).type === LegendEntry)
+                  (element as React.ReactElement<any>).type === LegendEntry || (element as React.ReactElement<any>).type === Bar || (element as React.ReactElement<any>).type === BarAggregate ||
+                  (element as React.ReactElement<any>).type === CircleGroup)
                   return element;
                 return null;
               })}
@@ -1016,7 +1023,7 @@ const Plot = (props: React.PropsWithChildren<IProps>) => {
           </svg>
         </div>
         {props.legend !== undefined && props.legend !== 'hidden' ?
-          <Legend
+          <LegendWithContext
             location={props.legend}
             height={legendHeight}
             width={legendWidthToUse}
