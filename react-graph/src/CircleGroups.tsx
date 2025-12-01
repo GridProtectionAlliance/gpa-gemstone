@@ -25,7 +25,7 @@
 import * as React from 'react';
 import { AxisIdentifier, AxisMap, GraphContext, IDataSeries } from './GraphContext';
 import Circle from './Circle';
-import LineLegend from './LineLegend';
+import DataLegend from './DataLegend';
 
 export interface IProps {
   Legend?: string,
@@ -80,11 +80,11 @@ const CircleGroup = React.memo((props: IProps) => {
             return undefined;
 
         return (
-			<LineLegend
+			<DataLegend
 				id={guid}
 				label={props.Legend}
 				color={props.Color}
-				lineStyle='-'
+				legendSymbol='circle'
 				setEnabled={setEnabled}
 				enabled={enabled}
 				hasNoData={props.Data.length === 0}

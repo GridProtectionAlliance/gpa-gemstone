@@ -25,7 +25,7 @@ import * as React from 'react';
 import * as _ from 'lodash';
 import { ILegendContext, LegendContext } from './LegendContext';
 import { GetScrollbarWidth, GetTextHeight, GetTextWidth } from '@gpa-gemstone/helper-functions';
-import LineLegend from './LineLegend';
+import DataLegend from './DataLegend';
 import HeatLegend from './HeatLegend';
 
 interface IProps {
@@ -57,7 +57,7 @@ export const Legend = React.memo((props: IProps) => {
     const newNLegends = props.LegendElements.reduce((s, c) => {
       if (c === undefined) return s;
       if ((props.HideDisabled ?? false) && !(c?.props?.enabled as boolean ?? true)) return s;
-      if ((c as React.ReactElement<any>)?.type === LineLegend) s.sm = s.sm + 1;
+      if ((c as React.ReactElement<any>)?.type === DataLegend) s.sm = s.sm + 1;
       else if ((c as React.ReactElement<any>)?.type === HeatLegend) s.lg = s.lg + 1;
       else {
         s.sm = s.sm + 1;
@@ -94,7 +94,7 @@ export const Legend = React.memo((props: IProps) => {
         let newFontSize = 1;
         let textHeight = GetTextHeight(fontFamily, `${newFontSize}em`, label, `${cssStyle}`, `${smWidth - nonTextualWidth}px`);
         let textWidth = GetTextWidth(fontFamily, `${newFontSize}em`, label, `${cssStyle}`, `${textHeight}px`);
-        // LineLegend is considered a "small" element
+        // DataLegend is considered a "small" element
         if (textWidth > smWidthNeeded) smWidthNeeded = textWidth;
 
         let useML = false;
@@ -116,12 +116,12 @@ export const Legend = React.memo((props: IProps) => {
         }
       }
 
-    const lineLegendArray = _.orderBy(legendArray.filter(legend => 
+    const dataLegendArray = _.orderBy(legendArray.filter(legend => 
       (!(props.HideDisabled ?? false) || ((legend?.props?.enabled as boolean) ?? false)) &&
-      (legend as React.ReactElement<any>)?.type === LineLegend
+      (legend as React.ReactElement<any>)?.type === DataLegend
     ),(item) => item?.props?.label?.length ?? 0, ['desc']);
 
-    if (lineLegendArray.length > 0) findSizing(lineLegendArray[0]?.props?.label);
+    if (dataLegendArray.length > 0) findSizing(dataLegendArray[0]?.props?.label);
 
     // Find if we have a heat legend
     const heatIndex = legendArray.findIndex(legend => 

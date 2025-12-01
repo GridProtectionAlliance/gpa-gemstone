@@ -23,7 +23,7 @@
 
 import * as React from 'react';
 import { GraphContext, AxisIdentifier, AxisMap, IDataSeries } from './GraphContext';
-import LineLegend from './LineLegend';
+import DataLegend from './DataLegend';
 
 export interface IBarProps {
     /**
@@ -77,11 +77,11 @@ export const StackedBar = (props: IBarProps) => {
         if (props.Legend === undefined || guid == null)
             return undefined;
 
-        return <LineLegend
+        return <DataLegend
             id={guid}
             label={props.Legend}
             color={props.Color}
-            lineStyle='-'
+            legendSymbol='square'
             setEnabled={() => {/*do nothing*/}}
             enabled={true}
             hasNoData={props.Data.length === 0} />;

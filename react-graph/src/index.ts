@@ -17,7 +17,7 @@ import StreamingLine from './StreamingLine';
 import PlotGroup from './PlotGroup';
 import LegendEntry from './LegendEntry';
 import Legend from './Legend';
-import LineLegend from './LineLegend';
+import DataLegend from './DataLegend';
 import Bar from './Bar';
 import BarAggregate from './BarAggregate';
 import CircleGroup from './CircleGroups';
@@ -42,7 +42,7 @@ export {
     StreamingLine,
     LegendEntry,
     Legend,
-    LineLegend,
+    DataLegend,
     Bar,
     BarAggregate,
     CircleGroup

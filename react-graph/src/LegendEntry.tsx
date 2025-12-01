@@ -23,7 +23,7 @@
 
 import * as React from 'react';
 import { GraphContext, IDataSeries } from './GraphContext';
-import LineLegend from './LineLegend';
+import DataLegend from './DataLegend';
 
 interface IProps {
     OnClick?: (e: React.MouseEvent<HTMLDivElement>) => void,
@@ -36,11 +36,11 @@ const LegendEntry = (props: IProps) => {
 
     const makeSeries = React.useCallback((): IDataSeries => ({
         legend: guid == null ? undefined :
-            <LineLegend
+            <DataLegend
                 id={guid}
                 label={props.Label}
                 color={'' /* Color doesnt matter here */}
-                lineStyle={'none' /* No line shown in legend */}
+                legendSymbol={'none' /* No line shown in legend */}
                 setEnabled={(_, e) => props.OnClick?.(e)}
                 enabled={true}
                 hasNoData={false}
