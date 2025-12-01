@@ -79,8 +79,8 @@ export default class GenericController<T> {
         let sort = sortField;
         let asc = ascending;
 
-        sort = sort === undefined ? this.DefaultSort : sort;
-        asc = asc === undefined ? this.Ascending : asc;
+        sort = sort == null ? this.DefaultSort : sort;
+        asc = asc == null ? this.Ascending : asc;
 
         const handle = this.Search(filter, asc,sort, parentID);
     

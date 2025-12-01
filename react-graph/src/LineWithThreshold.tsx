@@ -29,7 +29,7 @@ import * as moment from 'moment';
 import {PointNode} from './PointNode';
 import {GetTextWidth} from '@gpa-gemstone/helper-functions';
 import {IProps as ILineProps} from './Line';
-import LineLegend from './LineLegend';
+import DataLegend from './DataLegend';
 
 export interface IProps extends ILineProps {
     threshHolds: IThreshold[],
@@ -126,8 +126,8 @@ function LineWithThreshold(props: IProps) {
      if ((props.highlightHover ?? false) && !isNaN(highlight[0]) && !isNaN(highlight[1]))
       txt = txt + ` (${moment.utc(highlight[0]).format('MM/DD/YY hh:mm:ss')}: ${highlight[1].toPrecision(6)})`
 
-      return <LineLegend id={guid}
-        label={txt} color={props.color} lineStyle={props.lineStyle}
+      return <DataLegend id={guid}
+        label={txt} color={props.color} legendSymbol={props.lineStyle}
         setEnabled={setEnabled} enabled={enabled} hasNoData={data == null}/>;
    }
 

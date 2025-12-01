@@ -25,7 +25,7 @@ import * as React from 'react';
 import { IDataSeries, GraphContext, LineStyle, AxisIdentifier, AxisMap, LineMap } from './GraphContext';
 import * as moment from 'moment';
 import { PointNode } from './PointNode';
-import LineLegend from './LineLegend';
+import DataLegend from './DataLegend';
 
 export interface IInteralProps extends IProps {
     reRender?: number
@@ -41,6 +41,7 @@ export interface IProps {
     lineStyle: LineStyle,
     width?: number,
     axis?: AxisIdentifier,
+    onHover?: (x: number, y:number) => void
 }
 
 export const InternalLine = React.forwardRef<PointNode | null, IInteralProps>((props, ref) => {
@@ -55,7 +56,9 @@ export const InternalLine = React.forwardRef<PointNode | null, IInteralProps>((p
     const showPoints = React.useMemo(() => (props.showPoints ?? false) || ((props.autoShowPoints ?? true) && (data?.GetCount(context.XDomain[0], context.XDomain[1]) ?? 1000) <= 100),
         [props.showPoints, props.autoShowPoints, data, context.XDomain]);
 
-    const points = data?.GetData(context.XDomain[0], context.XDomain[1], true) ?? [];
+    const points = React.useMemo(() => 
+        data?.GetData(context.XDomain[0], context.XDomain[1], true) ?? []
+    , [context.XDomain, data]);
 
     React.useImperativeHandle<PointNode | null, PointNode | null>(ref, () => data, [data]);
 
@@ -68,11 +71,11 @@ export const InternalLine = React.forwardRef<PointNode | null, IInteralProps>((p
         if ((props.highlightHover ?? false) && !isNaN(highlight[0]) && !isNaN(highlight[1]))
             txt = txt + ` (${moment.utc(highlight[0]).format('MM/DD/YY hh:mm:ss')}: ${highlight[1].toPrecision(6)})`
 
-        return <LineLegend
+        return <DataLegend
             id={guid}
             label={txt}
             color={props.color}
-            lineStyle={props.lineStyle}
+            legendSymbol={props.lineStyle}
             setEnabled={setEnabled}
             enabled={enabled}
             hasNoData={data == null}
@@ -102,8 +105,10 @@ export const InternalLine = React.forwardRef<PointNode | null, IInteralProps>((p
         else {
             try {
                 const point = data.GetPoint(context.XHover);
-                if (point != null)
+                if (point != null) {
                     setHighlight(point as [number, number]);
+                    if (props.onHover != null) props.onHover(point[0], point[1]);
+                }
             } catch {
                 setHighlight([NaN, NaN]);
             }

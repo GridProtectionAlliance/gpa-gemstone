@@ -1,5 +1,5 @@
 ﻿// ******************************************************************************************************
-//  Legend.tsx - Gbtc
+//  ContextlessLegend.tsx - Gbtc
 //
 //  Copyright © 2021, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -23,22 +23,20 @@
 
 import * as React from 'react';
 import * as _ from 'lodash';
-import { GraphContext } from './GraphContext';
 import { ILegendContext, LegendContext } from './LegendContext';
 import { GetScrollbarWidth, GetTextHeight, GetTextWidth } from '@gpa-gemstone/helper-functions';
-import LineLegend from './LineLegend';
+import DataLegend from './DataLegend';
 import HeatLegend from './HeatLegend';
 
 interface IProps {
+  orientation: 'horizontal' | 'vertical',
   height: number,
   width: number,
-  location: 'bottom' | 'right',
-  graphHeight: number,
-  graphWidth: number,
-  RequestLegendWidth: (width: number) => void,
-  RequestLegendHeight: (height: number) => void,
-  SendMassCommand: (args: {requester: string, command: "disable-others"|"enable-all"}) => void, 
-  HideDisabled: boolean
+  RequestLegendWidth?: (width: number) => void,
+  RequestLegendHeight?: (height: number) => void,
+  SendMassCommand?: (args: {requester: string, command: "disable-others"|"enable-all"}) => void, 
+  HideDisabled?: boolean,
+  LegendElements: JSX.Element[]
 }
 
 const itemHeight = 25;
@@ -52,16 +50,15 @@ const cssStyle = `margin: auto auto auto 0px; display: inline-block; font-weight
 // heat legend consts
 const heatWidth = 50;
 
-function Legend(props: IProps) {
-  const graphContext = React.useContext(GraphContext);
+export const Legend = React.memo((props: IProps) => {
   const massEnableRef = React.useRef((_: string)=>{ /* do nothing */ });
 
   const [nLegendsSm, nLegendsLg] = React.useMemo(() => {
-    const newNLegends = [...graphContext.Data.current.values()].reduce((s, c) => {
-      if (c.legend === undefined) return s;
-      if (props.HideDisabled && !(c.legend?.props?.enabled as boolean ?? true)) return s;
-      if ((c.legend as React.ReactElement<any>)?.type === LineLegend) s.sm = s.sm + 1;
-      else if ((c.legend as React.ReactElement<any>)?.type === HeatLegend) s.lg = s.lg + 1;
+    const newNLegends = props.LegendElements.reduce((s, c) => {
+      if (c === undefined) return s;
+      if ((props.HideDisabled ?? false) && !(c?.props?.enabled as boolean ?? true)) return s;
+      if ((c as React.ReactElement<any>)?.type === DataLegend) s.sm = s.sm + 1;
+      else if ((c as React.ReactElement<any>)?.type === HeatLegend) s.lg = s.lg + 1;
       else {
         s.sm = s.sm + 1;
         console.warn("Unknown legend element found. Please check legend component or children to legend.")
@@ -69,25 +66,22 @@ function Legend(props: IProps) {
       return s;
     }, { sm: 0, lg: 0 });
     return [newNLegends.sm, newNLegends.lg];
-  }, [graphContext.DataGuid, props.HideDisabled]);
+  }, [props.LegendElements, props.HideDisabled]);
 
-  const leftPad = props.location === 'bottom' ? 39 : 0;
-  const width = props.location === 'bottom' ? props.graphWidth : props.width;
-  const height = props.location === 'right' ? props.graphHeight : props.height;
-
-  const smHeight = props.location === 'bottom' ? itemHeight : Math.max(height / (Math.max(nLegendsSm+ nLegendsLg, 1)), itemHeight);
-  const lgHeight = smHeight * (props.location === 'bottom' ? 2 : 1);
-  const requiredHeight = Math.ceil(nLegendsSm/ (props.location === 'bottom' ? itemsWhenBottom : 1)) * smHeight + nLegendsLg * lgHeight;
-  const scrollBarSpace = (requiredHeight > height ? GetScrollbarWidth() : 0);
-  const smWidth = ((width - leftPad) / (props.location === 'bottom' ? itemsWhenBottom : 1)) - scrollBarSpace;
-  const lgWidth = width - leftPad - scrollBarSpace;
+  const leftPad = props.orientation === 'horizontal' ? 39 : 0;
+  const smHeight = props.orientation === 'horizontal' ? itemHeight : Math.max(props.height / (Math.max(nLegendsSm+ nLegendsLg, 1)), itemHeight);
+  const lgHeight = smHeight * (props.orientation === 'horizontal' ? 2 : 1);
+  const requiredHeight = Math.ceil(nLegendsSm/ (props.orientation === 'horizontal' ? itemsWhenBottom : 1)) * smHeight + nLegendsLg * lgHeight;
+  const scrollBarSpace = (requiredHeight > props.height ? GetScrollbarWidth() : 0);
+  const smWidth = ((props.width - leftPad) / (props.orientation === 'horizontal' ? itemsWhenBottom : 1)) - scrollBarSpace;
+  const lgWidth = props.width - leftPad - scrollBarSpace;
 
   const [smallestFontSize, useMultiLine, requiredWidth] = React.useMemo(() => {
     let smallestFont = 1;
     let isMultiLine = false;
     let lgWidthNeeded = 0;
     let smWidthNeeded = 0;
-    const legendArray = [...graphContext.Data.current.values()].map(dataSeries => dataSeries?.legend);
+    const legendArray = props.LegendElements;
 
     const setNeeded = (size: 'sm'|'lg', width: number) => {
       if (size === 'lg' && width > lgWidthNeeded)
@@ -100,7 +94,7 @@ function Legend(props: IProps) {
         let newFontSize = 1;
         let textHeight = GetTextHeight(fontFamily, `${newFontSize}em`, label, `${cssStyle}`, `${smWidth - nonTextualWidth}px`);
         let textWidth = GetTextWidth(fontFamily, `${newFontSize}em`, label, `${cssStyle}`, `${textHeight}px`);
-        // LineLegend is considered a "small" element
+        // DataLegend is considered a "small" element
         if (textWidth > smWidthNeeded) smWidthNeeded = textWidth;
 
         let useML = false;
@@ -122,27 +116,27 @@ function Legend(props: IProps) {
         }
       }
 
-    const lineLegendArray = _.orderBy(legendArray.filter(legend => 
-      (!props.HideDisabled || ((legend?.props?.enabled as boolean) ?? false)) &&
-      (legend as React.ReactElement<any>)?.type === LineLegend
+    const dataLegendArray = _.orderBy(legendArray.filter(legend => 
+      (!(props.HideDisabled ?? false) || ((legend?.props?.enabled as boolean) ?? false)) &&
+      (legend as React.ReactElement<any>)?.type === DataLegend
     ),(item) => item?.props?.label?.length ?? 0, ['desc']);
 
-    if (lineLegendArray.length > 0) findSizing(lineLegendArray[0]?.props?.label);
+    if (dataLegendArray.length > 0) findSizing(dataLegendArray[0]?.props?.label);
 
     // Find if we have a heat legend
     const heatIndex = legendArray.findIndex(legend => 
-      (props.HideDisabled && !((legend?.props?.enabled as boolean)  ?? false)) &&
+      ((props.HideDisabled ?? false) && !((legend?.props?.enabled as boolean)  ?? false)) &&
       (legend as React.ReactElement<any>)?.type === HeatLegend
     );
     // HeatLegend is considered a "large" element
     if (heatIndex >=0) setNeeded('lg', 50);
     if (heatIndex >=0 && heatWidth > lgWidthNeeded) lgWidthNeeded = heatWidth;
 
-    const smTotal = (smWidthNeeded + scrollBarSpace) * (props.location === 'bottom' ? itemsWhenBottom : 1) + leftPad;
+    const smTotal = (smWidthNeeded + scrollBarSpace) * (props.orientation === 'horizontal' ? itemsWhenBottom : 1) + leftPad;
     const lgTotal = lgWidthNeeded + leftPad + scrollBarSpace;
   
     return [smallestFont, isMultiLine, Math.max(smTotal, lgTotal)]
-  }, [graphContext.DataGuid, props.HideDisabled, lgWidth, smWidth, smHeight, lgHeight, leftPad, props.location, scrollBarSpace]);
+  }, [props.LegendElements, props.HideDisabled, lgWidth, smWidth, smHeight, lgHeight, leftPad, props.orientation, scrollBarSpace]);
 
   const legendContextValue = React.useMemo<ILegendContext>(() => {
     return {
@@ -157,48 +151,49 @@ function Legend(props: IProps) {
   }, [smallestFontSize, smHeight, lgHeight, smWidth, smHeight, useMultiLine]);
 
   React.useEffect(() => {
-    if (props.RequestLegendHeight !== undefined && requiredHeight !== height) props.RequestLegendHeight(requiredHeight);
-  }, [requiredHeight, height]);
+    if (props.RequestLegendHeight !== undefined && requiredHeight !== props.height) props.RequestLegendHeight(requiredHeight);
+  }, [requiredHeight, props.height]);
 
   React.useEffect(() => {
-    if (props.RequestLegendWidth !== undefined && requiredWidth !== width) props.RequestLegendWidth(requiredWidth);
-  }, [requiredWidth, width]);
+    if (props.RequestLegendWidth !== undefined && requiredWidth !== props.width) props.RequestLegendWidth(requiredWidth);
+  }, [requiredWidth, props.width]);
 
   React.useEffect(() => {
     massEnableRef.current = (triggerId: string) => {
-      const isMassDisable = [...graphContext.Data.current.values()].some(dataSeries => 
-        ((dataSeries?.legend?.props?.enabled as boolean) && (dataSeries?.legend?.props?.id !== triggerId))
+      const isMassDisable = props.LegendElements.some(element => 
+        ((element?.props?.enabled as boolean) && (element?.props?.id !== triggerId))
       );
-      props.SendMassCommand({requester: triggerId, command: isMassDisable ? "disable-others" : "enable-all"});
+      if (props.SendMassCommand != null)
+        props.SendMassCommand({requester: triggerId, command: isMassDisable ? "disable-others" : "enable-all"});
     }
-  }, [graphContext.DataGuid, props.SendMassCommand]);
+  }, [props.LegendElements, props.SendMassCommand]);
 
   return (
     <LegendContext.Provider value={legendContextValue}>
       <div
         style={{
-          height,
-          width,
+          height: props.height,
+          width: props.width,
           paddingLeft: `${leftPad}px`,
-          position: (props.location === 'bottom' ? 'absolute' : 'relative'),
-          float: (props.location as any),
+          position: (props.orientation === 'horizontal' ? 'absolute' : 'relative'),
+          float: ((props.orientation === 'horizontal' ? 'bottom' : 'right') as any),
           display: 'flex',
           flexWrap: 'wrap',
           bottom: 0,
-          overflowY: requiredHeight > height ? 'scroll' : 'hidden',
-          overflowX: requiredHeight > height ? 'visible' : 'hidden',
+          overflowY: requiredHeight > props.height ? 'scroll' : 'hidden',
+          overflowX: requiredHeight > props.height ? 'visible' : 'hidden',
           cursor: 'default'
         }}
       >
-        {[...graphContext.Data.current.values()].map((series, index) => (series.legend !== undefined && (!props.HideDisabled || (series.legend.props.enabled as boolean ?? true)) ?
+        {props.LegendElements.map((element, index) => (element !== undefined && (!(props.HideDisabled ?? false) || (element.props.enabled as boolean ?? true)) ?
           <div
             key={index}
-            data-html2canvas-ignore={!(series.legend.props.enabled as boolean ?? true)}
+            data-html2canvas-ignore={!(element.props.enabled as boolean ?? true)}
           >
-            {series.legend}
+            {element}
           </div> : null))}
       </div>
     </LegendContext.Provider>);
-}
+});
 
-export default React.memo(Legend);
+export default Legend;

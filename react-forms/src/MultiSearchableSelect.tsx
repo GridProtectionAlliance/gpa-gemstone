@@ -62,8 +62,10 @@ interface IProps<T> extends Omit<ISearchableSelectProps<T>, 'Valid' | 'Feedback'
     /**
     * Setter function to update the Record
     * @param record - Updated Record
+    * @param index - Index in array field updated
+    * @param selectedOption - Option selected for the update
     */
-    Setter: (record: T, selectedOption?: Gemstone.TSX.Interfaces.ILabelValue<string | number>) => void;
+    Setter: (record: T, index: number, selectedOption?: Gemstone.TSX.Interfaces.ILabelValue<string | number>) => void;
 }
 
 //Only supporting string/number arrays for now
@@ -97,7 +99,7 @@ function MultiSearchableSelect<T>(props: IProps<T>) {
                             </span>
                             : null}
                         <button className='btn'
-                            onClick={() => props.Setter({ ...props.Record, [props.Field]: [props.DefaultValue] }, { Label: props.DefaultValue.toString(), Value: props.DefaultValue })}>
+                            onClick={() => props.Setter({ ...props.Record, [props.Field]: [props.DefaultValue] }, 0, { Label: props.DefaultValue.toString(), Value: props.DefaultValue })}>
                             <ReactIcons.CirclePlus />
                         </button>
                     </label>
@@ -122,7 +124,7 @@ function MultiSearchableSelect<T>(props: IProps<T>) {
                             Setter={(record, option) => {
                                 const newArray = [...fieldArray];
                                 newArray[index] = record[index];
-                                props.Setter({ ...props.Record, [props.Field]: newArray }, option);
+                                props.Setter({ ...props.Record, [props.Field]: newArray }, index, option);
                             }}
                             Search={props.Search}
                             BtnStyle={props.BtnStyle}
@@ -135,7 +137,7 @@ function MultiSearchableSelect<T>(props: IProps<T>) {
                         <button className='btn' style={(props.Disabled ?? false) ? { display: 'none' } : undefined}
                             onClick={() => {
                                 const newRecords = [...fieldArray].filter((_, i) => i !== index);
-                                props.Setter({ ...props.Record, [props.Field]: newRecords });
+                                props.Setter({ ...props.Record, [props.Field]: newRecords }, index);
                             }}>
                             <ReactIcons.TrashCan Color='red' />
                         </button>
@@ -147,7 +149,7 @@ function MultiSearchableSelect<T>(props: IProps<T>) {
                                 style={(((props.DisableAdd ?? false) || (props.Disabled ?? false)) ?? false) ? { display: 'none' } : undefined}
                                 onClick={() => {
                                     const newRecords = [...[...fieldArray], props.DefaultValue];
-                                    props.Setter({ ...props.Record, [props.Field]: newRecords });
+                                    props.Setter({ ...props.Record, [props.Field]: newRecords }, newRecords.length - 1, { Label: props.DefaultValue.toString(), Value: props.DefaultValue });
                                 }}>
                                 <ReactIcons.CirclePlus />
                             </button>

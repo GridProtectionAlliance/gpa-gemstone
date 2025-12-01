@@ -24,21 +24,14 @@
 import * as React from 'react';
 import { BlockPicker, Color, ColorResult } from 'react-color';
 import styled from "styled-components";
-import { GetNodeSize } from '@gpa-gemstone/helper-functions'
+import { CreateGuid, GetNodeSize } from '@gpa-gemstone/helper-functions'
 import { Portal } from 'react-portal';
 import { isEqual } from 'lodash';
+import { Gemstone } from '@gpa-gemstone/application-typings';
+import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
+import ToolTip from './ToolTip';
 
-interface IProps<T> {
-  /**
-    * Record to be used in the form
-    * @type {T}
-  */
-  Record: T;
-  /**
-    * Field of the record to be edited
-    * @type {keyof T}
-  */
-  Field: keyof T;
+interface IProps<T> extends Omit<Gemstone.TSX.Interfaces.IBaseFormProps<T>, "Setter"> {
   /**
     * Setter function to update the Record
     * @param record - Updated record of type T
@@ -47,17 +40,11 @@ interface IProps<T> {
   */
   Setter: (record: T, color: ColorResult) => void;
   /**
-    * Label to display for the form, defaults to the Field prop
-    * @type {string}
-    * @optional
+    * Function to determine the validity of a field
+    * @param field - Field of the record to check
+    * @returns {boolean}
   */
-  Label: string;
-  /**
-    * Flag to disable the input field
-    * @type {boolean}
-    * @optional
-  */
-  Disabled?: boolean;
+  Valid?: (field: keyof T) => boolean;
   /**
     * Feedback message to show when input is invalid
     * @type {string}
@@ -106,7 +93,7 @@ const WrapperDiv = styled.div<IWrapperProps>`
     left: ${props => `${props.Left}px`};
     border: 1px solid transparent;
   }
-`
+`;
 
 interface ISize {
   Top: number,
@@ -116,6 +103,9 @@ interface ISize {
 }
 
 export default function ColorPicker<T>(props: IProps<T>) {
+  const [guid] = React.useState<string>(CreateGuid);
+  const [showHelp, setShowHelp] = React.useState<boolean>(false);
+
   const toolTipRef = React.useRef<HTMLDivElement>(null);
   const buttonRef = React.useRef<HTMLButtonElement>(null);
 
@@ -148,15 +138,45 @@ export default function ColorPicker<T>(props: IProps<T>) {
     }
   });
 
+  const label = props.Label === undefined ? props.Field : props.Label;
+  
   return (
-    <>
-      <button disabled={props.Disabled ?? false} ref={buttonRef} className="btn btn-block" data-tooltip={"color-picker"} onMouseOver={() => setShow(true)} onMouseOut={() => setShow(false)} style={props.Style}>
-        {props.Label ?? ""}
+    <div className={"form-group "} style={props.Style}>
+      {/* Rendering label and help icon */}
+      {props.Help !== undefined || props.Label !== "" ?
+        <label className="d-flex align-items-center">
+          <span>{props.Label !== "" ? label : ''}</span>
+          {props.Help !== undefined && (
+            <span className="ml-2 d-flex align-items-center"
+              onMouseEnter={() => setShowHelp(true)}
+              onMouseLeave={() => setShowHelp(false)}
+              data-tooltip={guid}
+            >
+              <ReactIcons.QuestionMark Color="var(--info)" Size={20} />
+            </span>
+          )}
+        </label>
+        : null}
+        
+      {props.Help !== undefined ?
+        <ToolTip Show={showHelp} Target={guid} Class="info" Position="top">
+          {props.Help}
+        </ToolTip>
+        : null}
+        
+
+      {/* Input element */}
+      <button 
+        disabled={props.Disabled ?? false} 
+        ref={buttonRef} 
+        className={`btn btn-block form-control${props.Valid == null || props.Valid(props.Field) ? '' : ' is-invalid'}`}
+        data-tooltip={"color-picker"} 
+        onMouseOver={() => setShow(true)} 
+        onMouseOut={() => setShow(false)} 
+        style={{...props.Style, backgroundColor: props.Record[props.Field] as any, color: "#ffffff"}}
+      >
+        {props.Record[props.Field] ?? ""}
       </button>
-      {props.Feedback !== undefined && (props.Disabled ?? false) ?
-        <div className="text-danger">
-          {props.Feedback}
-        </div> : null}
       <Portal>
         {!(props.Disabled ?? false) ?
           <WrapperDiv className="popover popover-body border" Show={show} Top={top} Left={left} ref={toolTipRef} onMouseOver={() => (props.Disabled ?? false) ? {} : setShow(true)} onMouseOut={() => setShow(false)}>
@@ -173,8 +193,13 @@ export default function ColorPicker<T>(props: IProps<T>) {
           </WrapperDiv>
           : <></>}
       </Portal>
-    </>
-  )
+
+      {/* Invalid feedback message */}
+      <div className="invalid-feedback">
+        {props.Feedback == null ? props.Field.toString() + ' is a required field.' : props.Feedback}
+      </div>
+    </div>
+  );
 }
 
 const GetBestPosition = (ref: React.RefObject<HTMLDivElement>, targetTop: number, targetHeight: number, targetLeft: number, targetWidth: number) => {

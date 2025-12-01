@@ -172,8 +172,8 @@ const Applications: React.ForwardRefRenderFunction<IApplicationRefs, React.Props
         navBarDiv: navBarRef.current,
     }));
 
-    function GetContext(): IContext {
-        return {
+    const context = React.useMemo(()=> (
+        {
             homePath: props.HomePath,
             userRoles: (props.UserRoles ?? ['Viewer']),
             collapsed,
@@ -181,14 +181,14 @@ const Applications: React.ForwardRefRenderFunction<IApplicationRefs, React.Props
             activeSection,
             setActiveSection,
             setActivePageLabel
-        }
-    }
+        }), 
+    [props.HomePath, props.UserRoles, collapsed, props.UseLegacyNavigation, activeSection]);
 
     function CreateRoute(element: React.ReactElement<React.PropsWithChildren<IPageProps>>): JSX.Element[] {
         const routes: JSX.Element[] = [];
 
         // Generate a route for the Name prop
-        if (element.props.RequiredRoles !== undefined && element.props.RequiredRoles.filter((r: Application.Types.SecurityRoleName) => GetContext().userRoles.findIndex(i => i === r) > -1).length === 0)
+        if (element.props.RequiredRoles !== undefined && element.props.RequiredRoles.filter((r: Application.Types.SecurityRoleName) => context.userRoles.findIndex(i => i === r) > -1).length === 0)
             routes.push(<Route path={`${props.HomePath}${element.props.Name}`} element={<ServerErrorIcon Show={true} Label={'You are not authorized to view this page.'} />} />);
         else
             routes.push(<Route path={`${props.HomePath}${element.props.Name}`} element={<Content>{element.props.children}</Content>} />);
@@ -197,7 +197,7 @@ const Applications: React.ForwardRefRenderFunction<IApplicationRefs, React.Props
         if ((element.props.Paths != null)) {
             for (const path of element.props.Paths) {
                 const fullPath = `${props.HomePath}${element.props.Name}${path}`;
-                if (element.props.RequiredRoles !== undefined && element.props.RequiredRoles.filter((r: Application.Types.SecurityRoleName) => GetContext().userRoles.findIndex(i => i === r) > -1).length === 0)
+                if (element.props.RequiredRoles !== undefined && element.props.RequiredRoles.filter((r: Application.Types.SecurityRoleName) => context.userRoles.findIndex(i => i === r) > -1).length === 0)
                     routes.push(<Route path={fullPath} element={<ServerErrorIcon Show={true} Label={'You are not authorized to view this page.'} />} />);
                 else
                     routes.push(<Route path={fullPath} element={<Content>{element.props.children}</Content>} />);
@@ -208,7 +208,7 @@ const Applications: React.ForwardRefRenderFunction<IApplicationRefs, React.Props
     }
 
     return (
-        <Context.Provider value={GetContext()}>
+        <Context.Provider value={context}>
             {props.UseLegacyNavigation === undefined || !props.UseLegacyNavigation ? <Router>
                 <div ref={mainDivRef} style={{ width: '100%', height: '100%', position: "absolute" }}>
                     <HeaderContent
