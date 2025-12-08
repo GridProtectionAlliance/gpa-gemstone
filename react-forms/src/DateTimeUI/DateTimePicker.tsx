@@ -77,7 +77,7 @@ export default function DateTimePickerBase<T>(props: IProps<T>) {
     const allowNull = React.useMemo(() => props.AllowEmpty ?? false, [props.AllowEmpty]);
 
     React.useEffect(() => {
-        if (props.Record[props.Field] as any !== null) {
+        if (props.Record[props.Field] as any != null) {
             setPickerRecord(parse(props.Record));
             setBoxRecord(parse(props.Record).format(boxFormat));
         }
@@ -130,11 +130,11 @@ export default function DateTimePickerBase<T>(props: IProps<T>) {
     function setPickerAndRecord(arg: moment.Moment | undefined) {
         setPickerRecord(arg);
 
-        if (allowNull && arg === undefined && props.Record[props.Field] !== null)
+        if (allowNull && arg == null && props.Record[props.Field] != null)
             props.Setter({ ...props.Record, [props.Field]: null });
         else if (
-            (arg != undefined && validateDate(arg)) &&
-            (props.Record[props.Field] as any).toString() !== arg.format(recordFormat)
+            (arg != null && validateDate(arg)) &&
+            (props.Record[props.Field] as any)?.toString() !== arg.format(recordFormat)
         ) props.Setter({ ...props.Record, [props.Field]: arg.format(recordFormat) });
     }
 
@@ -212,9 +212,6 @@ export default function DateTimePickerBase<T>(props: IProps<T>) {
         else if (validDate) {
             props.Setter({ ...props.Record, [props.Field]: moment(value, boxFormat).format(recordFormat) });
             setPickerAndRecord(moment(value, boxFormat));
-        }
-        else {
-            setPickerAndRecord(undefined);
         }
         setBoxRecord(value);
     }
