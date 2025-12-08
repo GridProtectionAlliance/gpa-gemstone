@@ -133,8 +133,8 @@ export default function DateTimePickerBase<T>(props: IProps<T>) {
         if (allowNull && arg == null && props.Record[props.Field] != null)
             props.Setter({ ...props.Record, [props.Field]: null });
         else if (
-            (arg != undefined && validateDate(arg)) &&
-            (props.Record[props.Field] as any).toString() !== arg.format(recordFormat)
+            (arg != null && validateDate(arg)) &&
+            (props.Record[props.Field] as any)?.toString() !== arg.format(recordFormat)
         ) props.Setter({ ...props.Record, [props.Field]: arg.format(recordFormat) });
     }
 
