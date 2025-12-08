@@ -213,9 +213,6 @@ export default function DateTimePickerBase<T>(props: IProps<T>) {
             props.Setter({ ...props.Record, [props.Field]: moment(value, boxFormat).format(recordFormat) });
             setPickerAndRecord(moment(value, boxFormat));
         }
-        else {
-            setPickerAndRecord(undefined);
-        }
         setBoxRecord(value);
     }
 
