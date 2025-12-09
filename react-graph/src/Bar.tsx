@@ -82,6 +82,10 @@ export interface IBarStyle {
      * Stroke width of this portion bar.
     */
     StrokeWidth?: number,
+    /**
+     * Fill property of the bars, defaults to solid if undefined.
+    */
+    Fill?: FillStyles,
 }
 
 export const StackedBar = (props: IBarProps) => {
@@ -89,7 +93,7 @@ export const StackedBar = (props: IBarProps) => {
     const context = React.useContext(GraphContext);
 
     const createLegend = React.useCallback(() => {
-        if (props.Legend === undefined || guid == null)
+        if (props.Legend == undefined || guid == null)
             return undefined;
 
         return <DataLegend
@@ -169,6 +173,26 @@ export const StackedBar = (props: IBarProps) => {
             const yLower = context.YTransformation(yValues[yIndex+1], axis);
             const style = props.GetBarStyle == null ? {} : props.GetBarStyle([yValues[yIndex], yValues[yIndex+1]], yIndex);
             const color = style?.ColorOverride ?? props.Color;
+
+            let fillProp;
+            switch(style.Fill){
+                default:
+                case "Solid":
+                    fillProp = color;
+                    break;
+                case "Hatched":
+                    fillProp = `url(#${guid}_${yIndex})`;
+                    newBars.push(
+                        <pattern id={`${guid}_${yIndex}`} width="24" height="24" patternUnits="userSpaceOnUse" key={`hatch_${yIndex}`}>
+                            <path 
+                                d="M -3 3 L 6 -6 M 0 24 L 24 0 M 21 27 L 30 18" 
+                                strokeWidth={6}
+                                stroke={color}
+                            />
+                        </pattern>
+                    );
+                    break;
+            }
 
             newBars.push(
                 <rect
