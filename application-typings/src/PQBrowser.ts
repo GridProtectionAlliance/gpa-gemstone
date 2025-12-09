@@ -32,10 +32,16 @@ namespace PQBrowser {
 			Phase: string, ChannelGroup: string, ChannelGroupType: string, Unit: string,
 			Series: Series[]
 		}
-
 		export interface Series {
 			ID: number, ChannelID: number, 
 			TypeName: string, TypeDescription: string
+		}
+		export interface IWidgetView {
+			ID: number,
+			Name: string,
+			Type: string,
+			Setting: string,
+			CategoryID: number
 		}
 	}
 }
