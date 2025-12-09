@@ -158,7 +158,7 @@ export const StackedBar = (props: IBarProps) => {
         const rightEdge = context.XTransformation(xValue+props.BarWidth);
         const leftEdge = context.XTransformation(xValue);
         const axis = AxisMap.get(props.Axis);
-        let yValues = [...props.Data];
+        const yValues = [...props.Data];
         // Insert bottom of bar if only 1 value exists
         if (yValues.length === 1)
             yValues.push(context.YDomain[axis][0]);
