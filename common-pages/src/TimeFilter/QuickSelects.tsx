@@ -145,6 +145,22 @@ const getColSize = (dateTimeSetting: DateTimeSetting, splitSelects: boolean) => 
 //update all quick selects to use new timefilters
 export const AvailableQuickSelects: IQuickSelect[] = [
     {
+    {
+        label: 'Last 45 Minutes', createFilter: (tz, format) => {
+            const offset = momentTZ.tz(moment.utc().startOf('minute').subtract(45, 'minutes').format('YYYY-MM-DDTHH:mm:ss.SSSSS'), tz).utcOffset();
+            const t = moment.utc().add(offset, 'minutes').startOf('minute');
+
+            return {
+                end: t.format(getFormat(format)),
+                unit: 'm',
+                duration: 45,
+            }
+        },
+        hideQuickPick: (f) => {
+            return f !== 'datetime-short'
+        }
+    },
+    {
         label: 'This Hour', createFilter: (tz, format) => {
 
             const offset = momentTZ.tz(moment.utc().startOf('hour').format('YYYY-MM-DDTHH:mm:ss.SSSSS'), tz).utcOffset();
