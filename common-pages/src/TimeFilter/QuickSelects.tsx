@@ -146,6 +146,21 @@ const getColSize = (dateTimeSetting: DateTimeSetting, splitSelects: boolean) => 
 export const AvailableQuickSelects: IQuickSelect[] = [
     {
     {
+        label: 'Last 30 Seconds', createFilter: (tz, format) => {
+            const offset = momentTZ.tz(moment.utc().startOf('second').subtract(30, 'seconds').format('YYYY-MM-DDTHH:mm:ss.SSSSS'), tz).utcOffset();
+            const t = moment.utc().add(offset, 'seconds').startOf('second');
+
+            return {
+                end: t.format(getFormat(format)),
+                unit: 's',
+                duration: 30,
+            }
+        },
+        hideQuickPick: (f) => {
+            return f !== 'datetime-short'
+        }
+    },
+    {
         label: 'Last 45 Seconds', createFilter: (tz, format) => {
             const offset = momentTZ.tz(moment.utc().startOf('second').subtract(45, 'seconds').format('YYYY-MM-DDTHH:mm:ss.SSSSS'), tz).utcOffset();
             const t = moment.utc().add(offset, 'seconds').startOf('second');
