@@ -28,7 +28,7 @@ import moment from 'moment';
 import momentTZ from 'moment-timezone';
 import { TimeUnit } from './TimeWindowUtils';
 
-export type DateUnit = ('datetime-local' | 'date' | 'time');
+export type DateUnit = ('datetime-local' | 'datetime-short' | 'date' | 'time');
 
 interface IQuickSelect {
     label: string,
