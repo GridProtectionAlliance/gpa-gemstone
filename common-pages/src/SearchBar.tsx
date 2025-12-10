@@ -229,9 +229,9 @@ export namespace DefaultSearch {
         const data: Application.Types.iUserAccount[] = useSelector(props.Slice.SearchResults);
 
         const defaultSearchcols: Search.IField<Application.Types.iUserAccount>[] = [
-            { label: 'Username', key: 'Name', type: 'string', isPivotField: false },
-            { label: 'Email', key: 'Email', type: 'string', isPivotField: false },
-            { label: 'Account Locked', key: 'LockedOut', type: 'boolean', isPivotField: false },     
+            { label: 'First Name', key: 'FirstName', type: 'string', isPivotField: false },
+            { label: 'Last Name', key: 'LastName', type: 'string', isPivotField: false },
+            { label: 'Email', key: 'Email', type: 'string', isPivotField: false },    
         ];
 
         React.useEffect(() => {
