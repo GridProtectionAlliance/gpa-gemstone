@@ -73,7 +73,7 @@ export interface IBarStyle {
     /**
      * Color of this portion of the bar.
     */
-    ColorOverride?: string,
+    Color?: string,
     /**
      * Stroke color of this portion bar.
     */
@@ -86,6 +86,11 @@ export interface IBarStyle {
      * Fill property of the bars, defaults to solid if undefined.
     */
     Fill?: FillStyles,
+}
+
+const defaultStyle: IBarStyle = {
+    Opacity: 0.5,
+    StrokeColor: "black"
 }
 
 export const StackedBar = (props: IBarProps) => {
@@ -171,14 +176,15 @@ export const StackedBar = (props: IBarProps) => {
             // This looks backwards but isn't, asc in values === desc in pixels
             const yUpper = context.YTransformation(yValues[yIndex], axis);
             const yLower = context.YTransformation(yValues[yIndex+1], axis);
-            const style = props.GetBarStyle == null ? {} : props.GetBarStyle([yValues[yIndex], yValues[yIndex+1]], yIndex);
-            const color = style?.ColorOverride ?? props.Color;
+            const style = props.GetBarStyle == null ? 
+                {...defaultStyle, Color: props.Color} : 
+                {...defaultStyle, Color: props.Color, ...props.GetBarStyle([yValues[yIndex], yValues[yIndex+1]], yIndex)};
 
             let fillProp;
             switch(style.Fill){
                 default:
                 case "Solid":
-                    fillProp = color;
+                    fillProp = style.Color;
                     break;
                 case "Hatched":
                     fillProp = `url(#${guid}_${yIndex})`;
@@ -187,7 +193,7 @@ export const StackedBar = (props: IBarProps) => {
                             <path 
                                 d="M -3 3 L 6 -6 M 0 24 L 24 0 M 21 27 L 30 18" 
                                 strokeWidth={6}
-                                stroke={color}
+                                stroke={style.Color}
                             />
                         </pattern>
                     );
@@ -202,8 +208,8 @@ export const StackedBar = (props: IBarProps) => {
                     width={rightEdge-leftEdge}
                     height={yUpper-yLower}
                     fill={fillProp}
-                    opacity={style.Opacity ?? 0.5}
-                    stroke={style.StrokeColor ?? "black"}
+                    opacity={style.Opacity}
+                    stroke={style.StrokeColor}
                     strokeWidth={style.StrokeWidth}
                 />
             );
