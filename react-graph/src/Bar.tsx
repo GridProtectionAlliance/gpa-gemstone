@@ -27,13 +27,17 @@ import DataLegend from './DataLegend';
 
 export interface IBarProps {
     /**
-     * Array of data points to be represented by bar, each point as a [x, y1, y2, ...yn] tuple.
+     * Array of data points to be represented by bar as segments of the bar.
     */
     Data: number[],
     /**
      * Origin of the Bar on the X-Axis
      */
     BarOrigin: number,
+    /**
+     * Reference point of data, if the x data represents the left side, center, or right side of the bar.
+    */
+    XBarOrigin?: 'left' | 'right' | 'center',
     /**
      * Width of the bar
     */
@@ -48,25 +52,45 @@ export interface IBarProps {
     */
     Legend?: string,
     /**
-     * Reference point of data, if the x data represents the left side, center, or right side of the bar.
-    */
-    XBarOrigin?: 'left' | 'right' | 'center',
-    /**
-     * Opacity of the bars.
-    */
-    Opacity?: number,
-    /**
-     * Color of the bars.
+     * Color of the bar.
     */
     Color: string,
     /**
-     * Stroke color of the bars.
+     * Function retrieves an override of the portion of the bar. 
+     * @param {[number, number]} yValues - The bottom and top of this portion of the bar.
+     * @param {number} index - Index of this portion with regard to all bar segments. Counting begins from the lowest portion in ascending order.
+    */
+    GetBarStyle?: (yValues: [number, number], index: number) => IBarStyle
+}
+
+type FillStyles = 'Hatched' | 'Solid' | undefined;
+
+export interface IBarStyle {
+    /**
+     * Opacity of this portion bar.
+    */
+    Opacity?: number,
+    /**
+     * Color of this portion of the bar.
+    */
+    Color?: string,
+    /**
+     * Stroke color of this portion bar.
     */
     StrokeColor?: string,
     /**
-     * Stroke width of the bars.
+     * Stroke width of this portion bar.
     */
     StrokeWidth?: number,
+    /**
+     * Fill property of the bars, defaults to solid if undefined.
+    */
+    Fill?: FillStyles,
+}
+
+const defaultStyle: IBarStyle = {
+    Opacity: 0.5,
+    StrokeColor: "black"
 }
 
 export const StackedBar = (props: IBarProps) => {
@@ -74,7 +98,7 @@ export const StackedBar = (props: IBarProps) => {
     const context = React.useContext(GraphContext);
 
     const createLegend = React.useCallback(() => {
-        if (props.Legend === undefined || guid == null)
+        if (props.Legend == undefined || guid == null)
             return undefined;
 
         return <DataLegend
@@ -139,29 +163,54 @@ export const StackedBar = (props: IBarProps) => {
         const rightEdge = context.XTransformation(xValue+props.BarWidth);
         const leftEdge = context.XTransformation(xValue);
         const axis = AxisMap.get(props.Axis);
-        let yValues = [...props.Data];
+        const yValues = [...props.Data];
         // Insert bottom of bar if only 1 value exists
         if (yValues.length === 1)
             yValues.push(context.YDomain[axis][0]);
         
-        yValues = yValues.map(yVal => 
-            context.YTransformation(Math.min(yVal, context.YDomain[axis][1]), axis)
-        );
+        // Sort Values in ascending order
         yValues.sort((a,b) => a-b);
 
         const newBars :JSX.Element[] = [];
         for(let yIndex = 0; yIndex < yValues.length-1; yIndex++){
+            // This looks backwards but isn't, asc in values === desc in pixels
+            const yUpper = context.YTransformation(yValues[yIndex], axis);
+            const yLower = context.YTransformation(yValues[yIndex+1], axis);
+            const style = props.GetBarStyle == null ? 
+                {...defaultStyle, Color: props.Color} : 
+                {...defaultStyle, Color: props.Color, ...props.GetBarStyle([yValues[yIndex], yValues[yIndex+1]], yIndex)};
+
+            let fillProp;
+            switch(style.Fill){
+                default:
+                case "Solid":
+                    fillProp = style.Color;
+                    break;
+                case "Hatched":
+                    fillProp = `url(#${guid}_${yIndex})`;
+                    newBars.push(
+                        <pattern id={`${guid}_${yIndex}`} width="24" height="24" patternUnits="userSpaceOnUse" key={`hatch_${yIndex}`}>
+                            <path 
+                                d="M -3 3 L 6 -6 M 0 24 L 24 0 M 21 27 L 30 18" 
+                                strokeWidth={6}
+                                stroke={style.Color}
+                            />
+                        </pattern>
+                    );
+                    break;
+            }
+
             newBars.push(
                 <rect
                     key={yIndex}
                     x={leftEdge}
-                    y={yValues[yIndex]}
+                    y={yLower}
                     width={rightEdge-leftEdge}
-                    height={yValues[yIndex+1]-yValues[yIndex]}
-                    fill={props.Color}
-                    opacity={props.Opacity ?? 0.5}
-                    stroke={props.StrokeColor}
-                    strokeWidth={props.StrokeWidth}
+                    height={yUpper-yLower}
+                    fill={fillProp}
+                    opacity={style.Opacity}
+                    stroke={style.StrokeColor}
+                    strokeWidth={style.StrokeWidth}
                 />
             );
         }

@@ -24,7 +24,7 @@
 import * as React from 'react';
 import Bar, { IBarProps } from './Bar';
 
-interface IProps extends IBarProps {
+interface IProps extends Omit<IBarProps, "GetBarStyle"> {
     AggregationType?: "min_max_avg"
 }
 
