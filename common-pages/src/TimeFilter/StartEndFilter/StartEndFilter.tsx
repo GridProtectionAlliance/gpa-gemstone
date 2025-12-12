@@ -53,7 +53,7 @@ export interface IFilterProps {
 }
 
 const StartEndFilter = (props: IFilterProps) => {
-    if (props.DateUnit === 'datetime-local')
+    if (props.DateUnit === 'datetime-local' || props.DateUnit === 'datetime-short')
         return <DateTimeLocalFilter {...props} />
 
     if (props.DateUnit === 'time')

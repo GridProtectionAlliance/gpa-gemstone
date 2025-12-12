@@ -28,7 +28,7 @@ import moment from 'moment';
 import momentTZ from 'moment-timezone';
 import { TimeUnit } from './TimeWindowUtils';
 
-export type DateUnit = ('datetime-local' | 'date' | 'time');
+export type DateUnit = ('datetime-local' | 'datetime-short' | 'date' | 'time');
 
 interface IQuickSelect {
     label: string,
@@ -145,6 +145,186 @@ const getColSize = (dateTimeSetting: DateTimeSetting, splitSelects: boolean) => 
 //update all quick selects to use new timefilters
 export const AvailableQuickSelects: IQuickSelect[] = [
     {
+        label: 'Last 1 Second', createFilter: (tz, format) => {
+            const offset = momentTZ.tz(moment.utc().startOf('second').subtract(1, 'second').format('YYYY-MM-DDTHH:mm:ss.SSSSS'), tz).utcOffset();
+            const t = moment.utc().add(offset, 'second').startOf('second');
+
+            return {
+                end: t.format(getFormat(format)),
+                unit: 's',
+                duration: 1,
+            }
+        },
+        hideQuickPick: (f) => {
+            return f !== 'datetime-short'
+        }
+    },
+    {
+        label: 'Last 5 Seconds', createFilter: (tz, format) => {
+            const offset = momentTZ.tz(moment.utc().startOf('second').subtract(5, 'seconds').format('YYYY-MM-DDTHH:mm:ss.SSSSS'), tz).utcOffset();
+            const t = moment.utc().add(offset, 'seconds').startOf('second');
+
+            return {
+                end: t.format(getFormat(format)),
+                unit: 's',
+                duration: 5,
+            }
+        },
+        hideQuickPick: (f) => {
+            return f !== 'datetime-short'
+        }
+    },
+    {
+        label: 'Last 10 Seconds', createFilter: (tz, format) => {
+            const offset = momentTZ.tz(moment.utc().startOf('second').subtract(10, 'seconds').format('YYYY-MM-DDTHH:mm:ss.SSSSS'), tz).utcOffset();
+            const t = moment.utc().add(offset, 'seconds').startOf('second');
+
+            return {
+                end: t.format(getFormat(format)),
+                unit: 's',
+                duration: 10,
+            }
+        },
+        hideQuickPick: (f) => {
+            return f !== 'datetime-short'
+        }
+    },
+    {
+        label: 'Last 15 Seconds', createFilter: (tz, format) => {
+            const offset = momentTZ.tz(moment.utc().startOf('second').subtract(15, 'seconds').format('YYYY-MM-DDTHH:mm:ss.SSSSS'), tz).utcOffset();
+            const t = moment.utc().add(offset, 'seconds').startOf('second');
+
+            return {
+                end: t.format(getFormat(format)),
+                unit: 's',
+                duration: 15,
+            }
+        },
+        hideQuickPick: (f) => {
+            return f !== 'datetime-short'
+        }
+    },
+    {
+        label: 'Last 30 Seconds', createFilter: (tz, format) => {
+            const offset = momentTZ.tz(moment.utc().startOf('second').subtract(30, 'seconds').format('YYYY-MM-DDTHH:mm:ss.SSSSS'), tz).utcOffset();
+            const t = moment.utc().add(offset, 'seconds').startOf('second');
+
+            return {
+                end: t.format(getFormat(format)),
+                unit: 's',
+                duration: 30,
+            }
+        },
+        hideQuickPick: (f) => {
+            return f !== 'datetime-short'
+        }
+    },
+    {
+        label: 'Last 45 Seconds', createFilter: (tz, format) => {
+            const offset = momentTZ.tz(moment.utc().startOf('second').subtract(45, 'seconds').format('YYYY-MM-DDTHH:mm:ss.SSSSS'), tz).utcOffset();
+            const t = moment.utc().add(offset, 'seconds').startOf('second');
+
+            return {
+                end: t.format(getFormat(format)),
+                unit: 's',
+                duration: 45,
+            }
+        },
+        hideQuickPick: (f) => {
+            return f !== 'datetime-short'
+        }
+    },
+    {
+        label: 'Last 1 Minute', createFilter: (tz, format) => {
+            const offset = momentTZ.tz(moment.utc().startOf('minute').subtract(1, 'minute').format('YYYY-MM-DDTHH:mm:ss.SSSSS'), tz).utcOffset();
+            const t = moment.utc().add(offset, 'minutes').startOf('minute');
+
+            return {
+                end: t.format(getFormat(format)),
+                unit: 'm',
+                duration: 1,
+            }
+        },
+        hideQuickPick: (f) => {
+            return f !== 'datetime-short'
+        }
+    },
+    {
+        label: 'Last 5 Minutes', createFilter: (tz, format) => {
+            const offset = momentTZ.tz(moment.utc().startOf('minute').subtract(5, 'minutes').format('YYYY-MM-DDTHH:mm:ss.SSSSS'), tz).utcOffset();
+            const t = moment.utc().add(offset, 'minutes').startOf('minute');
+
+            return {
+                end: t.format(getFormat(format)),
+                unit: 'm',
+                duration: 5,
+            }
+        },
+        hideQuickPick: (f) => {
+            return f !== 'datetime-short'
+        }
+    },
+    {
+        label: 'Last 10 Minutes', createFilter: (tz, format) => {
+            const offset = momentTZ.tz(moment.utc().startOf('minute').subtract(10, 'minutes').format('YYYY-MM-DDTHH:mm:ss.SSSSS'), tz).utcOffset();
+            const t = moment.utc().add(offset, 'minutes').startOf('minute');
+
+            return {
+                end: t.format(getFormat(format)),
+                unit: 'm',
+                duration: 10,
+            }
+        },
+        hideQuickPick: (f) => {
+            return f !== 'datetime-short'
+        }
+    },
+    {
+        label: 'Last 15 Minutes', createFilter: (tz, format) => {
+            const offset = momentTZ.tz(moment.utc().startOf('minute').subtract(15, 'minutes').format('YYYY-MM-DDTHH:mm:ss.SSSSS'), tz).utcOffset();
+            const t = moment.utc().add(offset, 'minutes').startOf('minute');
+
+            return {
+                end: t.format(getFormat(format)),
+                unit: 'm',
+                duration: 15,
+            }
+        },
+        hideQuickPick: (f) => {
+            return f !== 'datetime-short'
+        }
+    },
+    {
+        label: 'Last 30 Minutes', createFilter: (tz, format) => {
+            const offset = momentTZ.tz(moment.utc().startOf('minute').subtract(30, 'minutes').format('YYYY-MM-DDTHH:mm:ss.SSSSS'), tz).utcOffset();
+            const t = moment.utc().add(offset, 'minutes').startOf('minute');
+
+            return {
+                end: t.format(getFormat(format)),
+                unit: 'm',
+                duration: 30,
+            }
+        },
+        hideQuickPick: (f) => {
+            return f !== 'datetime-short'
+        }
+    },
+    {
+        label: 'Last 45 Minutes', createFilter: (tz, format) => {
+            const offset = momentTZ.tz(moment.utc().startOf('minute').subtract(45, 'minutes').format('YYYY-MM-DDTHH:mm:ss.SSSSS'), tz).utcOffset();
+            const t = moment.utc().add(offset, 'minutes').startOf('minute');
+
+            return {
+                end: t.format(getFormat(format)),
+                unit: 'm',
+                duration: 45,
+            }
+        },
+        hideQuickPick: (f) => {
+            return f !== 'datetime-short'
+        }
+    },
+    {
         label: 'This Hour', createFilter: (tz, format) => {
 
             const offset = momentTZ.tz(moment.utc().startOf('hour').format('YYYY-MM-DDTHH:mm:ss.SSSSS'), tz).utcOffset();
@@ -240,7 +420,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             }
         },
         hideQuickPick: (f) => {
-            return f == 'time'
+            return f == 'time' || f == 'datetime-short'
         }
     },
     {
@@ -254,7 +434,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             }
         },
         hideQuickPick: (f) => {
-            return f == 'time'
+            return f == 'time' || f == 'datetime-short'
         }
     },
     {
@@ -268,7 +448,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             }
         },
         hideQuickPick: (f) => {
-            return f == 'time'
+            return f == 'time' || f == 'datetime-short'
         }
     },
     {
@@ -282,7 +462,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             }
         },
         hideQuickPick: (f) => {
-            return f == 'time'
+            return f == 'time' || f == 'datetime-short'
         }
     },
     {
@@ -296,7 +476,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             }
         },
         hideQuickPick: (f) => {
-            return f == 'time'
+            return f == 'time' || f == 'datetime-short'
         }
     },
     {
@@ -310,7 +490,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             }
         },
         hideQuickPick: (f) => {
-            return f == 'time'
+            return f == 'time' || f == 'datetime-short'
         }
     },
     {
@@ -329,7 +509,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             }
         },
         hideQuickPick: (f) => {
-            return f == 'time'
+            return f == 'time' || f == 'datetime-short'
         }
     },
     {
@@ -348,7 +528,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             }
         },
         hideQuickPick: (f) => {
-            return f == 'time'
+            return f == 'time' || f == 'datetime-short'
         }
     },
     {
@@ -362,7 +542,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             }
         },
         hideQuickPick: (f) => {
-            return f == 'time'
+            return f == 'time' || f == 'datetime-short'
         }
     },
     {
@@ -376,7 +556,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             }
         },
         hideQuickPick: (f) => {
-            return f == 'time'
+            return f == 'time' || f == 'datetime-short'
         }
     },
     {
@@ -390,7 +570,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             }
         },
         hideQuickPick: (f) => {
-            return f == 'time'
+            return f == 'time' || f == 'datetime-short'
         }
     },
     {
@@ -404,7 +584,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             }
         },
         hideQuickPick: (f) => {
-            return f == 'time'
+            return f == 'time' || f == 'datetime-short'
         }
     }
 ]
