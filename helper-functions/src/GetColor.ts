@@ -23,5 +23,5 @@
 
 export const maxGPAColorIndex = 21;
 export const GetColor = (index: number) => {
-    return `var(--gpa-${index % maxGPAColorIndex})`
+    return `var(--gpa-${index % (maxGPAColorIndex+1)})`
 }
