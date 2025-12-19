@@ -53,6 +53,7 @@ const Page = (props: React.PropsWithChildren<IProps>) => {
     React.useEffect(() => {
         // Use Name as the base check and see if the current path starts with this base.
         // React v6 will try to set active or not themselves, we need to not let them to support search matching
+        const base = `${context.homePath}${props.Name}`;
         let currentPage = location.pathname;
         if (context.useSearchMatch) currentPage += location.search;
 
@@ -67,9 +68,18 @@ const Page = (props: React.PropsWithChildren<IProps>) => {
 
             return false;
         }
-        
-        const isPathActive = currentPage.startsWith(`${context.homePath}${props.Name}`) || isOtherPathActive();
-        
+
+        // Helper function to see if the current page is the base route or a child route of the base path
+        const isBaseOrChildRoute = (page: string, basePath: string) => {
+            if (!page.startsWith(basePath))
+                return false;
+
+            const nextChar = page.charAt(basePath.length);
+            return nextChar === '' || nextChar === '/' || nextChar === '?';
+        };
+
+        const isPathActive = isBaseOrChildRoute(currentPage, base) || isOtherPathActive();
+
         if (isPathActive) {
             context.setActivePageLabel(props.Label ?? null);
             context.setActiveSection(sectionGuid);
