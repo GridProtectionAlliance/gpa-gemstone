@@ -53,23 +53,14 @@ const Page = (props: React.PropsWithChildren<IProps>) => {
     React.useEffect(() => {
         // Use Name as the base check and see if the current path starts with this base.
         // React v6 will try to set active or not themselves, we need to not let them to support search matching
+        const base = `${context.homePath}${props.Name}`;
         let currentPage = location.pathname;
-        if (context.useSearchMatch) currentPage += location.search;
 
-        const isOtherPathActive = () => {
-            if (props.OtherActivePages == null)
-                return false;
+        if (context.useSearchMatch)
+            currentPage += location.search;
 
-            for (const path of props.OtherActivePages) {
-                if (currentPage.includes(path))
-                    return true;
-            }
+        const isPathActive = isBaseOrChildRoute(currentPage, base) || isOtherPathActive(props.OtherActivePages ?? [], currentPage);
 
-            return false;
-        }
-        
-        const isPathActive = currentPage.startsWith(`${context.homePath}${props.Name}`) || isOtherPathActive();
-        
         if (isPathActive) {
             context.setActivePageLabel(props.Label ?? null);
             context.setActiveSection(sectionGuid);
@@ -106,5 +97,27 @@ const Page = (props: React.PropsWithChildren<IProps>) => {
     }
     return null;
 }
+
+//Helper functiions
+const isOtherPathActive = (otherActivePages: string[], currentPage: string) => {
+    if (otherActivePages == null)
+        return false;
+
+    for (const path of otherActivePages) {
+        if (currentPage.includes(path))
+            return true;
+    }
+
+    return false;
+}
+
+// Helper function to see if the current page is the base route or a child route of the base path
+const isBaseOrChildRoute = (page: string, basePath: string) => {
+    if (!page.startsWith(basePath))
+        return false;
+
+    const nextChar = page.charAt(basePath.length);
+    return nextChar === '' || nextChar === '/' || nextChar === '?';
+};
 
 export default Page;
