@@ -24,7 +24,7 @@ import { createSlice, createAsyncThunk, AsyncThunk, Slice, Draft, PayloadAction,
 import * as _ from 'lodash';
 import { Application } from '@gpa-gemstone/application-typings';
 import * as $ from 'jquery';
-import { Search } from './SearchBar';
+import { Search } from './SearchBar/SearchBar';
 import { WritableDraft } from 'immer/dist/types/types-external'
 import GenericController from './GenericController';
 
