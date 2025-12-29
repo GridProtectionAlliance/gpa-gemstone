@@ -23,10 +23,12 @@
 import * as React from 'react';
 import Modal from '../Modal';
 import LoadingIcon from '../LoadingIcon';
-import { Select } from '@gpa-gemstone/react-forms';
+import { Select, ToolTip } from '@gpa-gemstone/react-forms';
 import _ from 'lodash';
 import FilterCreator from './FilterCreator';
 import FilterRow from './FilterRow';
+import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
+import { CreateGuid } from '@gpa-gemstone/helper-functions';
 
 interface IProps<T> {
     /**
@@ -79,6 +81,14 @@ interface IProps<T> {
      * Optional class to apply to outer div
      */
     Class?: string
+    /**
+     * Optional disabled flag
+     */
+    Disabled?: boolean,
+    /**
+     * Optional help message for the filter button
+     */
+    Help?: string
 }
 
 export interface IOptions { Value: string, Label: string }
@@ -105,6 +115,9 @@ export default function SearchBar<T>(props: React.PropsWithChildren<IProps<T>>) 
     const [search, setSearch] = React.useState<string>("");
     const [searchFilter, setSearchFilter] = React.useState<Search.IFilter<T> | null>(null);
     const [draftFilter, setDraftFilter] = React.useState<Search.IFilter<T>>(setDefaultDraftFilter(props.CollumnList[0]));
+
+    const [showHelpTooltip, setShowHelpTooltip] = React.useState<boolean>(false);
+    const helpTooltipRef = React.useRef<string>(CreateGuid())
 
     const activeFilters = React.useMemo(() => hasExternalFilters ? (props.Filters ?? []) : internalFilters, [hasExternalFilters, props.Filters, internalFilters]);
 
@@ -268,7 +281,14 @@ export default function SearchBar<T>(props: React.PropsWithChildren<IProps<T>>) 
                 {useQuickSearch ?
                     <div className="col">
                         <div className="input-group">
-                            <input className="form-control mr-sm-2" type="search" placeholder={"Search " + (memoizedDefaultColumn?.label ?? '')} onChange={(event) => editSearch(event.target.value as string)} value={search} />
+                            <input
+                                className="form-control mr-sm-2"
+                                type="search"
+                                placeholder={"Search " + (memoizedDefaultColumn?.label ?? '')}
+                                onChange={(event) => editSearch(event.target.value as string)}
+                                value={search}
+                                disabled={props.Disabled}
+                            />
 
                             {props.ShowLoading !== undefined && props.ShowLoading ?
                                 <div className="input-group-append">
@@ -280,8 +300,9 @@ export default function SearchBar<T>(props: React.PropsWithChildren<IProps<T>>) 
                         <p style={{ marginTop: 2, marginBottom: 2 }}>{props.ResultNote}</p>
                     </div> : null}
 
-                <div style={{ position: 'relative', display: 'inline-block' }} className='col'>
+                <div style={{ position: 'relative', display: 'inline-block' }} className='col align-items-start'>
                     <button
+                        disabled={props.Disabled}
                         className={"btn btn-" + (activeFilters.length > 0 ? "warning" : "primary")}
                         onClick={(evt) => { evt.preventDefault(); createFilter(); }}
                         onMouseEnter={() => setHover(true)}
@@ -289,7 +310,22 @@ export default function SearchBar<T>(props: React.PropsWithChildren<IProps<T>>) 
                     >
                         Add Filter{activeFilters.length > 0 ? ("(" + activeFilters.length + ")") : ""}
                     </button>
-
+                    {props.Help != null ?
+                            <button
+                                className='btn'
+                                onMouseEnter={() => setShowHelpTooltip(true)}
+                                onMouseLeave={() => setShowHelpTooltip(false)}
+                                data-tooltip={helpTooltipRef.current}
+                            >
+                                <ReactIcons.QuestionMark
+                                    Color="var(--info)"
+                                    Size={20}
+                                />
+                                <ToolTip Show={showHelpTooltip} Target={helpTooltipRef.current} Class="info">
+                                    {props.Help}
+                                </ToolTip>
+                            </button>
+                        : null}
                     <div className="popover"
                         style={{
                             display: hover ? 'block' : 'none', maxWidth: 'unset',
