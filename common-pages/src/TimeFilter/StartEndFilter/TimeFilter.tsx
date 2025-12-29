@@ -88,6 +88,7 @@ const TimeFilter = (props: IFilterProps) => {
                         Format={props.Format}
                         DateUnit={props.DateUnit}
                         AddRowContainer={false}
+                        QuickSelectDateUnit={props.QuickSelectDateUnit ?? props.DateUnit}
                     />
                     : null}
             </div>
@@ -132,6 +133,7 @@ const TimeFilter = (props: IFilterProps) => {
                         SetFilter={props.SetFilter}
                         Format={props.Format}
                         DateUnit={props.DateUnit}
+                        QuickSelectDateUnit={props.QuickSelectDateUnit ?? props.DateUnit}
                     />
                     : null}
             </>

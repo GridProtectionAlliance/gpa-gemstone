@@ -101,6 +101,7 @@ const DateTimeLocalFilter = (props: IFilterProps) => {
                             SetFilter={props.SetFilter}
                             Format={props.Format}
                             DateUnit={props.DateUnit}
+                            QuickSelectDateUnit={props.QuickSelectDateUnit ?? props.DateUnit}
                         />
                     </div> : null}
             </div>
@@ -146,6 +147,7 @@ const DateTimeLocalFilter = (props: IFilterProps) => {
                                 SetFilter={props.SetFilter}
                                 Format={props.Format}
                                 DateUnit={props.DateUnit}
+                                QuickSelectDateUnit={props.QuickSelectDateUnit ?? props.DateUnit}
                             />
                         </div>
                         : null}
@@ -207,6 +209,7 @@ const DateTimeLocalFilter = (props: IFilterProps) => {
                                     SetFilter={props.SetFilter}
                                     Format={props.Format}
                                     DateUnit={props.DateUnit}
+                                    QuickSelectDateUnit={props.QuickSelectDateUnit ?? props.DateUnit}
                                 />
                             </div>
                         </Modal>
