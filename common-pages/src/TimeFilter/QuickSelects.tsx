@@ -30,9 +30,11 @@ import { TimeUnit } from './TimeWindowUtils';
 
 export type DateUnit = ('datetime-local' | 'date' | 'time');
 
+export type QuickSelectDateUnit = DateUnit | 'datetime-short'
+
 interface IQuickSelect {
     label: string,
-    hideQuickPick: (format?: DateUnit) => boolean,
+    hideQuickPick: (format?: QuickSelectDateUnit) => boolean,
     createFilter: (timeZone: string, format?: DateUnit) => ITimeFilter,
 }
 
@@ -40,6 +42,7 @@ interface IProps {
     DateTimeSetting: DateTimeSetting,
     Format?: "YYYY-MM-DD" | "HH:mm:ss.SSS" | "MM/DD/YYYY HH:mm:ss.SSS",
     DateUnit?: DateUnit,
+    QuickSelectDateUnit?: QuickSelectDateUnit
     Timezone: string,
     ActiveQP: number,
     SetActiveQP: (qp: number) => void,
@@ -49,7 +52,7 @@ interface IProps {
 }
 
 const QuickSelects = (props: IProps) => {
-    const CurrentQuickSelects = React.useMemo(() => AvailableQuickSelects.filter(qs => !qs.hideQuickPick(props.DateUnit)), [props.DateUnit]);
+    const CurrentQuickSelects = React.useMemo(() => AvailableQuickSelects.filter(qs => !qs.hideQuickPick(props.QuickSelectDateUnit ?? props.DateUnit)), [props.QuickSelectDateUnit, props.DateUnit]);
 
     return (
         <Container AddRow={props.AddRowContainer ?? true}>
