@@ -28,7 +28,7 @@ import {
     TimeUnit, findAppropriateUnit, addDuration
 } from './TimeWindowUtils';
 import moment from 'moment';
-import { getFormat, DateUnit } from './QuickSelects';
+import { getFormat, DateUnit, QuickSelectDateUnit } from './QuickSelects';
 import _ from 'lodash';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 import StartEndFilter from './StartEndFilter/StartEndFilter';
@@ -84,6 +84,10 @@ interface IProps {
      * Flag to toggle usage of helper message
      */
     showHelpMessage?: boolean,
+    /**
+    * Optional choice of QuickSelect buttons
+    */
+    quickSelectDateUnit?: QuickSelectDateUnit
     /**
      * Optional Flag to enable collapsing of TimeFilter
      */
@@ -164,6 +168,7 @@ const TimeFilter = (props: IProps) => {
                         ShowQuickSelects={props.showQuickSelect}
                         ContainerWidth={width}
                         HelpMessage={helpMessaage}
+                        QuickSelectDateUnit={props.quickSelectDateUnit}
                     />
                     : props.dateTimeSetting === 'startWindow' ?
                         <WindowFilter
@@ -180,6 +185,7 @@ const TimeFilter = (props: IProps) => {
                             ContainerWidth={width}
                             HelpMessage={helpMessaage}
                             Window={'start'}
+                            QuickSelectDateUnit={props.quickSelectDateUnit}
                         />
                         :
                         <WindowFilter
@@ -196,6 +202,7 @@ const TimeFilter = (props: IProps) => {
                             ContainerWidth={width}
                             HelpMessage={helpMessaage}
                             Window={'end'}
+                            QuickSelectDateUnit={props.quickSelectDateUnit}
                         />
             }
         </fieldset >

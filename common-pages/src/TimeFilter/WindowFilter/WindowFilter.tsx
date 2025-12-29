@@ -112,6 +112,7 @@ const WindowFilter = (props: IProps) => {
                         SetFilter={props.SetFilter}
                         Format={props.Format}
                         DateUnit={props.DateUnit}
+                        QuickSelectDateUnit={props.QuickSelectDateUnit ?? props.DateUnit}
                     />
                 </div>
             </div>
@@ -154,6 +155,7 @@ const WindowFilter = (props: IProps) => {
                             SetFilter={props.SetFilter}
                             Format={props.Format}
                             DateUnit={props.DateUnit}
+                            QuickSelectDateUnit={props.QuickSelectDateUnit ?? props.DateUnit}
                         />
                     </div>
                 </div>
@@ -200,6 +202,7 @@ const WindowFilter = (props: IProps) => {
                             SetFilter={props.SetFilter}
                             Format={props.Format}
                             DateUnit={props.DateUnit}
+                            QuickSelectDateUnit={props.QuickSelectDateUnit ?? props.DateUnit}
                         />
                     </div>
                 </div>
