@@ -75,6 +75,10 @@ interface IProps<T> {
      * If provided, component stores and loads filters to/from localStorage using this key
      */
     StorageID?: string
+    /**
+     * Optional class to apply to outer div
+     */
+    Class?: string
 }
 
 export interface IOptions { Value: string, Label: string }
@@ -317,7 +321,7 @@ export default function SearchBar<T>(props: React.PropsWithChildren<IProps<T>>) 
     )
 
     return (
-        <div className='w-100'>
+        <div className={props.Class ?? 'w-100'}>
             <nav className="navbar navbar-expand">
                 <div className='w-100'>
                     <ul className="navbar-nav mr-auto d-flex align-items-center w-100">
