@@ -22,7 +22,7 @@
 
 import * as _ from 'lodash';
 import * as $ from 'jquery';
-import { Search } from './SearchBar';
+import { Search } from './SearchBar/SearchBar';
 
 interface IPagedResult<T> {
     Data: T[],

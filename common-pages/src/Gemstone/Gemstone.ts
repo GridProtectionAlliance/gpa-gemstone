@@ -43,6 +43,11 @@ export namespace Gemstone {
     }
 
     export namespace HelperFunctions {
+        /**
+         * Builds an array of Types.ISearchFilter<T> from an array of Search.IFilter<T>
+         * @param searchFilter Array of Search.IFilter<T>
+         * @returns Array of Gemstone.Types.ISearchFilter<T>
+         */
         export const getSearchFilter = <T,>(searchFilter: Search.IFilter<T>[]) => {
             return searchFilter.map(s => {
 
@@ -70,7 +75,7 @@ export namespace Gemstone {
                 }
 
                 let searchParameter;
-                
+
                 if (Array.isArray(searchText)) {
                     searchParameter = searchText.map(v => castValue(v));
                 } else {
@@ -84,5 +89,54 @@ export namespace Gemstone {
                 };
             }) as Types.ISearchFilter<T>[];
         }
+
+        /**
+         * Builds an array of Search.IFilter<T> from an array of Gemstone.Types.ISearchFilter<T>
+         * @param filters Array of Gemstone.Types.ISearchFilter<T>
+         * @returns Array of Search.IFilter<T>
+         */
+        export const buildSearchFilter = <T,>(filters: Types.ISearchFilter<T>[]): Search.IFilter<T>[] => {
+            return filters.map(f => {
+                const toStringValue = (val: string | number | boolean): string => {
+                    if (typeof val === 'boolean') {
+                        return val ? '1' : '0';
+                    }
+                    return String(val);
+                };
+
+                let searchText: string;
+
+                if (Array.isArray(f.SearchParameter)) {
+                    // Cover IN / NOT IN case
+                    const values = f.SearchParameter.map(v => toStringValue(v));
+                    searchText = `(${values.join(',')})`;
+                } else {
+                    searchText = toStringValue(f.SearchParameter);
+                }
+
+                let type: Search.IFilter<T>['Type'];
+
+                switch (typeof f.SearchParameter) {
+                    case 'number':
+                        type = Number.isInteger(f.SearchParameter)
+                            ? 'integer'
+                            : 'number';
+                        break;
+                    case 'boolean':
+                        type = 'boolean';
+                        break;
+                    default:
+                        type = 'string';
+                }
+
+                return {
+                    FieldName: f.FieldName as string,
+                    SearchText: searchText,
+                    Operator: f.Operator,
+                    Type: type,
+                    IsPivotColumn: false // Defaulting to false as this info is not available here
+                };
+            });
+        };
     }
 }
