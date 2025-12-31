@@ -24,7 +24,7 @@ import { DatePicker } from '@gpa-gemstone/react-forms';
 import * as React from 'react';
 import { getTimeWindowFromFilter, ITimeWindow } from '../TimeFilter';
 import { IFilterProps } from '../StartEndFilter/StartEndFilter';
-import QuickSelects from '../QuickSelects';
+import QuickSelects, { getQuickSelectRange } from '../QuickSelects';
 import WindowForm, { Window } from './WindowForm';
 
 const WINDOW_FirstFallbackBreakpoint = 898;
@@ -112,6 +112,7 @@ const WindowFilter = (props: IProps) => {
                         SetFilter={props.SetFilter}
                         Format={props.Format}
                         DateUnit={props.DateUnit}
+                        QuickSelectRange={props.QuickSelectRange ?? getQuickSelectRange(props.DateUnit)}
                     />
                 </div>
             </div>
@@ -154,6 +155,7 @@ const WindowFilter = (props: IProps) => {
                             SetFilter={props.SetFilter}
                             Format={props.Format}
                             DateUnit={props.DateUnit}
+                            QuickSelectRange={props.QuickSelectRange ?? getQuickSelectRange(props.DateUnit)}
                         />
                     </div>
                 </div>
@@ -200,6 +202,7 @@ const WindowFilter = (props: IProps) => {
                             SetFilter={props.SetFilter}
                             Format={props.Format}
                             DateUnit={props.DateUnit}
+                            QuickSelectRange={props.QuickSelectRange ?? getQuickSelectRange(props.DateUnit)}
                         />
                     </div>
                 </div>
