@@ -28,7 +28,7 @@ import {
     TimeUnit, findAppropriateUnit, addDuration
 } from './TimeWindowUtils';
 import moment from 'moment';
-import { getFormat, DateUnit, QuickSelectDateUnit } from './QuickSelects';
+import { getFormat, DateUnit, QuickSelectRange } from './QuickSelects';
 import _ from 'lodash';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 import StartEndFilter from './StartEndFilter/StartEndFilter';
@@ -87,7 +87,7 @@ interface IProps {
     /**
     * Optional choice of QuickSelect buttons
     */
-    quickSelectDateUnit?: QuickSelectDateUnit
+    quickSelectRange?: QuickSelectRange
     /**
      * Optional Flag to enable collapsing of TimeFilter
      */
@@ -168,7 +168,7 @@ const TimeFilter = (props: IProps) => {
                         ShowQuickSelects={props.showQuickSelect}
                         ContainerWidth={width}
                         HelpMessage={helpMessaage}
-                        QuickSelectDateUnit={props.quickSelectDateUnit}
+                        QuickSelectRange={props.quickSelectRange}
                     />
                     : props.dateTimeSetting === 'startWindow' ?
                         <WindowFilter
@@ -185,7 +185,7 @@ const TimeFilter = (props: IProps) => {
                             ContainerWidth={width}
                             HelpMessage={helpMessaage}
                             Window={'start'}
-                            QuickSelectDateUnit={props.quickSelectDateUnit}
+                            QuickSelectRange={props.quickSelectRange}
                         />
                         :
                         <WindowFilter
@@ -202,7 +202,7 @@ const TimeFilter = (props: IProps) => {
                             ContainerWidth={width}
                             HelpMessage={helpMessaage}
                             Window={'end'}
-                            QuickSelectDateUnit={props.quickSelectDateUnit}
+                            QuickSelectRange={props.quickSelectRange}
                         />
             }
         </fieldset >
