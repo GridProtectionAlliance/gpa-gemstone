@@ -30,11 +30,11 @@ import { TimeUnit } from './TimeWindowUtils';
 
 export type DateUnit = ('datetime-local' | 'date' | 'time');
 
-export type QuickSelectDateUnit = DateUnit | 'datetime-short'
+export type QuickSelectRange = 'short' | 'medium' | 'long' | 'full'
 
 interface IQuickSelect {
     label: string,
-    hideQuickPick: (format?: QuickSelectDateUnit) => boolean,
+    hideQuickPick: (quickSelectRange?: QuickSelectRange) => boolean,
     createFilter: (timeZone: string, format?: DateUnit) => ITimeFilter,
 }
 
@@ -42,7 +42,7 @@ interface IProps {
     DateTimeSetting: DateTimeSetting,
     Format?: "YYYY-MM-DD" | "HH:mm:ss.SSS" | "MM/DD/YYYY HH:mm:ss.SSS",
     DateUnit?: DateUnit,
-    QuickSelectDateUnit?: QuickSelectDateUnit
+    QuickSelectRange?: QuickSelectRange
     Timezone: string,
     ActiveQP: number,
     SetActiveQP: (qp: number) => void,
@@ -52,7 +52,7 @@ interface IProps {
 }
 
 const QuickSelects = (props: IProps) => {
-    const CurrentQuickSelects = React.useMemo(() => AvailableQuickSelects.filter(qs => !qs.hideQuickPick(props.QuickSelectDateUnit ?? props.DateUnit)), [props.QuickSelectDateUnit, props.DateUnit]);
+    const CurrentQuickSelects = React.useMemo(() => AvailableQuickSelects.filter(qs => !qs.hideQuickPick(props.QuickSelectRange ?? getQuickSelectRange(props.DateUnit))), [props.QuickSelectRange, props.DateUnit]);
 
     return (
         <Container AddRow={props.AddRowContainer ?? true}>
@@ -131,6 +131,15 @@ export function getFormat(format?: DateUnit) {
         return 'MM/DD/YYYY HH:mm:ss.SSS'
 }
 
+export function getQuickSelectRange(dateUnit?: DateUnit) {
+    if (dateUnit === 'datetime-local')
+        return 'full'
+    if (dateUnit === 'time')
+        return 'medium'
+    if (dateUnit === 'date')
+        return 'long'
+}
+
 const getColSize = (dateTimeSetting: DateTimeSetting, splitSelects: boolean) => {
     if (dateTimeSetting === 'startEnd') {
         if (splitSelects)
@@ -159,7 +168,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             }
         },
         hideQuickPick: (f) => {
-            return f !== 'datetime-short'
+            return f !== 'short'
         }
     },
     {
@@ -174,7 +183,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             }
         },
         hideQuickPick: (f) => {
-            return f !== 'datetime-short'
+            return f !== 'short'
         }
     },
     {
@@ -189,7 +198,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             }
         },
         hideQuickPick: (f) => {
-            return f !== 'datetime-short'
+            return f !== 'short'
         }
     },
     {
@@ -204,7 +213,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             }
         },
         hideQuickPick: (f) => {
-            return f !== 'datetime-short'
+            return f !== 'short'
         }
     },
     {
@@ -219,7 +228,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             }
         },
         hideQuickPick: (f) => {
-            return f !== 'datetime-short'
+            return f !== 'short'
         }
     },
     {
@@ -234,7 +243,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             }
         },
         hideQuickPick: (f) => {
-            return f !== 'datetime-short'
+            return f !== 'short'
         }
     },
     {
@@ -249,7 +258,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             }
         },
         hideQuickPick: (f) => {
-            return f !== 'datetime-short'
+            return f !== 'short'
         }
     },
     {
@@ -264,7 +273,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             }
         },
         hideQuickPick: (f) => {
-            return f !== 'datetime-short'
+            return f !== 'short'
         }
     },
     {
@@ -279,7 +288,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             }
         },
         hideQuickPick: (f) => {
-            return f !== 'datetime-short'
+            return f !== 'short'
         }
     },
     {
@@ -294,7 +303,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             }
         },
         hideQuickPick: (f) => {
-            return f !== 'datetime-short'
+            return f !== 'short'
         }
     },
     {
@@ -309,7 +318,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             }
         },
         hideQuickPick: (f) => {
-            return f !== 'datetime-short'
+            return f !== 'short'
         }
     },
     {
@@ -324,7 +333,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             }
         },
         hideQuickPick: (f) => {
-            return f !== 'datetime-short'
+            return f !== 'short'
         }
     },
     {
@@ -338,7 +347,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             }
         },
         hideQuickPick: (f) => {
-            return f == 'date'
+            return f == 'long'
         }
     },
     {
@@ -352,7 +361,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             }
         },
         hideQuickPick: (f) => {
-            return f == 'date'
+            return f == 'long'
         }
     },
     {
@@ -367,7 +376,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             }
         },
         hideQuickPick: (f) => {
-            return f == 'date'
+            return f == 'long'
         }
     },
     {
@@ -381,7 +390,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             }
         },
         hideQuickPick: (f) => {
-            return f == 'time'
+            return f == 'medium'
         }
     },
     {
@@ -395,7 +404,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             }
         },
         hideQuickPick: (f) => {
-            return f == 'time'
+            return f == 'medium'
         }
     },
     {
@@ -409,7 +418,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             }
         },
         hideQuickPick: (f) => {
-            return f == 'date' || f == 'time'
+            return f == 'long' || f == 'medium'
         }
     },
     {
@@ -423,7 +432,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             }
         },
         hideQuickPick: (f) => {
-            return f == 'time' || f == 'datetime-short'
+            return f == 'medium' || f == 'short'
         }
     },
     {
@@ -437,7 +446,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             }
         },
         hideQuickPick: (f) => {
-            return f == 'time' || f == 'datetime-short'
+            return f == 'medium' || f == 'short'
         }
     },
     {
@@ -451,7 +460,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             }
         },
         hideQuickPick: (f) => {
-            return f == 'time' || f == 'datetime-short'
+            return f == 'medium' || f == 'short'
         }
     },
     {
@@ -465,7 +474,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             }
         },
         hideQuickPick: (f) => {
-            return f == 'time' || f == 'datetime-short'
+            return f == 'medium' || f == 'short'
         }
     },
     {
@@ -479,7 +488,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             }
         },
         hideQuickPick: (f) => {
-            return f == 'time' || f == 'datetime-short'
+            return f == 'medium' || f == 'short'
         }
     },
     {
@@ -493,7 +502,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             }
         },
         hideQuickPick: (f) => {
-            return f == 'time' || f == 'datetime-short'
+            return f == 'medium' || f == 'short'
         }
     },
     {
@@ -512,7 +521,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             }
         },
         hideQuickPick: (f) => {
-            return f == 'time' || f == 'datetime-short'
+            return f == 'medium' || f == 'short'
         }
     },
     {
@@ -531,7 +540,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             }
         },
         hideQuickPick: (f) => {
-            return f == 'time' || f == 'datetime-short'
+            return f == 'medium' || f == 'short'
         }
     },
     {
@@ -545,7 +554,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             }
         },
         hideQuickPick: (f) => {
-            return f == 'time' || f == 'datetime-short'
+            return f == 'medium' || f == 'short'
         }
     },
     {
@@ -559,7 +568,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             }
         },
         hideQuickPick: (f) => {
-            return f == 'time' || f == 'datetime-short'
+            return f == 'medium' || f == 'short'
         }
     },
     {
@@ -573,7 +582,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             }
         },
         hideQuickPick: (f) => {
-            return f == 'time' || f == 'datetime-short'
+            return f == 'medium' || f == 'short'
         }
     },
     {
@@ -587,7 +596,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             }
         },
         hideQuickPick: (f) => {
-            return f == 'time' || f == 'datetime-short'
+            return f == 'medium' || f == 'short'
         }
     }
 ]
