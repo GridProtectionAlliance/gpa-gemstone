@@ -143,6 +143,42 @@ function ConfigurableTableExample() {
 }
 ```
 
-![TableExample](https://raw.githubusercontent.com/GridProtectionAlliance/gpa-gemstone/docs/react-table/img/react-table_usage-configurable-table.png)
+![ConfigurableTableExample](https://raw.githubusercontent.com/GridProtectionAlliance/gpa-gemstone/docs/react-table/img/react-table_usage-configurable-table.png)
 
-![TableExample](https://raw.githubusercontent.com/GridProtectionAlliance/gpa-gemstone/docs/react-table/img/react-table_usage-configurable-table-with-modal.png)
+![ConfigurableTableExampleWithModal](https://raw.githubusercontent.com/GridProtectionAlliance/gpa-gemstone/docs/react-table/img/react-table_usage-configurable-table-with-modal.png)
+
+### Paging
+
+Paging can be implemented with the Paging component. 
+Notice that, when rendered, the Paging component provides a one-indexed list, while the underlying data structure is zero-indexed.
+
+``` ts
+function PagingExample() {
+    
+    const ExampleData = ['cat', 'dog', 'ferret', 'fish', 'giraffe','elephant','vulture','jellyfish']
+
+    /** This variable will hold the current page state.*/
+    const currentPage = 1;
+
+    /** Use a React hook to manage page state. */
+    const [page, setPage] = React.useState<number>(currentPage);
+    return (
+        <>
+            <Paging
+                {/** The visible component for pagination is one-indexed. */}
+                Current={page + 1}
+
+                {/** Set the maximum page count. */}
+                Total={ExampleData.length}
+
+                {/** setPage must be adjusted for the original zero indexed list */}
+                SetPage={(p) => setPage(p - 1)}
+            />
+            <h1 className={'position-absolute top-10 start-50 translate-middle'}>{ExampleData[page]}</h1>
+
+        </>
+    )
+}
+```
+
+![PagingExample](https://raw.githubusercontent.com/GridProtectionAlliance/gpa-gemstone/docs/react-table/img/react-table_usage-paging.png)
