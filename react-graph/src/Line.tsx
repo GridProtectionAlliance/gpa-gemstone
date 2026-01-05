@@ -25,7 +25,7 @@ import * as React from 'react';
 import { IDataSeries, GraphContext, LineStyle, AxisIdentifier, AxisMap, LineMap } from './GraphContext';
 import * as moment from 'moment';
 import { PointNode } from './PointNode';
-import DataLegend from './DataLegend';
+import useLegend from './Hooks/useLegend';
 
 export interface IInteralProps extends IProps {
     reRender?: number
@@ -41,56 +41,47 @@ export interface IProps {
     lineStyle: LineStyle,
     width?: number,
     axis?: AxisIdentifier,
-    onHover?: (x: number, y:number) => void
+    onHover?: (x: number, y: number) => void
 }
 
+/**
+ * Single Line with ability to turn off and on.
+ */
 export const InternalLine = React.forwardRef<PointNode | null, IInteralProps>((props, ref) => {
-    /*
-        Single Line with ability to turn off and on.
-    */
+
     const [guid, setGuid] = React.useState<string>("");
     const [highlight, setHighlight] = React.useState<[number, number]>([NaN, NaN]);
-    const [enabled, setEnabled] = React.useState<boolean>(true);
     const [data, setData] = React.useState<PointNode | null>(null);
     const context = React.useContext(GraphContext);
     const showPoints = React.useMemo(() => (props.showPoints ?? false) || ((props.autoShowPoints ?? true) && (data?.GetCount(context.XDomain[0], context.XDomain[1]) ?? 1000) <= 100),
         [props.showPoints, props.autoShowPoints, data, context.XDomain]);
 
-    const points = React.useMemo(() => 
+    const points = React.useMemo(() =>
         data?.GetData(context.XDomain[0], context.XDomain[1], true) ?? []
-    , [context.XDomain, data]);
+        , [context.XDomain, data]);
 
     React.useImperativeHandle<PointNode | null, PointNode | null>(ref, () => data, [data]);
 
-    const createLegend = React.useCallback(() => {
-        if (props.legend === undefined || guid === "")
-            return undefined;
-
+    const legendTxt = React.useMemo(() => {
         let txt = props.legend;
 
         if ((props.highlightHover ?? false) && !isNaN(highlight[0]) && !isNaN(highlight[1]))
             txt = txt + ` (${moment.utc(highlight[0]).format('MM/DD/YY hh:mm:ss')}: ${highlight[1].toPrecision(6)})`
 
-        return <DataLegend
-            id={guid}
-            label={txt}
-            color={props.color}
-            legendSymbol={props.lineStyle}
-            setEnabled={setEnabled}
-            enabled={enabled}
-            hasNoData={data == null}
-        />;
-    }, [props.color, props.lineStyle, enabled, data, props.legend, guid]);
+        return txt
+    }, [props.legend, props.highlightHover, highlight]);
 
-    const createContextData = React.useCallback(() => {
+    const { enabled, createLegend } = useLegend(props.color, props.lineStyle, guid, data == null, legendTxt);
+
+    const createContextData = React.useCallback((): IDataSeries => {
         return {
             legend: createLegend(),
             axis: props.axis,
             enabled: enabled,
             getMax: (t) => (data == null || !enabled ? -Infinity : data.GetLimits(t[0], t[1])[1]),
             getMin: (t) => (data == null || !enabled ? Infinity : data.GetLimits(t[0], t[1])[0]),
-            getPoints: (t, n?) => (data == null || !enabled ? NaN : data.GetPoints(t, n ?? 1))
-        } as IDataSeries;
+            getPoints: (t, n?) => (data == null || !enabled ? [[NaN]] : data.GetPoints(t, n ?? 1))
+        };
     }, [props.axis, enabled, data, createLegend, props.reRender]);
 
     React.useEffect(() => {
@@ -116,23 +107,9 @@ export const InternalLine = React.forwardRef<PointNode | null, IInteralProps>((p
     }, [data, context.XHover]);
 
     React.useEffect(() => {
-        if (context.MassEnableCommand.command === "enable-all")
-            setEnabled(true);
-        else if (context.MassEnableCommand.command === "disable-others")
-            setEnabled(guid === context.MassEnableCommand.requester);
-    }, [context.MassEnableCommand]);
-
-    React.useEffect(() => {
         if (props.data == null) setData(null);
         else setData(new PointNode(props.data));
     }, [props.data]);
-
-    React.useEffect(() => {
-        if (guid === "")
-            return;
-        context.SetLegend(guid, createLegend());
-
-    }, [highlight, enabled]);
 
     React.useEffect(() => {
         const id = context.AddData(createContextData());

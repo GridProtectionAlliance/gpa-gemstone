@@ -25,6 +25,7 @@
 import { GetTextHeight, GetTextWidth } from '@gpa-gemstone/helper-functions';
 import * as React from 'react';
 import { IDataSeries, GraphContext, IHandlers, IActionFunctions, AxisIdentifier, AxisMap } from './GraphContext';
+import useLegend from './Hooks/useLegend';
 
 export interface IProps {
     /**
@@ -101,7 +102,13 @@ export interface IProps {
      * @optional
      * @type {(actions: IActionFunctions) => void}
      */
-    OnClick?: (x: number, y: number, actions: IActionFunctions) => void
+    OnClick?: (x: number, y: number, actions: IActionFunctions) => void,
+    /**
+     * Legend text for the pill.
+     * @optional
+     * @type {string}
+     */
+    Legend?: string,
 }
 
 const Pill = (props: IProps) => {
@@ -109,6 +116,8 @@ const Pill = (props: IProps) => {
 
     const [guid, setGuid] = React.useState<string>("");
     const [textSize, setTextSize] = React.useState<number>(1);
+
+    const {enabled, createLegend} = useLegend(props.Color, 'solid', guid, false, props.Legend);
 
     const pxHeight = React.useMemo(() => {
         const axis = AxisMap.get(props.Axis);
@@ -126,51 +135,57 @@ const Pill = (props: IProps) => {
         return Math.min(pxHeight / 2, pxWidth / 2, props.RadiusPX);
     }, [pxHeight, pxWidth, props.RadiusPX])
 
+    // Function to get the maximum Y value within the pill's X range
     const getMax = React.useCallback((tDomain: [number, number]) => {
+        if (!enabled)
+            return Infinity;
+
         const [t0, t1] = tDomain;
         const [x1, x2] = props.XData;
         if (t1 >= x1 && t0 <= x2)
             return Math.max(props.YData[0], props.YData[1]);
 
         return undefined;
-    }, [props.XData, props.YData])
+    }, [props.XData[0], props.XData[1], props.YData[0], props.YData[1], enabled])
 
+    // Function to get the minimum Y value within the pill's X range
     const getMin = React.useCallback((tDomain: [number, number]) => {
+        if (!enabled)
+            return -Infinity;
         const [t0, t1] = tDomain;
         const [x1, x2] = props.XData;
         if (t1 >= x1 && t0 <= x2)
             return Math.min(props.YData[0], props.YData[1]);
 
         return undefined;
-    }, [props.XData, props.YData])
+    }, [props.XData[0], props.XData[1], props.YData[0], props.YData[1], enabled])
+
+    const createContextData = React.useCallback((): IDataSeries => { {
+        return {
+            axis: props.Axis,
+            legend: createLegend(),
+            getMax: getMax,
+            getMin: getMin,
+            enabled: enabled,
+            getPoints: () => []
+        };
+    } }, [props.Axis, getMax, getMin, createLegend]);
 
     // Update data series information in the graph context based on circle properties
     React.useEffect(() => {
         if (guid === "")
             return;
 
-        context.UpdateData(guid, {
-            axis: props.Axis,
-            legend: undefined,
-            getMax: getMax,
-            getMin: getMin,
-        } as IDataSeries);
-    }, [props.Axis, getMax, getMin, guid])
+        context.UpdateData(guid, createContextData());
+    }, [guid, createContextData]);
 
     // Add a new data series on component mount / removing on unmount
     React.useEffect(() => {
-        const id = context.AddData({
-            axis: props.Axis,
-            legend: undefined,
-            getMax: getMax,
-            getMin: getMin
-        } as IDataSeries);
+        const id = context.AddData(createContextData());
 
         setGuid(id);
 
-        return () => {
-            context.RemoveData(id)
-        }
+        return () => context.RemoveData(id);
     }, []);
 
     // Adjust text size within the pill to ensure it fits
@@ -249,6 +264,9 @@ const Pill = (props: IProps) => {
     if (!isFinite(context.XTransformation((props.XData[0] + props.XData[1]) / 2)) || !isFinite(context.YTransformation(props.YData[0], AxisMap.get(props.Axis))) || !isFinite(context.YTransformation(props.YData[1], AxisMap.get(props.Axis))))
         return null;
 
+    if(!enabled)
+        return null;
+    
     return (
         <g>
             <rect
