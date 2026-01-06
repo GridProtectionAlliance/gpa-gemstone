@@ -30,7 +30,7 @@ import { Warning } from '@gpa-gemstone/gpa-symbols';
 import { ILegendRequiredProps, LegendContext } from './LegendContext';
 import { fontFamily } from './Legend'
 
-type LegendStyle = LineStyle | 'none' | 'square' | 'circle';
+export type LegendStyle = LineStyle | 'none' | 'square' | 'circle';
 
 export interface IProps extends ILegendRequiredProps {
     color: string,
