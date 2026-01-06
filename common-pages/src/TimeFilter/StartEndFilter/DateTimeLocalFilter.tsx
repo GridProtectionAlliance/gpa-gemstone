@@ -23,7 +23,7 @@
 import * as React from 'react';
 import { DatePicker } from "@gpa-gemstone/react-forms";
 import { getTimeWindowFromFilter, ITimeWindow } from "../TimeFilter";
-import QuickSelects from '../QuickSelects';
+import QuickSelects, { getQuickSelectRange } from '../QuickSelects';
 import { Modal } from '@gpa-gemstone/react-interactive';
 import { IFilterProps } from './StartEndFilter';
 
@@ -101,6 +101,7 @@ const DateTimeLocalFilter = (props: IFilterProps) => {
                             SetFilter={props.SetFilter}
                             Format={props.Format}
                             DateUnit={props.DateUnit}
+                            QuickSelectRange={props.QuickSelectRange ?? getQuickSelectRange(props.DateUnit)}
                         />
                     </div> : null}
             </div>
@@ -146,6 +147,7 @@ const DateTimeLocalFilter = (props: IFilterProps) => {
                                 SetFilter={props.SetFilter}
                                 Format={props.Format}
                                 DateUnit={props.DateUnit}
+                                QuickSelectRange={props.QuickSelectRange ?? getQuickSelectRange(props.DateUnit)}
                             />
                         </div>
                         : null}
@@ -207,6 +209,7 @@ const DateTimeLocalFilter = (props: IFilterProps) => {
                                     SetFilter={props.SetFilter}
                                     Format={props.Format}
                                     DateUnit={props.DateUnit}
+                                    QuickSelectRange={props.QuickSelectRange ?? getQuickSelectRange(props.DateUnit)}
                                 />
                             </div>
                         </Modal>

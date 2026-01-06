@@ -23,7 +23,7 @@
 import * as React from 'react';
 import { DatePicker } from "@gpa-gemstone/react-forms";
 import { getTimeWindowFromFilter, ITimeWindow } from "../TimeFilter";
-import QuickSelects, { DateUnit } from '../QuickSelects';
+import QuickSelects, { DateUnit, QuickSelectRange } from '../QuickSelects';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 import { TimeUnit } from '../TimeWindowUtils';
 import { Modal } from '@gpa-gemstone/react-interactive';
@@ -39,6 +39,7 @@ export interface IFilterProps {
 
     Format: "YYYY-MM-DD" | "HH:mm:ss.SSS" | "MM/DD/YYYY HH:mm:ss.SSS",
     DateUnit: DateUnit
+    QuickSelectRange?: QuickSelectRange
 
     Timezone: string
     Accuracy?: Gemstone.TSX.Types.Accuracy,
