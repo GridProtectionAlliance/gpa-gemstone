@@ -26,23 +26,20 @@ import * as React from 'react';
 import { getTimeWindowFromFilter, DateTimeSetting, ITimeFilter } from './TimeFilter';
 import moment from 'moment';
 import momentTZ from 'moment-timezone';
+import { Gemstone } from '@gpa-gemstone/application-typings'
 import { TimeUnit } from './TimeWindowUtils';
-
-export type DateUnit = ('datetime-local' | 'date' | 'time');
-
-export type QuickSelectRange = 'short' | 'medium' | 'long' | 'full'
 
 interface IQuickSelect {
     label: string,
-    hideQuickPick: (quickSelectRange?: QuickSelectRange) => boolean,
-    createFilter: (timeZone: string, format?: DateUnit) => ITimeFilter,
+    hideQuickPick: (quickSelectRange?: Gemstone.TSX.Types.QuickSelectRange) => boolean,
+    createFilter: (timeZone: string, format?: Gemstone.TSX.Types.DateUnit) => ITimeFilter,
 }
 
 interface IProps {
     DateTimeSetting: DateTimeSetting,
     Format?: "YYYY-MM-DD" | "HH:mm:ss.SSS" | "MM/DD/YYYY HH:mm:ss.SSS",
-    DateUnit?: DateUnit,
-    QuickSelectRange?: QuickSelectRange
+    DateUnit?: Gemstone.TSX.Types.DateUnit,
+    QuickSelectRange?: Gemstone.TSX.Types.QuickSelectRange
     Timezone: string,
     ActiveQP: number,
     SetActiveQP: (qp: number) => void,
@@ -122,7 +119,7 @@ const QuickSelects = (props: IProps) => {
 
 export default QuickSelects;
 
-export function getFormat(format?: DateUnit) {
+export function getFormat(format?: Gemstone.TSX.Types.DateUnit) {
     if (format == 'date')
         return 'YYYY-MM-DD'
     else if (format == "time")
@@ -131,7 +128,7 @@ export function getFormat(format?: DateUnit) {
         return 'MM/DD/YYYY HH:mm:ss.SSS'
 }
 
-export function getQuickSelectRange(dateUnit?: DateUnit) {
+export function getQuickSelectRange(dateUnit?: Gemstone.TSX.Types.DateUnit) {
     if (dateUnit === 'datetime-local')
         return 'full'
     if (dateUnit === 'time')

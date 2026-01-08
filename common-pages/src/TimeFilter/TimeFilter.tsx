@@ -28,7 +28,7 @@ import {
     TimeUnit, findAppropriateUnit, addDuration
 } from './TimeWindowUtils';
 import moment from 'moment';
-import { getFormat, DateUnit, QuickSelectRange } from './QuickSelects';
+import { getFormat } from './QuickSelects';
 import _ from 'lodash';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 import StartEndFilter from './StartEndFilter/StartEndFilter';
@@ -75,7 +75,7 @@ interface IProps {
     /**
      * Format for date/time input
      */
-    format?: DateUnit;
+    format?: Gemstone.TSX.Types.DateUnit;
     /**
      * Accuracy of the time input
      */
@@ -87,7 +87,7 @@ interface IProps {
     /**
     * Optional choice of QuickSelect buttons
     */
-    quickSelectRange?: QuickSelectRange
+    quickSelectRange?: Gemstone.TSX.Types.QuickSelectRange
     /**
      * Optional Flag to enable collapsing of TimeFilter
      */
