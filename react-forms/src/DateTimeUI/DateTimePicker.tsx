@@ -29,13 +29,11 @@ import ToolTip from '../ToolTip';
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 
-export type TimeUnit = ('datetime-local' | 'date' | 'time');
-
 export interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
     Valid: (field: keyof T) => boolean;
     Feedback?: string;
     Format?: string;
-    Type?: TimeUnit; // Default to date
+    Type?: Gemstone.TSX.Types.DateUnit; // Default to date
     AllowEmpty?: boolean,
     Accuracy?: Gemstone.TSX.Types.Accuracy    //Default to second
     MinDate?: moment.Moment // Default to 01/01/1753 (SQL Database limit)
@@ -287,7 +285,7 @@ export default function DateTimePickerBase<T>(props: IProps<T>) {
     );
 }
 
-export function getBoxFormat(type?: TimeUnit, accuracy?: Gemstone.TSX.Types.Accuracy) {
+export function getBoxFormat(type?: Gemstone.TSX.Types.DateUnit, accuracy?: Gemstone.TSX.Types.Accuracy) {
     const dateTime = type ?? 'date'
     const timeUnit = accuracy ?? 'second'
 

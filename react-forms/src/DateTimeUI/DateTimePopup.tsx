@@ -29,7 +29,6 @@ import Calender from './Calender';
 import Clock from './Clock';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 import { useGetContainerPosition } from '@gpa-gemstone/helper-functions';
-import { TimeUnit } from './DateTimePicker';
 
 interface IWrapperProps {
     Top: number,
@@ -69,7 +68,7 @@ const WrapperDiv = styled.div<IWrapperProps>`
 interface IProps {
     DateTime: moment.Moment | undefined,
     Setter: (record: moment.Moment) => void,
-    Type: TimeUnit,
+    Type: Gemstone.TSX.Types.DateUnit,
     Show: boolean,
     Top: number,
     Center: number,
