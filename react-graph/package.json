@@ -51,7 +51,7 @@
   "dependencies": {
     "@gpa-gemstone/gpa-symbols": "0.0.58",
     "@gpa-gemstone/helper-functions": "0.0.53",
-    "@gpa-gemstone/react-forms": "1.1.108",
+    "@gpa-gemstone/react-forms": "1.1.109",
     "html2canvas": "^1.4.1",
     "lodash": "^4.17.21",
     "moment": "2.29.4"
