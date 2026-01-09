@@ -91,7 +91,7 @@ describe('Legend Entry Component', () => {
 
         // Find the legend entry
         const legendLabel = await container.findElement(
-            By.xpath(`.//label[normalize-space(text())="${LegendEntry_Label}"]`)
+            By.xpath(`.//span[normalize-space(text())="${LegendEntry_Label}"]`)
         );
 
         const readCounterVal = async (): Promise<number> => {
