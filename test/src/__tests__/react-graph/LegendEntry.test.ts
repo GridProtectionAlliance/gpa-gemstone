@@ -63,7 +63,7 @@ describe('Legend Entry Component', () => {
 
         // find legendentry by its label text as we dont have a better identifier
         const legendLabel = await container.findElement(
-            By.xpath(`.//label[normalize-space(text())="${LegendEntry_Label}"]`)
+            By.xpath(`.//span[normalize-space(text())="${LegendEntry_Label}"]`)
         );
 
         expect(await legendLabel.isDisplayed()).toBe(true);
