@@ -23,11 +23,16 @@
 
 import * as React from 'react';
 import { GraphContext, IDataSeries } from './GraphContext';
-import DataLegend from './DataLegend';
+import DataLegend, { LegendStyle } from './DataLegend';
 
 interface IProps {
-    OnClick?: (e: React.MouseEvent<HTMLDivElement>) => void,
-    Label: string
+    OnClick?: (e: React.MouseEvent<HTMLDivElement>, legendLabel: string) => void,
+    Label: string,
+    Color?: string,
+    LegendSymbol?: LegendStyle,
+    Enabled?: boolean,
+    HasNoData?: boolean,
+    ToolTipText?: string
 }
 
 const LegendEntry = (props: IProps) => {
@@ -39,18 +44,19 @@ const LegendEntry = (props: IProps) => {
             <DataLegend
                 id={guid}
                 label={props.Label}
-                color={'' /* Color doesnt matter here */}
-                legendSymbol={'none' /* No line shown in legend */}
-                setEnabled={(_, e) => props.OnClick?.(e)}
-                enabled={true}
-                hasNoData={false}
+                color={props.Color ?? ''}
+                legendSymbol={props.LegendSymbol ?? 'none'}
+                setEnabled={(_, e) => props.OnClick?.(e, props.Label)}
+                enabled={props.Enabled ?? true}
+                hasNoData={props.HasNoData ?? false}
+                toolTipText={props.ToolTipText}
             />,
         axis: undefined,
-        enabled: true,
+        enabled: props.Enabled ?? true,
         getMax: () => undefined,
         getMin: () => undefined,
         getPoints: () => undefined
-    }), [guid, props.Label, props.OnClick]);
+    }), [guid, props.Label, props.OnClick, props.Enabled, props.Color, props.LegendSymbol, props.HasNoData]);
 
     //Effect to register the 'action' with the legend context
     React.useEffect(() => {

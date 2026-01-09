@@ -29,42 +29,74 @@ import { LineStyle } from './GraphContext';
 import { Warning } from '@gpa-gemstone/gpa-symbols';
 import { ILegendRequiredProps, LegendContext } from './LegendContext';
 import { fontFamily } from './Legend'
+import { CreateGuid } from '@gpa-gemstone/helper-functions';
+import { ToolTip } from '@gpa-gemstone/react-forms';
 
 export type LegendStyle = LineStyle | 'none' | 'square' | 'circle';
 
 export interface IProps extends ILegendRequiredProps {
+    /**
+     * The color of the legend symbol
+     */
     color: string,
+    /**
+     * The style of the legend symbol to display
+     */
     legendSymbol: LegendStyle,
+    /**
+     * Handler to set the enabled state of the data series
+     * @param arg The new enabled state
+     * @param e The mouse event that triggered the change
+     */
     setEnabled: (arg: boolean, e: React.MouseEvent<HTMLDivElement>) => void,
+    /**
+     * Flag that indicates whether the data series has no data
+     */
     hasNoData: boolean,
-    label: string
+    /**
+     * The label to display next to the legend symbol.
+     */
+    label: string,
+    /**
+     * Optional text that will enable a tooltip when hovering over the legend entry
+     */
+    toolTipText?: string
 }
 
-function DataLegend(props: IProps) {
-    const containerRef = React.useRef<HTMLDivElement | null>(null);
-    const [label, setLabel] = React.useState<string>(props.label ?? "");
+const DataLegend = (props: IProps) => {
     const context = React.useContext(LegendContext);
+    const [label, setLabel] = React.useState<string>(props.label ?? "");
 
+    const guid = React.useRef<string>(CreateGuid());
+    const [isHovering, setIsHovering] = React.useState<boolean>(false);
+
+    //Effect to set the label with no data warning if applicable
     React.useEffect(() => {
         setLabel((props.hasNoData ? Warning : "") + props.label);
     }, [props.hasNoData, props.label]);
 
-
     return (
-        <div style={{ height: context.SmHeight, width: context.SmWidth }} ref={containerRef}>
+        <div style={{ height: context.SmHeight, width: context.SmWidth }}>
             <div
+                className="d-flex align-items-center h-100 w-100"
                 onClick={(evt) => {
-                    if (evt.ctrlKey && context.SendMassEnable != null) context.SendMassEnable.current(props.id)
-                    else props.setEnabled(!props.enabled, evt)
+                    if (evt.ctrlKey && context.SendMassEnable != null)
+                        context.SendMassEnable.current(props.id);
+                    else
+                        props.setEnabled(!props.enabled, evt);
+
+                    setIsHovering(false);
                 }}
-                style={{ width: '100%', display: 'flex', alignItems: 'center', marginRight: '5px', height: '100%' }}
+                onMouseEnter={() => setIsHovering(true)}
+                onMouseLeave={() => setIsHovering(false)}
+                style={{ marginRight: '5px', cursor: 'pointer' }}
             >
-                <DataSymbol 
-                    color={props.color} 
+                <DataSymbol
+                    color={props.color}
                     symbol={props.legendSymbol}
                     enabled={props.enabled}
                 />
-                <label
+                <span
                     style={{
                         fontFamily: fontFamily,
                         fontWeight: 400,
@@ -74,9 +106,15 @@ function DataLegend(props: IProps) {
                         fontSize: context.SmallestFontSize + 'em',
                         whiteSpace: (context.UseMultiLine ? 'normal' : 'nowrap')
                     }}
+                    data-tooltip={guid.current}
                 >
                     {label}
-                </label>
+                </span>
+                {props.toolTipText != null ?
+                    <ToolTip Show={isHovering} Target={guid.current}>
+                        {props.toolTipText}
+                    </ToolTip>
+                : null}
             </div>
         </div>
     );
@@ -88,12 +126,12 @@ interface ISymbolProps {
     enabled: boolean
 }
 
-function DataSymbol(props: ISymbolProps) {
+const DataSymbol = (props: ISymbolProps) => {
     /* Total width of symbol element should be 15px with a 5px margin */
     switch (props.symbol) {
-        default: 
+        default:
             console.warn("Unrecognized symbol type in Data Legend: " + props.symbol);
-            // falls through
+        // falls through
         case '-':
         case 'solid':
             return (
