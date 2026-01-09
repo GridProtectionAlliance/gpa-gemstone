@@ -31,7 +31,8 @@ interface IProps {
     Color?: string,
     LegendSymbol?: LegendStyle,
     Enabled?: boolean,
-    HasNoData?: boolean
+    HasNoData?: boolean,
+    ToolTipText?: string
 }
 
 const LegendEntry = (props: IProps) => {
@@ -48,6 +49,7 @@ const LegendEntry = (props: IProps) => {
                 setEnabled={(_, e) => props.OnClick?.(e, props.Label)}
                 enabled={props.Enabled ?? true}
                 hasNoData={props.HasNoData ?? false}
+                toolTipText={props.ToolTipText}
             />,
         axis: undefined,
         enabled: props.Enabled ?? true,
