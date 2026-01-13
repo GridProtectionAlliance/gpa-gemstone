@@ -22,7 +22,7 @@
 //******************************************************************************************************
 
 import * as React from 'react';
-import { map, tileLayer, Map as LeafletMap, MapOptions, TileLayerOptions  } from 'leaflet';
+import { map, tileLayer, Map as LeafletMap, MapOptions, TileLayerOptions, LatLngBoundsExpression  } from 'leaflet';
 import { useGetContainerPosition } from '@gpa-gemstone/helper-functions';
 
 // Import Leaflet's CSS so consumers don't have to.
@@ -30,20 +30,23 @@ import 'leaflet/dist/leaflet.css';
 
 interface IProps {
     Map: React.MutableRefObject<LeafletMap | null>,
-    MapOptions: MapOptions,
+    MapOptions?: MapOptions,
     TileLayerOptions: TileLayerOptions,
-    TileLayerURL: string
+    TileLayerURL: string,
+    Bounds?: LatLngBoundsExpression
 }
 
 const Map = (props: IProps) => {
     const mapDivRef = React.useRef<HTMLDivElement | null>(null);
     const { width, height } = useGetContainerPosition(mapDivRef);
 
-    const stringifiedMapOptions = React.useMemo(() => JSON.stringify(props.MapOptions), [props.MapOptions]);
+    const stringifiedMapOptions = React.useMemo(() => JSON.stringify(props.MapOptions ?? {}), [props.MapOptions]);
     const stringifiedTileLayerOptions = React.useMemo(() => JSON.stringify(props.TileLayerOptions), [props.TileLayerOptions]);
+    const stringifiedBounds = React.useMemo(() => JSON.stringify(props.Bounds ?? null), [props.Bounds]);
 
     const memoizedMapOptions = React.useMemo(() => JSON.parse(stringifiedMapOptions) as MapOptions, [stringifiedMapOptions]);
     const memoizedTileLayerOptions = React.useMemo(() => JSON.parse(stringifiedTileLayerOptions) as TileLayerOptions, [stringifiedTileLayerOptions]);
+    const memoizedBounds = React.useMemo(() => JSON.parse(stringifiedBounds) as LatLngBoundsExpression | null, [stringifiedBounds]);
 
     React.useEffect(() => {
         if (props.Map.current == null) return
@@ -58,12 +61,16 @@ const Map = (props: IProps) => {
 
         tileLayer(props.TileLayerURL, memoizedTileLayerOptions).addTo(props.Map.current);
 
+        //Fit to bounds if provided
+        if(memoizedBounds != null)
+            props.Map.current.fitBounds(memoizedBounds);
+
         return () => {
             if (props.Map.current == null) return;
             props.Map.current.remove();
             props.Map.current = null;
         };
-    }, [memoizedMapOptions, props.TileLayerURL, memoizedTileLayerOptions]);
+    }, [memoizedMapOptions, props.TileLayerURL, memoizedTileLayerOptions, memoizedBounds]);
 
     return (
         <div className='h-100 w-100' ref={mapDivRef} />
