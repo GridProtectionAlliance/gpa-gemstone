@@ -109,6 +109,10 @@ export interface IProps {
      * @type {string}
      */
     Legend?: string,
+    /**
+     * Optional flag to set enabled/disabled state of the pill.
+     */
+    Enabled?: boolean
 }
 
 const Pill = (props: IProps) => {
@@ -117,7 +121,9 @@ const Pill = (props: IProps) => {
     const [guid, setGuid] = React.useState<string>("");
     const [textSize, setTextSize] = React.useState<number>(1);
 
-    const {enabled, createLegend} = useLegend(props.Color, 'solid', guid, false, props.Legend);
+    const {enabled: localEnabled, createLegend} = useLegend(props.Color, 'solid', guid, false, props.Legend);
+
+    const enabled = props.Enabled ?? localEnabled;
 
     const pxHeight = React.useMemo(() => {
         const axis = AxisMap.get(props.Axis);
