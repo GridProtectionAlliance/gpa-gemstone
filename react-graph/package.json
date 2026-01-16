@@ -1,13 +1,11 @@
 {
   "name": "@gpa-gemstone/react-graph",
-  "version": "1.0.94",
+  "version": "1.0.95",
   "description": "Interactive UI Components for GPA products",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
-  "files": [
-    "lib/**/*"
-  ],
-  "scripts": {
+  "files": ["lib/**/*"],
+  "scripts":   {
     "test": "jest --config jestconfig.json",
     "build": "tsc",
     "format": "prettier --write \"src/**/*.tsx\"",
@@ -18,11 +16,11 @@
     "version": "npm run format && git add -A src",
     "postversion": "git push && git push --tags"
   },
-  "repository": {
+  "repository":   {
     "type": "git",
     "url": "https://github.com/GridProtectionAlliance/gpa-gemstone.git"
   },
-  "keywords": [
+  "keywords":   [
     "React",
     "Interactive",
     "GSF",
@@ -31,11 +29,9 @@
   ],
   "author": "GridProtectionAlliance",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/GridProtectionAlliance/gpa-gemstone/issues"
-  },
+  "bugs": {"url": "https://github.com/GridProtectionAlliance/gpa-gemstone/issues"},
   "homepage": "https://github.com/GridProtectionAlliance/gpa-gemstone#readme",
-  "devDependencies": {
+  "devDependencies":   {
     "@types/jest": "^27.0.0",
     "@types/lodash": "^4.14.171",
     "@types/mocha": "9.0.0",
@@ -48,19 +44,17 @@
     "ts-jest": "^29.0.0",
     "typescript": "5.5.3"
   },
-  "dependencies": {
-    "@gpa-gemstone/gpa-symbols": "0.0.58",
-    "@gpa-gemstone/helper-functions": "0.0.53",
-    "@gpa-gemstone/react-forms": "1.1.109",
+  "dependencies":   {
+    "@gpa-gemstone/gpa-symbols": "0.0.59",
+    "@gpa-gemstone/helper-functions": "0.0.54",
+    "@gpa-gemstone/react-forms": "1.1.110",
     "html2canvas": "^1.4.1",
     "lodash": "^4.17.21",
     "moment": "2.29.4"
   },
-  "peerDependencies": {
+  "peerDependencies":   {
     "react": "18.2.0",
     "react-dom": "18.2.0"
   },
-  "publishConfig": {
-    "access": "public"
-  }
+  "publishConfig": {"access": "public"}
 }
