@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Gemstone } from '@gpa-gemstone/application-typings'
-import TextArea from './Input'
+import TextArea from './TextArea'
 import { Portal } from 'react-portal'
 import * as _ from 'lodash'
 
@@ -42,6 +42,7 @@ export default function AutoCompleteTextArea<T>(props: IProps<T>) {
     const autoCompleteTextArea = React.useRef<HTMLDivElement>(null);
     const tableContainer = React.useRef<HTMLDivElement>(null);
     const selectTable = React.useRef<HTMLTableElement>(null);
+    const textAreaElement = React.useRef<HTMLTextAreaElement | null>(null);
     const [show, setShow] = React.useState<boolean>(false);
     const [autoCompleteOptions, setAutoCompleteOptions] = React.useState<ILabelValue[]>([])
     const [position, setPosition] = React.useState<Gemstone.TSX.Interfaces.IElementPosition>({ Top: 0, Left: 0, Width: 0, Height: 0 });
@@ -70,7 +71,24 @@ export default function AutoCompleteTextArea<T>(props: IProps<T>) {
      const updatePosition = _.debounce(() => {
       if (autoCompleteTextArea.current != null) {
         const rect = autoCompleteTextArea.current.getBoundingClientRect();
-        setPosition({ Top: rect.bottom, Left: rect.left, Width: rect.width, Height: rect.height });
+        if (textAreaElement.current == null) {
+            const textAreaComponent = autoCompleteTextArea.current.firstChild;
+            if (textAreaComponent == null) {return}
+            textAreaComponent.childNodes.forEach((element) => element.nodeName === 'TEXTAREA' ? textAreaElement.current = element as HTMLTextAreaElement : null)
+        }
+        if (textAreaElement.current == null) {return}
+        const font = window.getComputedStyle(textAreaElement.current).font;
+        const cursorIndex = textAreaElement.current.selectionStart;
+
+        // get width by testing it on an unrendered canvas, cutting the text at the last curly bracket
+        const canvas = document.createElement("canvas");
+        const context = canvas.getContext("2d") as CanvasRenderingContext2D;
+        context.font = font;
+        const precedingText = textAreaElement.current.textContent.slice(0, cursorIndex).split('{').slice(0, -1).join('{');
+        const metrics = context.measureText(precedingText);
+
+        // we want to offset the position based on the cursor position within the text area.
+        setPosition({ Top: rect.bottom, Left: rect.left + metrics.width, Width: rect.width - metrics.width, Height: rect.height });
       }
     }, 200);
 
@@ -102,6 +120,7 @@ export default function AutoCompleteTextArea<T>(props: IProps<T>) {
                 Record={props.Record}
                 Setter={props.Setter}
                 Field={props.Field}
+                Rows={props.Rows}
             />
             {!show ? null :
                 <Portal>
