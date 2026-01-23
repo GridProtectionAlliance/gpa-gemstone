@@ -43,7 +43,8 @@ import FileUpload from './FileUpload';
 import MultiInput from './MultiInput';
 import ToolTip from './ToolTip';
 import MultiSearchableSelect from './MultiSearchableSelect';
-import AutoCompleteTextArea from './AutoCompleteTextArea'
+import AutoCompleteTextArea from './AutoCompleteTextArea';
+import AutoCompleteInput from './AutoCompleteInput';
 
 export {
     CheckBox,
@@ -68,5 +69,6 @@ export {
     MultiInput,
     ToolTip,
     MultiSearchableSelect,
-    AutoCompleteTextArea
+    AutoCompleteTextArea,
+    AutoCompleteInput
 };
