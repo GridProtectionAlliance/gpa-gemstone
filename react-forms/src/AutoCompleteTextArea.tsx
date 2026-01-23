@@ -70,17 +70,18 @@ export default function AutoCompleteTextArea<T>(props: IProps<T>) {
     React.useLayoutEffect(() => {
      const updatePosition = _.debounce(() => {
       if (autoCompleteTextArea.current != null) {
-        const rect = autoCompleteTextArea.current.getBoundingClientRect();
         if (textAreaElement.current == null) {
             const textAreaComponent = autoCompleteTextArea.current.firstChild;
             if (textAreaComponent == null) {return}
             textAreaComponent.childNodes.forEach((element) => element.nodeName === 'TEXTAREA' ? textAreaElement.current = element as HTMLTextAreaElement : null)
         }
         if (textAreaElement.current == null) {return}
+        
+        const rect = textAreaElement.current.getBoundingClientRect();
         const font = window.getComputedStyle(textAreaElement.current).font;
         const cursorIndex = textAreaElement.current.selectionStart;
         const precedingText = textAreaElement.current.textContent.slice(0, cursorIndex);
-        const cursorRow = (precedingText.match("\n") || []).length;
+        const cursorRow = (precedingText.match(/\n/g) || []).length
         const precedingRowText = precedingText.split("\n")[cursorRow]
 
         // get width by testing it on an unrendered canvas, cutting the text at the last curly bracket
@@ -88,10 +89,15 @@ export default function AutoCompleteTextArea<T>(props: IProps<T>) {
         const context = canvas.getContext("2d") as CanvasRenderingContext2D;
         context.font = font;
         const variableText = precedingRowText.split('{').slice(0, -1).join('{');
-        const metrics = context.measureText(variableText);
+        const heightText = "t\n".repeat(cursorRow+1);
+        const rowWidth = context.measureText(variableText).width;
+        const hieghtMetrics = context.measureText(heightText);
+        // const fontHeight = hieghtMetrics.fontBoundingBoxAscent + hieghtMetrics.fontBoundingBoxDescent;
+        const actualHeight = hieghtMetrics.actualBoundingBoxAscent + hieghtMetrics.actualBoundingBoxDescent;
+        console.log(heightText, actualHeight)
 
         // we want to offset the position based on the cursor position within the text area.
-        setPosition({ Top: rect.bottom, Left: rect.left + metrics.width, Width: rect.width - metrics.width, Height: rect.height });
+        setPosition({ Top: rect.top + (actualHeight * (cursorRow + 1)), Left: rect.left + rowWidth, Width: rect.width - rowWidth, Height: rect.height });
       }
     }, 200);
 
