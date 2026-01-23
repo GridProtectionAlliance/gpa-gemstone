@@ -79,13 +79,16 @@ export default function AutoCompleteTextArea<T>(props: IProps<T>) {
         if (textAreaElement.current == null) {return}
         const font = window.getComputedStyle(textAreaElement.current).font;
         const cursorIndex = textAreaElement.current.selectionStart;
+        const precedingText = textAreaElement.current.textContent.slice(0, cursorIndex);
+        const cursorRow = (precedingText.match("\n") || []).length;
+        const precedingRowText = precedingText.split("\n")[cursorRow]
 
         // get width by testing it on an unrendered canvas, cutting the text at the last curly bracket
         const canvas = document.createElement("canvas");
         const context = canvas.getContext("2d") as CanvasRenderingContext2D;
         context.font = font;
-        const precedingText = textAreaElement.current.textContent.slice(0, cursorIndex).split('{').slice(0, -1).join('{');
-        const metrics = context.measureText(precedingText);
+        const variableText = precedingRowText.split('{').slice(0, -1).join('{');
+        const metrics = context.measureText(variableText);
 
         // we want to offset the position based on the cursor position within the text area.
         setPosition({ Top: rect.bottom, Left: rect.left + metrics.width, Width: rect.width - metrics.width, Height: rect.height });
