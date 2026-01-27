@@ -29,21 +29,85 @@ import momentTZ from 'moment-timezone';
 import { Gemstone } from '@gpa-gemstone/application-typings'
 import { TimeUnit } from './TimeWindowUtils';
 
+/**
+ * Represents the buttons which the user would click to set the TimeFilter quickly.
+ */
 interface IQuickSelect {
+    /**
+     * The UI label on the QuickSelect button.
+     */
     label: string,
+
+    /**
+     * function to determine whether to hide a QuickSelect button, depending on the quickSelectRange.
+     * @param quickSelectRange 
+     * @returns 'true' to hide, 'false' to show.
+     */
     hideQuickPick: (quickSelectRange?: Gemstone.TSX.Types.QuickSelectRange) => boolean,
+
+    /**
+     * @param timeZone - according to moment-timezone package
+     * @param format - optional parameter of type DateUnit
+     * @returns ITimeFilter with start and end set according to quickSelect
+     */
     createFilter: (timeZone: string, format?: Gemstone.TSX.Types.DateUnit) => ITimeFilter,
 }
 
+/**
+ * 
+ */
 interface IProps {
+    /**
+     * passed from TimeFilter component, only used for formatting the case of startEnd
+     */
     DateTimeSetting: DateTimeSetting,
+
+    /**
+     * usually derived from DateUnit using getFormat()
+     */
     Format?: "YYYY-MM-DD" | "HH:mm:ss.SSS" | "MM/DD/YYYY HH:mm:ss.SSS",
+
+    /**
+     * very rarely set to null, often already defaulted to 'datetime-local'
+     */
     DateUnit?: Gemstone.TSX.Types.DateUnit,
-    QuickSelectRange?: Gemstone.TSX.Types.QuickSelectRange
+    
+    /**
+     * derived by default from DateUnit, using getQuickSelectRange(), but usually set in the TimeFilter interface.
+     * used to decide which buttons to show and hide.
+     */
+    QuickSelectRange?: Gemstone.TSX.Types.QuickSelectRange,
+
+    /**
+     * used to adjust quick select for timezone, as well as creating a TimeWindow from a TimeFilter - from moment-timezone package
+     */
     Timezone: string,
+
+    /**
+     * the index of active quickSelect to style the selected quickSelect.
+     */
     ActiveQP: number,
+
+    /**
+     * stores the index of the selected quickSelect
+     * @param qp - the index of the quickSelect during render
+     * @returns void
+     */
     SetActiveQP: (qp: number) => void,
+
+     /**
+     * Setter function to update filter
+     * @param start - Start Time
+     * @param end - End Time
+     * @param unit - Time Unit
+     * @param duration - Duration
+     * @returns 
+     */
     SetFilter: (start: string, end: string, unit: TimeUnit, duration: number) => void,
+
+    /** 
+     * styling booleans
+     */
     AddRowContainer?: boolean,
     SplitSelects?: boolean,
 }
