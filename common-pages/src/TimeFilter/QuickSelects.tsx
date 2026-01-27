@@ -154,7 +154,7 @@ const getColSize = (dateTimeSetting: DateTimeSetting, splitSelects: boolean) => 
 //update all quick selects to use new timefilters
 export const AvailableQuickSelects: IQuickSelect[] = [
     {
-        label: '1/2 cycle', createFilter: (tz, format) => {
+        label: '1/2 Cycle', createFilter: (tz, format) => {
             const offset = momentTZ.tz(moment.utc().subtract(cyclesToSeconds(1/2), 'second').format('YYYY-MM--DDTHH:mm:ss.SSSSS'), tz).utcOffset();
             const t = moment.utc().add(offset, 'second');
             return {
@@ -168,7 +168,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
         }
     },
     {
-        label: '1 cycle', createFilter: (tz, format) => {
+        label: '1 Cycle', createFilter: (tz, format) => {
             const offset = momentTZ.tz(moment.utc().subtract(cyclesToSeconds(1), 'second').format('YYYY-MM--DDTHH:mm:ss.SSSSS'), tz).utcOffset();
             const t = moment.utc().add(offset, 'second');
             return {
@@ -182,7 +182,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
         }
     },
     {
-        label: '2 cycles', createFilter: (tz, format) => {
+        label: '2 Cycles', createFilter: (tz, format) => {
             const offset = momentTZ.tz(moment.utc().subtract(cyclesToSeconds(2), 'second').format('YYYY-MM--DDTHH:mm:ss.SSSSS'), tz).utcOffset();
             const t = moment.utc().add(offset, 'second');
             return {
@@ -196,7 +196,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
         }
     },
     {
-        label: '5 cycles', createFilter: (tz, format) => {
+        label: '5 Cycles', createFilter: (tz, format) => {
             const offset = momentTZ.tz(moment.utc().subtract(cyclesToSeconds(5), 'second').format('YYYY-MM--DDTHH:mm:ss.SSSSS'), tz).utcOffset();
             const t = moment.utc().add(offset, 'second');
             return {
@@ -210,7 +210,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
         }
     },
     {
-        label: '10 cycles', createFilter: (tz, format) => {
+        label: '10 Cycles', createFilter: (tz, format) => {
             const offset = momentTZ.tz(moment.utc().subtract(cyclesToSeconds(10), 'second').format('YYYY-MM--DDTHH:mm:ss.SSSSS'), tz).utcOffset();
             const t = moment.utc().add(offset, 'second');
             return {
@@ -224,7 +224,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
         }
     },
     {
-        label: '15 cycles', createFilter: (tz, format) => {
+        label: '15 Cycles', createFilter: (tz, format) => {
             const offset = momentTZ.tz(moment.utc().subtract(cyclesToSeconds(15), 'second').format('YYYY-MM--DDTHH:mm:ss.SSSSS'), tz).utcOffset();
             const t = moment.utc().add(offset, 'second');
             return {
@@ -238,7 +238,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
         }
     },
     {
-        label: '20 cycles', createFilter: (tz, format) => {
+        label: '20 Cycles', createFilter: (tz, format) => {
             const offset = momentTZ.tz(moment.utc().subtract(cyclesToSeconds(20), 'second').format('YYYY-MM--DDTHH:mm:ss.SSSSS'), tz).utcOffset();
             const t = moment.utc().add(offset, 'second');
             return {
@@ -252,7 +252,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
         }
     },
     {
-        label: '30 cycles', createFilter: (tz, format) => {
+        label: '30 Cycles', createFilter: (tz, format) => {
             const offset = momentTZ.tz(moment.utc().subtract(cyclesToSeconds(30), 'second').format('YYYY-MM--DDTHH:mm:ss.SSSSS'), tz).utcOffset();
             const t = moment.utc().add(offset, 'second');
             return {
@@ -266,7 +266,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
         }
     },
     {
-        label: '40 cycles', createFilter: (tz, format) => {
+        label: '40 Cycles', createFilter: (tz, format) => {
             const offset = momentTZ.tz(moment.utc().subtract(cyclesToSeconds(40), 'second').format('YYYY-MM--DDTHH:mm:ss.SSSSS'), tz).utcOffset();
             const t = moment.utc().add(offset, 'second');
             return {
