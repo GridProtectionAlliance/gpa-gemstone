@@ -83,7 +83,7 @@ export default function AutoCompleteInput<T>(props: IProps<T>) {
       }
     }, 200);
 
-    const handleScroll = (event: Event) => {
+    const handleScroll = (_: Event) => {
       if (tableContainer.current == null) return
       updatePosition()
     };

@@ -206,7 +206,7 @@ function getCaretPosition(textarea: HTMLTextAreaElement) {
     // Set text content up to caret
     const beforeCaret = textarea.value.substring(0, selectionStart);
     const toLastOpenBracket = "\n" + beforeCaret.split('{').slice(0, -1).join('{');
-    const afterCaret = textarea.value.substring(selectionStart) || '.';
+    const afterCaret = textarea.value.substring(selectionStart) ?? '.';
 
     hiddenDiv.textContent = toLastOpenBracket;
 
