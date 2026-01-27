@@ -608,3 +608,7 @@ const Container = (props: React.PropsWithChildren<IContainerProps>) => {
     else
         return <>{props.children}</>
 }
+
+const cyclesToSeconds = (cycle: number) => {
+    return cycle / 60;
+}
