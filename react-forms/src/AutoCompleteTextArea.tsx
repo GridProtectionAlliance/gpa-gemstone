@@ -77,27 +77,13 @@ export default function AutoCompleteTextArea<T>(props: IProps<T>) {
         }
         if (textAreaElement.current == null) {return}
         
+
+
         const rect = textAreaElement.current.getBoundingClientRect();
-        const font = window.getComputedStyle(textAreaElement.current).font;
-        const cursorIndex = textAreaElement.current.selectionStart;
-        const precedingText = textAreaElement.current.textContent.slice(0, cursorIndex);
-        const cursorRow = (precedingText.match(/\n/g) || []).length
-        const precedingRowText = precedingText.split("\n")[cursorRow]
-
-        // get width by testing it on an unrendered canvas, cutting the text at the last curly bracket
-        const canvas = document.createElement("canvas");
-        const context = canvas.getContext("2d") as CanvasRenderingContext2D;
-        context.font = font;
-        const variableText = precedingRowText.split('{').slice(0, -1).join('{');
-        const heightText = "t\n".repeat(cursorRow+1);
-        const rowWidth = context.measureText(variableText).width;
-        const hieghtMetrics = context.measureText(heightText);
-        // const fontHeight = hieghtMetrics.fontBoundingBoxAscent + hieghtMetrics.fontBoundingBoxDescent;
-        const actualHeight = hieghtMetrics.actualBoundingBoxAscent + hieghtMetrics.actualBoundingBoxDescent;
-        console.log(heightText, actualHeight)
-
+        const [ caret_X, caret_Y ] = getCaretPosition(textAreaElement.current);
+        console.log(caret_X, caret_Y, rect.top, rect.left)
         // we want to offset the position based on the cursor position within the text area.
-        setPosition({ Top: rect.top + (actualHeight * (cursorRow + 1)), Left: rect.left + rowWidth, Width: rect.width - rowWidth, Height: rect.height });
+        setPosition({ Top: rect.top + caret_Y - rect.bottom, Left: rect.left + caret_X, Width: rect.width, Height: rect.height });
       }
     }, 200);
 
@@ -207,3 +193,37 @@ export const handleAutoComplete = (inputString: string, autoCompletes: string[],
         });
         autoCompleteSetter(suggestions);
     };
+
+
+function getCaretPosition(textarea: HTMLTextAreaElement) {
+    const { selectionStart } = textarea;
+    const hiddenDiv = document.createElement('div')
+    const style = getComputedStyle(textarea);
+
+    Array.from(style).forEach((propertyName) => {
+        const value = style.getPropertyValue(propertyName);
+        hiddenDiv.style.setProperty(propertyName, value);
+    })
+
+    // Set text content up to caret
+    const beforeCaret = textarea.value.substring(0, selectionStart);
+    const toLastOpenBracket = "\n" + beforeCaret.split('{').slice(0, -1).join('{');
+    const afterCaret = textarea.value.substring(selectionStart) || '.';
+
+    hiddenDiv.textContent = toLastOpenBracket;
+
+    // Create a span to mark caret position
+    const span = document.createElement('span');
+    span.textContent = afterCaret[0];
+    hiddenDiv.appendChild(span);
+
+    document.body.appendChild(hiddenDiv);
+
+    // Get caret's vertical position relative to textarea
+    const caretX = span.offsetLeft - textarea.scrollLeft;
+    const caretY = span.offsetTop - textarea.scrollTop;
+
+    document.body.removeChild(hiddenDiv);
+    return [caretX, caretY];
+}
+    
