@@ -180,7 +180,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             }
         },
         hideQuickPick: (f) => {
-            return f !== 'short'
+            return f !== 'short' && f !== 'cycles'
         }
     },
     {
@@ -344,7 +344,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             }
         },
         hideQuickPick: (f) => {
-            return f == 'long'
+            return f == 'long' || f == 'cycles'
         }
     },
     {
@@ -358,7 +358,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             }
         },
         hideQuickPick: (f) => {
-            return f == 'long'
+            return f == 'long' || f == 'cycles'
         }
     },
     {
@@ -373,7 +373,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             }
         },
         hideQuickPick: (f) => {
-            return f == 'long'
+            return f == 'long' || f == 'cycles'
         }
     },
     {
@@ -387,7 +387,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             }
         },
         hideQuickPick: (f) => {
-            return f == 'medium'
+            return f == 'medium' || f == 'cycles'
         }
     },
     {
@@ -401,7 +401,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             }
         },
         hideQuickPick: (f) => {
-            return f == 'medium'
+            return f == 'medium' || f == 'cycles'
         }
     },
     {
@@ -415,7 +415,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             }
         },
         hideQuickPick: (f) => {
-            return f == 'long' || f == 'medium'
+            return f == 'long' || f == 'medium' || f == 'cycles'
         }
     },
     {
@@ -429,7 +429,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             }
         },
         hideQuickPick: (f) => {
-            return f == 'medium' || f == 'short'
+            return f == 'medium' || f == 'short' || f == 'cycles'
         }
     },
     {
@@ -443,7 +443,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             }
         },
         hideQuickPick: (f) => {
-            return f == 'medium' || f == 'short'
+            return f == 'medium' || f == 'short' || f == 'cycles'
         }
     },
     {
@@ -457,7 +457,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             }
         },
         hideQuickPick: (f) => {
-            return f == 'medium' || f == 'short'
+            return f == 'medium' || f == 'short' || f == 'cycles'
         }
     },
     {
@@ -471,7 +471,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             }
         },
         hideQuickPick: (f) => {
-            return f == 'medium' || f == 'short'
+            return f == 'medium' || f == 'short' || f == 'cycles'
         }
     },
     {
@@ -485,7 +485,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             }
         },
         hideQuickPick: (f) => {
-            return f == 'medium' || f == 'short'
+            return f == 'medium' || f == 'short' || f == 'cycles'
         }
     },
     {
@@ -499,7 +499,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             }
         },
         hideQuickPick: (f) => {
-            return f == 'medium' || f == 'short'
+            return f == 'medium' || f == 'short' || f == 'cycles'
         }
     },
     {
@@ -518,7 +518,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             }
         },
         hideQuickPick: (f) => {
-            return f == 'medium' || f == 'short'
+            return f == 'medium' || f == 'short' || f == 'cycles'
         }
     },
     {
@@ -537,7 +537,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             }
         },
         hideQuickPick: (f) => {
-            return f == 'medium' || f == 'short'
+            return f == 'medium' || f == 'short' || f == 'cycles'
         }
     },
     {
@@ -551,7 +551,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             }
         },
         hideQuickPick: (f) => {
-            return f == 'medium' || f == 'short'
+            return f == 'medium' || f == 'short' || f == 'cycles'
         }
     },
     {
@@ -565,7 +565,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             }
         },
         hideQuickPick: (f) => {
-            return f == 'medium' || f == 'short'
+            return f == 'medium' || f == 'short' || f == 'cycles'
         }
     },
     {
@@ -579,7 +579,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             }
         },
         hideQuickPick: (f) => {
-            return f == 'medium' || f == 'short'
+            return f == 'medium' || f == 'short' || f == 'cycles'
         }
     },
     {
@@ -593,7 +593,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             }
         },
         hideQuickPick: (f) => {
-            return f == 'medium' || f == 'short'
+            return f == 'medium' || f == 'short' || f == 'cycles'
         }
     }
 ]
