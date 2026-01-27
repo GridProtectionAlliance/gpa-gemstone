@@ -154,6 +154,132 @@ const getColSize = (dateTimeSetting: DateTimeSetting, splitSelects: boolean) => 
 //update all quick selects to use new timefilters
 export const AvailableQuickSelects: IQuickSelect[] = [
     {
+        label: '1/2 cycle', createFilter: (tz, format) => {
+            const offset = momentTZ.tz(moment.utc().subtract(cyclesToSeconds(1/2), 'second').format('YYYY-MM--DDTHH:mm:ss.SSSSS'), tz).utcOffset();
+            const t = moment.utc().add(offset, 'second');
+            return {
+                end: t.format(getFormat(format)),
+                unit: 's',
+                duration: cyclesToSeconds(1/2),
+            }
+        },
+        hideQuickPick: (f) => {
+            return f !== 'cycles'
+        }
+    },
+    {
+        label: '1 cycle', createFilter: (tz, format) => {
+            const offset = momentTZ.tz(moment.utc().subtract(cyclesToSeconds(1), 'second').format('YYYY-MM--DDTHH:mm:ss.SSSSS'), tz).utcOffset();
+            const t = moment.utc().add(offset, 'second');
+            return {
+                end: t.format(getFormat(format)),
+                unit: 's',
+                duration: cyclesToSeconds(1),
+            }
+        },
+        hideQuickPick: (f) => {
+            return f !== 'cycles'
+        }
+    },
+    {
+        label: '2 cycles', createFilter: (tz, format) => {
+            const offset = momentTZ.tz(moment.utc().subtract(cyclesToSeconds(2), 'second').format('YYYY-MM--DDTHH:mm:ss.SSSSS'), tz).utcOffset();
+            const t = moment.utc().add(offset, 'second');
+            return {
+                end: t.format(getFormat(format)),
+                unit: 's',
+                duration: cyclesToSeconds(2),
+            }
+        },
+        hideQuickPick: (f) => {
+            return f !== 'cycles'
+        }
+    },
+    {
+        label: '5 cycles', createFilter: (tz, format) => {
+            const offset = momentTZ.tz(moment.utc().subtract(cyclesToSeconds(5), 'second').format('YYYY-MM--DDTHH:mm:ss.SSSSS'), tz).utcOffset();
+            const t = moment.utc().add(offset, 'second');
+            return {
+                end: t.format(getFormat(format)),
+                unit: 's',
+                duration: cyclesToSeconds(5),
+            }
+        },
+        hideQuickPick: (f) => {
+            return f !== 'cycles'
+        }
+    },
+    {
+        label: '10 cycles', createFilter: (tz, format) => {
+            const offset = momentTZ.tz(moment.utc().subtract(cyclesToSeconds(10), 'second').format('YYYY-MM--DDTHH:mm:ss.SSSSS'), tz).utcOffset();
+            const t = moment.utc().add(offset, 'second');
+            return {
+                end: t.format(getFormat(format)),
+                unit: 's',
+                duration: cyclesToSeconds(10),
+            }
+        },
+        hideQuickPick: (f) => {
+            return f !== 'cycles'
+        }
+    },
+    {
+        label: '15 cycles', createFilter: (tz, format) => {
+            const offset = momentTZ.tz(moment.utc().subtract(cyclesToSeconds(15), 'second').format('YYYY-MM--DDTHH:mm:ss.SSSSS'), tz).utcOffset();
+            const t = moment.utc().add(offset, 'second');
+            return {
+                end: t.format(getFormat(format)),
+                unit: 's',
+                duration: cyclesToSeconds(15),
+            }
+        },
+        hideQuickPick: (f) => {
+            return f !== 'cycles'
+        }
+    },
+    {
+        label: '20 cycles', createFilter: (tz, format) => {
+            const offset = momentTZ.tz(moment.utc().subtract(cyclesToSeconds(20), 'second').format('YYYY-MM--DDTHH:mm:ss.SSSSS'), tz).utcOffset();
+            const t = moment.utc().add(offset, 'second');
+            return {
+                end: t.format(getFormat(format)),
+                unit: 's',
+                duration: cyclesToSeconds(20),
+            }
+        },
+        hideQuickPick: (f) => {
+            return f !== 'cycles'
+        }
+    },
+    {
+        label: '30 cycles', createFilter: (tz, format) => {
+            const offset = momentTZ.tz(moment.utc().subtract(cyclesToSeconds(30), 'second').format('YYYY-MM--DDTHH:mm:ss.SSSSS'), tz).utcOffset();
+            const t = moment.utc().add(offset, 'second');
+            return {
+                end: t.format(getFormat(format)),
+                unit: 's',
+                duration: cyclesToSeconds(30),
+            }
+        },
+        hideQuickPick: (f) => {
+            return f !== 'cycles'
+        }
+    },
+    {
+        label: '40 cycles', createFilter: (tz, format) => {
+            const offset = momentTZ.tz(moment.utc().subtract(cyclesToSeconds(40), 'second').format('YYYY-MM--DDTHH:mm:ss.SSSSS'), tz).utcOffset();
+            const t = moment.utc().add(offset, 'second');
+            return {
+                end: t.format(getFormat(format)),
+                unit: 's',
+                duration: cyclesToSeconds(40),
+            }
+        },
+        hideQuickPick: (f) => {
+            return f !== 'cycles'
+        }
+    },
+    {
         label: 'Last 1 Second', createFilter: (tz, format) => {
             const offset = momentTZ.tz(moment.utc().startOf('second').subtract(1, 'second').format('YYYY-MM-DDTHH:mm:ss.SSSSS'), tz).utcOffset();
             const t = moment.utc().add(offset, 'second').startOf('second');
@@ -165,7 +291,22 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             }
         },
         hideQuickPick: (f) => {
-            return f !== 'short'
+            return f !== 'short' && f !== 'cycles'
+        }
+    },
+    {
+        label: 'Last 2 Seconds', createFilter: (tz, format) => {
+            const offset = momentTZ.tz(moment.utc().startOf('second').subtract(2, 'seconds').format('YYYY-MM-DDTHH:mm:ss.SSSSS'), tz).utcOffset();
+            const t = moment.utc().add(offset, 'seconds').startOf('second');
+
+            return {
+                end: t.format(getFormat(format)),
+                unit: 's',
+                duration: 52
+            }
+        },
+        hideQuickPick: (f) => {
+            return f !== 'cycles'
         }
     },
     {
