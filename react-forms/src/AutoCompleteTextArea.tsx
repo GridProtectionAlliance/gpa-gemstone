@@ -76,9 +76,6 @@ export default function AutoCompleteTextArea<T>(props: IProps<T>) {
             textAreaComponent.childNodes.forEach((element) => element.nodeName === 'TEXTAREA' ? textAreaElement.current = element as HTMLTextAreaElement : null)
         }
         if (textAreaElement.current == null) {return}
-        
-
-
         const rect = textAreaElement.current.getBoundingClientRect();
         const [ caret_X, caret_Y ] = getCaretPosition(textAreaElement.current);
         console.log(caret_X, caret_Y, rect.top, rect.left)
@@ -196,6 +193,7 @@ export const handleAutoComplete = (inputString: string, autoCompletes: string[],
 
 
 function getCaretPosition(textarea: HTMLTextAreaElement) {
+    if (textarea.parentNode == null) {return [0, 0]}
     const { selectionStart } = textarea;
     const hiddenDiv = document.createElement('div')
     const style = getComputedStyle(textarea);
@@ -217,13 +215,15 @@ function getCaretPosition(textarea: HTMLTextAreaElement) {
     span.textContent = afterCaret[0];
     hiddenDiv.appendChild(span);
 
-    document.body.appendChild(hiddenDiv);
+    textarea.parentNode.appendChild(hiddenDiv);
 
     // Get caret's vertical position relative to textarea
+    console.log(`text area: ${textarea.scrollLeft}, ${textarea.scrollTop}`);
+    console.log(`span: ${span.offsetLeft}, ${span.offsetTop}`)
     const caretX = span.offsetLeft - textarea.scrollLeft;
     const caretY = span.offsetTop - textarea.scrollTop;
 
-    document.body.removeChild(hiddenDiv);
+    textarea.parentNode.removeChild(hiddenDiv);
     return [caretX, caretY];
 }
     
