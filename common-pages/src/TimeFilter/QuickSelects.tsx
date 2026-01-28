@@ -302,7 +302,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
             return {
                 end: t.format(getFormat(format)),
                 unit: 's',
-                duration: 52
+                duration: 2
             }
         },
         hideQuickPick: (f) => {
