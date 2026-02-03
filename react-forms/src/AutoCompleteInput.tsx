@@ -27,11 +27,6 @@ import Input from './Input'
 import { Portal } from 'react-portal'
 import * as _ from 'lodash'
 
-interface ILabelValue {
-    Label: string
-    Value: string
-}
-
 interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
   /**
     * Function to determine the validity of a field
@@ -52,10 +47,10 @@ export default function AutoCompleteInput<T>(props: IProps<T>) {
     const tableContainer = React.useRef<HTMLDivElement>(null);
     const selectTable = React.useRef<HTMLTableElement>(null);
     const [show, setShow] = React.useState<boolean>(false);
-    const [autoCompleteOptions, setAutoCompleteOptions] = React.useState<ILabelValue[]>([])
+    const [autoCompleteOptions, setAutoCompleteOptions] = React.useState<Gemstone.TSX.Interfaces.ILabelValue<string>[]>([])
     const [position, setPosition] = React.useState<Gemstone.TSX.Interfaces.IElementPosition>({ Top: 0, Left: 0, Width: 0, Height: 0 });
     
-    const handleOptionClick = (evt: React.MouseEvent<HTMLTableRowElement, MouseEvent>, option: ILabelValue) => {
+    const handleOptionClick = (evt: React.MouseEvent<HTMLTableRowElement, MouseEvent>, option: Gemstone.TSX.Interfaces.ILabelValue<string>) => {
         props.Record[props.Field] = option.Value as any;
         props.Setter(props.Record)
         setShow(false)
@@ -70,7 +65,7 @@ export default function AutoCompleteInput<T>(props: IProps<T>) {
     
     React.useEffect(() => {
         const rawValue = props.Record[props.Field] == null ? '' : (props.Record[props.Field] as any).toString();
-        handleAutoComplete(rawValue, props.AutoCompletes, setAutoCompleteOptions);
+        handleAutoComplete(rawValue, props.Options, setAutoCompleteOptions);
     }, [props.Record[props.Field]])
 
     React.useLayoutEffect(() => {
@@ -145,7 +140,7 @@ export default function AutoCompleteInput<T>(props: IProps<T>) {
     )
 }
 
-export const handleAutoComplete = (inputString: string, autoCompletes: string[], autoCompleteSetter: React.Dispatch<React.SetStateAction<ILabelValue[]>>) => {
+export const handleAutoComplete = (inputString: string, autoCompletes: string[], autoCompleteSetter: React.Dispatch<React.SetStateAction<Gemstone.TSX.Interfaces.ILabelValue<string>[]>>) => {
 
     // Find all variables in the searchString
     const regex = /\{([^\s{}]*)/g;
