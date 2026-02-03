@@ -127,7 +127,7 @@ export default function AutoCompleteTextArea<T>(props: IProps<T>) {
               <tbody>
                 {autoCompleteOptions.map((f, i) => (
                   f.Value === props.Record[props.Field] ? null :
-                  <tr key={i} onMouseDown={(evt) => handleOptionClick(evt, f)}>
+                  <tr key={i} onMouseDown={(_) => handleOptionClick(f)}>
                     <td>
                     {f.Label}
                     </td>
