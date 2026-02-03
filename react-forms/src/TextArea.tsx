@@ -52,6 +52,12 @@ interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
     * @optional
   */
   Help?: string | JSX.Element;
+  /**
+   * Optional reference to internal text area for features like autocomplete.
+   * @type {React.RefObject<HTMLTextAreaElement>}
+   * @optional
+   */
+  TextAreaRef?: React.RefObject<HTMLTextAreaElement>
 }
 
 export default function TextArea<T>(props: IProps<T>) {
@@ -110,6 +116,7 @@ export default function TextArea<T>(props: IProps<T>) {
 
       {/* Textarea element */}
       <textarea
+        ref={props.TextAreaRef}
         rows={props.Rows}
         className={props.Valid(props.Field) ? 'form-control' : 'form-control is-invalid'}
         onChange={(evt) => valueChange(evt.target.value)}
