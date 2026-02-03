@@ -63,9 +63,7 @@ export default function AutoCompleteTextArea<T>(props: IProps<T>) {
     React.useEffect(() => {
         const rawValue = props.Record[props.Field] == null ? '' : (props.Record[props.Field] as any).toString();
         handleAutoComplete(rawValue, props.AutoCompletes, setAutoCompleteOptions);
-    },
-    [props.Record[props.Field]]
-    )
+    }, [props.Record[props.Field]])
 
     React.useLayoutEffect(() => {
      const updatePosition = _.debounce(() => {
