@@ -3,6 +3,7 @@ import { Gemstone } from '@gpa-gemstone/application-typings'
 import TextArea from './TextArea'
 import { Portal } from 'react-portal'
 import * as _ from 'lodash'
+import { handleAutoComplete } from './AutoCompleteInput';
 
 interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
   /**
@@ -140,47 +141,6 @@ export default function AutoCompleteTextArea<T>(props: IProps<T>) {
     </div>
   )
 }
-
-export const handleAutoComplete = (inputString: string, autoCompletes: string[], autoCompleteSetter: React.Dispatch<React.SetStateAction<Gemstone.TSX.Interfaces.ILabelValue<string>[]>>) => {
-  // Find all variables in the searchString
-  const regex = /\{([^\s{}]*)/g;
-  let match: RegExpExecArray | null;
-  const variables: { name: string; start: number; end: number; hasClosingBrace: boolean }[] = [];
-
-  while ((match = regex.exec(inputString)) !== null) {
-    const variableName = match[1];
-    const start = match.index;
-    let end = regex.lastIndex;
-
-    // Check if there is a closing '}'
-    let hasClosingBrace = false;
-    if (inputString[end] === '}') {
-      hasClosingBrace = true;
-      end++; // Include the closing '}'
-    }
-
-    variables.push({ name: variableName, start, end, hasClosingBrace });
-  } // Find the first invalid variable
-  const invalidVariable = variables.find((v) => !v.hasClosingBrace || !autoCompletes.some((cv) => cv.toLowerCase() === v.name.toLowerCase()));
-    if (invalidVariable == null) {
-      return([]);
-    }
-
-  // Find suggestions for the invalid variable
-  const possibleVariables = autoCompletes.filter(v => v.toLowerCase().includes(invalidVariable.name.toLowerCase()));
-
-  // Generate suggestions by replacing the FIRST invalid variable
-  const suggestions = possibleVariables.map((pv) => {
-  const before = inputString.substring(0, invalidVariable.start);
-  const after = inputString.substring(invalidVariable.end);
-
-  // Ensure we have braces around the variable and add closing '}' if it was missing
-  const variableWithBraces = invalidVariable.hasClosingBrace ? `{${pv}}` : `{${pv}}`;
-  return { Label: `${variableWithBraces}`, Value: `${before}${variableWithBraces}${after}` };
-  });
-  autoCompleteSetter(suggestions);
-};
-
 
 function getCaretPosition(textarea: HTMLTextAreaElement) {
   if (textarea.parentNode == null) {return [0, 0]}
