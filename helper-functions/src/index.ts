@@ -49,7 +49,7 @@ import { ReplaceAll } from './ReplaceAll';
 import { RegexEncode } from './RegexEncode';
 import { ComputeMax } from './ComputeMax';
 import { ComputeMin } from './ComputeMin';
-import { FormatDuration } from './DisplayDur';
+import { FormatDuration } from './FormatDuration';
 import { GetColor } from './GetColor';
 
 export {
