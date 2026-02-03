@@ -28,7 +28,6 @@ interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
     * @optional
   */
   Help?: string | JSX.Element;
-
   /**
    * Autocomplete options
    * @type {string}
@@ -46,7 +45,7 @@ export default function AutoCompleteTextArea<T>(props: IProps<T>) {
     const [autoCompleteOptions, setAutoCompleteOptions] = React.useState<Gemstone.TSX.Interfaces.ILabelValue<string>[]>([])
     const [position, setPosition] = React.useState<Gemstone.TSX.Interfaces.IElementPosition>({ Top: 0, Left: 0, Width: 0, Height: 0 });
     
-    const handleOptionClick = (evt: React.MouseEvent<HTMLTableRowElement, MouseEvent>, option: Gemstone.TSX.Interfaces.ILabelValue<string>) => {
+    const handleOptionClick = (option: Gemstone.TSX.Interfaces.ILabelValue<string>) => {
         props.Record[props.Field] = option.Value as any;
         props.Setter(props.Record)
         setShow(false)
@@ -75,13 +74,12 @@ export default function AutoCompleteTextArea<T>(props: IProps<T>) {
         if (textAreaElement.current == null) {return}
         const rect = textAreaElement.current.getBoundingClientRect();
         const [ caret_X, caret_Y ] = getCaretPosition(textAreaElement.current);
-        console.log(caret_X, caret_Y, rect.top, rect.left)
         // we want to offset the position based on the cursor position within the text area.
         setPosition({ Top: rect.top + caret_Y - rect.bottom, Left: rect.left + caret_X, Width: rect.width, Height: rect.height });
       }
     }, 200);
 
-    const handleScroll = (event: Event) => {
+    const handleScroll = () => {
       if (tableContainer.current == null) return
       updatePosition()
     };
@@ -215,8 +213,6 @@ function getCaretPosition(textarea: HTMLTextAreaElement) {
     textarea.parentNode.appendChild(hiddenDiv);
 
     // Get caret's vertical position relative to textarea
-    console.log(`text area: ${textarea.scrollLeft}, ${textarea.scrollTop}`);
-    console.log(`span: ${span.offsetLeft}, ${span.offsetTop}`)
     const caretX = span.offsetLeft - textarea.scrollLeft;
     const caretY = span.offsetTop - textarea.scrollTop;
 

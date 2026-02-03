@@ -79,7 +79,7 @@ export default function AutoCompleteInput<T>(props: IProps<T>) {
     const [autoCompleteOptions, setAutoCompleteOptions] = React.useState<Gemstone.TSX.Interfaces.ILabelValue<string>[]>([])
     const [position, setPosition] = React.useState<Gemstone.TSX.Interfaces.IElementPosition>({ Top: 0, Left: 0, Width: 0, Height: 0 });
     
-    const handleOptionClick = (evt: React.MouseEvent<HTMLTableRowElement, MouseEvent>, option: Gemstone.TSX.Interfaces.ILabelValue<string>) => {
+    const handleOptionClick = (option: Gemstone.TSX.Interfaces.ILabelValue<string>) => {
         props.Record[props.Field] = option.Value as any;
         props.Setter(props.Record)
         setShow(false)
@@ -105,7 +105,7 @@ export default function AutoCompleteInput<T>(props: IProps<T>) {
       }
     }, 200);
 
-    const handleScroll = (_: Event) => {
+    const handleScroll = () => {
       if (tableContainer.current == null) return
       updatePosition()
     };
