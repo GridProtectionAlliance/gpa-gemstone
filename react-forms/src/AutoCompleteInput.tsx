@@ -34,10 +34,39 @@ interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
     * @returns {boolean}
   */
   Valid: (field: keyof T) => boolean;
-
+  /**
+    * Feedback message to show when input is invalid
+    * @type {string}
+    * @optional
+  */
+  Feedback?: string;
+  /**
+    * CSS styles to apply to the form group
+    * @type {React.CSSProperties}
+    * @optional
+  */
+  Style?: React.CSSProperties;
+  /**
+    * Flag to allow null values
+    * @type {boolean}
+    * @optional
+  */
+  AllowNull?: boolean;
+  /**
+    * Size of the input field
+    * @type {'small' | 'large'}
+    * @optional
+  */
+  Size?: 'small' | 'large',
+  /**
+    * Default value for the input field if it's null
+    * @type {number}
+    * @optional
+  */
+  DefaultValue?: number
   /**
    * Values for AutoCompletion
-   * 
+   * @type {string}
    */
   Options: string[]
 }
@@ -104,6 +133,11 @@ export default function AutoCompleteInput<T>(props: IProps<T>) {
                 Record={props.Record}
                 Setter={props.Setter}
                 Field={props.Field}
+                Feedback={props.Feedback}
+                Style={props.Style}
+                AllowNull={props.AllowNull}
+                Size={props.Size}
+                DefaultValue={props.DefaultValue}
             />
             {!show ? null :
                 <Portal>

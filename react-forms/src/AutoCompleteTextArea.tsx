@@ -29,7 +29,11 @@ interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
   */
   Help?: string | JSX.Element;
 
-  AutoCompletes: string[]
+  /**
+   * Autocomplete options
+   * @type {string}
+   */
+  Options: string[]
 }
 
 export default function AutoCompleteTextArea<T>(props: IProps<T>) {
