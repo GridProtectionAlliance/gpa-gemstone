@@ -44,7 +44,7 @@ interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
    * Values for AutoCompletion
    * 
    */
-  AutoCompletes: string[]
+  Options: string[]
 }
 
 export default function AutoCompleteInput<T>(props: IProps<T>) {
