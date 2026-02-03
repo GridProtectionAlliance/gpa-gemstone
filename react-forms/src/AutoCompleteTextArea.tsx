@@ -40,7 +40,7 @@ export default function AutoCompleteTextArea<T>(props: IProps<T>) {
   const autoCompleteTextArea = React.useRef<HTMLDivElement>(null);
   const tableContainer = React.useRef<HTMLDivElement>(null);
   const selectTable = React.useRef<HTMLTableElement>(null);
-  const textAreaElement = React.useRef<HTMLTextAreaElement | null>(null);
+  const textAreaElement = React.useRef<HTMLTextAreaElement>(null);
   const [show, setShow] = React.useState<boolean>(false);
   const [autoCompleteOptions, setAutoCompleteOptions] = React.useState<Gemstone.TSX.Interfaces.ILabelValue<string>[]>([])
   const [position, setPosition] = React.useState<Gemstone.TSX.Interfaces.IElementPosition>({ Top: 0, Left: 0, Width: 0, Height: 0 });
@@ -65,18 +65,11 @@ export default function AutoCompleteTextArea<T>(props: IProps<T>) {
 
   React.useLayoutEffect(() => {
     const updatePosition = _.debounce(() => {
-    if (autoCompleteTextArea.current != null) {
-    if (textAreaElement.current == null) {
-      const textAreaComponent = autoCompleteTextArea.current.firstChild;
-      if (textAreaComponent == null) {return}
-      textAreaComponent.childNodes.forEach((element) => element.nodeName === 'TEXTAREA' ? textAreaElement.current = element as HTMLTextAreaElement : null)
-    }
     if (textAreaElement.current == null) {return}
     const rect = textAreaElement.current.getBoundingClientRect();
     const [ caret_X, caret_Y ] = getCaretPosition(textAreaElement.current);
     // we want to offset the position based on the cursor position within the text area.
     setPosition({ Top: rect.top + caret_Y - rect.bottom, Left: rect.left + caret_X, Width: rect.width, Height: rect.height });
-    }
   }, 200);
 
   const handleScroll = () => {
@@ -106,6 +99,7 @@ export default function AutoCompleteTextArea<T>(props: IProps<T>) {
         Setter={props.Setter}
         Field={props.Field}
         Rows={props.Rows}
+        TextAreaRef={textAreaElement}
       />
         {!show ? null :
           <Portal>
