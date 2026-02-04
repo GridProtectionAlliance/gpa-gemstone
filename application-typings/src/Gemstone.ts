@@ -28,7 +28,7 @@ namespace Gemstone {
             export type BulkUploadStep = ('Upload' | 'Process' | 'Review' | 'Complete')
             export type Accuracy = ('minute' | 'second' | 'millisecond');
             export type ScreenSize = 'xs' | "sm" | 'md' | 'lg' | 'xl'
-            export type QuickSelectRange = 'short' | 'medium' | 'long' | 'full'
+            export type QuickSelectRange = 'cycles' | 'short' | 'medium' | 'long' | 'full' 
             export type DateUnit = 'datetime-local' | 'date' | 'time'
         }
         export namespace Interfaces {
