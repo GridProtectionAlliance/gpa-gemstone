@@ -1,5 +1,5 @@
 // ******************************************************************************************************
-//  DisplayDur.tsx - Gbtc
+//  FormatDuration.tsx - Gbtc
 //
 //  Copyright © 2025, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -26,7 +26,7 @@
  * @param duration: duration in milliseconds (can be fractional)
  * @returns Will return a string to display the duration.
  */
-function FormatDuration(duration: number): string {
+const FormatDuration = (duration: number): string => {
 
     const secondsPerMinute = 60;
     const secondsPerHour = secondsPerMinute * 60;
@@ -86,7 +86,7 @@ function FormatDuration(duration: number): string {
     const milliSeconds = duration - adjustment*1000
 
     if (milliSeconds >= 1)
-       display = display + (display.length > 0? ' ' : '') + Math.floor(milliSeconds).toFixed(0) + ' milliseconds' + (milliSeconds >= 2? 's' : '');
+       display = display + (display.length > 0? ' ' : '') + Math.floor(milliSeconds).toFixed(0) + ' millisecond' + (milliSeconds >= 2? 's' : '');
 
     // Display 0m 0s 0ms
     return display;
