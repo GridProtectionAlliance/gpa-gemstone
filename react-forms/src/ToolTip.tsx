@@ -170,6 +170,7 @@ export const Tooltip = (props: React.PropsWithChildren<IProps>) => {
     }
   }, [props.Show, isTooltipHovered]);
 
+  //Effect to get colors from alert class
   React.useLayoutEffect(() => {
     if (alertRef.current == null) return;
 
@@ -178,19 +179,56 @@ export const Tooltip = (props: React.PropsWithChildren<IProps>) => {
     setColor(style.color);
   });
 
+  //effect to get target element position
   React.useEffect(() => {
-    const target = document.querySelectorAll(`[data-tooltip${props.Target === undefined ? '' : `="${props.Target}"`}]`)
-    if (target.length === 0) {
-      setTargetElementPosition(defaultTargetPosition)
-      return;
-    }
+    const updateTargetPosition = () => {
+      const target = getTarget(props.Target);
 
-    const targetLocation = GetNodeSize(target[0] as HTMLElement);
-    const newPosition = { Height: targetLocation.height, Top: targetLocation.top, Left: targetLocation.left, Width: targetLocation.width }
-    if (!isEqual(newPosition, targetElementPosition))
-      setTargetElementPosition(newPosition)
-  }, [shouldShow, props.Target, targetElementPosition]);
+      if (target == null) {
+        setTargetElementPosition(defaultTargetPosition);
+        setDelayedShow(false);
+        setIsTooltipHovered(false);
+        return;
+      }
 
+      const targetLocation = GetNodeSize(target);
+      const newPosition = {
+        Height: targetLocation.height,
+        Top: targetLocation.top,
+        Left: targetLocation.left,
+        Width: targetLocation.width
+      };
+
+      setTargetElementPosition(prev => {
+        if (!isEqual(newPosition, prev))
+          return newPosition;
+        return prev;
+      });
+    };
+
+    // Initial position calculation
+    updateTargetPosition();
+
+    // Only set up observers when tooltip is visible
+    if (!shouldShow) return;
+
+    const target = getTarget(props.Target);
+    if (target == null) return;
+
+    window.addEventListener('scroll', updateTargetPosition, true);
+    window.addEventListener('resize', updateTargetPosition);
+
+    const resizeObserver = new ResizeObserver(updateTargetPosition);
+    resizeObserver.observe(document.body);
+    resizeObserver.observe(target);
+
+    return () => {
+      window.removeEventListener('scroll', updateTargetPosition, true);
+      window.removeEventListener('resize', updateTargetPosition);
+      resizeObserver.disconnect();
+    };
+  }, [shouldShow, props.Target]);
+  //Effect to position tooltip
   React.useLayoutEffect(() => {
     const [t, l, arrowLeft, actPosition] = getPosition(toolTip, targetElementPosition, targetPosition);
     setTop(t);
@@ -303,5 +341,10 @@ const getPosition = (toolTip: React.MutableRefObject<HTMLDivElement | null>, tar
 
   return [top, left, arrowPositionPercent, effectivePosition] as [number, number, number, 'top' | 'bottom' | 'left' | 'right'];
 }
+
+const getTarget = (target?: string) => {
+  const targets = document.querySelectorAll(`[data-tooltip${target === undefined ? '' : `="${target}"`}]`);
+  return targets.length > 0 ? targets[0] as HTMLElement : null;
+};
 
 export default Tooltip;
