@@ -1,6 +1,6 @@
 {
   "name": "@gpa-gemstone/helper-functions",
-  "version": "0.0.54",
+  "version": "0.0.55",
   "description": "Helper Functions for gpa-gemstone packages",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -45,7 +45,7 @@
     "typescript": "5.5.3"
   },
   "dependencies":   {
-    "@gpa-gemstone/application-typings": "0.0.95",
+    "@gpa-gemstone/application-typings": "0.0.96",
     "lodash": "^4.17.21"
   },
   "peerDependencies": {"react": "18.2.0"},
