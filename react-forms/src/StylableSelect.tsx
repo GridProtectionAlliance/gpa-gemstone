@@ -33,6 +33,7 @@ import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 export interface IOption {
   Value: any;
   Element: React.ReactElement<any> | string,
+  IsSelected?: boolean; //flag is needed as there may be multiple options with the same value ex: SearchableSelect with its input option.
 }
 
 interface IProps<T> {
@@ -265,9 +266,11 @@ export default function StylableSelect<T>(props: IProps<T>) {
         >
           <table className="table table-hover" style={{ margin: 0 }} ref={selectTable}>
             <tbody>
-              {props.Options.map((f, i) => (
-                f.Value === props.Record[props.Field] ? null :
-                  <tr key={i} onMouseDown={(evt) => handleOptionClick(evt, f)}>
+              {props.Options.filter(f => f.IsSelected || !isEqual(f.Value, props.Record[props.Field])).map((f, i) => (
+                  <tr
+                    key={i}
+                    className={(f.IsSelected ?? false) ? 'table-primary' : ''}
+                    onMouseDown={(evt) => handleOptionClick(evt, f)}>
                     <td>
                       {f.Element}
                     </td>
