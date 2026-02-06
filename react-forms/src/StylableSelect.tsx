@@ -266,7 +266,7 @@ export default function StylableSelect<T>(props: IProps<T>) {
         >
           <table className="table table-hover" style={{ margin: 0 }} ref={selectTable}>
             <tbody>
-              {props.Options.filter(f => f.IsSelected || !isEqual(f.Value, props.Record[props.Field])).map((f, i) => (
+              {props.Options.filter(f => (f.IsSelected ?? false)|| !isEqual(f.Value, props.Record[props.Field])).map((f, i) => (
                   <tr
                     key={i}
                     className={(f.IsSelected ?? false) ? 'table-primary' : ''}
