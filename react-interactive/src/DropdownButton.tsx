@@ -105,7 +105,7 @@ const BtnDropdown = (props: IProps) => {
                 onClick={() => { setShowDropdown((x) => !x) }}>
                 <span className="sr-only">Toggle Dropdown</span>
             </button>
-            <div className={"dropdown-menu" + (showDropdown ? " show" : "")}>
+            <div className={"dropdown-menu" + (showDropdown ? " show" : "")} style={{ position: 'absolute'}}>
                 {props.Options.map((option, i) => 
                     <React.Fragment key={option.Key ?? i}>
                         {i > 0 && props.Options[i].Group !== props.Options[i - 1].Group ?
