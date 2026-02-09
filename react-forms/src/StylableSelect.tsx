@@ -33,6 +33,8 @@ import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 export interface IOption {
   Value: any;
   Element: React.ReactElement<any> | string,
+  RowClass?: string;
+  RowStyle?: React.CSSProperties;
 }
 
 interface IProps<T> {
@@ -109,7 +111,7 @@ export default function StylableSelect<T>(props: IProps<T>) {
   const tableContainer = React.useRef<HTMLDivElement>(null);
 
   const [show, setShow] = React.useState<boolean>(false);
-  const [selected, setSelected] = React.useState<React.ReactElement<any> | string>(props.Options[0].Element);
+  const [selectedOptionIndex, setSelectedOptionIndex] = React.useState<number>(0);
   const [guid, setGuid] = React.useState<string>("");
   const [showHelp, setShowHelp] = React.useState<boolean>(false);
   const [position, setPosition] = React.useState<Gemstone.TSX.Interfaces.IElementPosition>({ Top: 0, Left: 0, Width: 0, Height: 0 });
@@ -171,7 +173,7 @@ export default function StylableSelect<T>(props: IProps<T>) {
 
   // Update the parent component's state with the selected option.
   function SetRecord(selectedOption: IOption) {
-    setSelected(selectedOption.Element);
+    setSelectedOptionIndex(props.Options.findIndex(e => isEqual(e.Value, selectedOption.Value)));
     const record: T = { ...props.Record };
     if (selectedOption.Value !== '') record[props.Field] = selectedOption.Value as any;
     else record[props.Field] = null as any;
@@ -190,8 +192,8 @@ export default function StylableSelect<T>(props: IProps<T>) {
 
   // Effect to handle changes to the record's field value.
   React.useEffect(() => {
-    const element: IOption | undefined = props.Options.find(e => isEqual(e.Value, props.Record[props.Field] as any));
-    setSelected(element !== undefined ? element.Element : <div />);
+    const elementIndex: number = props.Options.findIndex(e => isEqual(e.Value, props.Record[props.Field] as any));
+    setSelectedOptionIndex(elementIndex !== -1 ? elementIndex : 0);
   }, [props.Record, props.Options]);
 
   const handleOptionClick = (evt: React.MouseEvent<HTMLTableRowElement, MouseEvent>, option: IOption) => {
@@ -238,7 +240,7 @@ export default function StylableSelect<T>(props: IProps<T>) {
         disabled={props.Disabled === undefined ? false : props.Disabled}
       >
         <div style={props.Style}>
-          {selected}
+          {props.Options[selectedOptionIndex]?.Element}
         </div>
       </button>
 
@@ -265,14 +267,18 @@ export default function StylableSelect<T>(props: IProps<T>) {
         >
           <table className="table table-hover" style={{ margin: 0 }} ref={selectTable}>
             <tbody>
-              {props.Options.map((f, i) => (
-                f.Value === props.Record[props.Field] ? null :
-                  <tr key={i} onMouseDown={(evt) => handleOptionClick(evt, f)}>
-                    <td>
-                      {f.Element}
-                    </td>
-                  </tr>
-              ))}
+              {props.Options.map((f, i) => i === selectedOptionIndex ? null : ((
+                <tr
+                  key={`${i}-${JSON.stringify(f.Value)}`}
+                  className={f.RowClass ?? ''}
+                  style={f.RowStyle}
+                  onMouseDown={(evt) => handleOptionClick(evt, f)}
+                >
+                  <td>
+                    {f.Element}
+                  </td>
+                </tr>
+              )))}
             </tbody>
           </table>
         </div>

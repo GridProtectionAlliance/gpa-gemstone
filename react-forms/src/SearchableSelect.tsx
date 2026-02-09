@@ -177,6 +177,10 @@ export default function SearchableSelect<T>(props: IProps<T>) {
         if (props.AllowCustom ?? false)
             ops.push({ Value: search, Element: <>{search} (Entered Value)</>, Label: search });
 
+        //Ensure selectedOption is always at top of the list
+        const selected = searchOptions.find(f => f.Value === props.Record[props.Field]);
+        if (selected != null) ops.push({ ...selected, RowClass: 'table-primary' });
+
         ops.push(...searchOptions.filter(f => f.Value !== search && f.Value !== props.Record[props.Field]));
 
         return ops;
