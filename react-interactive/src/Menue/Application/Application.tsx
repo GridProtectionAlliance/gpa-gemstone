@@ -150,13 +150,16 @@ const Applications: React.ForwardRefRenderFunction<IApplicationRefs, React.Props
         else
             setShouldRemoveSideNav(false);
 
-        if (width <= 600) {
-            if (!(props.AllowCollapsed ?? false))
-                setShouldAddCollapseOptions(true);
-
-            setCollapsed(true);
-        }
-
+        if (width <= 600) 
+            if (props.AllowCollapsed ?? false) {
+                setCollapsed(true)
+                setShouldAddCollapseOptions(true)
+            }
+            else 
+                setShouldRemoveSideNav(true)
+        else
+            setCollapsed(false)
+        
     }, [width, props.AllowCollapsed])
 
     React.useEffect(() => {
