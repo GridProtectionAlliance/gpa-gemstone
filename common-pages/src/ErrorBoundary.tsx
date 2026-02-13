@@ -31,9 +31,25 @@ interface IError {
 }
 
 interface IProps {
-    ErrorMessage: string,
+    /**
+     * If provided, this message will be shown instead of the default error message. This is useful for providing a more user-friendly message or additional context about the error. NOTE: This will only be applied if ErrorContent is not provided, as ErrorContent is expected to provide its own error display.
+     */
+    ErrorMessage?: string,
+    /**
+     * If provided, this content will be shown instead of the default error content. This is useful for providing a more customized error display. NOTE: This will take precedence over ErrorMessage and ErrorIconSize, as it is expected to provide its own error display.
+     */
+    ErrorContent?: (props: IError) => React.ReactNode,
+    /**
+     * If provided, this style will be applied to the error container. This is useful for customizing the appearance of the error display.
+     */
     Style?: CSSProperties,
+    /**
+     * If provided, this class name will be applied to the error container. This is useful for applying custom styles to the error display.
+     */
     ClassName?: string,
+    /**
+     * If provided, this size will be applied to the error icon. This is useful for customizing the appearance of the error display. NOTE: This will only be applied if ErrorContent is not provided, as ErrorContent is expected to provide its own error display.
+     */
     ErrorIconSize?: number
 }
 
@@ -53,13 +69,19 @@ export default class ErrorBoundary extends React.Component<React.PropsWithChildr
 
     render() {
         if (this.state.name.length > 0) {
+            if (this.props.ErrorContent != null) {
+                return (
+                    <div className={this.props.ClassName} style={this.props.Style}>
+                        {this.props.ErrorContent(this.state)}
+                    </div>
+                );
+            }
             return (
                 <div className={this.props.ClassName} style={this.props.Style}>
-                    <ServerErrorIcon Show={true} Label={this.props.ErrorMessage} Size={this.props.ErrorIconSize ?? 150} />
+                    <ServerErrorIcon Show={true} Label={this.props.ErrorMessage ?? "An error occurred"} Size={this.props.ErrorIconSize ?? 150} />
                 </div>
             );
         } else
             return <>{this.props.children}</>;
-
     }
 }
