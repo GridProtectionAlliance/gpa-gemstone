@@ -36,12 +36,20 @@ export default function AutoCompleteTextArea<T>(props: IAutoCompleteProps<T>) {
   }
 
   React.useEffect(() => {
-    if (autoCompleteOptions?.length > 0) {
+    if (autoCompleteOptions.length > 0) {
+      if (!tableContainer.current) {return}
+      tableContainer.current.style.top = `${position.Top}px`;
+      tableContainer.current.style.left = `${position.Left}px`;
+      tableContainer.current.style.minWidth = `${position.Width}px`;
+      // console.log(`top ${tableContainer.current?.offsetTop} ${tableContainer.current.style.top} left ${tableContainer.current?.offsetLeft} ${tableContainer.current.style.left}`)
+      if (tableContainer.current.style.top === '0px' && tableContainer.current.style.left === '0px') { return}
       setShow(true);
-      return
     }
-    setShow(false);
-  },  [autoCompleteOptions])
+    else {
+      setShow(false);
+      setPosition({Top: 0, Left: 0, Width: 0, Height: 0})
+    }
+  },  [autoCompleteOptions, position])
 
   const getVariablePosition = () => {
     if (!textAreaElement.current) return [0, 0]
@@ -99,12 +107,14 @@ export default function AutoCompleteTextArea<T>(props: IAutoCompleteProps<T>) {
   }, [])
 
   React.useLayoutEffect(() => {
+    if (autoCompleteOptions?.length == 0) {return}
     const updatePosition = _.debounce(() => {
     if (textAreaElement.current == null) {return}
     const rect = textAreaElement.current.getBoundingClientRect();
     const [ caret_X, caret_Y ] = getVariablePosition();
-    // we want to offset the position based on the cursor position within the text area.
     setPosition({ Top: rect.top + caret_Y - rect.bottom, Left: rect.left + caret_X, Width: rect.width, Height: rect.height });
+    console.log(`top: ${position.Top}, container position: ${tableContainer.current?.offsetTop}`)
+    console.log(`left: ${position.Left}, container position: ${tableContainer.current?.offsetLeft}`)
   }, 200);
 
   const handleScroll = () => {
@@ -169,10 +179,8 @@ export default function AutoCompleteTextArea<T>(props: IAutoCompleteProps<T>) {
 
     // then, get the rest of the word.
     let end = start ?? 0;
-    let hasEndBracket = false;
     while (end < text.length) {
       if (/\}/.test(text[end])) {
-        hasEndBracket = true;
         //console.log('has end bracket')
         break;
       }
@@ -196,19 +204,20 @@ export default function AutoCompleteTextArea<T>(props: IAutoCompleteProps<T>) {
 
   const newhandleAutoComplete = () => {
     if (variable == null) {
-      console.log(`no variable for autocomplete`);
+      //console.log(`no variable for autocomplete`);
       setAutoCompleteOptions([]);
       return;
     }
     // if variable is valid option and hasEndBracket, assume it doesn't need autocompletion.
     if (props.Options.includes(variable)) {
-      console.log(`variable doesn't need autocomplete`);
+      //console.log(`variable doesn't need autocomplete`);
       setAutoCompleteOptions([]);
+      return;
     }
 
     const text = textAreaElement.current?.value;
     if (!text) {
-      console.log(`no text`);
+      //console.log(`no text`);
       setAutoCompleteOptions([]);
       return;
     }
@@ -219,20 +228,20 @@ export default function AutoCompleteTextArea<T>(props: IAutoCompleteProps<T>) {
     const before = text.substring(0, (varStart ?? 0) - 1);
     const after = text.substring(varEnd ?? 0);
     const hasEndBracket = (text[(varEnd ?? 0)] === '}')
-    console.log(`b: ${before} a: ${after} hasbracket: ${hasEndBracket}`);
+    //console.log(`b: ${before} a: ${after} hasbracket: ${hasEndBracket}`);
 
     // Generate suggestions
     const suggestions = possibleVariables.map((pv) => {
 
       // Ensure we have braces around the variable and add closing '}' if it was missing
       const variableWithBraces = hasEndBracket ? `{${pv}` : `{${pv}}`;
-      return { Label: `${variableWithBraces}`, Value: `${before}${variableWithBraces}${after}` };
+      return { Label: `${variableWithBraces}${hasEndBracket ? '}' : ''}`, Value: `${before}${variableWithBraces}${after}` };
     });
   setAutoCompleteOptions(suggestions);
   }
 
   React.useEffect(() => {
-    console.log('thank u son')
+    //console.log('thank u son')
     newhandleAutoComplete()
   }, [variable])
 
@@ -247,37 +256,34 @@ export default function AutoCompleteTextArea<T>(props: IAutoCompleteProps<T>) {
         TextAreaRef={textAreaElement}
         SpellCheck={false}
       />
-        {!show ? null :
           <Portal>
-          <div ref={tableContainer} className='popover'
-          style={{
-            maxHeight: window.innerHeight - position.Top,
-            overflowY: 'auto',
-            padding: '10 5',
-            display: show ? 'block' : 'none',
-            position: 'absolute',
-            zIndex: 9999,
-            top: `${position.Top}px`,
-            left: `${position.Left}px`,
-            minWidth: `${position.Width}px`,
-            maxWidth: '100%'
-            }}
-          >
-            <table className="table table-hover" style={{ margin: 0 }} ref={selectTable}>
-              <tbody>
-                {autoCompleteOptions.map((f, i) => (
-                  f.Value === props.Record[props.Field] ? null :
-                  <tr key={i} onMouseDown={(_) => handleOptionClick(f)}>
-                    <td>
-                    {f.Label}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+            <div ref={tableContainer} className='popover'
+            style={{
+              maxHeight: window.innerHeight - position.Top,
+              overflowY: 'auto',
+              padding: '10 5',
+              display: show ? 'block' : 'none',
+              position: 'absolute',
+              zIndex: 9999,
+              maxWidth: '100%'
+              }}
+            >
+              <table className="table table-hover" style={{ margin: 0 }} ref={selectTable}>
+                <tbody>
+                  {autoCompleteOptions.map((f, i) => (
+                    f.Value === props.Record[props.Field] ? null :
+                    <tr key={i} onMouseDown={(_) => handleOptionClick(f)}>
+                      <td>
+                      {f.Label}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </Portal> 
-        }
     </div>
   )
 }
+
+//(tableContainer.current?.offsetTop == position.Top && tableContainer.current?.offsetLeft == position.Left)
