@@ -245,6 +245,7 @@ export default function AutoCompleteTextArea<T>(props: IAutoCompleteProps<T>) {
         Field={props.Field}
         Rows={props.Rows}
         TextAreaRef={textAreaElement}
+        SpellCheck={false}
       />
         {!show ? null :
           <Portal>

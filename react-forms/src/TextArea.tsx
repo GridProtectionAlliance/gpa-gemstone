@@ -58,6 +58,13 @@ export interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
    * @optional
    */
   TextAreaRef?: React.RefObject<HTMLTextAreaElement>
+
+  /**
+   * Optional setting to enable/disable spellcheck.
+   * @type {boolean}
+   * @optional
+   */
+  SpellCheck?: boolean;
 }
 
 export default function TextArea<T>(props: IProps<T>) {
@@ -122,6 +129,7 @@ export default function TextArea<T>(props: IProps<T>) {
         onChange={(evt) => valueChange(evt.target.value)}
         value={heldVal == null ? '' : heldVal}
         disabled={props.Disabled == null ? false : props.Disabled}
+        spellCheck={props.SpellCheck ?? true}
       />
 
       {/* Invalid feedback message */}
