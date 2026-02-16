@@ -3,39 +3,13 @@ import { Gemstone } from '@gpa-gemstone/application-typings'
 import TextArea from './TextArea'
 import { Portal } from 'react-portal'
 import * as _ from 'lodash'
+import {IProps as ITextAreaProps} from './TextArea'
 
-interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
-  /**
-    * Number of rows for the textarea
-    * @type {number}
-  */
-    Rows: number;
-  /**
-    * Function to determine the validity of a field
-    * @param field - Field of the record to check
-    * @returns {boolean}
-  */
-    Valid: (field: keyof T) => boolean; 
-  /**
-    * Feedback message to show when input is invalid
-    * @type {string}
-    * @optional
-  */
-    Feedback?: string;
-  /**
-    * Help message or element to display
-    * @type {string | JSX.Element}
-    * @optional
-  */
-    Help?: string | JSX.Element;
-  /**
-    * Autocomplete options
-    * @type {string}
-  */
+interface IAutoCompleteProps<T> extends ITextAreaProps<T> {
     Options: string[]
 }
 
-export default function AutoCompleteTextArea<T>(props: IProps<T>) {
+export default function AutoCompleteTextArea<T>(props: IAutoCompleteProps<T>) {
   const autoCompleteTextArea = React.useRef<HTMLDivElement>(null);
   const tableContainer = React.useRef<HTMLDivElement>(null);
   const selectTable = React.useRef<HTMLTableElement>(null);

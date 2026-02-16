@@ -28,7 +28,7 @@ import ToolTip from './ToolTip';
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 
-interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
+export interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
   /**
     * Number of rows for the textarea
     * @type {number}

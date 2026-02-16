@@ -23,51 +23,11 @@
 
 import * as React from 'react';
 import { Gemstone } from '@gpa-gemstone/application-typings'
-import Input from './Input'
+import Input, {IProps as IInputProps} from './Input'
 import { Portal } from 'react-portal'
 import * as _ from 'lodash'
 
-interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
-  /**
-    * Function to determine the validity of a field
-    * @param field - Field of the record to check
-    * @returns {boolean}
-  */
-  Valid: (field: keyof T) => boolean;
-  /**
-    * Feedback message to show when input is invalid
-    * @type {string}
-    * @optional
-  */
-  Feedback?: string;
-  /**
-    * CSS styles to apply to the form group
-    * @type {React.CSSProperties}
-    * @optional
-  */
-  Style?: React.CSSProperties;
-  /**
-    * Flag to allow null values
-    * @type {boolean}
-    * @optional
-  */
-  AllowNull?: boolean;
-  /**
-    * Size of the input field
-    * @type {'small' | 'large'}
-    * @optional
-  */
-  Size?: 'small' | 'large',
-  /**
-    * Default value for the input field if it's null
-    * @type {number}
-    * @optional
-  */
-  DefaultValue?: number
-  /**
-    *Values for AutoCompletion
-    * @type {string}
-  */
+interface IProps<T> extends Omit<IInputProps<T>, 'Type'> {
   Options: string[]
 }
 
