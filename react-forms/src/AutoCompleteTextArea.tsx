@@ -32,8 +32,14 @@ export default function AutoCompleteTextArea<T>(props: IAutoCompleteProps<T>) {
     textAreaElement.current?.focus();
     textAreaElement.current?.setSelectionRange(newCaretPos, newCaretPos);
     setAutoCompleteOptions([]);
-    console.log(`after all: ${textAreaElement.current?.selectionStart} can be set to newPos ${newCaretPos}`);
   }
+
+
+  React.useEffect(() => {
+    if (autoCompleteOptions.length == 0) {
+      setPosition({Top: 0, Left: 0, Width: 0, Height: 0});
+    }
+  }, [autoCompleteOptions])
 
   React.useEffect(() => {
     if (autoCompleteOptions.length > 0) {
@@ -41,13 +47,11 @@ export default function AutoCompleteTextArea<T>(props: IAutoCompleteProps<T>) {
       tableContainer.current.style.top = `${position.Top}px`;
       tableContainer.current.style.left = `${position.Left}px`;
       tableContainer.current.style.minWidth = `${position.Width}px`;
-      // console.log(`top ${tableContainer.current?.offsetTop} ${tableContainer.current.style.top} left ${tableContainer.current?.offsetLeft} ${tableContainer.current.style.left}`)
-      if (tableContainer.current.style.top === '0px' && tableContainer.current.style.left === '0px') { return}
+      if (tableContainer.current.style.top === '0px' && tableContainer.current.style.left === '0px') {return}
       setShow(true);
     }
     else {
       setShow(false);
-      setPosition({Top: 0, Left: 0, Width: 0, Height: 0})
     }
   },  [autoCompleteOptions, position])
 
@@ -86,7 +90,6 @@ export default function AutoCompleteTextArea<T>(props: IAutoCompleteProps<T>) {
   }
   const updateCaretPosition = () => {
     if (textAreaElement.current) {
-      console.log('ok')
       setSelection(textAreaElement.current.selectionStart)
     }
   }
@@ -97,14 +100,13 @@ export default function AutoCompleteTextArea<T>(props: IAutoCompleteProps<T>) {
     
     autoComplete.addEventListener("keyup", updateCaretPosition);
     autoComplete.addEventListener("click", updateCaretPosition);
-    //autoComplete.addEventListener("input", updateCaretPosition);
 
     return () => {
       autoComplete.removeEventListener("keyup", updateCaretPosition);
       autoComplete.removeEventListener("click", updateCaretPosition);
-      //autoComplete.removeEventListener("input", updateCaretPosition);
     };
   }, [])
+
 
   React.useLayoutEffect(() => {
     if (autoCompleteOptions?.length == 0) {return}
@@ -113,8 +115,6 @@ export default function AutoCompleteTextArea<T>(props: IAutoCompleteProps<T>) {
     const rect = textAreaElement.current.getBoundingClientRect();
     const [ caret_X, caret_Y ] = getVariablePosition();
     setPosition({ Top: rect.top + caret_Y - rect.bottom, Left: rect.left + caret_X, Width: rect.width, Height: rect.height });
-    console.log(`top: ${position.Top}, container position: ${tableContainer.current?.offsetTop}`)
-    console.log(`left: ${position.Left}, container position: ${tableContainer.current?.offsetLeft}`)
   }, 200);
 
   const handleScroll = () => {
@@ -139,31 +139,26 @@ export default function AutoCompleteTextArea<T>(props: IAutoCompleteProps<T>) {
     const text = textAreaElement.current?.value;
     if (!text) {
       setVariable(null);
-      //console.log('no text')
       return;
     }
 
       // easy returns if selection start could not have a curly bracket before it
     if (selection === null || selection < 0 || selection > text.length) {
       setVariable(null);
-      //console.log('no text')
       return
       }
 
     // check backwards from the caret to find the nearest open curly bracket or space
     let start = selection;
     while (start > 0) {
-      //console.log(`checking ${text[start - 1]} from ${text}`)
       // check for open curly bracket. if found, assign and break as start of valid variable expression
       if (/\{/g.test(text[start - 1])) {
-        //console.log('open bracket encountered, moving on')
         break;
       }
 
       // if space is encountered first, return
       if (/[\s\}]/g.test(text[start - 1])) {
         setVariable(null);
-        //console.log('space encountered, set variable to null')
         return
       }
       start--;
@@ -172,7 +167,6 @@ export default function AutoCompleteTextArea<T>(props: IAutoCompleteProps<T>) {
     // if no variable found, return
     if (start == 0) {
       setVariable(null);
-      //console.log('no variable found')
       return
     }
     setVarStart(start);
@@ -180,12 +174,7 @@ export default function AutoCompleteTextArea<T>(props: IAutoCompleteProps<T>) {
     // then, get the rest of the word.
     let end = start ?? 0;
     while (end < text.length) {
-      if (/\}/.test(text[end])) {
-        //console.log('has end bracket')
-        break;
-      }
-      if (/[\s]/.test(text[end])) {
-        //console.log('finds the space')
+      if (/[\}\{\s}]/.test(text[end])) {
         break;
       }
       end++;
@@ -194,9 +183,9 @@ export default function AutoCompleteTextArea<T>(props: IAutoCompleteProps<T>) {
 
     // get variable as substring of text
     const variable = text.substring(start, end);
-    //console.log(`variable ${variable} from ${varStart} or ${start} to ${varEnd} or ${end}`)
     setVariable(variable);
   }
+
 
   React.useEffect(() => {
     updateVariable();
@@ -204,20 +193,17 @@ export default function AutoCompleteTextArea<T>(props: IAutoCompleteProps<T>) {
 
   const newhandleAutoComplete = () => {
     if (variable == null) {
-      //console.log(`no variable for autocomplete`);
       setAutoCompleteOptions([]);
       return;
     }
     // if variable is valid option and hasEndBracket, assume it doesn't need autocompletion.
     if (props.Options.includes(variable)) {
-      //console.log(`variable doesn't need autocomplete`);
       setAutoCompleteOptions([]);
       return;
     }
 
     const text = textAreaElement.current?.value;
     if (!text) {
-      //console.log(`no text`);
       setAutoCompleteOptions([]);
       return;
     }
@@ -227,8 +213,7 @@ export default function AutoCompleteTextArea<T>(props: IAutoCompleteProps<T>) {
 
     const before = text.substring(0, (varStart ?? 0) - 1);
     const after = text.substring(varEnd ?? 0);
-    const hasEndBracket = (text[(varEnd ?? 0)] === '}')
-    //console.log(`b: ${before} a: ${after} hasbracket: ${hasEndBracket}`);
+    const hasEndBracket = (text[(varEnd ?? 0)] === '}');
 
     // Generate suggestions
     const suggestions = possibleVariables.map((pv) => {
@@ -240,10 +225,11 @@ export default function AutoCompleteTextArea<T>(props: IAutoCompleteProps<T>) {
   setAutoCompleteOptions(suggestions);
   }
 
+
   React.useEffect(() => {
-    //console.log('thank u son')
     newhandleAutoComplete()
   }, [variable])
+
 
   return (
     <div ref={autoCompleteTextArea}>
@@ -285,5 +271,3 @@ export default function AutoCompleteTextArea<T>(props: IAutoCompleteProps<T>) {
     </div>
   )
 }
-
-//(tableContainer.current?.offsetTop == position.Top && tableContainer.current?.offsetLeft == position.Left)
