@@ -33,54 +33,181 @@ interface IProps<T> extends Omit<IInputProps<T>, 'Type'> {
 
 export default function AutoCompleteInput<T>(props: IProps<T>) {
   const autoCompleteInput = React.useRef<HTMLDivElement>(null);
+  const inputElement = React.useRef<HTMLInputElement>(null);
   const tableContainer = React.useRef<HTMLDivElement>(null);
   const selectTable = React.useRef<HTMLTableElement>(null);
   const [show, setShow] = React.useState<boolean>(false);
   const [autoCompleteOptions, setAutoCompleteOptions] = React.useState<Gemstone.TSX.Interfaces.ILabelValue<string>[]>([])
   const [position, setPosition] = React.useState<Gemstone.TSX.Interfaces.IElementPosition>({ Top: 0, Left: 0, Width: 0, Height: 0 });
+  const [selection, setSelection] = React.useState<number>(0);
+  const [variable, setVariable] = React.useState<string|null>(null);
+  const [varStart, setVarStart] = React.useState<number|null>(null);
+  const [varEnd, setVarEnd] = React.useState<number|null>(null);
     
   const handleOptionClick = (option: Gemstone.TSX.Interfaces.ILabelValue<string>) => {
-    props.Record[props.Field] = option.Value as any;
-    props.Setter(props.Record)
-    setShow(false)
-  }
-  React.useEffect(() => {
-    if (autoCompleteOptions != null && autoCompleteOptions.length !== 0) {
-      setShow(true);
-      return
+      if (!inputElement.current) return;
+      const currentPos = inputElement.current.selectionStart ?? 0;
+      const optionLength = option.Value.length;
+      props.Record[props.Field] = option.Value as any;
+      props.Setter(props.Record);
+      const textLength = inputElement.current ? inputElement.current.textContent?.length ?? 0 : 0;
+      const newCaretPos = (optionLength > textLength ? textLength - 1 : optionLength + currentPos);
+      inputElement.current?.focus();
+      inputElement.current?.setSelectionRange(newCaretPos, newCaretPos);
+      setAutoCompleteOptions([]);
     }
-    setShow(false);
-  }, [autoCompleteOptions])
-    
-  React.useEffect(() => {
-    const rawValue = props.Record[props.Field] == null ? '' : (props.Record[props.Field] as any).toString();
-    handleAutoComplete(rawValue, props.Options, setAutoCompleteOptions);
-  }, [props.Record[props.Field]])
+
 
   React.useLayoutEffect(() => {
+    if (autoCompleteOptions?.length == 0) {return}
     const updatePosition = _.debounce(() => {
-    if (autoCompleteInput.current != null) {
-      const rect = autoCompleteInput.current.getBoundingClientRect();
-      setPosition({ Top: rect.bottom, Left: rect.left, Width: rect.width, Height: rect.height });
-      }
-    }, 200);
+    if (inputElement.current == null) {return}
+    const rect = inputElement.current.getBoundingClientRect();
+    setPosition({ Top: rect.bottom, Left: rect.left, Width: rect.width, Height: rect.height });
+  }, 200);
+  const handleScroll = () => {
+    if (tableContainer.current == null) return
+    updatePosition()
+  };
 
-    const handleScroll = () => {
-      if (tableContainer.current == null) return
-      updatePosition()
-      };
+  updatePosition();
 
-    updatePosition();
+  window.addEventListener('scroll', handleScroll, true);
+  window.addEventListener('resize', updatePosition);
 
-    window.addEventListener('scroll', handleScroll, true);
-    window.addEventListener('resize', updatePosition);
+  return () => {
+    window.removeEventListener('scroll', handleScroll, true);
+    window.removeEventListener('resize', updatePosition);
+    updatePosition.cancel();
+    }
+
+  }, [autoCompleteOptions]);
+
+  React.useEffect(() => {
+    if (autoCompleteOptions.length > 0) {
+      if (position.Top == 0) {return}
+      setShow(true);
+    }
+    else {
+      setShow(false);
+    }
+  },  [autoCompleteOptions, position])
+
+  const updateCaretPosition = () => {
+    if (inputElement.current) {
+      setSelection(inputElement.current.selectionStart ?? 0)
+    }
+  }
+
+  React.useEffect(() => {
+    const autoComplete = inputElement.current;
+    if (!autoComplete) return;
+    
+    autoComplete.addEventListener("keyup", updateCaretPosition);
+    autoComplete.addEventListener("click", updateCaretPosition);
 
     return () => {
-      window.removeEventListener('scroll', handleScroll, true);
-      window.removeEventListener('resize', updatePosition);
-      updatePosition.cancel();
+      autoComplete.removeEventListener("keyup", updateCaretPosition);
+      autoComplete.removeEventListener("click", updateCaretPosition);
+    };
+  }, [])
+
+
+  const updateVariable = () => {
+    const text = inputElement.current?.value;
+    if (!text) {
+      setVariable(null);
+      return;
     }
-  }, [autoCompleteOptions]);
+
+      // easy returns if selection start could not have a curly bracket before it
+    if (selection === null || selection < 0 || selection > text.length) {
+      setVariable(null);
+      return
+      }
+
+    // check backwards from the caret to find the nearest open curly bracket or space
+    let start = selection;
+    while (start > 0) {
+      // check for open curly bracket. if found, assign and break as start of valid variable expression
+      if (/\{/g.test(text[start - 1])) {
+        break;
+      }
+
+      // if space is encountered first, return
+      if (/[\s\}]/g.test(text[start - 1])) {
+        setVariable(null);
+        return
+      }
+      start--;
+    }
+
+    // if no variable found, return
+    if (start == 0) {
+      setVariable(null);
+      return
+    }
+    setVarStart(start);
+
+    // then, get the rest of the word.
+    let end = start ?? 0;
+    while (end < text.length) {
+      if (/[\}\{\s}]/.test(text[end])) {
+        break;
+      }
+      end++;
+    }
+    setVarEnd(end);
+
+    // get variable as substring of text
+    const variable = text.substring(start, end);
+    setVariable(variable);
+  }
+
+
+  React.useEffect(() => {
+    updateVariable();
+  }, [selection])
+
+  const newhandleAutoComplete = () => {
+    if (variable == null) {
+      setAutoCompleteOptions([]);
+      return;
+    }
+    // if variable is valid option and hasEndBracket, assume it doesn't need autocompletion.
+    if (props.Options.includes(variable)) {
+      setAutoCompleteOptions([]);
+      return;
+    }
+
+    const text = inputElement.current?.value;
+    if (!text) {
+      setAutoCompleteOptions([]);
+      return;
+    }
+
+    // Find suggestions for the variable
+    const possibleVariables = props.Options.filter(v => v.toLowerCase().includes(variable.toLowerCase()));
+
+    const before = text.substring(0, (varStart ?? 0) - 1);
+    const after = text.substring(varEnd ?? 0);
+    const hasEndBracket = (text[(varEnd ?? 0)] === '}');
+
+    // Generate suggestions
+    const suggestions = possibleVariables.map((pv) => {
+
+      // Ensure we have braces around the variable and add closing '}' if it was missing
+      const variableWithBraces = hasEndBracket ? `{${pv}` : `{${pv}}`;
+      return { Label: `${variableWithBraces}${hasEndBracket ? '}' : ''}`, Value: `${before}${variableWithBraces}${after}` };
+    });
+  setAutoCompleteOptions(suggestions);
+  }
+
+
+  React.useEffect(() => {
+    newhandleAutoComplete()
+  }, [variable])
+
 
 
   return (
@@ -95,6 +222,7 @@ export default function AutoCompleteInput<T>(props: IProps<T>) {
         AllowNull={props.AllowNull}
         Size={props.Size}
         DefaultValue={props.DefaultValue}
+        InputRef={inputElement}
       />
       {!show ? null :
         <Portal>
@@ -103,7 +231,7 @@ export default function AutoCompleteInput<T>(props: IProps<T>) {
               maxHeight: window.innerHeight - position.Top,
               overflowY: 'auto',
               padding: '10 5',
-              display: show ? 'block' : 'none',
+              display: 'block',
               position: 'absolute',
               zIndex: 9999,
               top: `${position.Top}px`,
@@ -132,45 +260,3 @@ export default function AutoCompleteInput<T>(props: IProps<T>) {
       </div>
     )
 }
-
-export const handleAutoComplete = (inputString: string, autoCompletes: string[], autoCompleteSetter: React.Dispatch<React.SetStateAction<Gemstone.TSX.Interfaces.ILabelValue<string>[]>>) => {
-
-  // Find all variables in the searchString
-  const regex = /\{([^\s{}]*)/g;
-  let match: RegExpExecArray | null;
-  const variables: { name: string; start: number; end: number; hasClosingBrace: boolean }[] = [];
-
-  while ((match = regex.exec(inputString)) !== null) {
-    const variableName = match[1];
-    const start = match.index;
-    let end = regex.lastIndex;
-
-    // Check if there is a closing '}'
-    let hasClosingBrace = false;
-    if (inputString[end] === '}') {
-      hasClosingBrace = true;
-      end++; // Include the closing '}'
-    }
-
-    variables.push({ name: variableName, start, end, hasClosingBrace });
-  } // Find the first invalid variable
-  const invalidVariable = variables.find((v) => !v.hasClosingBrace || !autoCompletes.some((cv) => cv.toLowerCase() === v.name.toLowerCase()));
-
-  if (invalidVariable == null) {
-    return([]);
-  }
-
-  // Find suggestions for the invalid variable
-  const possibleVariables = autoCompletes.filter(v => v.toLowerCase().includes(invalidVariable.name.toLowerCase()));
-
-  // Generate suggestions by replacing the FIRST invalid variable
-  const suggestions = possibleVariables.map((pv) => {
-  const before = inputString.substring(0, invalidVariable.start);
-  const after = inputString.substring(invalidVariable.end);
-
-  // Ensure we have braces around the variable and add closing '}' if it was missing
-  const variableWithBraces = invalidVariable.hasClosingBrace ? `{${pv}}` : `{${pv}}`;
-  return { Label: `${variableWithBraces}`, Value: `${before}${variableWithBraces}${after}` };
-  });
-  autoCompleteSetter(suggestions);
-};
