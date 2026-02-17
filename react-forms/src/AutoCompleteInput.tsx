@@ -31,18 +31,22 @@ interface IProps<T> extends Omit<IInputProps<T>, 'Type'> {
   Options: string[]
 }
 
+export interface IVariable {
+  Start: number
+  End: number
+  Variable: string | null
+}
+
 export default function AutoCompleteInput<T>(props: IProps<T>) {
   const autoCompleteInput = React.useRef<HTMLDivElement>(null);
   const inputElement = React.useRef<HTMLInputElement>(null);
   const tableContainer = React.useRef<HTMLDivElement>(null);
   const selectTable = React.useRef<HTMLTableElement>(null);
   const [show, setShow] = React.useState<boolean>(false);
-  const [autoCompleteOptions, setAutoCompleteOptions] = React.useState<Gemstone.TSX.Interfaces.ILabelValue<string>[]>([])
+  const [suggestions, setSuggestions] = React.useState<Gemstone.TSX.Interfaces.ILabelValue<string>[]>([])
   const [position, setPosition] = React.useState<Gemstone.TSX.Interfaces.IElementPosition>({ Top: 0, Left: 0, Width: 0, Height: 0 });
   const [selection, setSelection] = React.useState<number>(0);
-  const [variable, setVariable] = React.useState<string|null>(null);
-  const [varStart, setVarStart] = React.useState<number|null>(null);
-  const [varEnd, setVarEnd] = React.useState<number|null>(null);
+  const [variable, setVariable] = React.useState<IVariable>({Start: 0, End: 0, Variable: ""});
     
   const handleOptionClick = (option: Gemstone.TSX.Interfaces.ILabelValue<string>) => {
       if (!inputElement.current) return;
@@ -54,12 +58,11 @@ export default function AutoCompleteInput<T>(props: IProps<T>) {
       const newCaretPos = (optionLength > textLength ? textLength - 1 : optionLength + currentPos);
       inputElement.current?.focus();
       inputElement.current?.setSelectionRange(newCaretPos, newCaretPos);
-      setAutoCompleteOptions([]);
+      setSuggestions([]);
     }
 
-
   React.useLayoutEffect(() => {
-    if (autoCompleteOptions?.length == 0) {return}
+    if (suggestions?.length == 0) {return}
     const updatePosition = _.debounce(() => {
     if (inputElement.current == null) {return}
     const rect = inputElement.current.getBoundingClientRect();
@@ -81,17 +84,17 @@ export default function AutoCompleteInput<T>(props: IProps<T>) {
     updatePosition.cancel();
     }
 
-  }, [autoCompleteOptions]);
+  }, [suggestions]);
 
   React.useEffect(() => {
-    if (autoCompleteOptions.length > 0) {
+    if (suggestions.length > 0) {
       if (position.Top == 0) {return}
       setShow(true);
     }
     else {
       setShow(false);
     }
-  },  [autoCompleteOptions, position])
+  },  [suggestions, position])
 
   const updateCaretPosition = () => {
     if (inputElement.current) {
@@ -112,100 +115,13 @@ export default function AutoCompleteInput<T>(props: IProps<T>) {
     };
   }, [])
 
-
-  const updateVariable = () => {
-    const text = inputElement.current?.value;
-    if (!text) {
-      setVariable(null);
-      return;
-    }
-
-      // easy returns if selection start could not have a curly bracket before it
-    if (selection === null || selection < 0 || selection > text.length) {
-      setVariable(null);
-      return
-      }
-
-    // check backwards from the caret to find the nearest open curly bracket or space
-    let start = selection;
-    while (start > 0) {
-      // check for open curly bracket. if found, assign and break as start of valid variable expression
-      if (/\{/g.test(text[start - 1])) {
-        break;
-      }
-
-      // if space is encountered first, return
-      if (/[\s\}]/g.test(text[start - 1])) {
-        setVariable(null);
-        return
-      }
-      start--;
-    }
-
-    // if no variable found, return
-    if (start == 0) {
-      setVariable(null);
-      return
-    }
-    setVarStart(start);
-
-    // then, get the rest of the word.
-    let end = start ?? 0;
-    while (end < text.length) {
-      if (/[\}\{\s}]/.test(text[end])) {
-        break;
-      }
-      end++;
-    }
-    setVarEnd(end);
-
-    // get variable as substring of text
-    const variable = text.substring(start, end);
-    setVariable(variable);
-  }
-
-
   React.useEffect(() => {
-    updateVariable();
+    setVariable(getCurrentVariable(inputElement.current?.getAttribute('value') ?? "", selection));
   }, [selection])
 
-  const newhandleAutoComplete = () => {
-    if (variable == null) {
-      setAutoCompleteOptions([]);
-      return;
-    }
-    // if variable is valid option and hasEndBracket, assume it doesn't need autocompletion.
-    if (props.Options.includes(variable)) {
-      setAutoCompleteOptions([]);
-      return;
-    }
-
-    const text = inputElement.current?.value;
-    if (!text) {
-      setAutoCompleteOptions([]);
-      return;
-    }
-
-    // Find suggestions for the variable
-    const possibleVariables = props.Options.filter(v => v.toLowerCase().includes(variable.toLowerCase()));
-
-    const before = text.substring(0, (varStart ?? 0) - 1);
-    const after = text.substring(varEnd ?? 0);
-    const hasEndBracket = (text[(varEnd ?? 0)] === '}');
-
-    // Generate suggestions
-    const suggestions = possibleVariables.map((pv) => {
-
-      // Ensure we have braces around the variable and add closing '}' if it was missing
-      const variableWithBraces = hasEndBracket ? `{${pv}` : `{${pv}}`;
-      return { Label: `${variableWithBraces}${hasEndBracket ? '}' : ''}`, Value: `${before}${variableWithBraces}${after}` };
-    });
-  setAutoCompleteOptions(suggestions);
-  }
-
 
   React.useEffect(() => {
-    newhandleAutoComplete()
+    setSuggestions(getSuggestions(variable, inputElement.current?.getAttribute('value') ?? "", props.Options))
   }, [variable])
 
 
@@ -242,7 +158,7 @@ export default function AutoCompleteInput<T>(props: IProps<T>) {
         >
             <table className="table table-hover" style={{ margin: 0 }} ref={selectTable}>
               <tbody>
-                {autoCompleteOptions.map((f, i) => (
+                {suggestions.map((f, i) => (
                   f.Value === props.Record[props.Field] ? null :
                     <tr key={i} onMouseDown={(_) => handleOptionClick(f)}>
                       <td>
@@ -259,4 +175,90 @@ export default function AutoCompleteInput<T>(props: IProps<T>) {
         }
       </div>
     )
+}
+
+
+export const getSuggestions = (variable: IVariable, text: string, options: string[]) => {
+  if (!(variable.Variable != null)) {
+    return [];
+  }
+  // if variable is valid option and hasEndBracket, assume it doesn't need autocompletion.
+  if (options.includes(variable.Variable)) {
+    return [];
+  }
+
+  if (!text) {
+    return [];
+  }
+
+  // Find suggestions for the variable
+  const possibleVariables = options.filter(v => v.toLowerCase().includes((variable.Variable ?? "").toLowerCase()));
+
+  const before = text.substring(0, (variable.Start) - 1);
+  const after = text.substring(variable.End);
+  const hasEndBracket = (text[variable.End] === '}');
+
+  // Generate suggestions
+  const suggestions = possibleVariables.map((pv) => {
+
+    // Ensure we have braces around the variable and add closing '}' if it was missing
+    const variableWithBraces = hasEndBracket ? `{${pv}` : `{${pv}}`;
+    return { Label: `${variableWithBraces}${hasEndBracket ? '}' : ''}`, Value: `${before}${variableWithBraces}${after}` };
+  });
+return suggestions;
+}
+
+
+
+export const getCurrentVariable = (text: string, selection: number) => {
+  let thisVariable = {
+    Start: 0,
+    End: 0,
+    Variable: null 
+  };
+
+  if (!text) {
+    return thisVariable;
+  }
+
+    // easy returns if selection start could not have a curly bracket before it
+  if (selection === null || selection < 0 || selection > text.length) {
+    return thisVariable;
+    }
+
+  // check backwards from the caret to find the nearest open curly bracket or space
+  let start = selection;
+  while (start > 0) {
+    // check for open curly bracket. if found, assign and break as start of valid variable expression
+    if (/\{/g.test(text[start - 1])) {
+      break;
+    }
+
+    // if space is encountered first, return
+    if (/[\s\}]/g.test(text[start - 1])) {
+      return thisVariable;
+    }
+    start--;
+  }
+
+  // if no variable found, return
+  if (start == 0) {
+    return thisVariable;
+  }
+
+  thisVariable.Start = start;
+
+  // then, get the rest of the word.
+  let end = start ?? 0;
+  while (end < text.length) {
+    if (/[\}\{\s}]/.test(text[end])) {
+      break;
+    }
+    end++;
+  }
+  thisVariable.End = end;
+
+  // get variable as substring of text
+  const variable = text.substring(start, end);
+  return {Start: thisVariable.Start, End: thisVariable.End, Variable: variable};
 }
