@@ -61,5 +61,25 @@ describe('AutoCompleteTextArea', () => {
         await autoCompleteTextArea.sendKeys("{");
         const dropDown = await driver.findElement(By.css('table.table.table-hover'));
         expect(dropDown).toBeDefined()
+    }),
+    it('inserts selected suggestion into the text, preserving before and after text, including empty or broken variables', async () => {
+        const autoCompleteTextArea = await driver.wait(until.elementLocated(By.css('textarea.form-control')), 100);
+        await driver.wait(until.elementIsVisible(autoCompleteTextArea), 300)
+
+        // add an opening curly brackets that would break earlier versions of autocomplete
+        await autoCompleteTextArea.sendKeys("i like to {read every weekend { night.");
+        await driver.executeScript(`
+            const textarea = document.getElementsByClassName("form-control")[0];
+            textarea.focus();
+            textarea.setSelectionRange(15, 15);
+            `);
+        await autoCompleteTextArea.sendKeys(" {");
+        const dropDown = await driver.findElement(By.css('table.table.table-hover'));
+        const poreteSuggestion = await dropDown.findElement(By.xpath("//tbody/tr[td='{Porete}']/td"));
+        await driver.wait(until.elementIsVisible(poreteSuggestion));
+        await poreteSuggestion.click();
+        // makes the test more consistent
+        await driver.sleep(100);
+        expect(await autoCompleteTextArea.getText()).toBe("i like to {read {Porete} every weekend { night.");
     })
 })
