@@ -33,7 +33,6 @@ export default function AutoCompleteTextArea<T>(props: IAutoCompleteProps<T>) {
     setSuggestions([]);
   }
 
-
   React.useEffect(() => {
     if (suggestions.length == 0) {
       setPosition({Top: 0, Left: 0, Width: 0, Height: 0});
@@ -54,39 +53,6 @@ export default function AutoCompleteTextArea<T>(props: IAutoCompleteProps<T>) {
     }
   },  [suggestions, position])
 
-  const getVariablePosition = () => {
-    if (!textAreaElement.current) return [0, 0]
-    const textarea = textAreaElement.current;
-    if (!textarea.parentNode) return [0,0];
-    const hiddenDiv = document.createElement('div')
-    const style = getComputedStyle(textarea);
-
-    Array.from(style).forEach((propertyName) => {
-      const value = style.getPropertyValue(propertyName);
-      hiddenDiv.style.setProperty(propertyName, value);
-    })
-
-    // Set text content up to caret
-    const beforeCaret = textarea.value.substring(0, variable.Start);
-    const toLastOpenBracket = "\n" + beforeCaret.split('{').slice(0, -1).join('{');
-    const afterCaret = textarea.value.substring(variable.Start) ?? '.';
-
-    hiddenDiv.textContent = toLastOpenBracket;
-
-    // Create a span to mark caret position
-    const span = document.createElement('span');
-    span.textContent = afterCaret[0];
-    hiddenDiv.appendChild(span);
-
-    textarea.parentNode.appendChild(hiddenDiv);
-
-    // Get caret's vertical position relative to textarea
-    const caretX = span.offsetLeft - textarea.scrollLeft;
-    const caretY = span.offsetTop - textarea.scrollTop;
-
-    textarea.parentNode.removeChild(hiddenDiv);
-    return [caretX, caretY];
-  }
   const updateCaretPosition = () => {
     if (textAreaElement.current) {
       setSelection(textAreaElement.current.selectionStart)
@@ -112,7 +78,7 @@ export default function AutoCompleteTextArea<T>(props: IAutoCompleteProps<T>) {
     const updatePosition = _.debounce(() => {
     if (textAreaElement.current == null) {return}
     const rect = textAreaElement.current.getBoundingClientRect();
-    const [ caret_X, caret_Y ] = getVariablePosition();
+    const [ caret_X, caret_Y ] = getTextDimensions(textAreaElement, variable.Start - 1, "\n");
     setPosition({ Top: rect.top + caret_Y - rect.bottom, Left: rect.left + caret_X, Width: rect.width, Height: rect.height });
   }, 200);
 
@@ -183,4 +149,37 @@ export default function AutoCompleteTextArea<T>(props: IAutoCompleteProps<T>) {
           </Portal> 
     </div>
   )
+}
+
+const getTextDimensions = (textArea: React.RefObject<HTMLTextAreaElement>, selection: number, prefix?: string) => {
+  if (!textArea.current) return [0, 0]
+  const textarea = textArea.current;
+  if (!textarea.parentNode) return [0,0];
+  const hiddenDiv = document.createElement('div')
+  const style = getComputedStyle(textarea);
+
+  Array.from(style).forEach((propertyName) => {
+    const value = style.getPropertyValue(propertyName);
+    hiddenDiv.style.setProperty(propertyName, value);
+  })
+
+  // Set text content up to caret
+  const beforeSelection = textarea.value.substring(0, selection);
+  const afterSelection = textarea.value.substring(selection) ?? '.';
+
+  hiddenDiv.textContent = (prefix ?? "") + beforeSelection;
+
+  // Create a span to mark caret position
+  const span = document.createElement('span');
+  span.textContent = afterSelection[0];
+  hiddenDiv.appendChild(span);
+
+  textarea.parentNode.appendChild(hiddenDiv);
+
+  // Get caret's vertical position relative to textarea
+  const caretX = span.offsetLeft - textarea.scrollLeft;
+  const caretY = span.offsetTop - textarea.scrollTop;
+
+  textarea.parentNode.removeChild(hiddenDiv);
+  return [caretX, caretY];
 }
