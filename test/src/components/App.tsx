@@ -32,6 +32,7 @@ import { RadioButtonsTestComponent } from './react-forms';
 import MapTestComponent from './react-interactive/Map';
 import LegendEntryTestComponent from './react-graph/LegendEntry';
 import AutoCompleteTextAreaTestComponent from './react-forms/AutoCompleteTextArea';
+import AutoCompleteInputTestComponent from './react-forms/AutoCompleteInput';
 
 declare const homePath: string;
 
@@ -39,6 +40,7 @@ declare const homePath: string;
 export const CheckboxPageRoute = "Checkbox";
 export const RadioButtonsPageRoute = "RadioButtons";
 export const AutoCompleteTextAreaRoute = "AutoCompleteTextArea";
+export const AutoCompleteInputRoute = "AutoCompleteInput";
 
 // Common Pages Page Routes/Labels
 export const TimeFilterRoute = "TimeFilter"
@@ -90,6 +92,9 @@ const App = () => {
                 </Page>
                 <Page Name={AutoCompleteTextAreaRoute} Label={AutoCompleteTextAreaRoute} >
                     <AutoCompleteTextAreaTestComponent />
+                </Page>
+                <Page Name={AutoCompleteInputRoute} Label={AutoCompleteInputRoute} >
+                    <AutoCompleteInputTestComponent />
                 </Page>
 
             </Section>
