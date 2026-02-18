@@ -61,6 +61,9 @@ describe('AutoCompleteInput', () => {
         await autoCompleteInput.sendKeys("{");
         const dropDown = await driver.wait(until.elementLocated(By.css('table.table.table-hover')), 100);
         expect(dropDown).toBeDefined()
+        const dropDownRect = await dropDown.getRect();
+        expect([dropDownRect.x]).toBeGreaterThan(0); // neither x nor y should be 0.
+        expect([dropDownRect.y]).toBeGreaterThan(0);
     }),
     it('inserts selected suggestion into the text, preserving before and after text, including empty or broken variables', async () => {
         const autoCompleteInput = await driver.wait(until.elementLocated(By.css('input.form-control')), 100);

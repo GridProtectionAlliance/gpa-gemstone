@@ -36,7 +36,9 @@ beforeEach(async () => {
 
     const options = new chrome.Options();
     // Ensure headless mode for sizing tests. Mimics Jenkins
-    options.addArguments('--window-size=750,900', '--headless=new');
+    options.addArguments('--window-size=750,900', 
+     //   '--headless=new'
+    );
 
     driver = await new Builder()
         .forBrowser('chrome')
@@ -60,7 +62,10 @@ describe('AutoCompleteTextArea', () => {
         await driver.wait(until.elementIsVisible(autoCompleteTextArea), 300)
         await autoCompleteTextArea.sendKeys("{");
         const dropDown = await driver.wait(until.elementLocated(By.css('table.table.table-hover')), 100);
-        expect(dropDown).toBeDefined()
+        expect(dropDown).toBeDefined();
+        const dropDownRect = await dropDown.getRect();
+        expect(dropDownRect.x).toBeGreaterThan(0); // neither x nor y should be 0.
+        expect(dropDownRect.y).toBeGreaterThan(0);
     }),
     it('inserts selected suggestion into the text, preserving before and after text, including empty or broken variables', async () => {
         const autoCompleteTextArea = await driver.wait(until.elementLocated(By.css('textarea.form-control')), 100);
@@ -81,5 +86,33 @@ describe('AutoCompleteTextArea', () => {
         // makes the test more consistent
         await driver.sleep(100);
         expect(await autoCompleteTextArea.getText()).toBe("i like to {read {Porete} every weekend { night.");
+    }),
+    it('moves the dropdown to the variable under the caret.', async () => {
+        const autoCompleteTextArea = await driver.wait(until.elementLocated(By.css('textarea.form-control')), 100);
+        await driver.wait(until.elementIsVisible(autoCompleteTextArea), 300)
+        await autoCompleteTextArea.sendKeys("{");
+        const firstDropDown = await driver.wait(until.elementLocated(By.css('table.table.table-hover')), 100);
+        expect(firstDropDown).toBeDefined();
+        const firstRect = await firstDropDown.getRect();
+        await autoCompleteTextArea.sendKeys("} lorem \n ipsum lorem ipsum yes yes yes {");
+        const secondDropDown = await driver.wait(until.elementLocated(By.css('table.table.table-hover')), 100);
+        expect(secondDropDown).toBeDefined();
+        const secondRect = await secondDropDown.getRect();
+        expect(secondRect.x).toBeGreaterThan(firstRect.x);
+        expect(secondRect.y).toBeGreaterThan(firstRect.y);
+        await driver.executeScript(`
+            const textarea = document.getElementsByClassName("form-control")[0];
+            textarea.focus();
+            textarea.setSelectionRange(1, 1);
+            `);
+        // setting the selection by script prevents autocomplete from updating. 
+        // by sending keys, we can also make sure that the location of the dropdown doesn't change while typing.
+        await autoCompleteTextArea.sendKeys("e"); 
+        const thirdDropDown = await driver.wait(until.elementLocated(By.css('table.table.table-hover')), 100);
+        await driver.sleep(200);
+        expect(thirdDropDown).toBeDefined();
+        const thirdRect = await thirdDropDown.getRect();
+        expect(thirdRect.x).toBe(firstRect.x);
+        expect(thirdRect.y).toBe(firstRect.y);
     })
 })
