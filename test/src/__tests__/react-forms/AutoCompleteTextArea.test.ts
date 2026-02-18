@@ -59,7 +59,7 @@ describe('AutoCompleteTextArea', () => {
         const autoCompleteTextArea = await driver.wait(until.elementLocated(By.css('textarea.form-control')), 100);
         await driver.wait(until.elementIsVisible(autoCompleteTextArea), 300)
         await autoCompleteTextArea.sendKeys("{");
-        const dropDown = await driver.findElement(By.css('table.table.table-hover'));
+        const dropDown = await driver.wait(until.elementLocated(By.css('table.table.table-hover')), 100);
         expect(dropDown).toBeDefined()
     }),
     it('inserts selected suggestion into the text, preserving before and after text, including empty or broken variables', async () => {
@@ -74,7 +74,7 @@ describe('AutoCompleteTextArea', () => {
             textarea.setSelectionRange(15, 15);
             `);
         await autoCompleteTextArea.sendKeys(" {");
-        const dropDown = await driver.findElement(By.css('table.table.table-hover'));
+        const dropDown = await driver.wait(until.elementLocated(By.css('table.table.table-hover')), 100);
         const poreteSuggestion = await dropDown.findElement(By.xpath("//tbody/tr[td='{Porete}']/td"));
         await driver.wait(until.elementIsVisible(poreteSuggestion));
         await poreteSuggestion.click();
