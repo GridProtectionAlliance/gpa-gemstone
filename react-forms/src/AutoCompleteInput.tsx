@@ -42,27 +42,15 @@ export default function AutoCompleteInput<T>(props: IProps<T>) {
   const inputElement = React.useRef<HTMLInputElement>(null);
   const tableContainer = React.useRef<HTMLDivElement>(null);
   const selectTable = React.useRef<HTMLTableElement>(null);
-  const [show, setShow] = React.useState<boolean>(false);
   const [suggestions, setSuggestions] = React.useState<Gemstone.TSX.Interfaces.ILabelValue<string>[]>([])
-  const [position, setPosition] = React.useState<Gemstone.TSX.Interfaces.IElementPosition>({ Top: 0, Left: 0, Width: 0, Height: 0 });
-  const [selection, setSelection] = React.useState<number>(0);
-  const [variable, setVariable] = React.useState<IVariable>({Start: 0, End: 0, Variable: ""});
-    
-  const handleOptionClick = (option: Gemstone.TSX.Interfaces.ILabelValue<string>) => {
-      if (inputElement.current == null) return;
-      const currentPos = inputElement.current.selectionStart ?? 0;
-      const optionLength = option.Value.length;
-      props.Record[props.Field] = option.Value as any;
-      props.Setter(props.Record);
-      const textLength = inputElement.current.textContent?.length ?? 0;
-      const newCaretPos = (optionLength > textLength ? textLength - 1 : optionLength + currentPos);
-      inputElement.current?.focus();
-      inputElement.current?.setSelectionRange(newCaretPos, newCaretPos);
-      setSuggestions([]);
-    }
+  const [position, setPosition] = React.useState<Gemstone.TSX.Interfaces.IElementPosition|null>(null);
 
+  // update dropdown position
   React.useLayoutEffect(() => {
-    if (suggestions?.length == 0) {return}
+    if (suggestions?.length == 0) {
+      setPosition(null);
+      return
+    }
     const updatePosition = _.debounce(() => {
       if (inputElement.current == null) {return}
       const rect = inputElement.current.getBoundingClientRect();
@@ -87,45 +75,43 @@ export default function AutoCompleteInput<T>(props: IProps<T>) {
 
   }, [suggestions]);
 
-  React.useEffect(() => {
-    if (suggestions.length > 0) {
-      if (position.Top == 0) {return}
-      setShow(true);
-    }
-    else {
-      setShow(false);
-    }
-  },  [suggestions, position])
-
-  const updateCaretPosition = () => {
-    if (inputElement.current !== null) {
-      setSelection(inputElement.current.selectionStart ?? 0)
-    }
-  }
-
+  // listen for changes in input caret position
   React.useEffect(() => {
     const autoComplete = inputElement.current;
     if (autoComplete == null) return;
     
-    autoComplete.addEventListener("keyup", updateCaretPosition);
-    autoComplete.addEventListener("click", updateCaretPosition);
+    autoComplete.addEventListener("keyup", handleCaretPosition);
+    autoComplete.addEventListener("click", handleCaretPosition);
 
     return () => {
-      autoComplete.removeEventListener("keyup", updateCaretPosition);
-      autoComplete.removeEventListener("click", updateCaretPosition);
+      autoComplete.removeEventListener("keyup", handleCaretPosition);
+      autoComplete.removeEventListener("click", handleCaretPosition);
     };
   }, [])
 
-  React.useEffect(() => {
-    setVariable(getCurrentVariable(inputElement.current?.getAttribute('value') ?? "", selection));
-  }, [selection])
+  // edit input text when suggestion is selected
+  const handleOptionClick = (option: Gemstone.TSX.Interfaces.ILabelValue<string>) => {
+    if (inputElement.current == null) return;
+    const currentPos = inputElement.current.selectionStart ?? 0;
+    const optionLength = option.Value.length;
+    props.Record[props.Field] = option.Value as any;
+    props.Setter(props.Record);
+    const textLength = inputElement.current.textContent?.length ?? 0;
+    const newCaretPos = (optionLength > textLength ? textLength - 1 : optionLength + currentPos);
+    inputElement.current?.focus();
+    inputElement.current?.setSelectionRange(newCaretPos, newCaretPos);
+    setSuggestions([]);
+  }
 
-
-  React.useEffect(() => {
-    setSuggestions(getSuggestions(variable, inputElement.current?.getAttribute('value') ?? "", props.Options))
-  }, [variable])
-
-
+  // update variable when caret position changes
+  const handleCaretPosition = () => {
+    if (inputElement.current !== null) {
+      const selection = (inputElement.current.selectionStart ?? 0);
+      const variable = getCurrentVariable(inputElement.current?.getAttribute('value') ?? "", selection);
+      const suggests = getSuggestions(variable, inputElement.current?.getAttribute('value') ?? "", props.Options);
+      setSuggestions(suggests);
+    }
+  }
 
   return (
     <div ref={autoCompleteInput}>
@@ -141,7 +127,7 @@ export default function AutoCompleteInput<T>(props: IProps<T>) {
         DefaultValue={props.DefaultValue}
         InputRef={inputElement}
       />
-      {!show ? null :
+      {position == null ? null :
         <Portal>
           <div ref={tableContainer} className='popover'
             style={{

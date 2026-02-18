@@ -15,12 +15,66 @@ export default function AutoCompleteTextArea<T>(props: IAutoCompleteProps<T>) {
   const tableContainer = React.useRef<HTMLDivElement>(null);
   const selectTable = React.useRef<HTMLTableElement>(null);
   const textAreaElement = React.useRef<HTMLTextAreaElement>(null);
-  const [show, setShow] = React.useState<boolean>(false);
   const [suggestions, setSuggestions] = React.useState<Gemstone.TSX.Interfaces.ILabelValue<string>[]>([])
-  const [position, setPosition] = React.useState<Gemstone.TSX.Interfaces.IElementPosition>({ Top: 0, Left: 0, Width: 0, Height: 0 });
-  const [selection, setSelection] = React.useState<number>(0);
+  const [position, setPosition] = React.useState<Gemstone.TSX.Interfaces.IElementPosition|null>(null);
   const [variable, setVariable] = React.useState<IVariable>({Start: 0, End: 0, Variable: ""});
+
+  // add listeners to follow caret
+  React.useEffect(() => {
+    const autoComplete = textAreaElement.current;
+    if (autoComplete == null) return;
     
+    autoComplete.addEventListener("keyup", handleCaretPosition);
+    autoComplete.addEventListener("click", handleCaretPosition);
+
+    return () => {
+      autoComplete.removeEventListener("keyup", handleCaretPosition);
+      autoComplete.removeEventListener("click", handleCaretPosition);
+    };
+  }, [])
+
+  // set position of the suggestion dropdown
+  React.useLayoutEffect(() => {
+    if (suggestions?.length == 0) {
+      setPosition(null);
+      return
+    }
+    const updatePosition = _.debounce(() => {
+      if (textAreaElement.current == null) {return}
+      const rect = textAreaElement.current.getBoundingClientRect();
+      const [ caret_X, caret_Y ] = getTextDimensions(textAreaElement, variable.Start - 1, "\n");
+      setPosition({ Top: rect.top + caret_Y - rect.bottom, Left: rect.left + caret_X, Width: rect.width, Height: rect.height });
+    }, 200);
+
+    const handleScroll = () => {
+      if (tableContainer.current == null) return
+      updatePosition()
+    };
+
+    updatePosition();
+
+    window.addEventListener('scroll', handleScroll, true);
+    window.addEventListener('resize', updatePosition);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll, true);
+      window.removeEventListener('resize', updatePosition);
+      updatePosition.cancel();
+    }
+  }, [suggestions]);
+
+  // update variable and suggestions when caret position changes
+  const handleCaretPosition = () => {
+    if (textAreaElement.current !== null) {
+      const selection = textAreaElement.current.selectionStart;
+      const variable = getCurrentVariable(textAreaElement.current?.value ?? "", selection);
+      setVariable(variable);
+      const suggests = getSuggestions(variable, textAreaElement.current?.value ?? "", props.Options)
+      setSuggestions(suggests);
+    }
+  }
+  
+  // edit text area contents with selected suggestion
   const handleOptionClick = (option: Gemstone.TSX.Interfaces.ILabelValue<string>) => {
     const currentPos = textAreaElement.current !== null ? textAreaElement.current.selectionStart : 0;
     const optionLength = option.Value.length;
@@ -33,84 +87,6 @@ export default function AutoCompleteTextArea<T>(props: IAutoCompleteProps<T>) {
     setSuggestions([]);
   }
 
-  React.useEffect(() => {
-    if (suggestions.length == 0) {
-      setPosition({Top: 0, Left: 0, Width: 0, Height: 0});
-    }
-  }, [suggestions])
-
-  React.useEffect(() => {
-    if (suggestions.length > 0) {
-      if (tableContainer.current == null) {return}
-      tableContainer.current.style.top = `${position.Top}px`;
-      tableContainer.current.style.left = `${position.Left}px`;
-      tableContainer.current.style.minWidth = `${position.Width}px`;
-      if (tableContainer.current.style.top === '0px' && tableContainer.current.style.left === '0px') {return}
-      setShow(true);
-    }
-    else {
-      setShow(false);
-    }
-  },  [suggestions, position])
-
-  const updateCaretPosition = () => {
-    if (textAreaElement.current !== null) {
-      setSelection(textAreaElement.current.selectionStart)
-    }
-  }
-
-  React.useEffect(() => {
-    const autoComplete = textAreaElement.current;
-    if (autoComplete == null) return;
-    
-    autoComplete.addEventListener("keyup", updateCaretPosition);
-    autoComplete.addEventListener("click", updateCaretPosition);
-
-    return () => {
-      autoComplete.removeEventListener("keyup", updateCaretPosition);
-      autoComplete.removeEventListener("click", updateCaretPosition);
-    };
-  }, [])
-
-
-  React.useLayoutEffect(() => {
-    if (suggestions?.length == 0) {return}
-    const updatePosition = _.debounce(() => {
-    if (textAreaElement.current == null) {return}
-    const rect = textAreaElement.current.getBoundingClientRect();
-    const [ caret_X, caret_Y ] = getTextDimensions(textAreaElement, variable.Start - 1, "\n");
-    setPosition({ Top: rect.top + caret_Y - rect.bottom, Left: rect.left + caret_X, Width: rect.width, Height: rect.height });
-    console.log(`top: ${rect.top} caretY ${caret_Y} bottom ${rect.bottom}`)
-  }, 200);
-
-  const handleScroll = () => {
-    if (tableContainer.current == null) return
-    updatePosition()
-  };
-
-  updatePosition();
-
-  window.addEventListener('scroll', handleScroll, true);
-  window.addEventListener('resize', updatePosition);
-
-  return () => {
-    window.removeEventListener('scroll', handleScroll, true);
-    window.removeEventListener('resize', updatePosition);
-    updatePosition.cancel();
-    }
-
-  }, [suggestions]);
-
-  React.useEffect(() => {
-    setVariable(getCurrentVariable(textAreaElement.current?.value ?? "", selection));
-  }, [selection])
-
-
-  React.useEffect(() => {
-    setSuggestions(getSuggestions(variable, textAreaElement.current?.value ?? "", props.Options))
-  }, [variable])
-
-
   return (
     <div ref={autoCompleteTextArea}>
       <TextArea
@@ -122,16 +98,20 @@ export default function AutoCompleteTextArea<T>(props: IAutoCompleteProps<T>) {
         TextAreaRef={textAreaElement}
         SpellCheck={false}
       />
+      {position == null ? <></> : 
           <Portal>
             <div ref={tableContainer} className='popover'
             style={{
               maxHeight: window.innerHeight - position.Top,
               overflowY: 'auto',
               padding: '10 5',
-              display: show ? 'block' : 'none',
+              display: 'block',
               position: 'absolute',
               zIndex: 9999,
-              maxWidth: '100%'
+              maxWidth: '100%',
+              top: `${position.Top}px`,
+              left: `${position.Left}px`,
+              minWidth: `${position.Width}px`
               }}
             >
               <table className="table table-hover" style={{ margin: 0 }} ref={selectTable}>
@@ -148,6 +128,7 @@ export default function AutoCompleteTextArea<T>(props: IAutoCompleteProps<T>) {
               </table>
             </div>
           </Portal> 
+    }
     </div>
   )
 }
