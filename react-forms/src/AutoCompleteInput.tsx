@@ -49,12 +49,12 @@ export default function AutoCompleteInput<T>(props: IProps<T>) {
   const [variable, setVariable] = React.useState<IVariable>({Start: 0, End: 0, Variable: ""});
     
   const handleOptionClick = (option: Gemstone.TSX.Interfaces.ILabelValue<string>) => {
-      if (!inputElement.current) return;
+      if (inputElement.current == null) return;
       const currentPos = inputElement.current.selectionStart ?? 0;
       const optionLength = option.Value.length;
       props.Record[props.Field] = option.Value as any;
       props.Setter(props.Record);
-      const textLength = inputElement.current ? inputElement.current.textContent?.length ?? 0 : 0;
+      const textLength = inputElement.current.textContent?.length ?? 0;
       const newCaretPos = (optionLength > textLength ? textLength - 1 : optionLength + currentPos);
       inputElement.current?.focus();
       inputElement.current?.setSelectionRange(newCaretPos, newCaretPos);
@@ -64,25 +64,26 @@ export default function AutoCompleteInput<T>(props: IProps<T>) {
   React.useLayoutEffect(() => {
     if (suggestions?.length == 0) {return}
     const updatePosition = _.debounce(() => {
-    if (inputElement.current == null) {return}
-    const rect = inputElement.current.getBoundingClientRect();
-    setPosition({ Top: rect.bottom, Left: rect.left, Width: rect.width, Height: rect.height });
-  }, 200);
-  const handleScroll = () => {
-    if (tableContainer.current == null) return
-    updatePosition()
-  };
+      if (inputElement.current == null) {return}
+      const rect = inputElement.current.getBoundingClientRect();
+      setPosition({ Top: rect.bottom, Left: rect.left, Width: rect.width, Height: rect.height });
+      }, 200);
 
-  updatePosition();
+    const handleScroll = () => {
+      if (tableContainer.current == null) return
+      updatePosition()
+    };
 
-  window.addEventListener('scroll', handleScroll, true);
-  window.addEventListener('resize', updatePosition);
+    updatePosition();
 
-  return () => {
-    window.removeEventListener('scroll', handleScroll, true);
-    window.removeEventListener('resize', updatePosition);
-    updatePosition.cancel();
-    }
+    window.addEventListener('scroll', handleScroll, true);
+    window.addEventListener('resize', updatePosition);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll, true);
+      window.removeEventListener('resize', updatePosition);
+      updatePosition.cancel();
+      }
 
   }, [suggestions]);
 
@@ -97,14 +98,14 @@ export default function AutoCompleteInput<T>(props: IProps<T>) {
   },  [suggestions, position])
 
   const updateCaretPosition = () => {
-    if (inputElement.current) {
+    if (inputElement.current !== null) {
       setSelection(inputElement.current.selectionStart ?? 0)
     }
   }
 
   React.useEffect(() => {
     const autoComplete = inputElement.current;
-    if (!autoComplete) return;
+    if (autoComplete == null) return;
     
     autoComplete.addEventListener("keyup", updateCaretPosition);
     autoComplete.addEventListener("click", updateCaretPosition);
@@ -187,7 +188,7 @@ export const getSuggestions = (variable: IVariable, text: string, options: strin
     return [];
   }
 
-  if (!text) {
+  if (text === "") {
     return [];
   }
 
@@ -211,13 +212,13 @@ return suggestions;
 
 
 export const getCurrentVariable = (text: string, selection: number) => {
-  let thisVariable = {
+  const thisVariable = {
     Start: 0,
     End: 0,
     Variable: null 
   };
 
-  if (!text) {
+  if (text === "") {
     return thisVariable;
   }
 
@@ -230,12 +231,12 @@ export const getCurrentVariable = (text: string, selection: number) => {
   let start = selection;
   while (start > 0) {
     // check for open curly bracket. if found, assign and break as start of valid variable expression
-    if (/\{/g.test(text[start - 1])) {
+    if (/{/g.test(text[start - 1])) {
       break;
     }
 
     // if space is encountered first, return
-    if (/[\s\}]/g.test(text[start - 1])) {
+    if (/[\s}]/g.test(text[start - 1])) {
       return thisVariable;
     }
     start--;
@@ -251,7 +252,7 @@ export const getCurrentVariable = (text: string, selection: number) => {
   // then, get the rest of the word.
   let end = start ?? 0;
   while (end < text.length) {
-    if (/[\}\{\s}]/.test(text[end])) {
+    if (/[}{\s}]/.test(text[end])) {
       break;
     }
     end++;

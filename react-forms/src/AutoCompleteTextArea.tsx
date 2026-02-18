@@ -22,11 +22,11 @@ export default function AutoCompleteTextArea<T>(props: IAutoCompleteProps<T>) {
   const [variable, setVariable] = React.useState<IVariable>({Start: 0, End: 0, Variable: ""});
     
   const handleOptionClick = (option: Gemstone.TSX.Interfaces.ILabelValue<string>) => {
-    const currentPos = textAreaElement.current ? textAreaElement.current.selectionStart : 0;
+    const currentPos = textAreaElement.current !== null ? textAreaElement.current.selectionStart : 0;
     const optionLength = option.Value.length;
     props.Record[props.Field] = option.Value as any;
     props.Setter(props.Record);
-    const textLength = textAreaElement.current ? textAreaElement.current.textContent?.length ?? 0 : 0;
+    const textLength = textAreaElement.current !== null ? textAreaElement.current.textContent?.length ?? 0 : 0;
     const newCaretPos = (optionLength > textLength ? textLength - 1 : optionLength + currentPos);
     textAreaElement.current?.focus();
     textAreaElement.current?.setSelectionRange(newCaretPos, newCaretPos);
@@ -41,7 +41,7 @@ export default function AutoCompleteTextArea<T>(props: IAutoCompleteProps<T>) {
 
   React.useEffect(() => {
     if (suggestions.length > 0) {
-      if (!tableContainer.current) {return}
+      if (tableContainer.current == null) {return}
       tableContainer.current.style.top = `${position.Top}px`;
       tableContainer.current.style.left = `${position.Left}px`;
       tableContainer.current.style.minWidth = `${position.Width}px`;
@@ -54,14 +54,14 @@ export default function AutoCompleteTextArea<T>(props: IAutoCompleteProps<T>) {
   },  [suggestions, position])
 
   const updateCaretPosition = () => {
-    if (textAreaElement.current) {
+    if (textAreaElement.current !== null) {
       setSelection(textAreaElement.current.selectionStart)
     }
   }
 
   React.useEffect(() => {
     const autoComplete = textAreaElement.current;
-    if (!autoComplete) return;
+    if (autoComplete == null) return;
     
     autoComplete.addEventListener("keyup", updateCaretPosition);
     autoComplete.addEventListener("click", updateCaretPosition);
@@ -80,6 +80,7 @@ export default function AutoCompleteTextArea<T>(props: IAutoCompleteProps<T>) {
     const rect = textAreaElement.current.getBoundingClientRect();
     const [ caret_X, caret_Y ] = getTextDimensions(textAreaElement, variable.Start - 1, "\n");
     setPosition({ Top: rect.top + caret_Y - rect.bottom, Left: rect.left + caret_X, Width: rect.width, Height: rect.height });
+    console.log(`top: ${rect.top} caretY ${caret_Y} bottom ${rect.bottom}`)
   }, 200);
 
   const handleScroll = () => {
@@ -152,9 +153,9 @@ export default function AutoCompleteTextArea<T>(props: IAutoCompleteProps<T>) {
 }
 
 const getTextDimensions = (textArea: React.RefObject<HTMLTextAreaElement>, selection: number, prefix?: string) => {
-  if (!textArea.current) return [0, 0]
+  if (textArea.current == null) return [0, 0]
   const textarea = textArea.current;
-  if (!textarea.parentNode) return [0,0];
+  if (textarea.parentNode == null) return [0,0];
   const hiddenDiv = document.createElement('div')
   const style = getComputedStyle(textarea);
 
