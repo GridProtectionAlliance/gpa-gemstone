@@ -26,6 +26,7 @@ import ToolTip from './ToolTip';
 import { CreateGuid } from '@gpa-gemstone/helper-functions';
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import { Gemstone } from '@gpa-gemstone/application-typings';
+import HelpIcon from './HelpIcon';
 
 interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
   /**
@@ -59,25 +60,13 @@ export default function DatePicker<T>(props: IProps<T>) {
 
   return (
     <div className="form-group">
-
       {showHelpIcon || showLabel ?
         <label className="d-flex align-items-center">
           <span>{showLabel ? label : ''}</span>
-          {showHelpIcon && (
-            <span className="ml-2 d-flex align-items-center"
-              onMouseEnter={() => setShowHelp(true)}
-              onMouseLeave={() => setShowHelp(false)}
-              data-tooltip={guid}
-            >
-              <ReactIcons.QuestionMark Color="var(--info)" Size={20} />
-            </span>
-          )}
+          <HelpIcon Help={props.Help} />
         </label>
         : null}
 
-      <ToolTip Show={showHelp} Target={guid} Class="info" Position="top">
-        {props.Help}
-      </ToolTip>
       <input
         className={'form-control' + (props.Valid(props.Field) ? '' : ' is-invalid')}
         type="time"
@@ -89,9 +78,7 @@ export default function DatePicker<T>(props: IProps<T>) {
 
           props.Setter(record);
         }}
-        value={
-          props.Record[props.Field] == null ? '' : (props.Record[props.Field] as any).toString()
-        }
+        value={props.Record[props.Field] == null ? '' : (props.Record[props.Field] as any).toString()}
         disabled={props.Disabled == null ? false : props.Disabled}
       />
 
