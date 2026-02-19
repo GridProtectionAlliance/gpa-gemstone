@@ -30,6 +30,7 @@ import { isEqual } from 'lodash';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import ToolTip from './ToolTip';
+import HelpIcon from './HelpIcon';
 
 interface IProps<T> extends Omit<Gemstone.TSX.Interfaces.IBaseFormProps<T>, "Setter"> {
   /**
@@ -101,11 +102,7 @@ interface ISize {
   Width: number,
   Height: number
 }
-
-export default function ColorPicker<T>(props: IProps<T>) {
-  const [guid] = React.useState<string>(CreateGuid);
-  const [showHelp, setShowHelp] = React.useState<boolean>(false);
-
+const ColorPicker = <T,>(props: IProps<T>) => {
   const toolTipRef = React.useRef<HTMLDivElement>(null);
   const buttonRef = React.useRef<HTMLButtonElement>(null);
 
@@ -124,7 +121,6 @@ export default function ColorPicker<T>(props: IProps<T>) {
     "#B43894", "#737373"
   ];
 
-
   React.useLayoutEffect(() => {
     if (buttonRef.current === null) return;
     const targetLocation = GetNodeSize(buttonRef.current);
@@ -138,42 +134,30 @@ export default function ColorPicker<T>(props: IProps<T>) {
     }
   });
 
+  // Variables to control the rendering of label and help icon.
+  const showLabel = props.Label !== "";
+  const showHelpIcon = props.Help !== undefined;
   const label = props.Label === undefined ? props.Field : props.Label;
-  
+
   return (
     <div className={"form-group "} style={props.Style}>
       {/* Rendering label and help icon */}
-      {props.Help !== undefined || props.Label !== "" ?
+      {showHelpIcon || showLabel ?
         <label className="d-flex align-items-center">
-          <span>{props.Label !== "" ? label : ''}</span>
-          {props.Help !== undefined && (
-            <span className="ml-2 d-flex align-items-center"
-              onMouseEnter={() => setShowHelp(true)}
-              onMouseLeave={() => setShowHelp(false)}
-              data-tooltip={guid}
-            >
-              <ReactIcons.QuestionMark Color="var(--info)" Size={20} />
-            </span>
-          )}
+          <span>{showLabel ? label : ''}</span>
+          <HelpIcon Help={props.Help} />
         </label>
         : null}
-        
-      {props.Help !== undefined ?
-        <ToolTip Show={showHelp} Target={guid} Class="info" Position="top">
-          {props.Help}
-        </ToolTip>
-        : null}
-        
 
       {/* Input element */}
-      <button 
-        disabled={props.Disabled ?? false} 
-        ref={buttonRef} 
+      <button
+        disabled={props.Disabled ?? false}
+        ref={buttonRef}
         className={`btn btn-block form-control${props.Valid == null || props.Valid(props.Field) ? '' : ' is-invalid'}`}
-        data-tooltip={"color-picker"} 
-        onMouseOver={() => setShow(true)} 
-        onMouseOut={() => setShow(false)} 
-        style={{...props.Style, backgroundColor: props.Record[props.Field] as any, color: "#ffffff"}}
+        data-tooltip={"color-picker"}
+        onMouseOver={() => setShow(true)}
+        onMouseOut={() => setShow(false)}
+        style={{ ...props.Style, backgroundColor: props.Record[props.Field] as any, color: "#ffffff" }}
       >
         {props.Record[props.Field] ?? ""}
       </button>
@@ -237,3 +221,5 @@ const GetBestPosition = (ref: React.RefObject<HTMLDivElement>, targetTop: number
 
   return result;
 }
+
+export default ColorPicker;

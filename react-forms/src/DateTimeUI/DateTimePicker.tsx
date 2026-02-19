@@ -28,6 +28,7 @@ import { CreateGuid, GetNodeSize, useGetContainerPosition } from '@gpa-gemstone/
 import ToolTip from '../ToolTip';
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import { Gemstone } from '@gpa-gemstone/application-typings';
+import HelpIcon from '../HelpIcon';
 
 export interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
     Valid: (field: keyof T) => boolean;
@@ -227,15 +228,7 @@ export default function DateTimePickerBase<T>(props: IProps<T>) {
             {showHelpIcon || showLabel ?
                 <label className="d-flex align-items-center">
                     <span>{showLabel ? label : ''}</span>
-                    {showHelpIcon && (
-                        <span className="ml-2 d-flex align-items-center"
-                            onMouseEnter={() => setShowHelp(true)}
-                            onMouseLeave={() => setShowHelp(false)}
-                            data-tooltip={helpGuid}
-                        >
-                            <ReactIcons.QuestionMark Color="var(--info)" Size={20} />
-                        </span>
-                    )}
+                    <HelpIcon Help={props.Help} />
                 </label>
                 : null}
 

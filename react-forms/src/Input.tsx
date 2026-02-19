@@ -28,6 +28,7 @@ import ToolTip from './ToolTip';
 import { CreateGuid, IsInteger, IsNumber } from '@gpa-gemstone/helper-functions'
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import { Gemstone } from '@gpa-gemstone/application-typings';
+import HelpIcon from './HelpIcon';
 
 export interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
   /**
@@ -84,7 +85,6 @@ export interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
 export default function Input<T>(props: IProps<T>) {
   const internal = React.useRef<boolean>(false);
   const [guid, setGuid] = React.useState<string>("");
-  const [showHelp, setShowHelp] = React.useState<boolean>(false);
   const [heldVal, setHeldVal] = React.useState<string>(''); // Need to buffer tha value because parseFloat will throw away trailing decimals or zeros
 
   // Effect to generate a unique ID for the component.
@@ -157,22 +157,8 @@ export default function Input<T>(props: IProps<T>) {
       {showHelpIcon || showLabel ?
         <label className="d-flex align-items-center">
           <span>{showLabel ? label : ''}</span>
-          {showHelpIcon && (
-            <span className="ml-2 d-flex align-items-center"
-              onMouseEnter={() => setShowHelp(true)}
-              onMouseLeave={() => setShowHelp(false)}
-              data-tooltip={guid}
-            >
-              <ReactIcons.QuestionMark Color="var(--info)" Size={20} />
-            </span>
-          )}
+          <HelpIcon Help={props.Help} />
         </label>
-        : null}
-
-      {showHelpIcon ?
-        <ToolTip Show={showHelp} Target={guid} Class="info" Position="top">
-          {props.Help}
-        </ToolTip>
         : null}
 
       {/* Input element */}

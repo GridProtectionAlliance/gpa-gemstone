@@ -45,6 +45,7 @@ import ToolTip from './ToolTip';
 import MultiSearchableSelect from './MultiSearchableSelect';
 import AutoCompleteTextArea from './AutoCompleteTextArea';
 import AutoCompleteInput from './AutoCompleteInput';
+import HelpIcon from './HelpIcon';
 
 export {
     CheckBox,
@@ -69,6 +70,7 @@ export {
     MultiInput,
     ToolTip,
     MultiSearchableSelect,
+    HelpIcon,
     AutoCompleteTextArea,
     AutoCompleteInput
 };
