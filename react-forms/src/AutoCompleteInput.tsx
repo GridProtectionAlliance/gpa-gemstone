@@ -44,6 +44,7 @@ export default function AutoCompleteInput<T>(props: IProps<T>) {
   const selectTable = React.useRef<HTMLTableElement>(null);
   const [suggestions, setSuggestions] = React.useState<Gemstone.TSX.Interfaces.ILabelValue<string>[]>([])
   const [position, setPosition] = React.useState<Gemstone.TSX.Interfaces.IElementPosition|null>(null);
+  const [show, setShow] = React.useState<boolean>(true);
 
   // update dropdown position
   React.useLayoutEffect(() => {
@@ -82,10 +83,12 @@ export default function AutoCompleteInput<T>(props: IProps<T>) {
     
     autoComplete.addEventListener("keyup", handleCaretPosition);
     autoComplete.addEventListener("click", handleCaretPosition);
+    window.addEventListener('mousedown', HandleShow, false);
 
     return () => {
       autoComplete.removeEventListener("keyup", handleCaretPosition);
       autoComplete.removeEventListener("click", handleCaretPosition);
+      window.removeEventListener('mousedown', HandleShow, false);
     };
   }, [])
 
@@ -102,6 +105,29 @@ export default function AutoCompleteInput<T>(props: IProps<T>) {
     inputElement.current?.setSelectionRange(newCaretPos, newCaretPos);
     setSuggestions([]);
   }
+
+  // Handle showing and hiding of the dropdown.
+  const HandleShow = React.useCallback((evt: React.MouseEvent<HTMLButtonElement, MouseEvent> | MouseEvent) => {
+    // Ignore if disabled or not a mousedown event
+    if (
+      (props.Disabled === undefined ? false : props.Disabled) 
+      || evt.type !== 'mousedown' 
+    ) {
+      return
+    }
+
+    //ignore the click if it was inside the table or table container
+    if ((selectTable.current != null && selectTable.current.contains(evt.target as Node)) || (tableContainer.current != null && tableContainer.current.contains(evt.target as Node))) {
+      return
+    }
+
+    if (!inputElement.current?.contains(evt.target as Node)) { 
+      setShow(false)
+    }
+    else {
+      setShow(true)
+    }
+  }, [props.Disabled, show])
 
   // update variable when caret position changes
   const handleCaretPosition = () => {
@@ -127,7 +153,7 @@ export default function AutoCompleteInput<T>(props: IProps<T>) {
         DefaultValue={props.DefaultValue}
         InputRef={inputElement}
       />
-      {position == null ? null :
+      {position == null || !show ? null :
         <Portal>
           <div ref={tableContainer} className='popover'
             style={{
