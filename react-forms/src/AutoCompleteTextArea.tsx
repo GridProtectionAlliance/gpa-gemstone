@@ -159,8 +159,8 @@ const getTextDimensions = (textArea: React.RefObject<HTMLTextAreaElement>, selec
   textarea.parentNode.appendChild(hiddenDiv);
 
   // Get caret's vertical position relative to textarea
-  const caretX = span.offsetLeft - hiddenDiv.scrollLeft;
-  const caretY = span.offsetTop - hiddenDiv.offsetTop;
+  const caretX = span.offsetLeft - hiddenDiv.offsetLeft - hiddenDiv.scrollLeft;
+  const caretY = span.offsetTop - hiddenDiv.offsetTop - textarea.scrollTop;
 
   textarea.parentNode.removeChild(hiddenDiv);
   return [caretX, caretY];
