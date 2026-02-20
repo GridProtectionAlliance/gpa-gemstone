@@ -61,7 +61,7 @@ export default function AutoCompleteInput<T>(props: IProps<T>) {
       return
     }
 
-    if (!inputElement.current?.contains(evt.target as Node)) { 
+    if (inputElement.current !== null && !inputElement.current?.contains(evt.target as Node)) { 
       setShow(false)
     }
     else {

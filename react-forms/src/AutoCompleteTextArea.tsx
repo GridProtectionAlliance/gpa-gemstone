@@ -35,7 +35,7 @@ export default function AutoCompleteTextArea<T>(props: IAutoCompleteProps<T>) {
       return
     }
 
-    if (!textAreaElement.current?.contains(evt.target as Node)) { 
+    if (textAreaElement.current !== null && !textAreaElement.current?.contains(evt.target as Node)) { 
       setShow(false)
     }
     else {
