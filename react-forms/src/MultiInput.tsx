@@ -27,6 +27,7 @@ import ToolTip from './ToolTip';
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import { CreateGuid } from '@gpa-gemstone/helper-functions';
 import { Gemstone } from '@gpa-gemstone/application-typings';
+import HelpIcon from './HelpIcon';
 
 interface IProps<T> extends Omit<Gemstone.TSX.Interfaces.IBaseFormProps<T>, 'Valid' | 'Feedback'> {
     /**
@@ -86,31 +87,21 @@ function MultiInput<T>(props: IProps<T>) {
         return <></>
     }
 
+    // Variables to control the rendering of label and help icon.
+    const showLabel = props.Label !== "";
+    const showHelpIcon = props.Help !== undefined;
+    const label = props.Label === undefined ? props.Field : props.Label;
+
     return (
         <>
             {fieldArray.length === 0 ?
                 <>
-                    <label className='d-flex align-items-center'>
-                        <span>
-                            {props.Label ?? props.Field}
-                        </span>
-
-                        {props.Help != null ?
-                            <span className="ml-2 d-flex align-items-center"
-                                onMouseEnter={() => setShowHelp(true)}
-                                onMouseLeave={() => setShowHelp(false)}
-                                data-tooltip={guid}
-                            >
-                                <ReactIcons.QuestionMark Color="var(--info)" Size={20} />
-                            </span>
-                            : null}
-                        <button className='btn' onClick={() => props.Setter({ ...props.Record, [props.Field]: [props.DefaultValue] })}>
-                            <ReactIcons.CirclePlus />
-                        </button>
-                    </label>
-                    <ToolTip Show={showHelp && props.Help != null} Target={guid} Class="info" Position="top">
-                        {props.Help}
-                    </ToolTip>
+                    {showHelpIcon || showLabel ?
+                        <label className="d-flex align-items-center">
+                            <span>{showLabel ? label : ''}</span>
+                            <HelpIcon Help={props.Help} />
+                        </label>
+                        : null}
                 </>
                 : null}
 

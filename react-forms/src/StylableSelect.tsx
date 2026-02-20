@@ -29,6 +29,7 @@ import { Portal } from 'react-portal';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 import * as _ from 'lodash';
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
+import HelpIcon from './HelpIcon';
 
 export interface IOption {
   Value: any;
@@ -211,24 +212,11 @@ export default function StylableSelect<T>(props: IProps<T>) {
       {/* Label and help icon rendering */}
       {showHelpIcon || showLabel ?
         <label className="d-flex align-items-center">
-          <span>{showLabel ? label : ''}</span>
-          {showHelpIcon && (
-            <span
-              onMouseEnter={() => setShowHelp(true)}
-              onMouseLeave={() => setShowHelp(false)}
-              data-tooltip={guid}
-              className="ml-2 d-flex align-items-center"
-            >
-              <ReactIcons.QuestionMark Color="var(--info)" Size={20} />
-            </span>
-          )}
+          <span>
+            {showLabel ? label : ''}
+          </span>
+          <HelpIcon Help={props.Help} />
         </label>
-        : null}
-
-      {props.Help !== undefined ?
-        <ToolTip Show={showHelp} Target={guid} Class="info" Position="top">
-          {props.Help}
-        </ToolTip>
         : null}
 
       {/* Dropdown toggle button */}

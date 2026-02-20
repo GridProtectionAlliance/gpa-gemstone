@@ -28,6 +28,7 @@ import ToolTip from './ToolTip';
 import { CreateGuid } from '@gpa-gemstone/helper-functions'
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import { Gemstone } from '@gpa-gemstone/application-typings';
+import HelpIcon from './HelpIcon';
 
 interface IProps<T> extends Omit<Gemstone.TSX.Interfaces.IBaseFormProps<T>, 'Setter'> {
   /**
@@ -102,22 +103,8 @@ export default function Select<T>(props: IProps<T>) {
       {showHelpIcon || showLabel ?
         <label className="d-flex align-items-center">
           <span>{showLabel ? label : ''}</span>
-          {showHelpIcon && (
-            <span className="ml-2 d-flex align-items-center"
-              onMouseEnter={() => setShowHelp(true)}
-              onMouseLeave={() => setShowHelp(false)}
-              data-tooltip={guid}
-            >
-              <ReactIcons.QuestionMark Color="var(--info)" Size={20} />
-            </span>
-          )}
+          <HelpIcon Help={props.Help} />
         </label>
-        : null}
-
-      {showHelpIcon ?
-        <ToolTip Show={showHelp} Target={guid} Class="info" Position="top">
-          {props.Help}
-        </ToolTip>
         : null}
 
       {/* Rendering the select input */}
