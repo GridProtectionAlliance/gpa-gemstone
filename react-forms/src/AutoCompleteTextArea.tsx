@@ -43,7 +43,7 @@ export default function AutoCompleteTextArea<T>(props: IAutoCompleteProps<T>) {
       if (textAreaElement.current == null) {return}
       const rect = textAreaElement.current.getBoundingClientRect();
       const [ caret_X, caret_Y ] = getTextDimensions(textAreaElement, variable.Start - 1, "\n");
-      setPosition({ Top: rect.top + caret_Y - rect.bottom, Left: rect.left + caret_X, Width: rect.width, Height: rect.height });
+      setPosition({ Top: rect.top + caret_Y, Left: rect.left + caret_X, Width: rect.width, Height: rect.height });
     }, 200);
 
     const handleScroll = () => {
@@ -159,8 +159,8 @@ const getTextDimensions = (textArea: React.RefObject<HTMLTextAreaElement>, selec
   textarea.parentNode.appendChild(hiddenDiv);
 
   // Get caret's vertical position relative to textarea
-  const caretX = span.offsetLeft - textarea.scrollLeft;
-  const caretY = span.offsetTop - textarea.scrollTop;
+  const caretX = span.offsetLeft - hiddenDiv.scrollLeft;
+  const caretY = span.offsetTop - hiddenDiv.offsetTop;
 
   textarea.parentNode.removeChild(hiddenDiv);
   return [caretX, caretY];
