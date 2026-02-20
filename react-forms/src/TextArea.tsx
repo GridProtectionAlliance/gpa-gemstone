@@ -28,7 +28,7 @@ import ToolTip from './ToolTip';
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 
-interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
+export interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
   /**
     * Number of rows for the textarea
     * @type {number}
@@ -52,6 +52,19 @@ interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
     * @optional
   */
   Help?: string | JSX.Element;
+  /**
+   * Optional reference to internal text area for features like autocomplete.
+   * @type {React.RefObject<HTMLTextAreaElement>}
+   * @optional
+   */
+  TextAreaRef?: React.RefObject<HTMLTextAreaElement>
+
+  /**
+   * Optional setting to enable/disable spellcheck.
+   * @type {boolean}
+   * @optional
+   */
+  SpellCheck?: boolean;
 }
 
 export default function TextArea<T>(props: IProps<T>) {
@@ -110,11 +123,13 @@ export default function TextArea<T>(props: IProps<T>) {
 
       {/* Textarea element */}
       <textarea
+        ref={props.TextAreaRef}
         rows={props.Rows}
         className={props.Valid(props.Field) ? 'form-control' : 'form-control is-invalid'}
         onChange={(evt) => valueChange(evt.target.value)}
         value={heldVal == null ? '' : heldVal}
         disabled={props.Disabled == null ? false : props.Disabled}
+        spellCheck={props.SpellCheck ?? true}
       />
 
       {/* Invalid feedback message */}
