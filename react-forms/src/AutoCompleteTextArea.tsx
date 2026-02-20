@@ -20,6 +20,29 @@ export default function AutoCompleteTextArea<T>(props: IAutoCompleteProps<T>) {
   const [variable, setVariable] = React.useState<IVariable>({Start: 0, End: 0, Variable: ""});
   const [show, setShow] = React.useState<boolean>(true);
 
+    // Handle showing and hiding of the dropdown.
+  const HandleShow = React.useCallback((evt: React.MouseEvent<HTMLButtonElement, MouseEvent> | MouseEvent) => {
+    // Ignore if disabled or not a mousedown event
+    if (
+      (props.Disabled === undefined ? false : props.Disabled) 
+      || evt.type !== 'mousedown' 
+    ) {
+      return
+    }
+
+    //ignore the click if it was inside the table or table container
+    if ((selectTable.current != null && selectTable.current.contains(evt.target as Node)) || (tableContainer.current != null && tableContainer.current.contains(evt.target as Node))) {
+      return
+    }
+
+    if (!textAreaElement.current?.contains(evt.target as Node)) { 
+      setShow(false)
+    }
+    else {
+      setShow(true)
+    }
+  }, [props.Disabled])
+  
   // add listeners to follow caret
   React.useEffect(() => {
     const autoComplete = textAreaElement.current;
@@ -64,7 +87,7 @@ export default function AutoCompleteTextArea<T>(props: IAutoCompleteProps<T>) {
       window.removeEventListener('mousedown', HandleShow, false);
       updatePosition.cancel();
     }
-  }, [suggestions]);
+  }, [suggestions, HandleShow]);
 
   // update variable and suggestions when caret position changes
   const handleCaretPosition = () => {
@@ -89,29 +112,6 @@ export default function AutoCompleteTextArea<T>(props: IAutoCompleteProps<T>) {
     textAreaElement.current?.setSelectionRange(newCaretPos, newCaretPos);
     setSuggestions([]);
   }
-
-    // Handle showing and hiding of the dropdown.
-  const HandleShow = React.useCallback((evt: React.MouseEvent<HTMLButtonElement, MouseEvent> | MouseEvent) => {
-    // Ignore if disabled or not a mousedown event
-    if (
-      (props.Disabled === undefined ? false : props.Disabled) 
-      || evt.type !== 'mousedown' 
-    ) {
-      return
-    }
-
-    //ignore the click if it was inside the table or table container
-    if ((selectTable.current != null && selectTable.current.contains(evt.target as Node)) || (tableContainer.current != null && tableContainer.current.contains(evt.target as Node))) {
-      return
-    }
-
-    if (!textAreaElement.current?.contains(evt.target as Node)) { 
-      setShow(false)
-    }
-    else {
-      setShow(true)
-    }
-  }, [props.Disabled, show])
 
   return (
     <div ref={autoCompleteTextArea}>

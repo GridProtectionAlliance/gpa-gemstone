@@ -46,6 +46,29 @@ export default function AutoCompleteInput<T>(props: IProps<T>) {
   const [position, setPosition] = React.useState<Gemstone.TSX.Interfaces.IElementPosition|null>(null);
   const [show, setShow] = React.useState<boolean>(true);
 
+  // Handle showing and hiding of the dropdown.
+  const HandleShow = React.useCallback((evt: React.MouseEvent<HTMLButtonElement, MouseEvent> | MouseEvent) => {
+    // Ignore if disabled or not a mousedown event
+    if (
+      (props.Disabled === undefined ? false : props.Disabled) 
+      || evt.type !== 'mousedown' 
+    ) {
+      return
+    }
+
+    //ignore the click if it was inside the table or table container
+    if ((selectTable.current != null && selectTable.current.contains(evt.target as Node)) || (tableContainer.current != null && tableContainer.current.contains(evt.target as Node))) {
+      return
+    }
+
+    if (!inputElement.current?.contains(evt.target as Node)) { 
+      setShow(false)
+    }
+    else {
+      setShow(true)
+    }
+  }, [props.Disabled])
+  
   // update dropdown position
   React.useLayoutEffect(() => {
     if (suggestions?.length == 0) {
@@ -90,7 +113,7 @@ export default function AutoCompleteInput<T>(props: IProps<T>) {
       autoComplete.removeEventListener("click", handleCaretPosition);
       window.removeEventListener('mousedown', HandleShow, false);
     };
-  }, [])
+  }, [HandleShow])
 
   // edit input text when suggestion is selected
   const handleOptionClick = (option: Gemstone.TSX.Interfaces.ILabelValue<string>) => {
@@ -105,29 +128,6 @@ export default function AutoCompleteInput<T>(props: IProps<T>) {
     inputElement.current?.setSelectionRange(newCaretPos, newCaretPos);
     setSuggestions([]);
   }
-
-  // Handle showing and hiding of the dropdown.
-  const HandleShow = React.useCallback((evt: React.MouseEvent<HTMLButtonElement, MouseEvent> | MouseEvent) => {
-    // Ignore if disabled or not a mousedown event
-    if (
-      (props.Disabled === undefined ? false : props.Disabled) 
-      || evt.type !== 'mousedown' 
-    ) {
-      return
-    }
-
-    //ignore the click if it was inside the table or table container
-    if ((selectTable.current != null && selectTable.current.contains(evt.target as Node)) || (tableContainer.current != null && tableContainer.current.contains(evt.target as Node))) {
-      return
-    }
-
-    if (!inputElement.current?.contains(evt.target as Node)) { 
-      setShow(false)
-    }
-    else {
-      setShow(true)
-    }
-  }, [props.Disabled, show])
 
   // update variable when caret position changes
   const handleCaretPosition = () => {
