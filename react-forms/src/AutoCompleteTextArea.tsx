@@ -18,6 +18,7 @@ export default function AutoCompleteTextArea<T>(props: IAutoCompleteProps<T>) {
   const [suggestions, setSuggestions] = React.useState<Gemstone.TSX.Interfaces.ILabelValue<string>[]>([])
   const [position, setPosition] = React.useState<Gemstone.TSX.Interfaces.IElementPosition|null>(null);
   const [variable, setVariable] = React.useState<IVariable>({Start: 0, End: 0, Variable: ""});
+  const [show, setShow] = React.useState<boolean>(true);
 
   // add listeners to follow caret
   React.useEffect(() => {
@@ -55,10 +56,12 @@ export default function AutoCompleteTextArea<T>(props: IAutoCompleteProps<T>) {
 
     window.addEventListener('scroll', handleScroll, true);
     window.addEventListener('resize', updatePosition);
+    window.addEventListener('mousedown', HandleShow, false);
 
     return () => {
       window.removeEventListener('scroll', handleScroll, true);
       window.removeEventListener('resize', updatePosition);
+      window.removeEventListener('mousedown', HandleShow, false);
       updatePosition.cancel();
     }
   }, [suggestions]);
@@ -87,6 +90,29 @@ export default function AutoCompleteTextArea<T>(props: IAutoCompleteProps<T>) {
     setSuggestions([]);
   }
 
+    // Handle showing and hiding of the dropdown.
+  const HandleShow = React.useCallback((evt: React.MouseEvent<HTMLButtonElement, MouseEvent> | MouseEvent) => {
+    // Ignore if disabled or not a mousedown event
+    if (
+      (props.Disabled === undefined ? false : props.Disabled) 
+      || evt.type !== 'mousedown' 
+    ) {
+      return
+    }
+
+    //ignore the click if it was inside the table or table container
+    if ((selectTable.current != null && selectTable.current.contains(evt.target as Node)) || (tableContainer.current != null && tableContainer.current.contains(evt.target as Node))) {
+      return
+    }
+
+    if (!textAreaElement.current?.contains(evt.target as Node)) { 
+      setShow(false)
+    }
+    else {
+      setShow(true)
+    }
+  }, [props.Disabled, show])
+
   return (
     <div ref={autoCompleteTextArea}>
       <TextArea
@@ -98,7 +124,7 @@ export default function AutoCompleteTextArea<T>(props: IAutoCompleteProps<T>) {
         TextAreaRef={textAreaElement}
         SpellCheck={false}
       />
-      {position == null ? <></> : 
+      {position == null || !show ? <></> : 
           <Portal>
             <div ref={tableContainer} className='popover'
             style={{
