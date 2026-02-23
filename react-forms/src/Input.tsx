@@ -29,7 +29,7 @@ import { CreateGuid, IsInteger, IsNumber } from '@gpa-gemstone/helper-functions'
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 
-interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
+export interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
   /**
     * Function to determine the validity of a field
     * @param field - Field of the record to check
@@ -72,6 +72,12 @@ interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
     * @optional
   */
   DefaultValue?: number
+  /**
+   * Optional reference to internal input for features like autocomplete.
+   * @type {React.RefObject<HTMLInputElement>}
+   * @optional
+   */
+  InputRef?: React.RefObject<HTMLInputElement>
 }
 
 
@@ -171,6 +177,7 @@ export default function Input<T>(props: IProps<T>) {
 
       {/* Input element */}
       <input
+        ref={props.InputRef}
         type={props.Type === undefined ? 'text' : props.Type}
         className={props.Valid(props.Field) ? 'form-control' : 'form-control is-invalid'}
         onChange={(evt) => valueChange(evt.target.value)}
