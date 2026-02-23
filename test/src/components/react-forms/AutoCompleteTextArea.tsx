@@ -29,13 +29,14 @@ interface IExampleRecord {
 }
 
 const ExampleOptions = ["Emerson", "Thoreau", "Descartes", "Kierkegaard", "deNavarre", "Porete"]
+export const AutoCompleteTextAreaID = "autoCompleteTextAreaTest"
 
 const AutoCompleteTextAreaTestComponent = () => {
 
     const [exampleRecord, setExampleRecord] = React.useState<IExampleRecord>({Name: ""})
 
     return (
-        <>
+        <div id={AutoCompleteTextAreaID}>
             <AutoCompleteTextArea<IExampleRecord>
                 Record={exampleRecord}
                 Field={'Name'}
@@ -44,7 +45,7 @@ const AutoCompleteTextAreaTestComponent = () => {
                 Setter={(record) => setExampleRecord(record)}
                 Options={ExampleOptions}
             />
-        </>
+        </div>
     )
 }
 

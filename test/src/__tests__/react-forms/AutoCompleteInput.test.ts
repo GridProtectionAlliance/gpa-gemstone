@@ -26,6 +26,7 @@ import { Builder, By, until, WebDriver } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome';
 import chromedriver from "chromedriver";
 import { AutoCompleteInputRoute } from "../../components/App";
+import { AutoCompleteInputID } from "../../components/react-forms/AutoCompleteInput";
 
 const rootURL = `http://localhost:${global.PORT}/${AutoCompleteInputRoute}`;
 let driver: WebDriver;
@@ -56,7 +57,8 @@ afterEach(async () => {
 
 describe('AutoCompleteInput', () => {
     it('provides a dropdown of suggestions when the cursor lies after an open curly bracket', async () => {
-        const autoCompleteInput = await driver.wait(until.elementLocated(By.css('input.form-control')), 100);
+        const autoCompleteDiv = await driver.wait(until.elementLocated(By.id(AutoCompleteInputID)), 100)
+        const autoCompleteInput = await autoCompleteDiv.findElement(By.css('input.form-control'));
         await driver.wait(until.elementIsVisible(autoCompleteInput), 300)
         await autoCompleteInput.sendKeys("{");
         const dropDown = await driver.wait(until.elementLocated(By.css('table.table.table-hover')), 100);
@@ -66,7 +68,8 @@ describe('AutoCompleteInput', () => {
         expect(dropDownRect.y).toBeGreaterThan(0);
     }),
     it('inserts selected suggestion into the text, preserving before and after text, including empty or broken variables', async () => {
-        const autoCompleteInput = await driver.wait(until.elementLocated(By.css('input.form-control')), 100);
+        const autoCompleteDiv = await driver.wait(until.elementLocated(By.id(AutoCompleteInputID)), 100)
+        const autoCompleteInput = await autoCompleteDiv.findElement(By.css('input.form-control'));
         await driver.wait(until.elementIsVisible(autoCompleteInput), 300)
 
         // add an opening curly brackets that would break earlier versions of autocomplete

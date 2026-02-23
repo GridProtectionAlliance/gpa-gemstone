@@ -26,6 +26,7 @@ import { Builder, By, until, WebDriver } from 'selenium-webdriver';
 import chrome from 'selenium-webdriver/chrome';
 import chromedriver from "chromedriver";
 import { AutoCompleteTextAreaRoute } from "../../components/App";
+import { AutoCompleteTextAreaID } from "../../components/react-forms/AutoCompleteTextArea";
 
 const rootURL = `http://localhost:${global.PORT}/${AutoCompleteTextAreaRoute}`;
 let driver: WebDriver;
@@ -58,7 +59,8 @@ afterEach(async () => {
 
 describe('AutoCompleteTextArea', () => {
     it('provides a dropdown of suggestions when the cursor lies after an open curly bracket', async () => {
-        const autoCompleteTextArea = await driver.wait(until.elementLocated(By.css('textarea.form-control')), 100);
+        const autoCompleteDiv = await driver.wait(until.elementLocated(By.id(AutoCompleteTextAreaID)), 100)
+        const autoCompleteTextArea = await autoCompleteDiv.findElement(By.css('textarea.form-control'));
         await driver.wait(until.elementIsVisible(autoCompleteTextArea), 300)
         await autoCompleteTextArea.sendKeys("{");
         const dropDown = await driver.wait(until.elementLocated(By.css('table.table.table-hover')), 100);
@@ -68,7 +70,8 @@ describe('AutoCompleteTextArea', () => {
         expect(dropDownRect.y).toBeGreaterThan(0);
     }),
     it('inserts selected suggestion into the text, preserving before and after text, including empty or broken variables', async () => {
-        const autoCompleteTextArea = await driver.wait(until.elementLocated(By.css('textarea.form-control')), 100);
+        const autoCompleteDiv = await driver.wait(until.elementLocated(By.id(AutoCompleteTextAreaID)), 100)
+        const autoCompleteTextArea = await autoCompleteDiv.findElement(By.css('textarea.form-control'));
         await driver.wait(until.elementIsVisible(autoCompleteTextArea), 300)
 
         // add an opening curly brackets that would break earlier versions of autocomplete
@@ -88,7 +91,8 @@ describe('AutoCompleteTextArea', () => {
         expect(await autoCompleteTextArea.getText()).toBe("i like to {read {Porete} every weekend { night.");
     }),
     it('moves the dropdown to the variable under the caret.', async () => {
-        const autoCompleteTextArea = await driver.wait(until.elementLocated(By.css('textarea.form-control')), 100);
+        const autoCompleteDiv = await driver.wait(until.elementLocated(By.id(AutoCompleteTextAreaID)), 100)
+        const autoCompleteTextArea = await autoCompleteDiv.findElement(By.css('textarea.form-control'));
         await driver.wait(until.elementIsVisible(autoCompleteTextArea), 300)
         await autoCompleteTextArea.sendKeys("{");
         const firstDropDown = await driver.wait(until.elementLocated(By.css('table.table.table-hover')), 100);
