@@ -1,6 +1,6 @@
 {
   "name": "@gpa-gemstone/react-table",
-  "version": "1.2.99",
+  "version": "1.2.100",
   "description": "Table for GPA web applications",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -47,7 +47,7 @@
   "dependencies":   {
     "@gpa-gemstone/gpa-symbols": "0.0.59",
     "@gpa-gemstone/helper-functions": "0.0.55",
-    "@gpa-gemstone/react-interactive": "1.0.176",
+    "@gpa-gemstone/react-interactive": "1.0.177",
     "lodash": "^4.17.21",
     "react-portal": "4.2.2"
   },
