@@ -23,9 +23,8 @@
 
 import * as React from 'react';
 import { CreateGuid } from '@gpa-gemstone/helper-functions'
-import ToolTip from './ToolTip';
-import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import { Gemstone } from '@gpa-gemstone/application-typings';
+import HelpIcon from './HelpIcon';
 
 interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
   /**
@@ -37,12 +36,9 @@ interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
 }
 
 export default function ToggleSwitch<T>(props: IProps<T>) {
-  const [helpID] = React.useState<string>(CreateGuid());
   const [switchID] = React.useState<string>(CreateGuid());
-  const [showHelp, setShowHelp] = React.useState<boolean>(false);
 
   // Variables to control the rendering of label and help icon.
-  const showHelpIcon = props.Help !== undefined;
   const label = props.Label === undefined ? props.Field : props.Label;
 
   return (
@@ -64,20 +60,7 @@ export default function ToggleSwitch<T>(props: IProps<T>) {
         <span>
           {label}
         </span>
-        {showHelpIcon ?
-          <>
-            <span className="ml-2 d-flex align-items-center"
-              onMouseEnter={() => setShowHelp(true)}
-              onMouseLeave={() => setShowHelp(false)}
-              data-tooltip={helpID}
-            >
-              <ReactIcons.QuestionMark Color="var(--info)" Size={20} />
-            </span>
-            <ToolTip Show={showHelp} Target={helpID} Zindex={9999} Class="info" Position="top">
-              {props.Help}
-            </ToolTip>
-          </>
-          : null}
+        <HelpIcon Help={props.Help} />
       </label>
     </div>
   );

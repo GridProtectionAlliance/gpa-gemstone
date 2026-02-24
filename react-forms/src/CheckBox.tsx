@@ -22,22 +22,11 @@
 // ******************************************************************************************************
 
 import * as React from 'react';
-import { CreateGuid } from '@gpa-gemstone/helper-functions'
-import ToolTip from './ToolTip';
-import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import { Gemstone } from '@gpa-gemstone/application-typings';
+import HelpIcon from './HelpIcon';
 
-export default function CheckBox<T>(props: Gemstone.TSX.Interfaces.IBaseFormProps<T>) {
-  const [guid, setGuid] = React.useState<string>("");
-  const [showHelp, setShowHelp] = React.useState<boolean>(false);
-
-  // Runs once, setting a unique GUID for each checkbox instance.
-  React.useEffect(() => {
-    setGuid(CreateGuid());
-  }, []);
-
+const CheckBox = <T,>(props: Gemstone.TSX.Interfaces.IBaseFormProps<T>) => {
   const showLabel = props.Label !== "";
-  const showHelpIcon = props.Help !== undefined;
   const label = props.Label === undefined ? props.Field : props.Label;
 
   return (
@@ -56,27 +45,14 @@ export default function CheckBox<T>(props: Gemstone.TSX.Interfaces.IBaseFormProp
         disabled={props.Disabled == null ? false : props.Disabled}
       />
 
-      {showHelpIcon || showLabel ?
-        <label className="form-check-label d-flex align-items-center">
+      {showLabel ?
+        <label className="d-flex align-items-center">
           <span>{showLabel ? label : ''}</span>
-          {showHelpIcon && (
-            <span className="ml-2 d-flex align-items-center"
-              onMouseEnter={() => setShowHelp(true)}
-              onMouseLeave={() => setShowHelp(false)}
-              data-tooltip={guid}
-            >
-              <ReactIcons.QuestionMark Color="var(--info)" Size={20} />
-            </span>
-          )}
+          <HelpIcon Help={props.Help} />
         </label>
-        : null}
-
-      {showHelpIcon ?
-        <ToolTip Show={showHelp} Target={guid} Class="info" Position="top">
-          {props.Help}
-        </ToolTip>
         : null}
     </div>
   );
-
 }
+
+export default CheckBox;

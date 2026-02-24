@@ -27,7 +27,7 @@ import ToolTip from './ToolTip';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 import { Portal } from 'react-portal';
 import * as _ from 'lodash';
-import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
+import HelpIcon from './HelpIcon';
 
 interface IOption {
   Value: number | string;
@@ -74,12 +74,9 @@ const MultiSelect = (props: IProps) => {
   const tableContainer = React.useRef<HTMLDivElement>(null);
 
   const [show, setShow] = React.useState<boolean>(false);
-  const [showHelp, setShowHelp] = React.useState<boolean>(false);
   const [showItems, setShowItems] = React.useState<boolean>(false);
   const [guid] = React.useState<string>(CreateGuid());
-  const [helperGuid] = React.useState<string>(CreateGuid());
   const showLabel = React.useMemo(() => props.Label !== "", [props.Label]);
-  const showHelpIcon = React.useMemo(() => props.Help !== undefined, [props.Help]);
   const selectedOptions = React.useMemo(() => props.Options.filter(opt => opt.Selected), [props.Options]);
   const [position, setPosition] = React.useState<Gemstone.TSX.Interfaces.IElementPosition>({ Top: 0, Left: 0, Width: 0, Height: 0 });
 
@@ -138,29 +135,16 @@ const MultiSelect = (props: IProps) => {
   return (
     <div className="form-group">
       {/* Rendering label and help icon */}
-      {showLabel || showHelpIcon ?
+      {showLabel ?
         <label className='d-flex align-items-center'>
           <span>
             {showLabel ?
               (props.Label === undefined ? 'Select' : props.Label) : ''}
           </span>
-          {showHelpIcon ?
-            <span className="ml-2 d-flex align-items-center"
-              onMouseEnter={() => setShowHelp(true)}
-              onMouseLeave={() => setShowHelp(false)}
-              data-tooltip={helperGuid}
-            >
-              <ReactIcons.QuestionMark Color="var(--info)" Size={20} />
-            </span>
-            : null}
+          <HelpIcon Help={props.Help} />
         </label> : null
       }
 
-      {showHelpIcon ?
-        <ToolTip Show={showHelp} Target={helperGuid} Class="info" Position="top">
-          {props.Help}
-        </ToolTip>
-        : null}
       {(props.ShowToolTip ?? false) ?
         <ToolTip Show={showItems} Target={guid} Position="top">
           <p>Selected Options:</p>

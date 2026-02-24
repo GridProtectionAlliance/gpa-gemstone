@@ -22,10 +22,8 @@
 // ******************************************************************************************************
 
 import * as React from 'react';
-import { CreateGuid } from '@gpa-gemstone/helper-functions'
-import ToolTip from './ToolTip';
-import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import { Gemstone } from '@gpa-gemstone/application-typings';
+import HelpIcon from './HelpIcon';
 
 interface IOption extends Gemstone.TSX.Interfaces.ILabelValue<string | number> {
     Disabled?: boolean
@@ -50,11 +48,6 @@ interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
 }
 
 export default function RadioButtons<T>(props: IProps<T>) {
-    const [guid] = React.useState<string>(CreateGuid());
-    const [showHelp, setShowHelp] = React.useState<boolean>(false);
-
-    // Variables to control the rendering of label and help icon.
-    const showHelpIcon = props.Help !== undefined;
     const label = props.Label === undefined ? props.Field : props.Label;
 
     return (
@@ -63,20 +56,7 @@ export default function RadioButtons<T>(props: IProps<T>) {
                 <span>
                     {label}
                 </span>
-                {showHelpIcon ?
-                    <>
-                        <span className="ml-2 d-flex align-items-center"
-                            onMouseEnter={() => setShowHelp(true)}
-                            onMouseLeave={() => setShowHelp(false)}
-                            data-tooltip={guid}
-                        >
-                            <ReactIcons.QuestionMark Color="var(--info)" Size={20} />
-                        </span>
-                        <ToolTip Show={showHelp} Target={guid} Class="info" Position="top">
-                            {props.Help}
-                        </ToolTip>
-                    </>
-                    : null}
+                <HelpIcon Help={props.Help} />
             </label>
             {props.Options.map((option, index) => (
                 <div key={index} className={`form-check ${props.Position == 'vertical' ? '' : 'form-check-inline'}`}>

@@ -22,13 +22,12 @@
 // ******************************************************************************************************
 
 import * as React from 'react';
-import ToolTip from './ToolTip';
 import { CreateGuid } from '@gpa-gemstone/helper-functions';
 import { isEqual } from 'lodash';
 import { Portal } from 'react-portal';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 import * as _ from 'lodash';
-import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
+import HelpIcon from './HelpIcon';
 
 export interface IOption {
   Value: any;
@@ -203,32 +202,18 @@ export default function StylableSelect<T>(props: IProps<T>) {
 
   // Variables to control the rendering of label and help icon.
   const showLabel = props.Label !== "";
-  const showHelpIcon = props.Help !== undefined;
   const label = props.Label === undefined ? props.Field : props.Label;
 
   return (
     <div ref={stylableSelect} className="form-group" style={{ position: 'relative', display: 'inline-block', width: 'inherit' }}>
       {/* Label and help icon rendering */}
-      {showHelpIcon || showLabel ?
+      {showLabel ?
         <label className="d-flex align-items-center">
-          <span>{showLabel ? label : ''}</span>
-          {showHelpIcon && (
-            <span
-              onMouseEnter={() => setShowHelp(true)}
-              onMouseLeave={() => setShowHelp(false)}
-              data-tooltip={guid}
-              className="ml-2 d-flex align-items-center"
-            >
-              <ReactIcons.QuestionMark Color="var(--info)" Size={20} />
-            </span>
-          )}
+          <span>
+            {showLabel ? label : ''}
+          </span>
+          <HelpIcon Help={props.Help} />
         </label>
-        : null}
-
-      {props.Help !== undefined ?
-        <ToolTip Show={showHelp} Target={guid} Class="info" Position="top">
-          {props.Help}
-        </ToolTip>
         : null}
 
       {/* Dropdown toggle button */}

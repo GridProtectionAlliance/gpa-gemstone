@@ -239,11 +239,25 @@ describe('TimeFilter Component', () => {
         let endElValue = moment(await endInputEl.getAttribute('value'));
         let prevEndElValue = endElValue.clone();
 
-        //xpaths arent great, but we dont have much control over identifiers for arrows..
-        //TODO: switch out xpaths to find table by using class name of gpa-gemstone-datetime-popup
+        // Locate popup containing time adjustment arrows
+        const popup = await driver.wait(
+            until.elementLocated(By.css('.gpa-gemstone-datetime-popup')),
+            5000
+        );
+
+        const timeTable = await popup.findElement(By.xpath(".//div[2]/table/tbody"));
+
+        const hourUpArrow = await timeTable.findElement(By.xpath(".//tr[1]/td[1]"));
+        const hourDownArrow = await timeTable.findElement(By.xpath(".//tr[3]/td[1]"));
+        const minuteUpArrow = await timeTable.findElement(By.xpath(".//tr[1]/td[3]"));
+        const minuteDownArrow = await timeTable.findElement(By.xpath(".//tr[3]/td[3]"));
+        const secondUpArrow = await timeTable.findElement(By.xpath(".//tr[1]/td[5]"));
+        const secondDownArrow = await timeTable.findElement(By.xpath(".//tr[3]/td[5]"));
+        const msUpArrow = await timeTable.findElement(By.xpath(".//tr[1]/td[7]"));
+        const msDownArrow = await timeTable.findElement(By.xpath(".//tr[3]/td[7]"));
+
         // HOUR +
         prevEndElValue = endElValue.clone();
-        const hourUpArrow = await driver.wait(until.elementLocated(By.xpath("/html/body/div[14]/div/div[2]/table/tbody/tr[1]/td[1]")), 5000);
         await hourUpArrow.click();
         await driver.sleep(500);
         endElValue = moment(await endInputEl.getAttribute('value'));
@@ -251,7 +265,6 @@ describe('TimeFilter Component', () => {
 
         // HOUR -
         prevEndElValue = endElValue.clone();
-        const hourDownArrow = await driver.wait(until.elementLocated(By.xpath("/html/body/div[14]/div/div[2]/table/tbody/tr[3]/td[1]")), 5000);
         await hourDownArrow.click();
         await driver.sleep(500);
         endElValue = moment(await endInputEl.getAttribute('value'));
@@ -259,7 +272,6 @@ describe('TimeFilter Component', () => {
 
         // MINUTE +
         prevEndElValue = endElValue.clone();
-        const minuteUpArrow = await driver.wait(until.elementLocated(By.xpath("/html/body/div[14]/div/div[2]/table/tbody/tr[1]/td[3]")), 5000);
         await minuteUpArrow.click();
         await driver.sleep(500);
         endElValue = moment(await endInputEl.getAttribute('value'));
@@ -267,7 +279,6 @@ describe('TimeFilter Component', () => {
 
         // MINUTE -
         prevEndElValue = endElValue.clone();
-        const minuteDownArrow = await driver.wait(until.elementLocated(By.xpath("/html/body/div[14]/div/div[2]/table/tbody/tr[3]/td[3]")), 5000);
         await minuteDownArrow.click();
         await driver.sleep(500);
         endElValue = moment(await endInputEl.getAttribute('value'));
@@ -275,7 +286,6 @@ describe('TimeFilter Component', () => {
 
         // SECOND +
         prevEndElValue = endElValue.clone();
-        const secondUpArrow = await driver.wait(until.elementLocated(By.xpath("/html/body/div[14]/div/div[2]/table/tbody/tr[1]/td[5]")), 5000);
         await secondUpArrow.click();
         await driver.sleep(500);
         endElValue = moment(await endInputEl.getAttribute('value'));
@@ -283,7 +293,6 @@ describe('TimeFilter Component', () => {
 
         // SECOND -
         prevEndElValue = endElValue.clone();
-        const secondDownArrow = await driver.wait(until.elementLocated(By.xpath("/html/body/div[14]/div/div[2]/table/tbody/tr[3]/td[5]")), 5000);
         await secondDownArrow.click();
         await driver.sleep(500);
         endElValue = moment(await endInputEl.getAttribute('value'));
@@ -291,7 +300,6 @@ describe('TimeFilter Component', () => {
 
         // MS +
         prevEndElValue = endElValue.clone();
-        const msUpArrow = await driver.wait(until.elementLocated(By.xpath("/html/body/div[14]/div/div[2]/table/tbody/tr[1]/td[7]")), 5000);
         await msUpArrow.click();
         await driver.sleep(500);
         endElValue = moment(await endInputEl.getAttribute('value'));
@@ -299,7 +307,6 @@ describe('TimeFilter Component', () => {
 
         // MS -
         prevEndElValue = endElValue.clone();
-        const msDownArrow = await driver.wait(until.elementLocated(By.xpath("/html/body/div[14]/div/div[2]/table/tbody/tr[3]/td[7]")), 5000);
         await msDownArrow.click();
         await driver.sleep(500);
         endElValue = moment(await endInputEl.getAttribute('value'));
@@ -332,7 +339,7 @@ describe('TimeFilter Component', () => {
 
         for (const el of quickSelectItems) {
             const label = (await el.getText()).trim();
-            if(label === '') continue; // Skip empty labels
+            if (label === '') continue; // Skip empty labels
 
             // Compute expected UTC-range
             const utcNow = moment.utc();
