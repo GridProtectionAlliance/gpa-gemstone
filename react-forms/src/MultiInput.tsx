@@ -23,9 +23,7 @@
 
 import * as React from 'react';
 import Input from './Input';
-import ToolTip from './ToolTip';
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
-import { CreateGuid } from '@gpa-gemstone/helper-functions';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 import HelpIcon from './HelpIcon';
 
@@ -77,9 +75,6 @@ interface IProps<T> extends Omit<Gemstone.TSX.Interfaces.IBaseFormProps<T>, 'Val
 
 //Only supporting string/number arrays for now
 function MultiInput<T>(props: IProps<T>) {
-    const [guid] = React.useState<string>(CreateGuid());
-    const [showHelp, setShowHelp] = React.useState<boolean>(false);
-
     const fieldArray = props.Record[props.Field as keyof T] as Array<string | number>
 
     if (fieldArray?.constructor !== Array) {
@@ -89,14 +84,13 @@ function MultiInput<T>(props: IProps<T>) {
 
     // Variables to control the rendering of label and help icon.
     const showLabel = props.Label !== "";
-    const showHelpIcon = props.Help !== undefined;
     const label = props.Label === undefined ? props.Field : props.Label;
 
     return (
         <>
             {fieldArray.length === 0 ?
                 <>
-                    {showHelpIcon || showLabel ?
+                    {showLabel ?
                         <label className="d-flex align-items-center">
                             <span>{showLabel ? label : ''}</span>
                             <HelpIcon Help={props.Help} />

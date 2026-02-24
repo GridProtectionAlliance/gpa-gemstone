@@ -22,13 +22,11 @@
 // ******************************************************************************************************
 
 import * as React from 'react';
-import ToolTip from './ToolTip';
 import { CreateGuid } from '@gpa-gemstone/helper-functions';
 import { isEqual } from 'lodash';
 import { Portal } from 'react-portal';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 import * as _ from 'lodash';
-import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import HelpIcon from './HelpIcon';
 
 export interface IOption {
@@ -204,13 +202,12 @@ export default function StylableSelect<T>(props: IProps<T>) {
 
   // Variables to control the rendering of label and help icon.
   const showLabel = props.Label !== "";
-  const showHelpIcon = props.Help !== undefined;
   const label = props.Label === undefined ? props.Field : props.Label;
 
   return (
     <div ref={stylableSelect} className="form-group" style={{ position: 'relative', display: 'inline-block', width: 'inherit' }}>
       {/* Label and help icon rendering */}
-      {showHelpIcon || showLabel ?
+      {showLabel ?
         <label className="d-flex align-items-center">
           <span>
             {showLabel ? label : ''}

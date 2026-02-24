@@ -77,7 +77,6 @@ const MultiSelect = (props: IProps) => {
   const [showItems, setShowItems] = React.useState<boolean>(false);
   const [guid] = React.useState<string>(CreateGuid());
   const showLabel = React.useMemo(() => props.Label !== "", [props.Label]);
-  const showHelpIcon = React.useMemo(() => props.Help !== undefined, [props.Help]);
   const selectedOptions = React.useMemo(() => props.Options.filter(opt => opt.Selected), [props.Options]);
   const [position, setPosition] = React.useState<Gemstone.TSX.Interfaces.IElementPosition>({ Top: 0, Left: 0, Width: 0, Height: 0 });
 
@@ -136,7 +135,7 @@ const MultiSelect = (props: IProps) => {
   return (
     <div className="form-group">
       {/* Rendering label and help icon */}
-      {showLabel || showHelpIcon ?
+      {showLabel ?
         <label className='d-flex align-items-center'>
           <span>
             {showLabel ?

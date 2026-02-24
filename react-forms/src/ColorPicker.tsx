@@ -24,12 +24,10 @@
 import * as React from 'react';
 import { BlockPicker, Color, ColorResult } from 'react-color';
 import styled from "styled-components";
-import { CreateGuid, GetNodeSize } from '@gpa-gemstone/helper-functions'
+import { GetNodeSize } from '@gpa-gemstone/helper-functions'
 import { Portal } from 'react-portal';
 import { isEqual } from 'lodash';
 import { Gemstone } from '@gpa-gemstone/application-typings';
-import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
-import ToolTip from './ToolTip';
 import HelpIcon from './HelpIcon';
 
 interface IProps<T> extends Omit<Gemstone.TSX.Interfaces.IBaseFormProps<T>, "Setter"> {
@@ -136,13 +134,12 @@ const ColorPicker = <T,>(props: IProps<T>) => {
 
   // Variables to control the rendering of label and help icon.
   const showLabel = props.Label !== "";
-  const showHelpIcon = props.Help !== undefined;
   const label = props.Label === undefined ? props.Field : props.Label;
 
   return (
     <div className={"form-group "} style={props.Style}>
       {/* Rendering label and help icon */}
-      {showHelpIcon || showLabel ?
+      {showLabel ?
         <label className="d-flex align-items-center">
           <span>{showLabel ? label : ''}</span>
           <HelpIcon Help={props.Help} />

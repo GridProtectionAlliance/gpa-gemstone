@@ -56,9 +56,9 @@ interface IProps {
  */
 const HelpIcon = (props: IProps) => {
     const [showHelp, setShowHelp] = React.useState<boolean>(false);
-    const [guid] = React.useState<string>(CreateGuid());
+    const guid = React.useRef<string>(CreateGuid());
 
-    if (props.Help === undefined)
+    if (props.Help == null || props.Help === '')
         return null;
 
     return (
@@ -67,11 +67,11 @@ const HelpIcon = (props: IProps) => {
                 className={props.Class ?? "ml-2 d-flex align-items-center"}
                 onMouseEnter={() => setShowHelp(true)}
                 onMouseLeave={() => setShowHelp(false)}
-                data-tooltip={guid}
+                data-tooltip={guid.current}
             >
                 <ReactIcons.QuestionMark Color={props.Color ?? "var(--info)"} Size={props.Size ?? 20} />
             </span>
-            <ToolTip Show={showHelp} Target={guid} Class="info" Position="top">
+            <ToolTip Show={showHelp} Target={guid.current} Class="info" Position="top">
                 {props.Help}
             </ToolTip>
         </>

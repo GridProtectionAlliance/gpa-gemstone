@@ -22,9 +22,7 @@
 // ******************************************************************************************************
 
 import * as React from 'react';
-import ToolTip from './ToolTip';
-import { CreateGuid, IsInteger, IsNumber } from '@gpa-gemstone/helper-functions'
-import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
+import { IsInteger, IsNumber } from '@gpa-gemstone/helper-functions'
 import { Gemstone } from '@gpa-gemstone/application-typings';
 import HelpIcon from './HelpIcon';
 
@@ -117,13 +115,7 @@ interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
 
 function InputWithButton<T>(props: IProps<T>) {
     const internal = React.useRef<boolean>(false);
-    const [guid, setGuid] = React.useState<string>("");
-    const [showHelp, setShowHelp] = React.useState<boolean>(false);
     const [heldVal, setHeldVal] = React.useState<string>(''); // Need to buffer tha value because parseFloat will throw away trailing decimals or zeros
-
-    React.useEffect(() => {
-        setGuid(CreateGuid());
-    }, []);
 
     React.useEffect(() => {
         if (!internal.current) {
@@ -171,12 +163,11 @@ function InputWithButton<T>(props: IProps<T>) {
     }
 
     const showLabel = props.Label !== "";
-    const showHelpIcon = props.Help !== undefined;
     const label = props.Label === undefined ? props.Field : props.Label;
 
     return (
         <div className={"form-group " + (props.Size === 'large' ? 'form-group-lg' : '') + (props.Size === 'small' ? 'form-group-sm' : '')} style={props.InputStyle}>
-            {showHelpIcon || showLabel ?
+            {showLabel ?
                 <label className="d-flex align-items-center">
                     <span>{showLabel ? label : ''}</span>
                     <HelpIcon Help={props.Help} />

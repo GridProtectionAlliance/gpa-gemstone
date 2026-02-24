@@ -61,9 +61,6 @@ export default function DateTimePickerBase<T>(props: IProps<T>) {
     // Parse the date from the record.
     const parse = (r: T) => moment(props.Record[props.Field] as any, recordFormat);
 
-    const [helpGuid] = React.useState<string>(CreateGuid());
-    const [showHelp, setShowHelp] = React.useState<boolean>(false);
-
     // Adds a buffer between the outside props and what the box is reading to prevent box overwriting every render with a keystroke
     const [boxRecord, setBoxRecord] = React.useState<string>(parse(props.Record).format(boxFormat));
     const [pickerRecord, setPickerRecord] = React.useState<moment.Moment | undefined>(parse(props.Record));
@@ -189,7 +186,6 @@ export default function DateTimePickerBase<T>(props: IProps<T>) {
 
     // Variables for rendering labels and help icons.
     const showLabel = props.Label !== "";
-    const showHelpIcon = props.Help !== undefined;
     const label = props.Label === undefined ? props.Field : props.Label;
     const step = props.Accuracy === 'millisecond' ? '0.001' : (props.Accuracy === 'minute' ? '60' : '1');
 
@@ -225,17 +221,11 @@ export default function DateTimePickerBase<T>(props: IProps<T>) {
     return (
         <div className="form-group" ref={divRef}>
             {/* Label and help icon */}
-            {showHelpIcon || showLabel ?
+            {showLabel ?
                 <label className="d-flex align-items-center">
                     <span>{showLabel ? label : ''}</span>
                     <HelpIcon Help={props.Help} />
                 </label>
-                : null}
-
-            {showHelpIcon ?
-                <ToolTip Show={showHelp} Target={helpGuid} Class="info" Position="top">
-                    {props.Help}
-                </ToolTip>
                 : null}
 
             <input

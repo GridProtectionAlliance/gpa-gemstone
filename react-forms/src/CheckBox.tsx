@@ -27,7 +27,6 @@ import HelpIcon from './HelpIcon';
 
 const CheckBox = <T,>(props: Gemstone.TSX.Interfaces.IBaseFormProps<T>) => {
   const showLabel = props.Label !== "";
-  const showHelpIcon = props.Help !== undefined;
   const label = props.Label === undefined ? props.Field : props.Label;
 
   return (
@@ -46,7 +45,7 @@ const CheckBox = <T,>(props: Gemstone.TSX.Interfaces.IBaseFormProps<T>) => {
         disabled={props.Disabled == null ? false : props.Disabled}
       />
 
-      {showHelpIcon || showLabel ?
+      {showLabel ?
         <label className="d-flex align-items-center">
           <span>{showLabel ? label : ''}</span>
           <HelpIcon Help={props.Help} />

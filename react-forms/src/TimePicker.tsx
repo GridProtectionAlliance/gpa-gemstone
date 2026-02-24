@@ -22,9 +22,6 @@
 // ******************************************************************************************************
 
 import * as React from 'react';
-import ToolTip from './ToolTip';
-import { CreateGuid } from '@gpa-gemstone/helper-functions';
-import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 import HelpIcon from './HelpIcon';
 
@@ -50,17 +47,13 @@ interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
 }
 
 export default function DatePicker<T>(props: IProps<T>) {
-  const [guid] = React.useState<string>(CreateGuid());
-  const [showHelp, setShowHelp] = React.useState<boolean>(false);
-
   // Variables to control the rendering of label and help icon.
   const showLabel = props.Label !== "";
-  const showHelpIcon = props.Help !== undefined;
   const label = props.Label === undefined ? props.Field : props.Label;
 
   return (
     <div className="form-group">
-      {showHelpIcon || showLabel ?
+      {showLabel ?
         <label className="d-flex align-items-center">
           <span>{showLabel ? label : ''}</span>
           <HelpIcon Help={props.Help} />

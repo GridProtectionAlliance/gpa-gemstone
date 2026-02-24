@@ -22,9 +22,6 @@
 // ******************************************************************************************************
 
 import * as React from 'react';
-import { CreateGuid } from '@gpa-gemstone/helper-functions'
-import ToolTip from './ToolTip';
-import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 import HelpIcon from './HelpIcon';
 
