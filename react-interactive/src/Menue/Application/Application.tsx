@@ -142,23 +142,34 @@ const Applications: React.ForwardRefRenderFunction<IApplicationRefs, React.Props
         setNavBarHeight(navBarRef.current?.offsetHeight ?? 40)
     });
 
+    // check to collapse or remove side nav
     React.useEffect(() => {
+
+        // width will be 0 if the browser has not completely initialized
         if (width === 0) return;
 
-        if (width <= 200)
+        // may not be possible in desktop browsers, but may be possible on phones
+        if (width <= 200) {
             setShouldRemoveSideNav(true);
-        else
-            setShouldRemoveSideNav(false);
-
-        if (width <= 600) {
-            if (!(props.AllowCollapsed ?? false))
-                setShouldAddCollapseOptions(true);
-
-            setCollapsed(true);
+            return
         }
 
+        if (width <= 600) {
+            if (props.AllowCollapsed ?? false) {
+                setCollapsed(true)
+                setShouldAddCollapseOptions(true)
+                return
+            }
+            setShouldRemoveSideNav(true)
+            return
+        }
+
+        setCollapsed(false)
+        setShouldRemoveSideNav(false)
+        
     }, [width, props.AllowCollapsed])
 
+    // listen for resizing
     React.useEffect(() => {
         const listener = (evt: any) => forceUpdate();
         window.addEventListener('resize', listener);
