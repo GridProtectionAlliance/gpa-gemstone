@@ -142,15 +142,7 @@ export default function AutoCompleteInput<T>(props: IProps<T>) {
   return (
     <div ref={autoCompleteInput}>
       <Input
-        Valid={props.Valid}
-        Record={props.Record}
-        Setter={props.Setter}
-        Field={props.Field}
-        Feedback={props.Feedback}
-        Style={props.Style}
-        AllowNull={props.AllowNull}
-        Size={props.Size}
-        DefaultValue={props.DefaultValue}
+        {...props}
         InputRef={inputElement}
       />
       {position == null || !show ? null :
