@@ -46,6 +46,7 @@ import MultiSearchableSelect from './MultiSearchableSelect';
 import AutoCompleteTextArea from './AutoCompleteTextArea';
 import AutoCompleteInput from './AutoCompleteInput';
 import HelpIcon from './HelpIcon';
+import AutoCompleteMultiInput from './AutoCompleteMultiInput';
 
 export {
     CheckBox,
@@ -72,5 +73,6 @@ export {
     MultiSearchableSelect,
     HelpIcon,
     AutoCompleteTextArea,
-    AutoCompleteInput
+    AutoCompleteInput,
+    AutoCompleteMultiInput
 };
