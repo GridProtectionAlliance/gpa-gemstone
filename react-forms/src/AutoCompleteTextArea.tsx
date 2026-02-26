@@ -116,11 +116,7 @@ export default function AutoCompleteTextArea<T>(props: IAutoCompleteProps<T>) {
   return (
     <div ref={autoCompleteTextArea}>
       <TextArea
-        Valid={props.Valid}
-        Record={props.Record}
-        Setter={props.Setter}
-        Field={props.Field}
-        Rows={props.Rows}
+        {...props}
         TextAreaRef={textAreaElement}
         SpellCheck={false}
       />
