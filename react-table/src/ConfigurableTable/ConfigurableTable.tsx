@@ -63,7 +63,7 @@ export default function ConfigurableTable<T>(props: React.PropsWithChildren<ITab
     const getKeyMappings = () => {
         const updated = new Map<string, IColDesc>();
         const localKeys = localStorage.getItem(props.LocalStorageKey ?? '')?.split(',') ?? [];
-        if (localKeys[0] == '') localKeys.pop(); // if localstorage is empty, set the array to an empty array. [''] by default
+        if (localKeys[0] === '' && localKeys.length == 1) localKeys.pop(); // if localstorage is empty, set the array to an empty array. [''] by default
 
         React.Children.forEach(props.children, (element) => {
             if (!React.isValidElement(element)) return;
