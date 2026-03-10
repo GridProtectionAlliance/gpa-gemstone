@@ -94,8 +94,11 @@ function MultiInput<T>(props: IProps<T>) {
                         <label className="d-flex align-items-center">
                             <span>{showLabel ? label : ''}</span>
                             <HelpIcon Help={props.Help} />
-                            <button className='btn'
-                                onClick={() => props.Setter({ ...props.Record, [props.Field]: [props.DefaultValue] })}>
+                            <button
+                                className='btn'
+                                style={(((props.DisableAdd ?? false) || (props.Disabled ?? false)) ?? false) ? { display: 'none' } : undefined}
+                                onClick={() => props.Setter({ ...props.Record, [props.Field]: [props.DefaultValue] })}
+                            >
                                 <ReactIcons.CirclePlus />
                             </button>
                         </label>
