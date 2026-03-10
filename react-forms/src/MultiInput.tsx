@@ -96,7 +96,7 @@ function MultiInput<T>(props: IProps<T>) {
                             <HelpIcon Help={props.Help} />
                             <button
                                 className='btn'
-                                style={(((props.DisableAdd ?? false) || (props.Disabled ?? false)) ?? false) ? { display: 'none' } : undefined}
+                                style={(props.DisableAdd ?? false) || (props.Disabled ?? false) ? { display: 'none' } : undefined}
                                 onClick={() => props.Setter({ ...props.Record, [props.Field]: [props.DefaultValue] })}
                             >
                                 <ReactIcons.CirclePlus />
@@ -147,7 +147,7 @@ function MultiInput<T>(props: IProps<T>) {
                         <div className={`col-1 ${index === 0 ? 'd-flex align-items-center justify-content-center' : ''}`}>
                             <button
                                 className='btn'
-                                style={(((props.DisableAdd ?? false) || (props.Disabled ?? false)) ?? false) ? { display: 'none' } : undefined}
+                                style={(props.DisableAdd ?? false) || (props.Disabled ?? false) ? { display: 'none' } : undefined}
                                 onClick={() => {
                                     const newRecords = [...[...fieldArray], props.DefaultValue];
                                     props.Setter({ ...props.Record, [props.Field]: newRecords });

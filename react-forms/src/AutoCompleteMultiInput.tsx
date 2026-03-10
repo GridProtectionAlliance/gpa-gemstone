@@ -98,7 +98,7 @@ function AutoCompleteMultiInput<T>(props: IProps<T>) {
                             <HelpIcon Help={props.Help} />
                             <button
                                 className='btn'
-                                style={(((props.DisableAdd ?? false) || (props.Disabled ?? false)) ?? false) ? { display: 'none' } : undefined}
+                                style={(props.DisableAdd ?? false) || (props.Disabled ?? false) ? { display: 'none' } : undefined}
                                 onClick={() => props.Setter({ ...props.Record, [props.Field]: [props.DefaultValue] })}
                             >
                                 <ReactIcons.CirclePlus />
