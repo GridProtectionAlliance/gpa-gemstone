@@ -343,8 +343,14 @@ const getPosition = (toolTip: React.MutableRefObject<HTMLDivElement | null>, tar
 }
 
 const getTarget = (target?: string) => {
-  const targets = document.querySelectorAll(`[data-tooltip${target === undefined ? '' : `="${target}"`}]`);
-  return targets.length > 0 ? targets[0] as HTMLElement : null;
+  try {
+    const targets = document.querySelectorAll(`[data-tooltip${target === undefined ? '' : `="${target}"`}]`);
+    return targets.length > 0 ? targets[0] as HTMLElement : null;
+  }
+  catch {
+    console.warn('Tooltip: Invalid target selector provided. Target elements must have a valid data-tooltip attribute that matches the Target prop of the tooltip.');
+    return null;
+  }
 };
 
 export default Tooltip;
