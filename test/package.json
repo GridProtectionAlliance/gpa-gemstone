@@ -8,7 +8,12 @@
     "build": "npm prune && webpack",
     "serve": "npm run build && webpack serve",
     "builddebug": "npm prune && webpack && npm run serve",
-    "tester": "start-server-and-test serve http-get://localhost:8085 test"
+    "tester": "start-server-and-test serve http-get://localhost:8085 test",
+    "tester:common-pages": "start-server-and-test serve http-get://localhost:8085 test:common-pages",
+    "tester:react-forms": "start-server-and-test serve http-get://localhost:8085 test:react-forms",
+    "tester:react-graph": "start-server-and-test serve http-get://localhost:8085 test:react-graph",
+    "tester:react-interactive": "start-server-and-test serve http-get://localhost:8085 test:react-interactive",
+    "tester:react-table": "start-server-and-test serve http-get://localhost:8085 test:react-table"
   },
   "keywords": [
     "Gemstone",
