@@ -33,6 +33,9 @@ import MapTestComponent from './react-interactive/Map';
 import LegendEntryTestComponent from './react-graph/LegendEntry';
 import AutoCompleteTextAreaTestComponent from './react-forms/AutoCompleteTextArea';
 import AutoCompleteInputTestComponent from './react-forms/AutoCompleteInput';
+import MultiSearchableSelectTestComponent from './react-forms/MultiSearchableSelect';
+import AutoCompleteMultiInputTestComponent from './react-forms/AutoCompleteMultiInput';
+import MultiInputTestComponent from './react-forms/MultiInput';
 
 declare const homePath: string;
 
@@ -41,6 +44,9 @@ export const CheckboxPageRoute = "Checkbox";
 export const RadioButtonsPageRoute = "RadioButtons";
 export const AutoCompleteTextAreaRoute = "AutoCompleteTextArea";
 export const AutoCompleteInputRoute = "AutoCompleteInput";
+export const MultiSearchableSelectRoute = "MultiSearchableSelect";
+export const AutoCompleteMultiInputRoute = "AutoCompleteMultiInput";
+export const MultiInputRoute = "MultiInput";
 
 // Common Pages Page Routes/Labels
 export const TimeFilterRoute = "TimeFilter"
@@ -96,7 +102,15 @@ const App = () => {
                 <Page Name={AutoCompleteInputRoute} Label={AutoCompleteInputRoute} >
                     <AutoCompleteInputTestComponent />
                 </Page>
-
+                <Page Name={MultiSearchableSelectRoute} Label={MultiSearchableSelectRoute} >
+                    <MultiSearchableSelectTestComponent />
+                </Page>
+                <Page Name={AutoCompleteMultiInputRoute} Label={AutoCompleteMultiInputRoute} >
+                    <AutoCompleteMultiInputTestComponent />
+                </Page>
+                <Page Name={MultiInputRoute} Label={MultiInputRoute} >
+                    <MultiInputTestComponent />
+                </Page>
             </Section>
 
             <Section Label="React Table">

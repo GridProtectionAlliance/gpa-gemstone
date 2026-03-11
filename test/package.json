@@ -8,7 +8,12 @@
     "build": "npm prune && webpack",
     "serve": "npm run build && webpack serve",
     "builddebug": "npm prune && webpack && npm run serve",
-    "tester": "start-server-and-test serve http-get://localhost:8085 test"
+    "tester": "start-server-and-test serve http-get://localhost:8085 test",
+    "tester:common-pages": "start-server-and-test serve http-get://localhost:8085 test:common-pages",
+    "tester:react-forms": "start-server-and-test serve http-get://localhost:8085 test:react-forms",
+    "tester:react-graph": "start-server-and-test serve http-get://localhost:8085 test:react-graph",
+    "tester:react-interactive": "start-server-and-test serve http-get://localhost:8085 test:react-interactive",
+    "tester:react-table": "start-server-and-test serve http-get://localhost:8085 test:react-table"
   },
   "keywords": [
     "Gemstone",
@@ -53,13 +58,13 @@
   },
   "dependencies": {
     "@gpa-gemstone/application-typings": "0.0.96",
-    "@gpa-gemstone/common-pages": "0.0.166",
+    "@gpa-gemstone/common-pages": "0.0.169",
     "@gpa-gemstone/gpa-symbols": "0.0.59",
     "@gpa-gemstone/helper-functions": "0.0.55",
-    "@gpa-gemstone/react-forms": "1.1.112",
-    "@gpa-gemstone/react-graph": "1.0.97",
-    "@gpa-gemstone/react-interactive": "1.0.176",
-    "@gpa-gemstone/react-table": "1.2.99",
+    "@gpa-gemstone/react-forms": "1.1.114",
+    "@gpa-gemstone/react-graph": "1.0.99",
+    "@gpa-gemstone/react-interactive": "1.0.178",
+    "@gpa-gemstone/react-table": "1.2.102",
     "@types/react": "^17.0.14",
     "@types/webpack": "^5.28.0",
     "jest-environment-jsdom": "^30.0.5",

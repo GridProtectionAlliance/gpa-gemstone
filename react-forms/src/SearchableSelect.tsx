@@ -175,7 +175,7 @@ export default function SearchableSelect<T>(props: IProps<T>) {
         })
 
         if (props.AllowCustom ?? false)
-            ops.push({ Value: search, Element: <>{search} (Entered Value)</>, Label: search });
+            ops.push({ Value: search, Element: <>{search} <span className="badge badge-info" style={{ fontSize: '0.75em' }}>Entered Value</span></>, Label: search });
 
         //Ensure selectedOption is always at top of the list
         const selected = searchOptions.find(f => f.Value === props.Record[props.Field]);
