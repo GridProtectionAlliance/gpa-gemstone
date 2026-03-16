@@ -168,7 +168,11 @@ export default function SearchableSelect<T>(props: IProps<T>) {
                     value={search}
                     onChange={(d) => setSearch(d.target.value)}
                     onBlur={() => handleSetSearch()}
-                    onClick={(evt) => { evt.preventDefault(); evt.stopPropagation(); }}
+                    onClick={(evt) => {
+                        evt.preventDefault();
+                        evt.stopPropagation();
+                        setSearch('');
+                    }}
                     disabled={props.Disabled ?? false}
                 />
                 {loading ?
@@ -200,8 +204,8 @@ export default function SearchableSelect<T>(props: IProps<T>) {
 
         ops.push(...searchOptions.filter(f => f.Value !== search && f.Value !== props.Record[props.Field]));
 
-        // Only show no-results when there's nothing else in the list besides the search input
-        if (ops.length === 1 && !loading)
+        // Only show no-results when there's no search results and we arent loading
+        if (searchOptions.length === 0 && !loading)
             ops.push({
                 Value: '',
                 Label: '',
@@ -209,8 +213,9 @@ export default function SearchableSelect<T>(props: IProps<T>) {
                 RowClass: 'disabled',
                 Disabled: true
             });
+
         return ops;
-    }, [search, props.Record[props.Field], props.Field, searchOptions, props.Disabled, loading, props.Valid, handleSetSearch]);
+    }, [search, props.Record[props.Field], props.Field, searchOptions, props.Disabled, loading, props.Valid, handleSetSearch, currentLabel, props.AllowCustom]);
 
     return <StylableSelect<T>
         Record={props.Record}
@@ -224,5 +229,6 @@ export default function SearchableSelect<T>(props: IProps<T>) {
         BtnStyle={props.BtnStyle}
         Valid={props.Valid}
         Feedback={props.Feedback}
+        OnBtnClick={() => setSearch('')}
     />;
 }

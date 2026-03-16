@@ -102,6 +102,10 @@ interface IProps<T> {
     *    
     */
   BtnStyle?: React.CSSProperties
+  /**
+   * Click handler for the button holding the selected value
+   */
+  OnBtnClick?: (evt: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
 }
 
 export default function StylableSelect<T>(props: IProps<T>) {
@@ -222,7 +226,10 @@ export default function StylableSelect<T>(props: IProps<T>) {
         type="button"
         style={{ padding: '.375rem .75rem', ...(props.BtnStyle ?? {}) }}
         className={`dropdown-toggle form-control ${(props.Valid?.(props.Field) ?? true) ? '' : 'is-invalid'}`}
-        onClick={HandleShow}
+        onClick={(evt) => {
+          HandleShow(evt);
+          if (props.OnBtnClick != null) props.OnBtnClick(evt);
+        }}
         disabled={props.Disabled === undefined ? false : props.Disabled}
       >
         <div style={props.Style}>
