@@ -34,6 +34,7 @@ export interface IOption {
   Element: React.ReactElement<any> | string,
   RowClass?: string;
   RowStyle?: React.CSSProperties;
+  Disabled?: boolean;
 }
 
 interface IProps<T> {
@@ -257,7 +258,15 @@ export default function StylableSelect<T>(props: IProps<T>) {
                   key={`${i}-${JSON.stringify(f.Value)}`}
                   className={f.RowClass ?? ''}
                   style={f.RowStyle}
-                  onMouseDown={(evt) => handleOptionClick(evt, f)}
+                  onMouseDown={(evt) => {
+                    if (f.Disabled ?? false) {
+                      evt.stopPropagation();
+                      evt.preventDefault();
+                      return;
+                    }
+                    handleOptionClick(evt, f);
+                  }}
+                  aria-disabled={f.Disabled ?? false}
                 >
                   <td>
                     {f.Element}
