@@ -28,7 +28,7 @@ import { IProps as ISearchableSelectProps } from './SearchableSelect';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 import HelpIcon from './HelpIcon';
 
-interface IProps<T> extends Omit<ISearchableSelectProps<T>, 'Valid' | 'Feedback' | 'GetLabel' | 'Setter'> {
+interface IProps<T> extends Omit<ISearchableSelectProps<T>, 'Valid' | 'Feedback' | 'GetLabel' | 'Setter' | 'Search'> {
     /**
       * Default value to use when adding an item and when value is null
       * @type {number}
@@ -65,6 +65,12 @@ interface IProps<T> extends Omit<ISearchableSelectProps<T>, 'Valid' | 'Feedback'
     * @param selectedOption - Option selected for the update
     */
     Setter: (record: T, index: number, selectedOption?: Gemstone.TSX.Interfaces.ILabelValue<string | number>) => void;
+    /**
+    * Function to perform a search and return a promiselike object with a list of IOption and an optional callback
+    * @param search - Search string
+    * @returns {AbortablePromise<T>}
+    */
+    Search: (search: string, value: string | number, index: number) => Gemstone.TSX.Interfaces.AbortablePromise<Gemstone.TSX.Interfaces.ILabelValue<string | number>[]>;
 }
 
 //Only supporting string/number arrays for now
@@ -117,7 +123,7 @@ function MultiSearchableSelect<T>(props: IProps<T>) {
                                 newArray[index] = record[index];
                                 props.Setter({ ...props.Record, [props.Field]: newArray }, index, option);
                             }}
-                            Search={props.Search}
+                            Search={(search) => props.Search(search, fieldArray[index], index)}
                             BtnStyle={props.BtnStyle}
                             GetLabel={props.GetLabel != null ? () => props.GetLabel!(fieldArray[index], index) : undefined}
                             ResetSearchOnSelect={props.ResetSearchOnSelect}
