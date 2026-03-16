@@ -68,6 +68,8 @@ interface IProps<T> extends Omit<ISearchableSelectProps<T>, 'Valid' | 'Feedback'
     /**
     * Function to perform a search and return a promiselike object with a list of IOption and an optional callback
     * @param search - Search string
+    * @param value - Current value of the field being updated
+    * @param index - Index in array field being updated
     * @returns {AbortablePromise<T>}
     */
     Search: (search: string, value: string | number, index: number) => Gemstone.TSX.Interfaces.AbortablePromise<Gemstone.TSX.Interfaces.ILabelValue<string | number>[]>;
