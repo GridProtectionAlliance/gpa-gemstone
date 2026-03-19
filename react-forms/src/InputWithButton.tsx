@@ -163,7 +163,7 @@ function InputWithButton<T>(props: IProps<T>) {
     }
 
     const showLabel = props.Label !== "";
-    const label = props.Label === undefined ? props.Field : props.Label;
+    const label = props.Label === undefined ? props.Field as string : props.Label;
 
     return (
         <div className={"form-group " + (props.Size === 'large' ? 'form-group-lg' : '') + (props.Size === 'small' ? 'form-group-sm' : '')} style={props.InputStyle}>

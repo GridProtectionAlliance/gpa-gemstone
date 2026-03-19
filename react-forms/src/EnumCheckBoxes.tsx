@@ -77,7 +77,7 @@ export default function EnumCheckBoxes<T>(props: IProps<T>) {
   return (
     <div className="form-group">
       {/* Label for the checkbox group. */}
-      <label>{props.Label == null ? props.Field : props.Label}</label>
+      <label>{props.Label == null ? props.Field as string : props.Label}</label>
       <br />
       
       {/* Checkbox for selecting/deselecting all options. */}

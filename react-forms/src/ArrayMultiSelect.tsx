@@ -43,7 +43,7 @@ interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
 export default function ArrayMultiSelect<T>(props: IProps<T>) {
   return (
     <div className="form-group" style={props.GroupStyle}>
-      <label>{props.Label == null ? props.Field : props.Label}</label>
+      <label>{props.Label == null ? props.Field as string : props.Label}</label>
 
       {/* Multi-select dropdown control */}
       <select

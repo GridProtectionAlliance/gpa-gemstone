@@ -207,7 +207,7 @@ export default function StylableSelect<T>(props: IProps<T>) {
 
   // Variables to control the rendering of label and help icon.
   const showLabel = props.Label !== "";
-  const label = props.Label === undefined ? props.Field : props.Label;
+  const label = props.Label === undefined ? props.Field as string : props.Label;
 
   return (
     <div ref={stylableSelect} className="form-group" style={{ position: 'relative', display: 'inline-block', width: 'inherit' }}>

@@ -134,7 +134,7 @@ const ColorPicker = <T,>(props: IProps<T>) => {
 
   // Variables to control the rendering of label and help icon.
   const showLabel = props.Label !== "";
-  const label = props.Label === undefined ? props.Field : props.Label;
+  const label = props.Label === undefined ? props.Field as string : props.Label;
 
   return (
     <div className={"form-group "} style={props.Style}>
@@ -156,7 +156,7 @@ const ColorPicker = <T,>(props: IProps<T>) => {
         onMouseOut={() => setShow(false)}
         style={{ ...props.Style, backgroundColor: props.Record[props.Field] as any, color: "#ffffff" }}
       >
-        {props.Record[props.Field] ?? ""}
+        {props.Record[props.Field] as string ?? ""}
       </button>
       <Portal>
         {!(props.Disabled ?? false) ?

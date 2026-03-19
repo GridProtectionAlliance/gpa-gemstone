@@ -39,7 +39,7 @@ export default function ToggleSwitch<T>(props: IProps<T>) {
   const [switchID] = React.useState<string>(CreateGuid());
 
   // Variables to control the rendering of label and help icon.
-  const label = props.Label === undefined ? props.Field : props.Label;
+  const label = props.Label === undefined ? props.Field as string : props.Label;
 
   return (
     <div className="custom-control custom-switch form-group" style={props.Style}>
