@@ -168,7 +168,7 @@ namespace Gemstone {
                 CurrentPipelineStep: number,
                 SetPipelineStep: (step: number) => void,
                 Errors: string[],
-                SetErrors: (errors: string[]) => void,
+                SetErrors: React.Dispatch<React.SetStateAction<string[]>>,
                 AdditionalProps?: U,
             }
 
