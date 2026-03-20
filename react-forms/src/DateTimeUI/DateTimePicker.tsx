@@ -186,7 +186,7 @@ export default function DateTimePickerBase<T>(props: IProps<T>) {
 
     // Variables for rendering labels and help icons.
     const showLabel = props.Label !== "";
-    const label = props.Label === undefined ? props.Field : props.Label;
+    const label = props.Label === undefined ? props.Field as string : props.Label;
     const step = props.Accuracy === 'millisecond' ? '0.001' : (props.Accuracy === 'minute' ? '60' : '1');
 
     const IsValid = () => {

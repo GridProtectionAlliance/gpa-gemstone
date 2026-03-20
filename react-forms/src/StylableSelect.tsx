@@ -34,6 +34,7 @@ export interface IOption {
   Element: React.ReactElement<any> | string,
   RowClass?: string;
   RowStyle?: React.CSSProperties;
+  Disabled?: boolean;
 }
 
 interface IProps<T> {
@@ -101,6 +102,10 @@ interface IProps<T> {
     *    
     */
   BtnStyle?: React.CSSProperties
+  /**
+   * Click handler for the button holding the selected value
+   */
+  OnBtnClick?: (evt: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
 }
 
 export default function StylableSelect<T>(props: IProps<T>) {
@@ -202,7 +207,7 @@ export default function StylableSelect<T>(props: IProps<T>) {
 
   // Variables to control the rendering of label and help icon.
   const showLabel = props.Label !== "";
-  const label = props.Label === undefined ? props.Field : props.Label;
+  const label = props.Label === undefined ? props.Field as string : props.Label;
 
   return (
     <div ref={stylableSelect} className="form-group" style={{ position: 'relative', display: 'inline-block', width: 'inherit' }}>
@@ -221,7 +226,10 @@ export default function StylableSelect<T>(props: IProps<T>) {
         type="button"
         style={{ padding: '.375rem .75rem', ...(props.BtnStyle ?? {}) }}
         className={`dropdown-toggle form-control ${(props.Valid?.(props.Field) ?? true) ? '' : 'is-invalid'}`}
-        onClick={HandleShow}
+        onClick={(evt) => {
+          HandleShow(evt);
+          if (props.OnBtnClick != null) props.OnBtnClick(evt);
+        }}
         disabled={props.Disabled === undefined ? false : props.Disabled}
       >
         <div style={props.Style}>
@@ -257,7 +265,15 @@ export default function StylableSelect<T>(props: IProps<T>) {
                   key={`${i}-${JSON.stringify(f.Value)}`}
                   className={f.RowClass ?? ''}
                   style={f.RowStyle}
-                  onMouseDown={(evt) => handleOptionClick(evt, f)}
+                  onMouseDown={(evt) => {
+                    if (f.Disabled ?? false) {
+                      evt.stopPropagation();
+                      evt.preventDefault();
+                      return;
+                    }
+                    handleOptionClick(evt, f);
+                  }}
+                  aria-disabled={f.Disabled ?? false}
                 >
                   <td>
                     {f.Element}

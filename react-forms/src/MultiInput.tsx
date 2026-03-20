@@ -84,7 +84,7 @@ function MultiInput<T>(props: IProps<T>) {
 
     // Variables to control the rendering of label and help icon.
     const showLabel = props.Label !== "";
-    const label = props.Label === undefined ? props.Field : props.Label;
+    const label = props.Label === undefined ? props.Field as string : props.Label;
 
     return (
         <>

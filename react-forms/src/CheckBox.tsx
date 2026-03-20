@@ -27,7 +27,7 @@ import HelpIcon from './HelpIcon';
 
 const CheckBox = <T,>(props: Gemstone.TSX.Interfaces.IBaseFormProps<T>) => {
   const showLabel = props.Label !== "";
-  const label = props.Label === undefined ? props.Field : props.Label;
+  const label = props.Label === undefined ? props.Field as string : props.Label;
 
   return (
     <div className="form-check">

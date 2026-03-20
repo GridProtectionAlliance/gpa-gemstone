@@ -48,7 +48,7 @@ interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
 }
 
 export default function RadioButtons<T>(props: IProps<T>) {
-    const label = props.Label === undefined ? props.Field : props.Label;
+    const label = props.Label === undefined ? props.Field as string : props.Label;
 
     return (
         <div className="form-group" style={props.Style}>

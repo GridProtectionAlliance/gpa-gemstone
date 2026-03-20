@@ -94,6 +94,7 @@ export default function SearchableSelect<T>(props: IProps<T>) {
 
     const [searchOptions, setSearchOptions] = React.useState<IStylableOptionOverride[]>([]);
     const [loading, setLoading] = React.useState<boolean>(false);
+    const [currentLabel, setCurrentLabel] = React.useState<string | null>(null);
 
     const setter = React.useCallback((record: T, selectedOption: IStylableOption) => {
         const selectedOptionCasted = selectedOption as IStylableOptionOverride; //we can safely cast here because we control the options going in.. 
@@ -107,19 +108,25 @@ export default function SearchableSelect<T>(props: IProps<T>) {
             return
         }
 
-        if (props.GetLabel === undefined) {
-            const newSearch: string = (selectedOption?.Label as string) ?? (props.Record[props.Field] as any)?.toString() ?? '';
-            setSearch(newSearch);
-            return
+        if (currentLabel != null) {
+            setSearch(currentLabel);
+            return;
         }
 
-        setLoading(true);
+        const newSearch: string = (selectedOption?.Label as string) ?? (props.Record[props.Field] as any)?.toString() ?? '';
+        setSearch(newSearch);
+    }, [props.ResetSearchOnSelect, currentLabel, props.Record[props.Field]]);
+
+    //Effect to set the label for the current value using GetLabel.
+    React.useEffect(() => {
+        if (props.GetLabel == null) {
+            setCurrentLabel(null);
+            return;
+        }
         const handle = props.GetLabel();
-        handle.then(lab => {
-            setSearch(lab)
-            setLoading(false)
-        }, () => setLoading(false));
-    }, [props.ResetSearchOnSelect, props.GetLabel, props.Record[props.Field]]);
+        handle.then(lab => setCurrentLabel(lab), () => setCurrentLabel(null));
+        return () => { if (handle?.abort != null) handle.abort(); };
+    }, [props.Record[props.Field], props.GetLabel]);
 
     //Effect to set search when props.Record[props.Field] changes externally
     React.useEffect(() => {
@@ -161,7 +168,11 @@ export default function SearchableSelect<T>(props: IProps<T>) {
                     value={search}
                     onChange={(d) => setSearch(d.target.value)}
                     onBlur={() => handleSetSearch()}
-                    onClick={(evt) => { evt.preventDefault(); evt.stopPropagation(); }}
+                    onClick={(evt) => {
+                        evt.preventDefault();
+                        evt.stopPropagation();
+                        setSearch('');
+                    }}
                     disabled={props.Disabled ?? false}
                 />
                 {loading ?
@@ -179,12 +190,32 @@ export default function SearchableSelect<T>(props: IProps<T>) {
 
         //Ensure selectedOption is always at top of the list
         const selected = searchOptions.find(f => f.Value === props.Record[props.Field]);
-        if (selected != null) ops.push({ ...selected, RowClass: 'table-primary' });
+        if (selected != null)
+            ops.push({ ...selected, RowClass: 'table-primary' });
+        else if (props.Record[props.Field] != null && props.Record[props.Field] !== '') {
+            const fallbackLabel = currentLabel ?? (props.Record[props.Field] as any)?.toString() ?? '';
+            ops.push({
+                Value: props.Record[props.Field],
+                Label: fallbackLabel,
+                Element: <>{fallbackLabel}</>,
+                RowClass: 'table-primary'
+            });
+        }
 
         ops.push(...searchOptions.filter(f => f.Value !== search && f.Value !== props.Record[props.Field]));
 
+        // Only show no-results when there's no search results and we arent loading
+        if (searchOptions.length === 0 && !loading)
+            ops.push({
+                Value: '',
+                Label: '',
+                Element: <span className="text-muted">No results found</span>,
+                RowClass: 'disabled',
+                Disabled: true
+            });
+
         return ops;
-    }, [search, props.Record[props.Field], props.Field, searchOptions, props.Disabled, loading, props.Valid, handleSetSearch]);
+    }, [search, props.Record[props.Field], props.Field, searchOptions, props.Disabled, loading, props.Valid, handleSetSearch, currentLabel, props.AllowCustom]);
 
     return <StylableSelect<T>
         Record={props.Record}
@@ -198,5 +229,6 @@ export default function SearchableSelect<T>(props: IProps<T>) {
         BtnStyle={props.BtnStyle}
         Valid={props.Valid}
         Feedback={props.Feedback}
+        OnBtnClick={() => setSearch('')}
     />;
 }
