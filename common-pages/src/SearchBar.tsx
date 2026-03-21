@@ -125,7 +125,7 @@ export namespace DefaultSearch {
 
         const setFilters = React.useCallback((filters: Search.IFilter<SystemCenter.Types.DetailedLocation>[]) => 
             dispatch(props.Slice.DBSearch({ filter: (addlFilters == null ? filters : [...filters, ...addlFilters]), sortField, ascending  })),
-            [sortField, ascending, addlFilters, props.Slice]);
+            [sortField, ascending, addlFilters, props.Slice.DBSearch]);
 
         return <GenericSearchBar<SystemCenter.Types.DetailedLocation> 
             CollumnList={[...defaultSearchcols, ...addlFieldCols]}
