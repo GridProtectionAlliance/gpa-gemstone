@@ -28,7 +28,7 @@ import _ from 'lodash';
 import FilterCreator from './FilterCreator';
 import FilterRow from './FilterRow';
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
-import { CreateGuid } from '@gpa-gemstone/helper-functions';
+import { CreateGuid, useStringMemonization } from '@gpa-gemstone/helper-functions';
 
 interface IProps<T> {
     /**
@@ -121,9 +121,7 @@ export default function SearchBar<T>(props: React.PropsWithChildren<IProps<T>>) 
 
     const activeFilters = React.useMemo(() => hasExternalFilters ? (props.Filters ?? []) : internalFilters, [hasExternalFilters, props.Filters, internalFilters]);
 
-    // Memoized default column to prevent unneccessary re-renders
-    const stringifiedDefaultColumn = React.useMemo(() => props.defaultCollumn != null ? JSON.stringify(props.defaultCollumn) : null, [props.defaultCollumn]);
-    const memoizedDefaultColumn = React.useMemo(() => stringifiedDefaultColumn != null ? JSON.parse(stringifiedDefaultColumn) as Search.IField<T> : undefined, [stringifiedDefaultColumn]);
+    const memoizedDefaultColumn = useStringMemonization<Search.IField<T>|undefined>(props.defaultCollumn);
 
     // Memoized function to apply quick search with debounce and push filters up
     const applyQuickSearch = React.useMemo(() => {
