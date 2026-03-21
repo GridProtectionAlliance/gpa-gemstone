@@ -27,6 +27,7 @@ import { GenericSlice, SearchBar as GenericSearchBar, Search } from '@gpa-gemsto
 import { OpenXDA, SystemCenter, Application } from '@gpa-gemstone/application-typings';
 import { useDispatch, useSelector } from 'react-redux';
 import { Dispatch } from '@reduxjs/toolkit';
+import { useStringMemonization } from '@gpa-gemstone/helper-functions';
 
 interface U { ID: number|string }
 
@@ -62,6 +63,8 @@ export namespace DefaultSearch {
         const dispatch = useDispatch<Dispatch<any>>();
 
         const [addlFieldCols, setAddlFieldCols] = React.useState<Search.IField<SystemCenter.Types.DetailedMeter>[]>([]);
+        const addlFilters = useStringMemonization<Search.IFilter<SystemCenter.Types.DetailedMeter>[]|undefined>(props.AddlFilters);
+
         const searchStatus = useSelector(props.Slice.SearchStatus)
         const sortField = useSelector(props.Slice.SortField)
         const ascending = useSelector(props.Slice.Ascending)
@@ -70,12 +73,16 @@ export namespace DefaultSearch {
         React.useEffect(() => {
           return props.GetAddlFields(setAddlFieldCols);
         }, []);
+        
+        const setFilters = React.useCallback((filters: Search.IFilter<SystemCenter.Types.DetailedMeter>[]) => 
+            dispatch(props.Slice.DBSearch({ filter: (addlFilters == null ? filters : [...filters, ...addlFilters]), sortField, ascending  })),
+         [sortField, ascending, addlFilters, props.Slice]);
 
         const standardSearch: Search.IField<SystemCenter.Types.DetailedMeter> = { label: 'Name', key: 'Name', type: 'string', isPivotField: false };
 
         return <GenericSearchBar<SystemCenter.Types.DetailedMeter>
             CollumnList={[...defaultSearchcols, ...addlFieldCols]}
-            SetFilter={(flds) => dispatch(props.Slice.DBSearch({ filter: (props.AddlFilters === undefined ? flds : [...flds, ...props.AddlFilters]), sortField, ascending }))} 
+            SetFilter={setFilters}
             Direction={'left'}
             defaultCollumn={standardSearch}
             Width={'50%'}
@@ -94,6 +101,7 @@ export namespace DefaultSearch {
 
         const standardSearch: Search.IField<SystemCenter.Types.DetailedLocation> = { label: 'Name', key: 'Name', type: 'string', isPivotField: false };
         const [addlFieldCols, setAddlFieldCols] = React.useState<Search.IField<SystemCenter.Types.DetailedLocation>[]>([]);
+        const addlFilters = useStringMemonization<Search.IFilter<SystemCenter.Types.DetailedLocation>[]|undefined>(props.AddlFilters);
         
         const dispatch = useDispatch<Dispatch<any>>();
         const searchStatus = useSelector(props.Slice.SearchStatus)
@@ -115,9 +123,13 @@ export namespace DefaultSearch {
           return props.GetAddlFields(setAddlFieldCols);
         }, []);
 
+        const setFilters = React.useCallback((filters: Search.IFilter<SystemCenter.Types.DetailedLocation>[]) => 
+            dispatch(props.Slice.DBSearch({ filter: (addlFilters == null ? filters : [...filters, ...addlFilters]), sortField, ascending  })),
+            [sortField, ascending, addlFilters, props.Slice.DBSearch]);
+
         return <GenericSearchBar<SystemCenter.Types.DetailedLocation> 
             CollumnList={[...defaultSearchcols, ...addlFieldCols]}
-            SetFilter={(flds) => dispatch(props.Slice.DBSearch({ filter: (props.AddlFilters === undefined ? flds : [...flds, ...props.AddlFilters]), sortField, ascending }))} 
+            SetFilter={setFilters} 
             Direction={'left'} 
             defaultCollumn={standardSearch} 
             Width={'50%'} 
@@ -136,6 +148,7 @@ export namespace DefaultSearch {
 
         const standardSearch: Search.IField<SystemCenter.Types.DetailedAsset> = { label: 'Name', key: 'AssetName', type: 'string', isPivotField: false };
         const [addlFieldCols, setAddlFieldCols] = React.useState<Search.IField<SystemCenter.Types.DetailedAsset>[]>([]);
+        const addlFilters = useStringMemonization<Search.IFilter<SystemCenter.Types.DetailedAsset>[]|undefined>(props.AddlFilters);
 
         const dispatch = useDispatch<Dispatch<any>>();
         const searchStatus = useSelector(props.Slice.SearchStatus)
@@ -159,9 +172,13 @@ export namespace DefaultSearch {
           return props.GetAddlFields(setAddlFieldCols);
         }, []);
 
+        const setFilters = React.useCallback((filters: Search.IFilter<SystemCenter.Types.DetailedAsset>[]) => 
+            dispatch(props.Slice.DBSearch({ filter: (addlFilters == null ? filters : [...filters, ...addlFilters]), sortField, ascending  })),
+            [sortField, ascending, addlFilters, props.Slice]);
+
         return <GenericSearchBar<SystemCenter.Types.DetailedAsset> 
             CollumnList={[...defaultSearchcols, ...addlFieldCols]}
-            SetFilter={(flds) => dispatch(props.Slice.DBSearch({ filter: (props.AddlFilters === undefined ? flds : [...flds, ...props.AddlFilters]), sortField, ascending }))} 
+            SetFilter={setFilters} 
             Direction={'left'} 
             defaultCollumn={standardSearch} 
             Width={'50%'} 
@@ -180,6 +197,7 @@ export namespace DefaultSearch {
 
         const standardSearch: Search.IField<OpenXDA.Types.AssetGroup> = { label: 'Name', key: 'Name', type: 'string', isPivotField: false };
         const [addlFieldCols, setAddlFieldCols] = React.useState<Search.IField<OpenXDA.Types.AssetGroup>[]>([]);
+        const addlFilters = useStringMemonization<Search.IFilter<OpenXDA.Types.AssetGroup>[]|undefined>(props.AddlFilters);
 
         const dispatch = useDispatch<Dispatch<any>>();
         const searchStatus = useSelector(props.Slice.SearchStatus)
@@ -200,9 +218,13 @@ export namespace DefaultSearch {
           return props.GetAddlFields(setAddlFieldCols);
         }, []);
         
+        const setFilters = React.useCallback((filters: Search.IFilter<OpenXDA.Types.AssetGroup>[]) => 
+            dispatch(props.Slice.DBSearch({ filter: (addlFilters == null ? filters : [...filters, ...addlFilters]), sortField, ascending  })),
+            [sortField, ascending, addlFilters, props.Slice]);
+
         return <GenericSearchBar<OpenXDA.Types.AssetGroup> 
             CollumnList={[...defaultSearchcols, ...addlFieldCols]}
-            SetFilter={(flds) => dispatch(props.Slice.DBSearch({ filter: (props.AddlFilters === undefined ? flds : [...flds, ...props.AddlFilters]), sortField, ascending }))} 
+            SetFilter={setFilters} 
             Direction={'left'} 
             defaultCollumn={standardSearch} 
             Width={'50%'} 
@@ -221,6 +243,7 @@ export namespace DefaultSearch {
 
         const standardSearch: Search.IField<Application.Types.iUserAccount> = { label: 'Username', key: 'Name', type: 'string', isPivotField: false };
         const [addlFieldCols, setAddlFieldCols] = React.useState<Search.IField<Application.Types.iUserAccount>[]>([]);
+        const addlFilters = useStringMemonization<Search.IFilter<Application.Types.iUserAccount>[]|undefined>(props.AddlFilters);
 
         const dispatch = useDispatch<Dispatch<any>>();
         const searchStatus = useSelector(props.Slice.SearchStatus)
@@ -237,10 +260,14 @@ export namespace DefaultSearch {
         React.useEffect(() => {
           return props.GetAddlFields(setAddlFieldCols);
         }, []);
-        
+
+        const setFilters = React.useCallback((filters: Search.IFilter<Application.Types.iUserAccount>[]) => 
+            dispatch(props.Slice.DBSearch({ filter: (addlFilters == null ? filters : [...filters, ...addlFilters]), sortField, ascending  })),
+            [sortField, ascending, addlFilters, props.Slice]);
+
         return <GenericSearchBar<Application.Types.iUserAccount> 
             CollumnList={[...defaultSearchcols, ...addlFieldCols]}
-            SetFilter={(flds) => dispatch(props.Slice.DBSearch({ filter: (props.AddlFilters === undefined ? flds : [...flds, ...props.AddlFilters]), sortField, ascending }))} 
+            SetFilter={setFilters} 
             Direction={'left'} 
             defaultCollumn={standardSearch} 
             Width={'50%'} 
@@ -267,6 +294,7 @@ export namespace DefaultSearch {
 
         const standardSearch: Search.IField<OpenXDA.Types.Customer> = { label: 'Name', key: 'Name', type: 'string', isPivotField: false };
         const [addlFieldCols, setAddlFieldCols] = React.useState<Search.IField<OpenXDA.Types.Customer>[]>([]);
+        const addlFilters = useStringMemonization<Search.IFilter<OpenXDA.Types.Customer>[]|undefined>(props.AddlFilters);
         
         const dispatch = useDispatch<Dispatch<any>>();
         const searchStatus = useSelector(props.Slice.SearchStatus)
@@ -277,10 +305,14 @@ export namespace DefaultSearch {
         React.useEffect(() => {
           return props.GetAddlFields(setAddlFieldCols);
         }, []);
-        
+
+         const setFilters = React.useCallback((filters: Search.IFilter<OpenXDA.Types.Customer>[]) => 
+            dispatch(props.Slice.DBSearch({ filter: (addlFilters == null ? filters : [...filters, ...addlFilters]), sortField, ascending  })),
+            [sortField, ascending, addlFilters, props.Slice]);
+
         return <GenericSearchBar<OpenXDA.Types.Customer> 
             CollumnList={[...defaultSearchcols, ...addlFieldCols]}
-            SetFilter={(flds) => dispatch(props.Slice.DBSearch({ filter: (props.AddlFilters === undefined ? flds : [...flds, ...props.AddlFilters]), sortField, ascending }))} 
+            SetFilter={setFilters} 
             Direction={'left'} 
             defaultCollumn={standardSearch} 
             Width={'50%'} 
