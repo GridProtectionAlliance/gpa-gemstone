@@ -42,6 +42,7 @@ import { useGetContainerPosition } from './React/useGetContainerPosition';
 import GetScrollbarWidth from './GetScrollBarWidth';
 import useMediaQuery from './React/useMediaQuery';
 import useGetScreenSize from './React/useGetScreenSize';
+import useStringMemonization from './React/useStringMemonization';
 import { ParseKeyValuePairs } from './ParseKeyValuePairs';
 import { JoinKeyValuePairs } from './JoinKeyValuePairs';
 import { IsBool } from './IsBool';
@@ -80,5 +81,6 @@ export {
     RegexEncode,
     ComputeMax,
     ComputeMin,
-    FormatDuration
+    FormatDuration,
+    useStringMemonization
 }
