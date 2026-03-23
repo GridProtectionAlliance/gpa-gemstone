@@ -41,7 +41,7 @@
     "@types/jquery": "3.5.6",
     "@types/lodash": "4.14.171",
     "@types/react": "18.2.0",
-    "@types/styled-components": "^5.1.36",
+    "@types/styled-components": "5.1.11",
     "@typescript-eslint/eslint-plugin": "^5.60.0",
     "@typescript-eslint/parser": "^5.60.0",
     "eslint": "^8.43.0",
