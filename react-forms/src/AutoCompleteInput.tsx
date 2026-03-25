@@ -120,8 +120,7 @@ export default function AutoCompleteInput<T>(props: IProps<T>) {
     if (inputElement.current == null) return;
     const currentPos = inputElement.current.selectionStart ?? 0;
     const optionLength = option.Value.length;
-    props.Record[props.Field] = option.Value as any;
-    props.Setter(props.Record);
+    props.Setter({...props.Record, [props.Field]: option.Value});
     const textLength = inputElement.current.textContent?.length ?? 0;
     const newCaretPos = (optionLength > textLength ? textLength - 1 : optionLength + currentPos);
     inputElement.current?.focus();
