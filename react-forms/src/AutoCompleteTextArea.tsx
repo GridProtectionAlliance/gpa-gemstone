@@ -67,7 +67,13 @@ export default function AutoCompleteTextArea<T>(props: IAutoCompleteProps<T>) {
       if (textAreaElement.current == null) { return }
       const rect = textAreaElement.current.getBoundingClientRect();
       const [caret_X, caret_Y] = getTextDimensions(textAreaElement, variable.Start - 1, "\n");
-      setPosition({ Top: rect.top + caret_Y, Left: rect.left + caret_X, Width: rect.width, Height: rect.height });
+
+      setPosition({
+        Top: rect.top + caret_Y,
+        Left: rect.left + caret_X,
+        Width: rect.width - caret_X,
+        Height: rect.height
+      });
     }, 200);
 
     const handleScroll = () => {
@@ -104,7 +110,7 @@ export default function AutoCompleteTextArea<T>(props: IAutoCompleteProps<T>) {
   const handleOptionClick = (option: Gemstone.TSX.Interfaces.ILabelValue<string>) => {
     const currentPos = textAreaElement.current !== null ? textAreaElement.current.selectionStart : 0;
     const optionLength = option.Value.length;
-    props.Setter({...props.Record, [props.Field]: option.Value});
+    props.Setter({ ...props.Record, [props.Field]: option.Value });
     const textLength = textAreaElement.current !== null ? textAreaElement.current.textContent?.length ?? 0 : 0;
     const newCaretPos = (optionLength > textLength ? textLength - 1 : optionLength + currentPos);
     textAreaElement.current?.focus();
@@ -132,7 +138,8 @@ export default function AutoCompleteTextArea<T>(props: IAutoCompleteProps<T>) {
               maxWidth: '100%',
               top: `${position.Top}px`,
               left: `${position.Left}px`,
-              minWidth: `${position.Width}px`
+              minWidth: `${Math.min(position.Width, window.innerWidth - position.Left)}px`,
+              overflowWrap: 'break-word',
             }}
           >
             <table className="table table-hover" style={{ margin: 0 }} ref={selectTable}>
