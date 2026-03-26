@@ -122,22 +122,9 @@ export const ParseKeyValuePairs = (
         }
     }
 
-    if (delimiterDepth !== 0 || valueEscaped) {
-        // If value is still escaped, tagged expression was not terminated
-        if (valueEscaped)
-            delimiterDepth = 1;
-
-        throw "Failed to parse key/value pairs: invalid delimiter mismatch. Encountered more " +
-        (delimiterDepth > 0
-            ? "start value delimiters \"" + startValueDelimiter + "\""
-            : "end value delimiters \"" + endValueDelimiter + "\"") +
-        " than " +
-        (delimiterDepth < 0
-            ? "start value delimiters \"" + startValueDelimiter + "\""
-            : "end value delimiters \"" + endValueDelimiter + "\"") +
-        ".";
-    }
-
+    if (delimiterDepth !== 0 || valueEscaped) 
+        console.warn("ParseKeyValuePairs: mismatched value delimiters, parsing best-effort result.");
+    
     // Parse key/value pairs from escaped value
     const pairs = escapedValue.join("").split(parameterDelimiter);
 
