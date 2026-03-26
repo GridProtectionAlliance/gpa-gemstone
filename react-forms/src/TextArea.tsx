@@ -67,25 +67,19 @@ export interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
 }
 
 export default function TextArea<T>(props: IProps<T>) {
-  // Internal ref and state hooks for managing the component state.
-  const internal = React.useRef<boolean>(false)
-  const [guid] = React.useState<string>(CreateGuid())
-
-  const [showHelp, setShowHelp] = React.useState<boolean>(false);
   const [heldVal, setHeldVal] = React.useState<string>('');
+  const [isFocused, setIsFocused] = React.useState<boolean>(false);
 
-  // Effect to handle changes to the record's field value.
+  //Effect to update heldVal when the record value changes, but only if the textarea is not currently focused to avoid cursor jumping. 
   React.useEffect(() => {
-    if (!internal.current) {
+
+    if (!isFocused) {
       setHeldVal(props.Record[props.Field] == null ? '' : (props.Record[props.Field] as any).toString());
     }
-    internal.current = false;
-
   }, [props.Record[props.Field]]);
 
   // Handle value change of the textarea.
   function valueChange(value: string) {
-    internal.current = true;
     props.Setter({ ...props.Record, [props.Field]: value !== '' ? value : null });
     setHeldVal(value);
   }
@@ -113,6 +107,11 @@ export default function TextArea<T>(props: IProps<T>) {
         value={heldVal == null ? '' : heldVal}
         disabled={props.Disabled == null ? false : props.Disabled}
         spellCheck={props.SpellCheck ?? true}
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => {
+          setIsFocused(false);
+          setHeldVal(props.Record[props.Field] == null ? '' : (props.Record[props.Field] as any).toString());
+        }}
       />
 
       {/* Invalid feedback message */}
