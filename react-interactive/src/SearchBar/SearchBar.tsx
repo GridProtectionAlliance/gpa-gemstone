@@ -105,6 +105,8 @@ export default function SearchBar<T>(props: React.PropsWithChildren<IProps<T>>) 
     const hasExternalFilters = props.Filters !== undefined;
     const useQuickSearch = props.defaultCollumn !== undefined;
 
+    const initializedStorageID = React.useRef<string | null>(null); //guard against initializing from localStorage more than once unless StorageID changes
+
     const [hover, setHover] = React.useState<boolean>(false);
     const [show, setShow] = React.useState<boolean>(false);
 
@@ -162,6 +164,11 @@ export default function SearchBar<T>(props: React.PropsWithChildren<IProps<T>>) 
     React.useEffect(() => {
         if (props.StorageID == null || hasExternalFilters)
             return;
+        
+        if (initializedStorageID.current === props.StorageID)
+            return;
+
+        initializedStorageID.current = props.StorageID;
 
         const storedFilters = JSON.parse(localStorage.getItem(`${props.StorageID}.Filters`) as string) ?? [];
         const storedSearch = localStorage.getItem(`${props.StorageID}.Search`) ?? "";
@@ -172,7 +179,7 @@ export default function SearchBar<T>(props: React.PropsWithChildren<IProps<T>>) 
         applyQuickSearch.cancel();
         applyQuickSearch(storedSearch, storedFilters, props.SetFilter, memoizedDefaultColumn, useQuickSearch);
         applyQuickSearch.flush();
-    }, [props.StorageID, memoizedDefaultColumn, useQuickSearch]);
+    }, [props.StorageID, props.SetFilter, memoizedDefaultColumn, useQuickSearch, hasExternalFilters]);
 
     const deleteFilter = (filterToDelete: Search.IFilter<T>) => {
         const updatedFilters = activeFilters.filter(f => f !== filterToDelete);
