@@ -231,4 +231,41 @@ describe('SearchableSelect', () => {
             expect(input).toHaveValue('');
         });
     });
+
+    describe('Search input space handling', () => {
+        it('should not reset search text when a space is typed', async () => {
+            const searchFn = jest.fn(() => createAbortablePromise([]));
+
+            renderSearchableSelect({
+                Search: searchFn,
+                Record: { ID: 1, Name: 'Test' },
+                Field: 'ID',
+            });
+
+            await act(async () => {
+                jest.advanceTimersByTime(500);
+            });
+
+            const input = screen.getByRole('textbox');
+
+            // Clear initial value
+            await act(async () => {
+                fireEvent.click(input);
+            });
+
+            // Type a search query
+            await act(async () => {
+                fireEvent.change(input, { target: { value: 'Option' } });
+            });
+
+            expect(input).toHaveValue('Option');
+
+            // Add a space - this shoudnt reset the value
+            await act(async () => {
+                fireEvent.change(input, { target: { value: 'Option A' } });
+            });
+
+            expect(input).toHaveValue('Option A');
+        });
+    });
 });

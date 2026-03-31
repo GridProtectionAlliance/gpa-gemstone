@@ -229,6 +229,6 @@ export default function SearchableSelect<T>(props: IProps<T>) {
         BtnStyle={props.BtnStyle}
         Valid={props.Valid}
         Feedback={props.Feedback}
-        OnBtnClick={() => setSearch('')}
+        OnSelectedOptionContainerClick={() => setSearch('')}
     />;
 }
