@@ -221,10 +221,10 @@ export default function StylableSelect<T>(props: IProps<T>) {
       {/* Dropdown toggle button */}
       <div
         role="button"
-        tabIndex={props.Disabled ? -1 : 0}
+        tabIndex={(props.Disabled ?? false) ? -1 : 0}
         style={{
           padding: '.375rem .75rem',
-          ...(props.Disabled ? { pointerEvents: 'none', opacity: 0.65 } : {}),
+          ...(props.Disabled ?? false ? { pointerEvents: 'none', opacity: 0.65 } : {}),
           ...(props.BtnStyle ?? {})
         }}
         className={`dropdown-toggle form-control ${(props.Valid?.(props.Field) ?? true) ? '' : 'is-invalid'}`}
