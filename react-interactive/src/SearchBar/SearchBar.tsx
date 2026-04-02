@@ -24,7 +24,6 @@ import * as React from 'react';
 import Modal from '../Modal';
 import LoadingIcon from '../LoadingIcon';
 import { Select, ToolTip } from '@gpa-gemstone/react-forms';
-import _ from 'lodash';
 import FilterCreator from './FilterCreator';
 import FilterRow from './FilterRow';
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
@@ -42,7 +41,7 @@ interface IProps<T> {
     /**
      * Called whenever internal filters change, if Filters props is provided this must update the Filters prop to keep in sync.
      * @param filters current filters
-     * @returns 
+     * @returns
      */
     SetFilter: (filters: Search.IFilter<T>[]) => void,
     /**
@@ -102,175 +101,101 @@ export namespace Search {
 }
 
 export default function SearchBar<T>(props: React.PropsWithChildren<IProps<T>>) {
-    const hasExternalFilters = props.Filters !== undefined;
     const useQuickSearch = props.defaultCollumn !== undefined;
 
     const [hover, setHover] = React.useState<boolean>(false);
     const [show, setShow] = React.useState<boolean>(false);
-
     const [isNew, setIsNew] = React.useState<boolean>(false);
 
-    const [internalFilters, setInternalFilters] = React.useState<Search.IFilter<T>[]>([]);
 
-    const [search, setSearch] = React.useState<string>("");
-    const [searchFilter, setSearchFilter] = React.useState<Search.IFilter<T> | null>(null);
+    const [internalFilters, setInternalFilters] = React.useState<Search.IFilter<T>[]>(() => {
+        if (props.Filters !== undefined) return props.Filters;
+        if (props.StorageID != null) return getStoredSearchState<T>(props.StorageID).filters;
+        return [];
+    });
+
+    const [search, setSearch] = React.useState<string>(() => {
+        if (props.Filters !== undefined) return "";
+        if (props.StorageID != null) return getStoredSearchState<T>(props.StorageID).search;
+        return "";
+    });
+
+    // Debounced version of search that the push-up effect watches
+    const [debouncedSearch, setDebouncedSearch] = React.useState<string>(search);
+
     const [draftFilter, setDraftFilter] = React.useState<Search.IFilter<T>>(setDefaultDraftFilter(props.CollumnList[0]));
 
     const [showHelpTooltip, setShowHelpTooltip] = React.useState<boolean>(false);
-    const helpTooltipRef = React.useRef<string>(CreateGuid())
+    const helpTooltipRef = React.useRef<string>(CreateGuid());
 
-    const activeFilters = React.useMemo(() => hasExternalFilters ? (props.Filters ?? []) : internalFilters, [hasExternalFilters, props.Filters, internalFilters]);
+    const memoizedDefaultColumn = useStringMemonization<Search.IField<T> | undefined>(props.defaultCollumn);
 
-    const memoizedDefaultColumn = useStringMemonization<Search.IField<T>|undefined>(props.defaultCollumn);
+    // Tracks the last filters we pushed to the parent so we can guard against unstable SetFilter
+    const lastPushedFilters = React.useRef<Search.IFilter<T>[]>([]);
 
-    // Memoized function to apply quick search with debounce and push filters up
-    const applyQuickSearch = React.useMemo(() => {
-        return _.debounce((text: string, baseFilters: Search.IFilter<T>[]) => {
-            if (!useQuickSearch || memoizedDefaultColumn == null) {
-                props.SetFilter(baseFilters);
-                return;
-            }
-
-            if (text.length === 0) {
-                setSearchFilter(null);
-                props.SetFilter(baseFilters);
-                return;
-            }
-
-            const quick: Search.IFilter<T> = {
-                FieldName: memoizedDefaultColumn.key,
-                Operator: 'LIKE',
-                Type: memoizedDefaultColumn.type,
-                SearchText: `*${text}*`,
-                IsPivotColumn: memoizedDefaultColumn.isPivotField
-            };
-
-            setSearchFilter(quick);
-            props.SetFilter([...baseFilters, quick]);
-        }, 500);
-    }, [props.SetFilter, memoizedDefaultColumn, useQuickSearch]);
-
-    // Cleanup debounce on unmount
     React.useEffect(() => {
-        return () => applyQuickSearch.cancel();
-    }, [applyQuickSearch]);
+        const timer = setTimeout(() => setDebouncedSearch(search), 500);
+        return () => clearTimeout(timer);
+    }, [search]);
 
-    // Handling filter initialization from props or localStorage
+    // Sync external filters into internal state when parent changes them
     React.useEffect(() => {
-        if (props.StorageID == null || hasExternalFilters)
-            return;
+        if (props.Filters === undefined) return;
+        if (filtersEqual(props.Filters, lastPushedFilters.current)) return;
+        setInternalFilters(props.Filters);
+    }, [props.Filters]);
 
-        // Get Button Filters
-        const storedFilters = JSON.parse(localStorage.getItem(`${props.StorageID}.Filters`) as string) ?? [];
-        setInternalFilters(storedFilters);
-
-        // Get Bar Search
-        const storedSearch = localStorage.getItem(`${props.StorageID}.Search`) ?? "";
-        setSearch(storedSearch);
-
-        applyQuickSearch.cancel();
-        applyQuickSearch(storedSearch, storedFilters);
-        applyQuickSearch.flush(); //Ensure immediate execution on load
-    }, [props.StorageID, hasExternalFilters, applyQuickSearch]);
-
-    //Effect tp store active filters if StorageID is provided
+    // Build the combined filter list (base filters + quick search) and push up
     React.useEffect(() => {
-        if (props.StorageID == null || hasExternalFilters)
-            return;
+        const combined = buildCombinedFilters(internalFilters, debouncedSearch, memoizedDefaultColumn, useQuickSearch);
 
-        localStorage.setItem(`${props.StorageID}.Filters`, JSON.stringify(activeFilters));
-    }, [activeFilters, hasExternalFilters]);
+        if (filtersEqual(combined, lastPushedFilters.current)) return;
 
-    //Effect to store search string if StorageID is provided
-    React.useEffect(() => {
-        if (props.StorageID == null || hasExternalFilters)
-            return;
+        lastPushedFilters.current = combined;
+        props.SetFilter(combined);
 
-        localStorage.setItem(`${props.StorageID}.Search`, search);
-    }, [search, hasExternalFilters]);
-
-    //Callback to push up filters
-    // if newSearchFilter is provided and not undefined, it will be used instead of the internal searchFilter
-    const pushFilters = React.useCallback((newFilters: Search.IFilter<T>[], newSearchFilter: Search.IFilter<T> | null | undefined) => {
-        const filtersToPush = [...newFilters];
-
-        //Only add newSearchFilter if quick search is being used and searchFilter is defined
-        if (newSearchFilter !== undefined) {
-            if (useQuickSearch && newSearchFilter != null)
-                props.SetFilter([...filtersToPush, newSearchFilter]);
-            else
-                props.SetFilter(filtersToPush);
-            return;
+        // Persist to localStorage when managing our own filters
+        if (props.Filters === undefined && props.StorageID != null) {
+            localStorage.setItem(`${props.StorageID}.Filters`, JSON.stringify(internalFilters));
+            localStorage.setItem(`${props.StorageID}.Search`, debouncedSearch);
         }
+    }, [internalFilters, debouncedSearch, memoizedDefaultColumn, useQuickSearch]);
 
-        if (useQuickSearch && searchFilter != null)
-            filtersToPush.push(searchFilter);
-
-        props.SetFilter(filtersToPush);
-    }, [searchFilter, props.SetFilter, useQuickSearch]);
-
-    function deleteFilter(filterToDelete: Search.IFilter<T>) {
-        const updatedFilters = activeFilters.filter(f => f !== filterToDelete);
-
+    const deleteFilter = (filterToDelete: Search.IFilter<T>) => {
         setHover(false);
-        if (!hasExternalFilters)
-            setInternalFilters(updatedFilters);
+        setInternalFilters(prev => prev.filter(f => f !== filterToDelete));
+    };
 
-        if (useQuickSearch)
-            applyQuickSearch(search, updatedFilters);
-        else
-            pushFilters(updatedFilters, undefined);
-    }
-
-    function addFilter() {
-        const oldFilters = [...activeFilters];
+    const addFilter = () => {
         const adjustedFilter = { ...draftFilter };
         if (adjustedFilter.Type === 'string' && (adjustedFilter.Operator === 'LIKE' || adjustedFilter.Operator === 'NOT LIKE'))
             adjustedFilter.SearchText = '*' + adjustedFilter.SearchText + '*';
-        oldFilters.push(adjustedFilter);
 
         setDraftFilter(setDefaultDraftFilter(props.CollumnList[0]));
+        setInternalFilters(prev => [...prev, adjustedFilter]);
+    };
 
-        if (!hasExternalFilters)
-            setInternalFilters(oldFilters);
-
-        if (useQuickSearch)
-            applyQuickSearch(search, oldFilters);
-        else
-            pushFilters(oldFilters, undefined);
-    }
-
-    function editFilter(index: number) {
+    const editFilter = (index: number) => {
         setIsNew(false);
-        const oldFilters = [...activeFilters];
-        const filt = { ...oldFilters[index] };
-        oldFilters.splice(index, 1);
+        const filt = { ...internalFilters[index] };
 
         if (filt.Type === 'string' && (filt.Operator === 'LIKE' || filt.Operator === 'NOT LIKE'))
             filt.SearchText = filt.SearchText.substr(1, filt.SearchText.length - 2);
 
         setShow(true);
         setDraftFilter(filt);
+        setInternalFilters(prev => prev.filter((_, i) => i !== index));
+    };
 
-        if (!hasExternalFilters)
-            setInternalFilters(oldFilters);
-
-        if (useQuickSearch)
-            applyQuickSearch(search, oldFilters);
-        else
-            pushFilters(oldFilters, undefined);
-    }
-
-    function createFilter() {
+    const createFilter = () => {
         setShow(!show);
         setIsNew(true);
         setDraftFilter(setDefaultDraftFilter(props.CollumnList[0]));
-    }
+    };
 
     const editSearch = (text: string) => {
         setSearch(text);
-        applyQuickSearch(text, activeFilters);
-    }
+    };
 
     const content = (
         <form>
@@ -301,28 +226,28 @@ export default function SearchBar<T>(props: React.PropsWithChildren<IProps<T>>) 
                 <div style={{ position: 'relative', display: 'inline-block' }} className='col align-items-start'>
                     <button
                         disabled={props.Disabled}
-                        className={"btn btn-" + (activeFilters.length > 0 ? "warning" : "primary")}
+                        className={"btn btn-" + (internalFilters.length > 0 ? "warning" : "primary")}
                         onClick={(evt) => { evt.preventDefault(); createFilter(); }}
                         onMouseEnter={() => setHover(true)}
                         onMouseLeave={() => setHover(false)}
                     >
-                        Add Filter{activeFilters.length > 0 ? ("(" + activeFilters.length + ")") : ""}
+                        Add Filter{internalFilters.length > 0 ? ("(" + internalFilters.length + ")") : ""}
                     </button>
                     {props.Help != null ?
-                            <button
-                                className='btn'
-                                onMouseEnter={() => setShowHelpTooltip(true)}
-                                onMouseLeave={() => setShowHelpTooltip(false)}
-                                data-tooltip={helpTooltipRef.current}
-                            >
-                                <ReactIcons.QuestionMark
-                                    Color="var(--info)"
-                                    Size={20}
-                                />
-                                <ToolTip Show={showHelpTooltip} Target={helpTooltipRef.current} Class="info">
-                                    {props.Help}
-                                </ToolTip>
-                            </button>
+                        <button
+                            className='btn'
+                            onMouseEnter={() => setShowHelpTooltip(true)}
+                            onMouseLeave={() => setShowHelpTooltip(false)}
+                            data-tooltip={helpTooltipRef.current}
+                        >
+                            <ReactIcons.QuestionMark
+                                Color="var(--info)"
+                                Size={20}
+                            />
+                            <ToolTip Show={showHelpTooltip} Target={helpTooltipRef.current} Class="info">
+                                {props.Help}
+                            </ToolTip>
+                        </button>
                         : null}
                     <div className="popover"
                         style={{
@@ -344,7 +269,7 @@ export default function SearchBar<T>(props: React.PropsWithChildren<IProps<T>>) 
                                 </tr>
                             </thead>
                             <tbody>
-                                {activeFilters.map((f, i) => <FilterRow Filter={f} Edit={() => editFilter(i)} Delete={() => deleteFilter(f)} key={i} Collumns={props.CollumnList} />)}
+                                {internalFilters.map((f, i) => <FilterRow Filter={f} Edit={() => editFilter(i)} Delete={() => deleteFilter(f)} key={i} Collumns={props.CollumnList} />)}
                             </tbody>
                         </table>
                     </div>
@@ -407,14 +332,34 @@ export default function SearchBar<T>(props: React.PropsWithChildren<IProps<T>>) 
             </Modal>
         </div>
     );
-
 }
 
-export const GetStoredFilters = (storageID: string) => {
-    const storedFilters = JSON.parse(localStorage.getItem(`${storageID}.Filters`) as string) ?? [];
-    const storedSearch = localStorage.getItem(`${storageID}.Search`) ?? "";
+// Returns all stored filters including the quick search filter if one exists
+export const GetStoredFilters = <T,>(storageID: string, defaultCol?: Search.IField<T>): Search.IFilter<T>[] => {
+    const { filters, search } = getStoredSearchState<T>(storageID);
+    if (defaultCol == null || search.length === 0) return filters;
 
-    return [...storedFilters, storedSearch]
+    const quick: Search.IFilter<T> = {
+        FieldName: defaultCol.key,
+        Operator: 'LIKE',
+        Type: defaultCol.type,
+        SearchText: `*${search}*`,
+        IsPivotColumn: defaultCol.isPivotField
+    };
+
+    return [...filters, quick];
+}
+
+// Reads both filters and search text from localStorage in one pass
+function getStoredSearchState<T>(storageID: string): { filters: Search.IFilter<T>[], search: string } {
+    let filters: Search.IFilter<T>[] = [];
+    try {
+        filters = JSON.parse(localStorage.getItem(`${storageID}.Filters`) as string) ?? [];
+    } catch {
+        filters = [];
+    }
+    const search = localStorage.getItem(`${storageID}.Search`) ?? "";
+    return { filters, search };
 }
 
 const setDefaultDraftFilter = <T,>(filter: Search.IField<T>) => {
@@ -427,4 +372,39 @@ const setDefaultDraftFilter = <T,>(filter: Search.IField<T>) => {
     }
 
     return draftFilter;
+}
+
+// Appends a quick search filter to the base filters when quick search is active
+function buildCombinedFilters<T>(
+    baseFilters: Search.IFilter<T>[],
+    searchText: string,
+    defaultCol: Search.IField<T> | null | undefined,
+    quickSearchEnabled: boolean
+): Search.IFilter<T>[] {
+    if (!quickSearchEnabled || defaultCol == null || searchText.length === 0)
+        return baseFilters;
+
+    const quick: Search.IFilter<T> = {
+        FieldName: defaultCol.key,
+        Operator: 'LIKE',
+        Type: defaultCol.type,
+        SearchText: `*${searchText}*`,
+        IsPivotColumn: defaultCol.isPivotField
+    };
+
+    return [...baseFilters, quick];
+}
+
+// Order-independent comparison of two filter arrays
+function filtersEqual<T>(a: Search.IFilter<T>[], b: Search.IFilter<T>[]): boolean {
+    if (a === b) return true;
+    if (a.length !== b.length) return false;
+
+    const serialize = (f: Search.IFilter<T>) =>
+        `${f.FieldName}|${f.Operator}|${f.SearchText}|${f.Type}|${f.IsPivotColumn}`;
+
+    const sortedA = a.map(serialize).sort();
+    const sortedB = b.map(serialize).sort();
+
+    return sortedA.every((val, i) => val === sortedB[i]);
 }
