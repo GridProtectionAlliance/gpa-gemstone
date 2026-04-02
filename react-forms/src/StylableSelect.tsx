@@ -105,7 +105,7 @@ interface IProps<T> {
   /**
    * Click handler for the button holding the selected value
    */
-  OnBtnClick?: (evt: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+  OnSelectedOptionContainerClick?: (evt: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
 }
 
 export default function StylableSelect<T>(props: IProps<T>) {
@@ -116,8 +116,6 @@ export default function StylableSelect<T>(props: IProps<T>) {
 
   const [show, setShow] = React.useState<boolean>(false);
   const [selectedOptionIndex, setSelectedOptionIndex] = React.useState<number>(0);
-  const [guid, setGuid] = React.useState<string>("");
-  const [showHelp, setShowHelp] = React.useState<boolean>(false);
   const [position, setPosition] = React.useState<Gemstone.TSX.Interfaces.IElementPosition>({ Top: 0, Left: 0, Width: 0, Height: 0 });
 
   React.useLayoutEffect(() => {
@@ -152,7 +150,7 @@ export default function StylableSelect<T>(props: IProps<T>) {
   }, [show]);
 
   // Handle showing and hiding of the dropdown.
-  const HandleShow = React.useCallback((evt: React.MouseEvent<HTMLButtonElement, MouseEvent> | MouseEvent) => {
+  const HandleShow = React.useCallback((evt: React.MouseEvent<HTMLDivElement, MouseEvent> | MouseEvent) => {
     // Ignore if disabled or not a mousedown event
     if ((props.Disabled === undefined ? false : props.Disabled) || evt.type !== 'mousedown' || stylableSelect.current == null) return;
 
@@ -187,7 +185,6 @@ export default function StylableSelect<T>(props: IProps<T>) {
 
   // Effect for initial setup and event listeners.
   React.useEffect(() => {
-    setGuid(CreateGuid());
     document.addEventListener('mousedown', HandleShow, false);
     return () => {
       document.removeEventListener('mousedown', HandleShow, false);
@@ -222,20 +219,26 @@ export default function StylableSelect<T>(props: IProps<T>) {
         : null}
 
       {/* Dropdown toggle button */}
-      <button
-        type="button"
-        style={{ padding: '.375rem .75rem', ...(props.BtnStyle ?? {}) }}
+      <div
+        role="button"
+        tabIndex={(props.Disabled ?? false) ? -1 : 0}
+        style={{
+          padding: '.375rem .75rem',
+          ...(props.Disabled ?? false ? { pointerEvents: 'none', opacity: 0.65 } : {}),
+          ...(props.BtnStyle ?? {})
+        }}
         className={`dropdown-toggle form-control ${(props.Valid?.(props.Field) ?? true) ? '' : 'is-invalid'}`}
         onClick={(evt) => {
           HandleShow(evt);
-          if (props.OnBtnClick != null) props.OnBtnClick(evt);
+          if(props.Disabled ?? false) return;
+          if (props.OnSelectedOptionContainerClick != null) props.OnSelectedOptionContainerClick(evt);
         }}
-        disabled={props.Disabled === undefined ? false : props.Disabled}
+
       >
         <div style={props.Style}>
           {props.Options[selectedOptionIndex]?.Element}
         </div>
-      </button>
+      </div>
 
       {/* Invalid feedback message */}
       <div className="invalid-feedback">

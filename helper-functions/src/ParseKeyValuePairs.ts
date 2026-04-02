@@ -25,6 +25,62 @@ import { RegexEncode } from "./RegexEncode";
 import { ReplaceAll } from "./ReplaceAll";
 
 /**
+ * Pre-scans the input string to determine which start/end value delimiter
+ * positions form properly matched pairs. Returns a Set of character indices
+ * that participate in a valid match. Unmatched delimiters are excluded so
+ * the main parser can treat them as literal characters.
+ */
+const findMatchedDelimiterPositions = (
+    str: string,
+    startValueDelimiter: string,
+    endValueDelimiter: string
+): Set<number> => {
+    const matched = new Set<number>();
+    let escaped = false;
+    let depth = 0;
+    let outerStart = -1;
+    const nestedStarts: number[] = [];
+
+    for (let i = 0; i < str.length; i++) {
+        const ch = str[i];
+
+        if (!escaped) {
+            if (ch === startValueDelimiter) {
+                escaped = true;
+                outerStart = i;
+                depth = 0;
+            }
+            // Stray end delimiter outside escaped mode -- just skip it
+        } else {
+            if (ch === startValueDelimiter) {
+                nestedStarts.push(i);
+                depth++;
+            } else if (ch === endValueDelimiter) {
+                if (depth > 0) {
+                    const nestedStart = nestedStarts.pop()!;
+                    matched.add(nestedStart);
+                    matched.add(i);
+                    depth--;
+                } else {
+                    // Closes the outer pair
+                    matched.add(outerStart);
+                    matched.add(i);
+                    escaped = false;
+                    outerStart = -1;
+                }
+            }
+        }
+    }
+
+    // If we're still in escaped mode at end-of-string, the outer start
+    // and any unclosed nested starts are unmatched -- they were intentionally
+    // left out of the matched set. Any nested pairs that DID close inside
+    // are already in the set and stay valid.
+
+    return matched;
+};
+
+/**
  * Parses a delimited string into key/value pairs
  *
  * @param str - The input string containing key/value pairs.
@@ -34,7 +90,7 @@ import { ReplaceAll } from "./ReplaceAll";
  * @param endValueDelimiter - Delimiter marking the end of a nested value (default `'}'`).
  * @param ignoreDuplicateKeys - If `true`, later values overwrite earlier ones for duplicate keys (default `true`).
  * @returns A `Map<string, string>` of parsed keys to their corresponding values.
- * @throws If any delimiters are not unique, or if nested delimiters are mismatched, or if duplicate keys are disallowed and encountered.
+ * @throws If any delimiters are not unique, or if duplicate keys are disallowed and encountered.
  */
 export const ParseKeyValuePairs = (
     str: string,
@@ -59,6 +115,10 @@ export const ParseKeyValuePairs = (
     const escapedEndValueDelimiter = RegexEncode(endValueDelimiter);
     const backslashDelimiter = RegexEncode("\\");
 
+    // First pass: find which { } positions are properly matched.
+    // Unmatched delimiters will be treated as literal characters.
+    const matchedPositions = findMatchedDelimiterPositions(str, startValueDelimiter, endValueDelimiter);
+
     const keyValuePairs = new Map();
     const escapedValue = [];
     let valueEscaped = false;
@@ -71,8 +131,9 @@ export const ParseKeyValuePairs = (
     //          "normalKVP=-1; nestedKVP=p1\\u003dtrue\\u003b p2\\u003dfalse")
     for (let i = 0; i < str.length; i++) {
         const character = str[i];
+        const isMatchedDelimiter = matchedPositions.has(i);
 
-        if (character === startValueDelimiter) {
+        if (character === startValueDelimiter && isMatchedDelimiter) {
             if (!valueEscaped) {
                 valueEscaped = true;
                 continue; // Don't add tag start delimiter to final value
@@ -82,7 +143,7 @@ export const ParseKeyValuePairs = (
             delimiterDepth++;
         }
 
-        if (character === endValueDelimiter) {
+        if (character === endValueDelimiter && isMatchedDelimiter) {
             if (valueEscaped) {
                 if (delimiterDepth > 0) {
                     // Handle nested delimiters
@@ -91,13 +152,8 @@ export const ParseKeyValuePairs = (
                     valueEscaped = false;
                     continue; // Don't add tag stop delimiter to final value
                 }
-            } else {
-                throw "Failed to parse key/value pairs: invalid delimiter mismatch. Encountered end value delimiter \"" +
-                endValueDelimiter +
-                "\" before start value delimiter \"" +
-                startValueDelimiter +
-                "\".";
             }
+            // Unmatched end delimiters that somehow got here are treated as literals below
         }
 
         if (valueEscaped) {
@@ -122,9 +178,6 @@ export const ParseKeyValuePairs = (
         }
     }
 
-    if (delimiterDepth !== 0 || valueEscaped) 
-        console.warn("ParseKeyValuePairs: mismatched value delimiters, parsing best-effort result.");
-    
     // Parse key/value pairs from escaped value
     const pairs = escapedValue.join("").split(parameterDelimiter);
 
