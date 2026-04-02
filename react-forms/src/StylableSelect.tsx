@@ -230,6 +230,7 @@ export default function StylableSelect<T>(props: IProps<T>) {
         className={`dropdown-toggle form-control ${(props.Valid?.(props.Field) ?? true) ? '' : 'is-invalid'}`}
         onClick={(evt) => {
           HandleShow(evt);
+          if(props.Disabled ?? false) return;
           if (props.OnSelectedOptionContainerClick != null) props.OnSelectedOptionContainerClick(evt);
         }}
 
