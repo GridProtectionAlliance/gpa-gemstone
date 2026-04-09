@@ -91,7 +91,7 @@ interface IProps {
     UseLegacyNavigation?: boolean;
 }
 
-interface IApplicationRefs {
+export interface IApplicationRefs {
     mainDiv: HTMLDivElement | null;
     navBarDiv: HTMLDivElement | null;
 }
