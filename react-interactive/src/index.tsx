@@ -50,6 +50,7 @@ import StatusProgressBar from './StatusProgressBar';
 import ExternalPage from './Menue/ExternalPage';
 import DecisionHelpTree from './DecisionHelpTree';
 import Map from './Map';
+import { IApplicationRefs } from './Menue/Application/Application';
 
 export {
   Modal,
@@ -84,5 +85,6 @@ export {
   StatusProgressBar,
   ExternalPage,
   DecisionHelpTree,
-  Map
+  Map,
+  IApplicationRefs
 };
