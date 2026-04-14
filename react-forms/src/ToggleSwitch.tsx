@@ -56,7 +56,7 @@ export default function ToggleSwitch<T>(props: IProps<T>) {
         disabled={props.Disabled == null ? false : props.Disabled}
         id={switchID}
       />
-      <label className="custom-control-label d-flex align-items-center" htmlFor={switchID}>
+      <label className="custom-control-label d-flex align-items-center" style={{ width: 'fit-content' }} htmlFor={switchID}>
         <span>
           {label}
         </span>
