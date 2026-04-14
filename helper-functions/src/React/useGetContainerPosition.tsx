@@ -31,6 +31,8 @@ import * as React from 'react'
  * - `height`: Height of the container.
  * - `width`: Width of the container.
  * - `scrollWidth`: Scroll Width of the container.
+ * - `offsetWidth`: Layout width of the container including borders and padding.
+ * - `offsetHeight`: Layout height of the container including borders and padding.
  * - `x`: Horizontal position of the container relative to the viewport.
  * - `y`: Vertical position of the container relative to the viewport.
  * - `bottom`: Distance from the top of the viewport to the bottom of the container.
@@ -40,6 +42,9 @@ import * as React from 'react'
 export const useGetContainerPosition = (containerRef: React.MutableRefObject<HTMLDivElement | null>) => {
     const [top, setTop] = React.useState<number>(0);
     const [left, setLeft] = React.useState<number>(0);
+
+    const [offsetWidth, setOffsetWidth] = React.useState<number>(0);
+    const [offsetHeight, setOffsetHeight] = React.useState<number>(0);
 
     const [height, setHeight] = React.useState<number>(0);
     const [scrollHeight, setScrollHeight] = React.useState<number>(0);
@@ -76,6 +81,9 @@ export const useGetContainerPosition = (containerRef: React.MutableRefObject<HTM
             if (newSize.y !== y) setY(newSize.y);
             if (newSize.bottom !== bottom) setBottom(newSize.bottom);
             if (newSize.right !== right) setRight(newSize.right);
+
+            if (containerRef.current.offsetWidth !== offsetWidth) setOffsetWidth(containerRef.current.offsetWidth);
+            if (containerRef.current.offsetHeight !== offsetHeight) setOffsetHeight(containerRef.current.offsetHeight);
         }
 
         const resizeObserver = new ResizeObserver(handleResize);
@@ -88,5 +96,5 @@ export const useGetContainerPosition = (containerRef: React.MutableRefObject<HTM
         };
     })
 
-    return { top, left, height, width, x, y, bottom, right, scrollWidth, clientWidth, scrollHeight, clientHeight };
+    return { top, left, height, width, x, y, bottom, right, scrollWidth, clientWidth, scrollHeight, clientHeight, offsetWidth, offsetHeight };
 }
