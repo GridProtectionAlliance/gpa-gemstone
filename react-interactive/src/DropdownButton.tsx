@@ -89,9 +89,9 @@ interface IProps {
      */
     Size?: 'sm' | 'lg' | 'xlg',
     /**
-     * Optional CSS class applied to the container
+     * Optional CSS applied to the container
      */
-    ContainerClass?: string,
+    ContainerStyle?: React.CSSProperties,
     /**
      * Optional CSS class applied to the buttons, defaulting to 'btn-primary'
      */
@@ -115,7 +115,7 @@ const BtnDropdown = (props: IProps) => {
     const containerRef = React.useRef<HTMLDivElement | null>(null);
 
     const size = props.Size ?? 'sm';
-    const className = props.BtnClass ?? 'btn-primary';
+    const btnClass = props.BtnClass ?? 'btn-primary';
     const disabled = props.Disabled ?? false;
 
     const [hover, setHover] = React.useState<boolean>(false);
@@ -132,10 +132,10 @@ const BtnDropdown = (props: IProps) => {
     }, [showDropdown]);
 
     return (
-        <div ref={containerRef} className={`btn-group btn-group-${size}`}>
+        <div ref={containerRef} className={`btn-group btn-group-${size}`} style={props.ContainerStyle}>
             <button
                 type="button"
-                className={`btn ${className} ${(!disabled ? "" : " disabled")}`}
+                className={`btn ${btnClass} ${(!disabled ? "" : " disabled")}`}
                 data-tooltip={guid.current}
                 onMouseEnter={() => setHover(true)}
                 onMouseLeave={() => setHover(false)}
@@ -148,7 +148,7 @@ const BtnDropdown = (props: IProps) => {
                 {props.Label}
             </button>
             <button type="button"
-                className={`btn ${className} dropdown-toggle dropdown-toggle-split`}
+                className={`btn ${btnClass} dropdown-toggle dropdown-toggle-split border-left`}
                 onClick={() => { setShowDropdown((x) => !x) }}
             >
                 <span className="sr-only">
