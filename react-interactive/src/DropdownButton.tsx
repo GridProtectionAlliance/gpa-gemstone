@@ -63,6 +63,8 @@ interface IButton {
     Key?: string | number
 }
 
+type BtnSize = 'sm' | 'lg' | 'xlg' | 'std';
+
 /**
 * Represents the properties for a component that renders buttons.
 */
@@ -87,7 +89,7 @@ interface IProps {
     /**
      * Optional size of the button group
      */
-    Size?: 'sm' | 'lg' | 'xlg',
+    Size?: 'sm' | 'lg' | 'xlg' | 'std',
     /**
      * Optional CSS applied to the container
      */
@@ -132,7 +134,7 @@ const BtnDropdown = (props: IProps) => {
     }, [showDropdown]);
 
     return (
-        <div ref={containerRef} className={`btn-group btn-group-${size}`} style={props.ContainerStyle}>
+        <div ref={containerRef} className={getBtnClass(size)} style={props.ContainerStyle}>
             <button
                 type="button"
                 className={`btn ${btnClass} ${(!disabled ? "" : " disabled")}`}
@@ -172,6 +174,13 @@ const BtnDropdown = (props: IProps) => {
                 {props.TooltipContent}
             </ToolTip>
         </div>)
+}
+
+const getBtnClass = (size: BtnSize) => {
+    if(size === 'std')
+        return 'btn-group btn-group'
+
+    return `btn-group btn-group-${size}`
 }
 
 interface DropDownProps extends IButton {
