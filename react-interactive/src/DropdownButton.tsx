@@ -1,4 +1,4 @@
- // ******************************************************************************************************
+// ******************************************************************************************************
 //  DropdownButton.tsx - Gbtc
 //
 //  Copyright © 2023, Grid Protection Alliance.  All Rights Reserved.
@@ -27,7 +27,7 @@ import { ToolTip } from '@gpa-gemstone/react-forms';
 /**
  * Represents the structure of a button used within the application.
  */
-interface IButton { 
+interface IButton {
     /** 
      * Text label that appears on the button
      */
@@ -63,62 +63,124 @@ interface IButton {
     Key?: string | number
 }
 
+type BtnSize = 'sm' | 'lg' | 'xlg' | 'std';
+
 /**
 * Represents the properties for a component that renders buttons.
 */
 interface IProps {
+    /**
+     * Text label that appears on the main button
+     */
     Label: JSX.Element | string,
+    /**
+     * Callback function for when the main button is clicked
+     * @returns
+     */
     Callback: () => void,
+    /**
+     * Optional flag to disable the main button
+     */
     Disabled?: boolean,
+    /**
+     * Array of button options rendered inside the dropdown menu
+     */
     Options: IButton[],
-    Size?: 'sm' | 'lg' | 'xlg',
+    /**
+     * Optional size of the button group
+     */
+    Size?: 'sm' | 'lg' | 'xlg' | 'std',
+    /**
+     * Optional CSS applied to the container
+     */
+    ContainerStyle?: React.CSSProperties,
+    /**
+     * Optional CSS class applied to the buttons, defaulting to 'btn-primary'
+     */
     BtnClass?: string,
+    /**
+     * Optional content to render inside the tooltip
+     */
     TooltipContent?: JSX.Element,
+    /**
+     * Optional location of the tooltip, defaulting to top
+     */
     TooltipLocation?: ('top' | 'bottom' | 'left' | 'right'),
+    /**
+     * Optional flag to render a tooltip on the main button
+     */
     ShowToolTip?: boolean,
 }
 
 const BtnDropdown = (props: IProps) => {
     const guid = React.useRef<string>(CreateGuid());
+    const containerRef = React.useRef<HTMLDivElement | null>(null);
 
     const size = props.Size ?? 'sm';
-    const className = props.BtnClass ?? 'btn-primary';
+    const btnClass = props.BtnClass ?? 'btn-primary';
     const disabled = props.Disabled ?? false;
 
     const [hover, setHover] = React.useState<boolean>(false);
     const [showDropdown, setShowDropdown] = React.useState<boolean>(false);
 
+    React.useEffect(() => {
+        if (!showDropdown) return;
+        const handleClickOutside = (event: MouseEvent) => {
+            if (containerRef.current !== null && !containerRef.current.contains(event.target as Node))
+                setShowDropdown(false);
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, [showDropdown]);
+
     return (
-        <div className={`btn-group btn-group-${size}`}>
-            <button type="button" className={`btn ${className} ${(!disabled ? "" : " disabled")}`}
+        <div ref={containerRef} className={getBtnClass(size)} style={props.ContainerStyle}>
+            <button
+                type="button"
+                className={`btn ${btnClass} ${(!disabled ? "" : " disabled")}`}
                 data-tooltip={guid.current}
                 onMouseEnter={() => setHover(true)}
                 onMouseLeave={() => setHover(false)}
                 onClick={() => {
                     if (disabled)
                         return;
-                   props.Callback();
-                }}> {props.Label}
+                    props.Callback();
+                }}
+            >
+                {props.Label}
             </button>
             <button type="button"
-                className={`btn ${className} dropdown-toggle dropdown-toggle-split`}
-                onClick={() => { setShowDropdown((x) => !x) }}>
-                <span className="sr-only">Toggle Dropdown</span>
+                className={`btn ${btnClass} dropdown-toggle dropdown-toggle-split border-left`}
+                onClick={() => { setShowDropdown((x) => !x) }}
+            >
+                <span className="sr-only">
+                    Toggle Dropdown
+                </span>
             </button>
-            <div className={"dropdown-menu" + (showDropdown ? " show" : "")} style={{ position: 'absolute'}}>
-                {props.Options.map((option, i) => 
+            <div className={"dropdown-menu" + (showDropdown ? " show" : "")} style={{ position: 'absolute' }}>
+                {props.Options.map((option, i) =>
                     <React.Fragment key={option.Key ?? i}>
                         {i > 0 && props.Options[i].Group !== props.Options[i - 1].Group ?
-                            <div className="dropdown-divider" /> 
+                            <div className="dropdown-divider" />
                             : null}
-                        <DropDownOption {...option} setShowDropDown={setShowDropdown}/>
+                        <DropDownOption {...option} setShowDropDown={setShowDropdown} />
                     </React.Fragment>)}
             </div>
-            <ToolTip Show={hover && (props.ShowToolTip ?? false)} 
-                Position={props.TooltipLocation ?? 'top'} Target={guid.current}>
+            <ToolTip
+                Show={hover && (props.ShowToolTip ?? false)}
+                Position={props.TooltipLocation ?? 'top'}
+                Target={guid.current}
+            >
                 {props.TooltipContent}
             </ToolTip>
-    </div>)
+        </div>)
+}
+
+const getBtnClass = (size: BtnSize) => {
+    if(size === 'std')
+        return 'btn-group btn-group'
+
+    return `btn-group btn-group-${size}`
 }
 
 interface DropDownProps extends IButton {
@@ -127,27 +189,28 @@ interface DropDownProps extends IButton {
 
 const DropDownOption = (props: DropDownProps) => {
     const [dropDownHover, setDropDownHover] = React.useState<boolean>(false);
-
     const guid = React.useRef<string>(CreateGuid());
 
-    return (<>
-        <a className={"dropdown-item" + ((props?.Disabled ?? false) ? " disabled" : "")} 
-            style={{cursor: ((props?.Disabled ?? false) ? undefined :  'pointer')}}
-            onClick={() => {
-                props.setShowDropDown(false);
-                if (!(props?.Disabled ?? false))
-                    props.Callback();
-            }}
-            onMouseEnter={() => setDropDownHover(true)}
-            onMouseLeave={() => setDropDownHover(false)}
-            data-tooltip={guid.current}
-                >
+    return (
+        <>
+            <a className={"dropdown-item" + ((props?.Disabled ?? false) ? " disabled" : "")}
+                style={{ cursor: ((props?.Disabled ?? false) ? undefined : 'pointer') }}
+                onClick={() => {
+                    props.setShowDropDown(false);
+                    if (!(props?.Disabled ?? false))
+                        props.Callback();
+                }}
+                onMouseEnter={() => setDropDownHover(true)}
+                onMouseLeave={() => setDropDownHover(false)}
+                data-tooltip={guid.current}
+            >
                 {props.Label}
-        </a>
-        <ToolTip Show={dropDownHover && (props.ShowToolTip ?? false)}
-            Position={props.ToolTipLocation ?? 'top'}  Target={guid.current}>
-            {props.ToolTipContent}
-        </ToolTip>
-    </>)
+            </a>
+            <ToolTip Show={dropDownHover && (props.ShowToolTip ?? false)}
+                Position={props.ToolTipLocation ?? 'top'} Target={guid.current}>
+                {props.ToolTipContent}
+            </ToolTip>
+        </>
+    )
 }
 export default BtnDropdown
