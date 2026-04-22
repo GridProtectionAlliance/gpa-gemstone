@@ -170,11 +170,6 @@ export default function SearchableSelect<T>(props: IProps<T>) {
                     value={search}
                     onChange={(d) => setSearch(d.target.value)}
                     onBlur={() => handleSetSearch()}
-                    onClick={(evt) => {
-                        evt.preventDefault();
-                        evt.stopPropagation();
-                        setSearch('');
-                    }}
                     disabled={props.Disabled ?? false}
                 />
                 {loading ?
