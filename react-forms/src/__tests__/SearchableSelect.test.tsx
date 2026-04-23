@@ -225,7 +225,7 @@ describe('SearchableSelect', () => {
 
             // Click the input to simulate focus
             await act(async () => {
-                fireEvent.click(input);
+                fireEvent.mouseDown(input);
             });
 
             expect(input).toHaveValue('');
