@@ -95,6 +95,7 @@ export default function SearchableSelect<T>(props: IProps<T>) {
     const [searchOptions, setSearchOptions] = React.useState<IStylableOptionOverride[]>([]);
     const [loading, setLoading] = React.useState<boolean>(false);
     const [currentLabel, setCurrentLabel] = React.useState<string | null>(null);
+    const inputRef = React.useRef<HTMLInputElement>(null);
 
     const setter = React.useCallback((record: T, selectedOption: IStylableOption) => {
         const selectedOptionCasted = selectedOption as IStylableOptionOverride; //we can safely cast here because we control the options going in.. 
@@ -163,16 +164,12 @@ export default function SearchableSelect<T>(props: IProps<T>) {
             Label: "", //Label doesnt matter in this case because you cant select this option
             Element: <div className='input-group'>
                 <input
+                    ref={inputRef}
                     type="text"
                     className={`form-control ${(props.Valid?.(props.Field) ?? true) ? '' : 'border-danger'}`}
                     value={search}
                     onChange={(d) => setSearch(d.target.value)}
                     onBlur={() => handleSetSearch()}
-                    onClick={(evt) => {
-                        evt.preventDefault();
-                        evt.stopPropagation();
-                        setSearch('');
-                    }}
                     disabled={props.Disabled ?? false}
                 />
                 {loading ?
@@ -229,6 +226,10 @@ export default function SearchableSelect<T>(props: IProps<T>) {
         BtnStyle={props.BtnStyle}
         Valid={props.Valid}
         Feedback={props.Feedback}
-        OnSelectedOptionContainerClick={() => setSearch('')}
+        OnDropdownOpen={() => {
+            setSearch('');
+            inputRef.current?.focus();
+        }}
+        OnDropdownClose={() => inputRef.current?.blur()}
     />;
 }

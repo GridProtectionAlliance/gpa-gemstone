@@ -103,9 +103,13 @@ interface IProps<T> {
     */
   BtnStyle?: React.CSSProperties
   /**
-   * Click handler for the button holding the selected value
+   * Callback fired after the dropdown opens and its contents are rendered
    */
-  OnSelectedOptionContainerClick?: (evt: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+  OnDropdownOpen?: () => void;
+  /**
+   * Callback fired after the dropdown closes
+   */
+  OnDropdownClose?: () => void;
 }
 
 export default function StylableSelect<T>(props: IProps<T>) {
@@ -147,6 +151,11 @@ export default function StylableSelect<T>(props: IProps<T>) {
       };
     }
 
+  }, [show]);
+
+  React.useEffect(() => {
+    if (show) props.OnDropdownOpen?.();
+    else props.OnDropdownClose?.();
   }, [show]);
 
   // Handle showing and hiding of the dropdown.
@@ -228,10 +237,10 @@ export default function StylableSelect<T>(props: IProps<T>) {
           ...(props.BtnStyle ?? {})
         }}
         className={`dropdown-toggle form-control ${(props.Valid?.(props.Field) ?? true) ? '' : 'is-invalid'}`}
+        onMouseDown={(evt) => evt.preventDefault()}
         onClick={(evt) => {
           HandleShow(evt);
           if(props.Disabled ?? false) return;
-          if (props.OnSelectedOptionContainerClick != null) props.OnSelectedOptionContainerClick(evt);
         }}
 
       >
