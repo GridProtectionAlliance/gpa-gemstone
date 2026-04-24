@@ -47,6 +47,7 @@ import AutoCompleteTextArea from './AutoCompleteTextArea';
 import AutoCompleteInput from './AutoCompleteInput';
 import HelpIcon from './HelpIcon';
 import AutoCompleteMultiInput from './AutoCompleteMultiInput';
+import MultiNodeForm from './MultiNodeForm';
 
 export {
     CheckBox,
@@ -74,5 +75,6 @@ export {
     HelpIcon,
     AutoCompleteTextArea,
     AutoCompleteInput,
-    AutoCompleteMultiInput
+    AutoCompleteMultiInput,
+    MultiNodeForm
 };
