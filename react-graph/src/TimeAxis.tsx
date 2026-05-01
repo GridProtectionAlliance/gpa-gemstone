@@ -194,9 +194,9 @@ function TimeAxis(props: IProps) {
       dateFormat = 'MM/DD HH:mm:ss';
     }
 
-    const Tstart = moment.utc(context.XDomain[0]);
-    const Tend = moment.utc(context.XDomain[1]);
-    const Tdiff = moment.duration(moment.utc(context.XDomain[1]).diff(moment.utc(context.XDomain[0])));
+    const Tstart = moment(context.XDomain[0]);
+    const Tend = moment(context.XDomain[1]);
+    const Tdiff = moment.duration(moment(context.XDomain[1]).diff(moment(context.XDomain[0])));
     const Ttick = cloneDeep(Tstart);
     let step = 10;
     let stepType: TimeStep = 'y'
@@ -508,7 +508,7 @@ function TimeAxis(props: IProps) {
 
 
 function formatTick(t: number, f: string): string {
-  const TS = moment.utc(t);
+  const TS = moment(t);
   return TS.format(f);
 }
 
