@@ -27,7 +27,6 @@ import * as $ from 'jquery';
 import { Search } from './SearchBar/SearchBar';
 import { WritableDraft } from 'immer/dist/types/types-external'
 import GenericController from './GenericController';
-import Page from './Menue/Page';
 
 interface IOptions<T extends U> {
     /**
