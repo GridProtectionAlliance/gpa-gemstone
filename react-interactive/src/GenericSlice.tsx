@@ -27,6 +27,7 @@ import * as $ from 'jquery';
 import { Search } from './SearchBar/SearchBar';
 import { WritableDraft } from 'immer/dist/types/types-external'
 import GenericController from './GenericController';
+import Page from './Menue/Page';
 
 interface IOptions<T extends U> {
     /**
@@ -288,36 +289,6 @@ export default class GenericSlice<T extends U> {
             return await handle;
         });
 
-        const dBSort = createAsyncThunk(`${name}/DBSort${name}`, async (args: {SortField: keyof T, Ascending: boolean}, { signal, getState, dispatch }) => {
-            const state = (getState() as any)[name] as IPagedState<T>;
-
-            if (this.actionDependency !== null)
-                this.actionDependency(state,`${name}/DBSort${name}`, args)
-
-            let sortFld = state.SortField;
-            let asc = state.Ascending;
-
-            if (state.SortField === args.SortField)
-                asc = !args.Ascending;
-            else
-                sortFld = args.SortField;
-
-            dispatch(dBSearch({filter: state.Filter, sortField: sortFld, ascending: asc}));
-
-            if (this.fetchHandle != null && this.fetchHandle.abort != null)
-                this.fetchHandle.abort('Prev');
-
-            const handle = this.controller.Fetch(state.ParentID,sortFld,asc);
-            this.fetchHandle = handle;
-            
-            signal.addEventListener('abort', () => {
-                if (handle.abort !== undefined) handle.abort();
-            });
-  
-            
-            return await handle
-        });
-
         const dBPage = createAsyncThunk(`${name}/Page${name}`, async (args: { filter?:  Search.IFilter<T>[], sortField?: keyof T, ascending?: boolean, page?: number}, { getState, signal }) => {
 
             const state = (getState() as any)[name] as IPagedState<T>;
@@ -343,6 +314,38 @@ export default class GenericSlice<T extends U> {
             });
 
             return await handle;
+        });
+
+        const dBSort = createAsyncThunk(`${name}/DBSort${name}`, async (args: {SortField: keyof T, Ascending: boolean}, { signal, getState, dispatch }) => {
+            const state = (getState() as any)[name] as IPagedState<T>;
+
+            if (this.actionDependency !== null)
+                this.actionDependency(state,`${name}/DBSort${name}`, args)
+
+            let sortFld = state.SortField;
+            let asc = state.Ascending;
+
+            if (state.SortField === args.SortField)
+                asc = !args.Ascending;
+            else
+                sortFld = args.SortField;
+
+            if (state.PagedStatus === 'uninitiated')
+                dispatch(dBSearch({filter: state.Filter, sortField: sortFld, ascending: asc}));
+            else
+                dispatch(dBPage({filter: state.Filter, sortField: sortFld, ascending: asc, page: state.CurrentPage}))
+
+            if (this.fetchHandle != null && this.fetchHandle.abort != null)
+                this.fetchHandle.abort('Prev');
+
+            const handle = this.controller.Fetch(state.ParentID,sortFld,asc);
+            this.fetchHandle = handle;
+            
+            signal.addEventListener('abort', () => {
+                if (handle.abort !== undefined) handle.abort();
+            });
+            
+            return await handle
         });
 
         const setChanged = createAsyncThunk(`${name}/SetChanged${name}`, async (args: void, {}) => { return; });
@@ -483,11 +486,11 @@ export default class GenericSlice<T extends U> {
                     state.TotalPages = action.payload.NumberOfPages;
                     state.RecordsPerPage = action.payload.RecordsPerPage;
                     state.SearchResults = JSON.parse(action.payload.Data);
+                    state.TotalRecords = action.payload.TotalRecords;
                     if (action.meta.arg.filter != null)
                         state.Filter = action.meta.arg.filter;
                     if (action.meta.arg.page !== undefined)
                         state.CurrentPage = action.meta.arg.page;
-                    state.TotalRecords = action.payload.TotalRecords;
                     if (this.actionFullfilledDependency !== null)
                         this.actionFullfilledDependency(state as IPagedState<T>,`${name}/Page${name}`, action.meta.arg, action.meta.requestId)
                 });
