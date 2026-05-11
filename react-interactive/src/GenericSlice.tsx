@@ -118,7 +118,8 @@ interface IPagedState< T extends U> extends IState<T> {
     PagedData: T[],
     PagedSortField: keyof T,
     PagedAscending: boolean,
-    PagedFilter:  Search.IFilter<T>[]
+    PagedFilter:  Search.IFilter<T>[],
+    RecordsPerPage: number
 }
 
 /**
@@ -368,7 +369,8 @@ export default class GenericSlice<T extends U> {
                 PagedData: [],
                 PagedSortField: defaultSort,
                 PagedAscending: ascending,
-                PagedFilter:  []
+                PagedFilter:  [],
+                RecordsPerPage: 0
             } as IPagedState<T>,
             reducers: {},
             extraReducers: (builder: ActionReducerMapBuilder<IPagedState<T>>) => {
@@ -479,6 +481,7 @@ export default class GenericSlice<T extends U> {
                     state.ActivePagedID = state.ActivePagedID.filter(id => id !== action.meta.requestId);
                     state.PagedStatus = 'idle';
                     state.TotalPages = action.payload.NumberOfPages;
+                    state.RecordsPerPage = action.payload.RecordsPerPage;
                     state.SearchResults = JSON.parse(action.payload.Data);
                     if (action.meta.arg.filter != null)
                         state.Filter = action.meta.arg.filter;
@@ -563,4 +566,5 @@ export default class GenericSlice<T extends U> {
     public CurrentPage = (state: any) => state[this.Name].CurrentPage as number;
     public TotalPages = (state: any) => state[this.Name].TotalPages as number;
     public TotalRecords = (state: any) => state[this.Name].TotalRecords as number;
+    public RecordsPerPage = (state: any) => state[this.Name].RecordsPerPage as number;
 }
