@@ -329,10 +329,7 @@ export default class GenericSlice<T extends U> {
             else
                 sortFld = args.SortField;
 
-            if (state.PagedStatus === 'uninitiated')
-                dispatch(dBSearch({filter: state.Filter, sortField: sortFld, ascending: asc}));
-            else
-                dispatch(dBPage({filter: state.Filter, sortField: sortFld, ascending: asc, page: state.CurrentPage}))
+            dispatch(dBSearch({filter: state.Filter, sortField: sortFld, ascending: asc}));
 
             if (this.fetchHandle != null && this.fetchHandle.abort != null)
                 this.fetchHandle.abort('Prev');
