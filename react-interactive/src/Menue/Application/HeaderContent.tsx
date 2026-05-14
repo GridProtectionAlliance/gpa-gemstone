@@ -38,7 +38,7 @@ interface IProps {
 
 const HeaderContent = React.forwardRef<HTMLDivElement, IProps>((props, ref) => {
     return <>
-        <nav className="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow" ref={ref}>
+        <nav className="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow" ref={ref} style={props.NavBarStyle}>
             {props.ShowOpen ? <a style={{ color: 'var(--light)', marginLeft: 15, cursor: 'pointer' }} onClick={() => props.SetCollapsed(false)} >
                 <ReactIcons.ArrowForward />
             </a> : null}
