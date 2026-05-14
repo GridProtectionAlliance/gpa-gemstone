@@ -60,7 +60,7 @@
     "@gpa-gemstone/application-typings": "0.0.98",
     "@gpa-gemstone/common-pages": "0.0.179",
     "@gpa-gemstone/gpa-symbols": "0.0.62",
-    "@gpa-gemstone/helper-functions": "60",
+    "@gpa-gemstone/helper-functions": "0.0.60",
     "@gpa-gemstone/react-forms": "1.1.123",
     "@gpa-gemstone/react-graph": "1.0.108",
     "@gpa-gemstone/react-interactive": "1.0.188",
