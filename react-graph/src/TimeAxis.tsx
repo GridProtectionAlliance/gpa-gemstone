@@ -39,7 +39,8 @@ export interface IProps {
   showTicks?: boolean,
   showDate?: boolean,
   showRightMostTick?: boolean,
-  showLeftMostTick?: boolean
+  showLeftMostTick?: boolean,
+  useUTC?: boolean
 }
 
 const msPerSecond = 1000.00;
@@ -127,7 +128,7 @@ function TimeAxis(props: IProps) {
     }
 
     if (props.label === '') {
-      const formatedTitle = titleFormat === "" ? "Time" : formatTick(ticks[0], titleFormat);
+      const formatedTitle = titleFormat === "" ? "Time" : formatTick(ticks[0], titleFormat, props.useUTC ?? true);
       setTitle(formatedTitle + unitLabel);
     }
     else setTitle(props.label + unitLabel);
@@ -135,7 +136,7 @@ function TimeAxis(props: IProps) {
 
   // Adjust space for X Tick labels
   React.useEffect(() => {
-    let dX = Math.max(...ticks.map(t => GetTextHeight("Segoe UI", '1em', formatTick(t, tickFormat))));
+    let dX = Math.max(...ticks.map(t => GetTextHeight("Segoe UI", '1em', formatTick(t, tickFormat, props.useUTC ?? true))));
     dX = (isFinite(dX) ? dX : 0) + 12
     setAxisHeight(dX);
   }, [ticks, tickFormat]);
@@ -194,9 +195,9 @@ function TimeAxis(props: IProps) {
       dateFormat = 'MM/DD HH:mm:ss';
     }
 
-    const Tstart = moment(context.XDomain[0]);
-    const Tend = moment(context.XDomain[1]);
-    const Tdiff = moment.duration(moment(context.XDomain[1]).diff(moment(context.XDomain[0])));
+    const Tstart = props.useUTC ?? true ? moment.utc(context.XDomain[0]) : moment(context.XDomain[0]);
+    const Tend = props.useUTC ?? true ? moment.utc(context.XDomain[1]) : moment(context.XDomain[1]);
+    const Tdiff = moment.duration(props.useUTC ?? true ? moment.utc(context.XDomain[1]).diff(moment.utc(context.XDomain[0])) : moment(context.XDomain[1]).diff(moment(context.XDomain[0])));
     const Ttick = cloneDeep(Tstart);
     let step = 10;
     let stepType: TimeStep = 'y'
@@ -427,7 +428,7 @@ function TimeAxis(props: IProps) {
     if (ticks.length === 0) return;
 
     // Use first tick as they should all be very similar in size
-    const sampleLabel = formatTick(ticks[0], tickFormat);
+    const sampleLabel = formatTick(ticks[0], tickFormat, props.useUTC ?? true);
     const availableWidth = props.width - props.offsetLeft - props.offsetRight - 10;
     const availableWidthPerTick = availableWidth / ticks.length;
 
@@ -478,7 +479,7 @@ function TimeAxis(props: IProps) {
               y={props.height - props.offsetBottom + 8}
               x={context.XTransformation(l)}
             >
-              {formatTick(l, tickFormat)}
+              {formatTick(l, tickFormat, props.useUTC ?? true)}
             </text>
           )}
         </>
@@ -501,14 +502,14 @@ function TimeAxis(props: IProps) {
           x={props.width - props.offsetRight}
           y={props.height - props.offsetBottom + axisHeight}
         >
-          {formatTick(ticks[0], dFormat)}
+          {formatTick(ticks[0], dFormat, props.useUTC ?? true)}
         </text> : null}
     </g>)
 }
 
 
-function formatTick(t: number, f: string): string {
-  const TS = moment(t);
+function formatTick(t: number, f: string, useUTC: boolean): string {
+  const TS = useUTC ? moment.utc(t) : moment(t);
   return TS.format(f);
 }
 

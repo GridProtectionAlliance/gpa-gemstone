@@ -108,7 +108,8 @@ export interface IProps {
   onTDomainChange?: (tDomain: [number, number]) => void,
   Ymin?: number | number[],
   Ymax?: number | number[],
-  snapMouse?: boolean
+  snapMouse?: boolean,
+  useUTC?: boolean
 }
 
 const SvgStyle: React.CSSProperties = {
@@ -914,7 +915,7 @@ const Plot = (props: React.PropsWithChildren<IProps>) => {
             {(props.hideXAxis ?? false) ? null : 
               (props.XAxisType === 'time' || props.XAxisType === undefined ?
                 <TimeAxis label={props.Tlabel} offsetBottom={offsetBottom} offsetLeft={offsetLeft} offsetRight={offsetRight} width={svgWidth} height={svgHeight} setHeight={setHeightXLabel}
-                  heightAxis={heightXLabel} showLeftMostTick={!yHasData[0]} showRightMostTick={!yHasData[1]} showDate={props.showDateOnTimeAxis} /> :
+                  heightAxis={heightXLabel} showLeftMostTick={!yHasData[0]} showRightMostTick={!yHasData[1]} showDate={props.showDateOnTimeAxis} useUTC={props.useUTC} /> :
                 props.XAxisType === 'value' ? <XValueAxis offsetBottom={offsetBottom} offsetLeft={offsetLeft} offsetRight={offsetRight} offsetTop={offsetTop} width={svgWidth} height={svgHeight} setHeight={setHeightXLabel} heightAxis={heightXLabel}
                   label={props.Tlabel} showLeftMostTick={!yHasData[0]} showRightMostTick={!yHasData[1]} showGrid={props.showGrid}/> :
                   <LogAxis offsetTop={offsetTop} showGrid={props.showGrid} label={props.Tlabel} offsetBottom={offsetBottom} offsetLeft={offsetLeft} offsetRight={offsetRight} width={svgWidth}
