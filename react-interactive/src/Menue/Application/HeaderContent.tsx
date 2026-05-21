@@ -32,6 +32,8 @@ interface IProps {
     ShowOpen: boolean,
     ShowClose: boolean,
     NavBarContent?: React.ReactNode,
+    NavBarStyle?: React.CSSProperties,
+    ImgStyle?: React.CSSProperties
 }
 
 const HeaderContent = React.forwardRef<HTMLDivElement, IProps>((props, ref) => {
@@ -44,7 +46,10 @@ const HeaderContent = React.forwardRef<HTMLDivElement, IProps>((props, ref) => {
                 <ReactIcons.ArrowBackward />
             </a> : null}
             {props.Logo !== undefined ?
-                < a className="navbar-brand col-sm-2 col-md-1 mr-0 mr-auto" href={props.HomePath} ><img style={{ maxHeight: 35, margin: -5 }} src={props.Logo} /></a> : null}
+                <a className="navbar-brand col-sm-2 col-md-1 mr-0 mr-auto" href={props.HomePath}>
+                    <img style={props.ImgStyle ?? { maxHeight: 35, margin: -5 }} src={props.Logo} />
+                </a>
+                : null}
             <ul className="navbar-nav px-3 ml-auto">
                 <li className="nav-item text-nowrap" style={{ cursor: props.OnSignOut !== undefined ? 'pointer' : 'default' }}>
                     {props.OnSignOut !== undefined ? <a className="nav-link" onClick={props.OnSignOut} >Sign out</a> : null}

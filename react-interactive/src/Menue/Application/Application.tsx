@@ -89,6 +89,14 @@ interface IProps {
      * Optional flag that disables modern navigation and layout, defaulting to false
      */
     UseLegacyNavigation?: boolean;
+    /**
+     * Optional style to be applied to the NavBar container.
+     */
+    NavBarStyle?: React.CSSProperties;
+    /**
+     * Optional style to be applied to the logo image in the NavBar. Default is { maxHeight: 35, margin: -5 }
+     */
+    NavBarImgStyle?: React.CSSProperties
 }
 
 export interface IApplicationRefs {
@@ -231,6 +239,8 @@ const Applications: React.ForwardRefRenderFunction<IApplicationRefs, React.Props
                         ShowClose={hideSide ? false : showClose}
                         NavBarContent={props.NavBarContent}
                         ref={navBarRef}
+                        NavBarStyle={props.NavBarStyle}
+                        ImgStyle={props.NavBarImgStyle}
                     />
                     <React.Suspense fallback={<LoadingScreen Show={true} />}>
                         <SideBarContent
@@ -278,6 +288,8 @@ const Applications: React.ForwardRefRenderFunction<IApplicationRefs, React.Props
                         ShowClose={showClose}
                         NavBarContent={props.NavBarContent}
                         ref={navBarRef}
+                        NavBarStyle={props.NavBarStyle}
+                        ImgStyle={props.NavBarImgStyle}
                     />
                     <SideBarContent
                         Collapsed={collapsed}
