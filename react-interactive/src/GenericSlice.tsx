@@ -118,7 +118,8 @@ interface IPagedState< T extends U> extends IState<T> {
     PagedData: T[],
     PagedSortField: keyof T,
     PagedAscending: boolean,
-    PagedFilter:  Search.IFilter<T>[]
+    PagedFilter:  Search.IFilter<T>[],
+    RecordsPerPage: number
 }
 
 /**
@@ -287,36 +288,6 @@ export default class GenericSlice<T extends U> {
             return await handle;
         });
 
-        const dBSort = createAsyncThunk(`${name}/DBSort${name}`, async (args: {SortField: keyof T, Ascending: boolean}, { signal, getState, dispatch }) => {
-            const state = (getState() as any)[name] as IPagedState<T>;
-
-            if (this.actionDependency !== null)
-                this.actionDependency(state,`${name}/DBSort${name}`, args)
-
-            let sortFld = state.SortField;
-            let asc = state.Ascending;
-
-            if (state.SortField === args.SortField)
-                asc = !args.Ascending;
-            else
-                sortFld = args.SortField;
-
-            dispatch(dBSearch({filter: state.Filter, sortField: sortFld, ascending: asc}));
-
-            if (this.fetchHandle != null && this.fetchHandle.abort != null)
-                this.fetchHandle.abort('Prev');
-
-            const handle = this.controller.Fetch(state.ParentID,sortFld,asc);
-            this.fetchHandle = handle;
-            
-            signal.addEventListener('abort', () => {
-                if (handle.abort !== undefined) handle.abort();
-            });
-  
-            
-            return await handle
-        });
-
         const dBPage = createAsyncThunk(`${name}/Page${name}`, async (args: { filter?:  Search.IFilter<T>[], sortField?: keyof T, ascending?: boolean, page?: number}, { getState, signal }) => {
 
             const state = (getState() as any)[name] as IPagedState<T>;
@@ -344,6 +315,35 @@ export default class GenericSlice<T extends U> {
             return await handle;
         });
 
+        const dBSort = createAsyncThunk(`${name}/DBSort${name}`, async (args: {SortField: keyof T, Ascending: boolean}, { signal, getState, dispatch }) => {
+            const state = (getState() as any)[name] as IPagedState<T>;
+
+            if (this.actionDependency !== null)
+                this.actionDependency(state,`${name}/DBSort${name}`, args)
+
+            let sortFld = state.SortField;
+            let asc = state.Ascending;
+
+            if (state.SortField === args.SortField)
+                asc = !args.Ascending;
+            else
+                sortFld = args.SortField;
+
+            dispatch(dBSearch({filter: state.Filter, sortField: sortFld, ascending: asc}));
+
+            if (this.fetchHandle != null && this.fetchHandle.abort != null)
+                this.fetchHandle.abort('Prev');
+
+            const handle = this.controller.Fetch(state.ParentID,sortFld,asc);
+            this.fetchHandle = handle;
+            
+            signal.addEventListener('abort', () => {
+                if (handle.abort !== undefined) handle.abort();
+            });
+            
+            return await handle
+        });
+
         const setChanged = createAsyncThunk(`${name}/SetChanged${name}`, async (args: void, {}) => { return; });
           
         const slice = createSlice({
@@ -368,7 +368,8 @@ export default class GenericSlice<T extends U> {
                 PagedData: [],
                 PagedSortField: defaultSort,
                 PagedAscending: ascending,
-                PagedFilter:  []
+                PagedFilter:  [],
+                RecordsPerPage: 0
             } as IPagedState<T>,
             reducers: {},
             extraReducers: (builder: ActionReducerMapBuilder<IPagedState<T>>) => {
@@ -479,12 +480,13 @@ export default class GenericSlice<T extends U> {
                     state.ActivePagedID = state.ActivePagedID.filter(id => id !== action.meta.requestId);
                     state.PagedStatus = 'idle';
                     state.TotalPages = action.payload.NumberOfPages;
+                    state.RecordsPerPage = action.payload.RecordsPerPage;
                     state.SearchResults = JSON.parse(action.payload.Data);
+                    state.TotalRecords = action.payload.TotalRecords;
                     if (action.meta.arg.filter != null)
                         state.Filter = action.meta.arg.filter;
                     if (action.meta.arg.page !== undefined)
                         state.CurrentPage = action.meta.arg.page;
-                    state.TotalRecords = action.payload.TotalRecords;
                     if (this.actionFullfilledDependency !== null)
                         this.actionFullfilledDependency(state as IPagedState<T>,`${name}/Page${name}`, action.meta.arg, action.meta.requestId)
                 });
@@ -563,4 +565,5 @@ export default class GenericSlice<T extends U> {
     public CurrentPage = (state: any) => state[this.Name].CurrentPage as number;
     public TotalPages = (state: any) => state[this.Name].TotalPages as number;
     public TotalRecords = (state: any) => state[this.Name].TotalRecords as number;
+    public RecordsPerPage = (state: any) => state[this.Name].RecordsPerPage as number;
 }
