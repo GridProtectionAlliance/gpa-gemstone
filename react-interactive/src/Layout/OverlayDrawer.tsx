@@ -137,14 +137,14 @@ const OverlayDrawer = (props: React.PropsWithChildren<IProps>) => {
         const selector = `[data-drawer${props.Target === undefined ? '' : `="${props.Target}"`}]`;
 
         const updateTargetSize = () => {
-            const target = document.querySelectorAll(selector);
-            const nextTarget = target.length === 0 ? null : target[0] as HTMLElement;
+            const targets = document.querySelectorAll(selector);
+            const target = targets.length === 0 ? null : targets[0] as HTMLElement;
 
-            if (targetElement !== nextTarget) {
+            if (targetElement !== target) {
                 if (targetElement != null)
                     resizeObserver?.unobserve(targetElement);
 
-                targetElement = nextTarget;
+                targetElement = target;
 
                 if (targetElement != null)
                     resizeObserver?.observe(targetElement);
@@ -165,19 +165,18 @@ const OverlayDrawer = (props: React.PropsWithChildren<IProps>) => {
             setTargetTop(targetLocation.top);
         }
 
+        //In older browsers ResizeObserver or MutationObserver might not be defined
         const resizeObserver = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(updateTargetSize);
         const mutationObserver = typeof MutationObserver === 'undefined' ? null : new MutationObserver(updateTargetSize);
-
+        
         updateTargetSize();
         resizeObserver?.observe(document.body);
         mutationObserver?.observe(document.body, { attributes: true, attributeFilter: ['class', 'data-drawer', 'style'], childList: true, subtree: true });
-        window.addEventListener('resize', updateTargetSize);
         window.addEventListener('scroll', updateTargetSize, true);
 
         return () => {
             resizeObserver?.disconnect();
             mutationObserver?.disconnect();
-            window.removeEventListener('resize', updateTargetSize);
             window.removeEventListener('scroll', updateTargetSize, true);
         };
     }, [props.Target])
