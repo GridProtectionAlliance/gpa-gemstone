@@ -23,7 +23,7 @@
 
 import * as React from 'react';
 import { Application, Page, Section } from '@gpa-gemstone/react-interactive';
-import { AlertTestComponent, BreadcrumbTestComponent, BtnDropdownTestComponent } from './react-interactive';
+import { AlertTestComponent, BreadcrumbTestComponent, BtnDropdownTestComponent, OverlayDrawerTestComponent } from './react-interactive';
 import CheckBoxTestComponent from './react-forms/Checkbox';
 import TableTestingComponent from './react-table/Table';
 import ConfigurableTableTestComponent from './react-table/ConfigurableTable';
@@ -56,6 +56,7 @@ export const AlertPageRoute = "Alerts";
 export const BtnDropdownPageRoute = "DropdownButton";
 export const BreadcrumbPageRoute = "Breadcrumbs";
 export const MapPageRoute = "Map";
+export const OverlayDrawerPageRoute = "OverlayDrawer";
 
 // React Graph Page Routes/Labels
 export const LegendEntryPageRoute = "LegendEntry";
@@ -86,6 +87,9 @@ const App = () => {
                 </Page>
                 <Page Name={MapPageRoute} Label={MapPageRoute}>
                     <MapTestComponent />
+                </Page>
+                <Page Name={OverlayDrawerPageRoute} Label={OverlayDrawerPageRoute}>
+                    <OverlayDrawerTestComponent />
                 </Page>
             </Section>
 

@@ -21,7 +21,7 @@
 // ******************************************************************************************************
 
 import * as React from 'react';
-import { GetNodeSize} from '@gpa-gemstone/helper-functions';
+import { GetNodeSize, useGetContainerPosition } from '@gpa-gemstone/helper-functions';
 import styled from 'styled-components';
 
 interface IProps {
@@ -36,7 +36,7 @@ interface IProps {
     /**
      * Location of the drawer in the component refferenced
      */
-    Location: 'left'|'right'|'top'|'bottom',
+    Location: 'left' | 'right' | 'top' | 'bottom',
     /**
      * This will be called with a callback to set the Drawer to open or closed form the parent
      * @param func 
@@ -57,7 +57,7 @@ interface IProps {
 }
 
 interface IClosedOverlayProps {
-    Location: 'left'|'right'|'top'|'bottom',
+    Location: 'left' | 'right' | 'top' | 'bottom',
     Left: number,
     Top: number,
     Width: number,
@@ -66,10 +66,10 @@ interface IClosedOverlayProps {
 /* top-left | top-right | bottom-right | bottom-left */
 const ClosedOverlayDiv = styled.div<IClosedOverlayProps>`
   & {
-    border-radius: ${props => props.Location === 'bottom' || props.Location === 'right'? 4 : 0}px
-    ${props => props.Location === 'bottom' || props.Location === 'left'? 4 : 0}px
-    ${props => props.Location === 'top' || props.Location === 'left'? 4 : 0}px
-    ${props => props.Location === 'top' || props.Location === 'right'? 4 : 0}px;
+    border-radius: ${props => props.Location === 'bottom' || props.Location === 'right' ? 4 : 0}px
+    ${props => props.Location === 'bottom' || props.Location === 'left' ? 4 : 0}px
+    ${props => props.Location === 'top' || props.Location === 'left' ? 4 : 0}px
+    ${props => props.Location === 'top' || props.Location === 'right' ? 4 : 0}px;
     display: inline-block;
     font-size: 13px;
     position: fixed;
@@ -80,22 +80,22 @@ const ClosedOverlayDiv = styled.div<IClosedOverlayProps>`
     left: ${props => props.Location === 'left' ? Math.floor(props.Left) : Math.floor(props.Left)}px;
     height: ${props => props.Location === 'bottom' ? Math.ceil(props.Height) : Math.floor(props.Height)}px;
     width: ${props => props.Location === 'right' ? Math.ceil(props.Width) : Math.floor(props.Width)}px;
-    writing-Mode: ${props => props.Location === 'bottom' || props.Location === 'top' ? 'horizontal-tb' : 'vertical-rl' };
+    writing-Mode: ${props => props.Location === 'bottom' || props.Location === 'top' ? 'horizontal-tb' : 'vertical-rl'};
     text-Orientation: upright;
     cursor: pointer;
     vertical-align: middle;
     text-align: center;
   }`
 
-  interface IOpenOverlayProps {
-    Location: 'left'|'right'|'top'|'bottom',
+interface IOpenOverlayProps {
+    Location: 'left' | 'right' | 'top' | 'bottom',
     Left: number,
     Top: number,
     Open: boolean,
 
 }
 
-  const OpenOverlayDiv = styled.div<IOpenOverlayProps>`
+const OpenOverlayDiv = styled.div<IOpenOverlayProps>`
   & {
     display: inline-block;
     position: fixed;
@@ -109,22 +109,21 @@ const ClosedOverlayDiv = styled.div<IClosedOverlayProps>`
     padding-top: 10px;
     padding-bottom: 10px;
     padding-right: 10px;
-    opacity: ${props => props.Open? '1.0' : '0'};
-    ${props => !props.Open? 'pointer-events: none;' : ''}
+    opacity: ${props => props.Open ? '1.0' : '0'};
+    ${props => !props.Open ? 'pointer-events: none;' : ''}
   }`
 
 const OverlayDrawer = (props: React.PropsWithChildren<IProps>) => {
     const divRef = React.useRef<any>(null);
- 
+
     const [top, setTop] = React.useState<number>(0);
     const [left, setLeft] = React.useState<number>(0);
     const [width, setWidth] = React.useState<number>(0);
     const [height, setHeight] = React.useState<number>(0);
 
-    const [open, setOpen] = React.useState<boolean>(props.Open);    
-    const [containerWidth, setContainerWidth] = React.useState<number>(0);
-    const [containerHeight, setContainerHeight] = React.useState<number>(0);
+    const [open, setOpen] = React.useState<boolean>(props.Open);
 
+    const { height: containerHeight, width: containerWidth } = useGetContainerPosition(divRef);
     const [containerTop, setContainerTop] = React.useState<number>(0);
     const [containerLeft, setContainerLeft] = React.useState<number>(0);
 
@@ -133,36 +132,58 @@ const OverlayDrawer = (props: React.PropsWithChildren<IProps>) => {
     const [targetWidth, setTargetWidth] = React.useState<number>(0);
     const [targetHeight, setTargetHeight] = React.useState<number>(0);
 
-    const [x,setX] = React.useState<boolean>(false);
-
     React.useEffect(() => {
-        const target = document.querySelectorAll(`[data-drawer${ props.Target === undefined? '' : `="${props.Target}"`}]`);
-    
-        if (target.length === 0) {
-          setTargetHeight(0);
-          setTargetWidth(0);
-          setTargetLeft(-999);
-          setTargetTop(-999);
+        let targetElement: HTMLElement | null = null;
+        const selector = `[data-drawer${props.Target === undefined ? '' : `="${props.Target}"`}]`;
+
+        const updateTargetSize = () => {
+            const targets = document.querySelectorAll(selector);
+            const target = targets.length === 0 ? null : targets[0] as HTMLElement;
+
+            if (targetElement !== target) {
+                if (targetElement != null)
+                    resizeObserver?.unobserve(targetElement);
+
+                targetElement = target;
+
+                if (targetElement != null)
+                    resizeObserver?.observe(targetElement);
+            }
+
+            if (targetElement == null) {
+                setTargetHeight(0);
+                setTargetWidth(0);
+                setTargetLeft(-999);
+                setTargetTop(-999);
+                return;
+            }
+
+            const targetLocation = GetNodeSize(targetElement);
+            setTargetHeight(targetLocation.height);
+            setTargetWidth(targetLocation.width);
+            setTargetLeft(targetLocation.left);
+            setTargetTop(targetLocation.top);
         }
-        else {
-          const targetLocation = GetNodeSize(target[0] as HTMLElement);
-          setTargetHeight(targetLocation.height);
-          setTargetWidth(targetLocation.width);
-          setTargetLeft(targetLocation.left);
-          setTargetTop(targetLocation.top);
-        }
-    
-        const h = setTimeout(() => {
-          setX((a) => !a)
-        }, 500);
-    
-        return () => { if (h !== null) clearTimeout(h); };
-    
-      }, [x])
+
+        //In older browsers ResizeObserver or MutationObserver might not be defined
+        const resizeObserver = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(updateTargetSize);
+        const mutationObserver = typeof MutationObserver === 'undefined' ? null : new MutationObserver(updateTargetSize);
+        
+        updateTargetSize();
+        resizeObserver?.observe(document.body);
+        mutationObserver?.observe(document.body, { attributes: true, attributeFilter: ['class', 'data-drawer', 'style'], childList: true, subtree: true });
+        window.addEventListener('scroll', updateTargetSize, true);
+
+        return () => {
+            resizeObserver?.disconnect();
+            mutationObserver?.disconnect();
+            window.removeEventListener('scroll', updateTargetSize, true);
+        };
+    }, [props.Target])
 
     React.useEffect(() => {
         const size = UpdatePosition();
-        
+
         if (size == null) {
             setTop(0);
             setLeft(0);
@@ -174,48 +195,43 @@ const OverlayDrawer = (props: React.PropsWithChildren<IProps>) => {
         setTop(size[1]);
         setLeft(size[0]);
         setWidth(size[2]);
-        setHeight(size[3]);    
-    }, [props.Location,targetHeight,targetWidth,targetLeft,targetTop])
+        setHeight(size[3]);
+    }, [props.Location, targetHeight, targetWidth, targetLeft, targetTop])
 
-    React.useEffect(() => { 
+    React.useEffect(() => {
         if (props.GetOverride !== undefined)
             props.GetOverride(changeStatus);
     }, [props.GetOverride])
 
-    React.useLayoutEffect(() => {
-        setContainerWidth(divRef.current?.offsetWidth ?? width);
-        setContainerHeight(divRef.current?.offsetHeight ?? height)
-    })
-
     React.useEffect(() => {
         let l = 0;
 
-        if (props.Location === 'bottom' || props.Location === 'top') 
-            l = left + 0.5*width - 0.5*containerWidth;
-        if (props.Location === 'right') 
-           l = left + width - containerWidth;
-        if (props.Location === 'left') 
-           l = left;
+        if (props.Location === 'bottom' || props.Location === 'top')
+            l = left + 0.5 * width - 0.5 * containerWidth;
+        if (props.Location === 'right')
+            l = left + width - containerWidth;
+        if (props.Location === 'left')
+            l = left;
         setContainerLeft(l);
-    },[props.Location,left,containerWidth, width])
+    }, [props.Location, left, containerWidth, width])
 
     React.useEffect(() => {
         let t = 0;
 
-        if (props.Location === 'right' || props.Location === 'left') 
-            t = top + 0.5*height - 0.5*containerHeight;
-        if (props.Location === 'top') 
-           t = top;
-        if (props.Location === 'bottom') 
-           t = top + height - containerHeight;
+        if (props.Location === 'right' || props.Location === 'left')
+            t = top + 0.5 * height - 0.5 * containerHeight;
+        if (props.Location === 'top')
+            t = top;
+        if (props.Location === 'bottom')
+            t = top + height - containerHeight;
         setContainerTop(t);
-    },[props.Location,top,containerHeight, height])
+    }, [props.Location, top, containerHeight, height])
 
     function changeStatus(o: boolean) {
         setOpen(o);
     }
 
-    function UpdatePosition(): [number,number,number,number]|null {
+    function UpdatePosition(): [number, number, number, number] | null {
 
         let w = 0
         let h = 0
@@ -231,40 +247,61 @@ const OverlayDrawer = (props: React.PropsWithChildren<IProps>) => {
             w = 15;
         }
 
-        if (props.Location === 'bottom' || props.Location === 'left' || props.Location === 'top') 
+        if (props.Location === 'bottom' || props.Location === 'left' || props.Location === 'top')
             l = targetLeft
-        if (props.Location === 'right') 
-           l = targetLeft + targetWidth - w;
-        
+        if (props.Location === 'right')
+            l = targetLeft + targetWidth - w;
 
-        if (props.Location === 'right' || props.Location === 'left' || props.Location === 'top') 
+
+        if (props.Location === 'right' || props.Location === 'left' || props.Location === 'top')
             t = targetTop
-        if (props.Location === 'bottom') 
-           t = targetTop + targetHeight - h;
-        
+        if (props.Location === 'bottom')
+            t = targetTop + targetHeight - h;
 
-        return [l,t,w,h]
+
+        return [l, t, w, h]
     }
 
-return <>
-        {!(props.HideHandle === undefined? false : props.HideHandle)? (!open? <ClosedOverlayDiv onClick={() => { 
-            setOpen(true);
-                if (props.OnChange !== undefined)
-                    props.OnChange(true);
-        }} Location={props.Location} Height={height} Left={left} Top={top} Width={width}>{props.Title}</ClosedOverlayDiv>: 
-        <ClosedOverlayDiv onClick={() => { 
-            setOpen(false);
-                if (props.OnChange !== undefined)
-                    props.OnChange(false);
-        }} Location={props.Location}
-         Height={(props.Location === 'top' || props.Location === 'bottom'? height : containerHeight)}
-         Left={(props.Location === 'top' || props.Location === 'bottom'? containerLeft : containerLeft + (props.Location === 'left'? containerWidth : -(width)))}
-         Top={(props.Location === 'left' || props.Location === 'right'? containerTop : containerTop + (props.Location === 'top'? containerHeight : -(height)))}
-         Width={(props.Location === 'left' || props.Location === 'right'? width : containerWidth)}
-          >{props.Title}</ClosedOverlayDiv>) : null}
-
-        <OpenOverlayDiv Location={props.Location} Left={containerLeft} Top={containerTop} Open={open} ref={divRef} style={{minHeight: height, minWidth: width}}>{props.children}</OpenOverlayDiv>
-
+    return <>
+        {!(props.HideHandle === undefined ? false : props.HideHandle) ? (!open ?
+            <ClosedOverlayDiv
+                onClick={() => {
+                    setOpen(true);
+                    if (props.OnChange !== undefined)
+                        props.OnChange(true);
+                }}
+                Location={props.Location}
+                Height={height}
+                Left={left}
+                Top={top}
+                Width={width}
+            >
+                {props.Title}
+            </ClosedOverlayDiv> :
+            <ClosedOverlayDiv
+                onClick={() => {
+                    setOpen(false);
+                    if (props.OnChange !== undefined)
+                        props.OnChange(false);
+                }}
+                Location={props.Location}
+                Height={(props.Location === 'top' || props.Location === 'bottom' ? height : containerHeight)}
+                Left={(props.Location === 'top' || props.Location === 'bottom' ? containerLeft : containerLeft + (props.Location === 'left' ? containerWidth : -(width)))}
+                Top={(props.Location === 'left' || props.Location === 'right' ? containerTop : containerTop + (props.Location === 'top' ? containerHeight : -(height)))}
+                Width={(props.Location === 'left' || props.Location === 'right' ? width : containerWidth)}
+            >
+                {props.Title}
+            </ClosedOverlayDiv>) : null}
+        <OpenOverlayDiv
+            Location={props.Location}
+            Left={containerLeft}
+            Top={containerTop}
+            Open={open}
+            ref={divRef}
+            style={{ minHeight: height, minWidth: width }}
+        >
+            {props.children}
+        </OpenOverlayDiv>
     </>
 }
 

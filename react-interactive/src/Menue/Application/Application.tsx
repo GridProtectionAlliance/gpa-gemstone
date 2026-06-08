@@ -174,7 +174,7 @@ const Applications: React.ForwardRefRenderFunction<IApplicationRefs, React.Props
 
         setCollapsed(false)
         setShouldRemoveSideNav(false)
-        
+
     }, [width, props.AllowCollapsed])
 
     // listen for resizing
@@ -191,7 +191,7 @@ const Applications: React.ForwardRefRenderFunction<IApplicationRefs, React.Props
         navBarDiv: navBarRef.current,
     }));
 
-    const context = React.useMemo(()=> (
+    const context = React.useMemo(() => (
         {
             homePath: props.HomePath,
             userRoles: (props.UserRoles ?? ['Viewer']),
@@ -200,8 +200,8 @@ const Applications: React.ForwardRefRenderFunction<IApplicationRefs, React.Props
             activeSection,
             setActiveSection,
             setActivePageLabel
-        }), 
-    [props.HomePath, props.UserRoles, collapsed, props.UseLegacyNavigation, activeSection]);
+        }),
+        [props.HomePath, props.UserRoles, collapsed, props.UseLegacyNavigation, activeSection]);
 
     function CreateRoute(element: React.ReactElement<React.PropsWithChildren<IPageProps>>): JSX.Element[] {
         const routes: JSX.Element[] = [];

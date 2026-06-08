@@ -40,16 +40,49 @@ interface IProps {
 }
 
 interface ISection {
+    /**
+     * Current live width units for this element. Dragging a divider updates this value.
+     */
     Width: number,
+    /**
+     * Minimum live width units allowed while dragging.
+     */
     MinWidth: number,
+    /**
+     * Maximum live width units allowed while dragging.
+     */
     MaxWidth: number,
+    /**
+     * Whether a drawer is currently open. Undefined for SplitSection elements.
+     */
     Open?: boolean,
+    /**
+     * Original child index within its SplitSection or SplitDrawer collection.
+     */
     Index: number,
+    /**
+     * True when this element represents a SplitDrawer; false for SplitSection.
+     */
     IsDrawer: boolean
+    /**
+     * Whether to render the drawer label while the drawer is closed.
+     */
     ShowClosed: boolean,
+    /**
+     * Last Width prop value seen from the child. This is not the live width after dragging.
+     */
     Percentage: number,
+    /**
+     * Drawer title shown in the vertical drawer header.
+     */
     Label: string,
+    /**
+     * Sort value used to render drawers and sections in their current order.
+     */
     Order: number,
+    /**
+     * Optional callback registration that lets a parent open or close the drawer.
+     */
     GetOverride?: (func: (open: boolean) => void) => void,
 }
 // Props Description:
@@ -71,11 +104,26 @@ const VerticalSplit = (props: React.PropsWithChildren<IProps>) => {
     const [sliderOriginal, setSliderOriginal] = React.useState<number>(0);
 
     React.useLayoutEffect(() => {
-        setCurrentWidth(divRef.current.offsetWidth ?? 0);
-    })
+        const splitElement = divRef.current;
+
+        if (splitElement == null)
+            return;
+
+        const updateCurrentWidth = () => setCurrentWidth(splitElement?.offsetWidth ?? 0);
+
+        const resizeObserver = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(updateCurrentWidth);
+
+        updateCurrentWidth();
+        resizeObserver?.observe(splitElement);
+
+        return () => {
+            resizeObserver?.disconnect();
+        };
+    }, [])
 
     React.useEffect(() => {
-        const p = elements.filter(e => !e.IsDrawer || e.Open).reduce((s,e) => s + e.Percentage,0)
+        // Use live Width values here because Percentage tracks the last Width prop, not drag changes.
+        const p = elements.filter(e => !e.IsDrawer || e.Open).reduce((s,e) => s + e.Width,0)
         if (p > 0)
             setTotalPercent(p);
         else
@@ -375,7 +423,13 @@ const VerticalSplit = (props: React.PropsWithChildren<IProps>) => {
 export default VerticalSplit;
 
 interface IDividerProps {
+    /**
+     * Optional style override for the divider bar.
+     */
     style?: any,
+    /**
+     * Called with the divider's starting clientX when dragging begins.
+     */
     onClick: (position: number) => void
 }
 const VerticalSplitDivider = (props: IDividerProps) => {
@@ -389,9 +443,21 @@ const VerticalSplitDivider = (props: IDividerProps) => {
 }
 
 interface IDrawerHeaderProps {
+    /**
+     * Drawer label shown in the header and optional tooltip.
+     */
     title: string,
+    /**
+     * Called when the user clicks the drawer header.
+     */
     onClick: () => void,
+    /**
+     * Icon shown in the drawer header.
+     */
     symbol: 'Open'|'Close'|'X',
+    /**
+     * Whether to show the drawer title tooltip on hover.
+     */
     showTooltip: boolean
 }
 const DrawerHeader = (props: IDrawerHeaderProps) => {
