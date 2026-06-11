@@ -22,7 +22,7 @@
 // ******************************************************************************************************
 
 import * as React from 'react';
-import * as moment from 'moment';
+import moment from 'moment';
 
 interface IProps {
   DateTime: moment.Moment|undefined

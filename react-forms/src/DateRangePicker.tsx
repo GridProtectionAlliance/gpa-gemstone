@@ -22,7 +22,7 @@
 // ******************************************************************************************************
 
 import * as React from 'react';
-import * as moment from 'moment';
+import moment from 'moment';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 
 interface IExtendedProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {

@@ -22,7 +22,7 @@
 // ******************************************************************************************************
 
 import * as React from 'react';
-import * as moment from 'moment';
+import moment from 'moment';
 import { Portal } from 'react-portal';
 import styled from 'styled-components';
 import Calender from './Calender';
