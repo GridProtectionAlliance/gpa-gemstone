@@ -12,7 +12,8 @@
     "strict": true,
     "jsx": "react",
     "skipLibCheck": true,
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "esModuleInterop": true
   },
   "include": [
     "src"

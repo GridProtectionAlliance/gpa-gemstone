@@ -22,7 +22,7 @@
 // ******************************************************************************************************
 
 import * as React from 'react';
-import * as moment from 'moment';
+import moment from 'moment';
 import DateTimePopup from './DateTimePopup';
 import { CreateGuid, GetNodeSize, useGetContainerPosition } from '@gpa-gemstone/helper-functions';
 import ToolTip from '../ToolTip';

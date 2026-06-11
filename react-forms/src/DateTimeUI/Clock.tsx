@@ -22,7 +22,7 @@
 // ******************************************************************************************************
 
 import * as React from 'react';
-import * as moment from 'moment';
+import moment from 'moment';
 import { IsInteger } from '@gpa-gemstone/helper-functions'
 import { Gemstone } from '@gpa-gemstone/application-typings';
 
