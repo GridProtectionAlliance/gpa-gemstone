@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useDataSeriesContext } from '../../Legend/DataSeriesContext';
 import DataSeriesGroup from '../../Legend/DataSeriesGroup';
 import LineInternal from './InternalLine';
-import { PointNode } from '@gpa-gemstone/react-graph';
+import { PointNode } from '../../../../PointNode';
 import { LegendPosition } from '../../LayoutContext';
 
 export interface ILineProps {

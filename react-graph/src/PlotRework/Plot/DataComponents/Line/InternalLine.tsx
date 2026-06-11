@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { PointNode } from '@gpa-gemstone/react-graph';
+import { PointNode } from '../../../../PointNode';
 import { useXViewportContext, IXDataSeries, useHoverValue } from '../../ViewportContext/XViewportContext';
 import { useYViewportContext, IYDataSeries } from '../../ViewportContext/YViewportContext';
 import { Portal } from 'react-portal';

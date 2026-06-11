@@ -22,7 +22,7 @@
 //******************************************************************************************************
 
 import * as React from 'react';
-import moment from 'moment';
+import moment = require('moment');
 import { Portal } from 'react-portal';
 import { PortalIds, useLayoutContext, GetPortalID } from '../LayoutContext';
 import { XViewportContext, IXViewportContext, IXDataSeries } from '../ViewportContext/XViewportContext';
