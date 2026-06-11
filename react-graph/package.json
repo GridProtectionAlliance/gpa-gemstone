@@ -40,7 +40,7 @@
     "@types/lodash": "^4.14.171",
     "@types/mocha": "9.0.0",
     "@types/react": "18.2.0",
-    "@types/react-portal": "^4.0.7",
+    "@types/react-portal": "4.0.4",
     "@typescript-eslint/eslint-plugin": "^5.60.0",
     "@typescript-eslint/parser": "^5.60.0",
     "eslint": "^8.43.0",
