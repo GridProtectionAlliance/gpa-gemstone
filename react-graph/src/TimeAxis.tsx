@@ -23,7 +23,7 @@
 
 import * as React from 'react';
 import { GraphContext } from './GraphContext'
-import * as moment from 'moment';
+import moment from 'moment';
 import { GetTextHeight, GetTextWidth } from '@gpa-gemstone/helper-functions';
 import { cloneDeep } from 'lodash';
 

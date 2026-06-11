@@ -25,7 +25,7 @@
 import * as React from 'react';
 
 import {IDataSeries, GraphContext, AxisIdentifier, AxisMap, LineMap} from './GraphContext';
-import * as moment from 'moment';
+import moment from 'moment';
 import {PointNode} from './PointNode';
 import {GetTextWidth} from '@gpa-gemstone/helper-functions';
 import {IProps as ILineProps} from './Line';
