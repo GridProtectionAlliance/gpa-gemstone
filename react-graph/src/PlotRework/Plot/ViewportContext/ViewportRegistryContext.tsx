@@ -41,7 +41,7 @@ interface IRegisteredViewportBase {
  * Registered X viewport. Contains the viewport state that axes expose
  * for the interaction layer (zoom/pan) and data components (transforms).
  */
-export interface IRegisteredXViewport  extends IRegisteredViewportBase {
+export interface IRegisteredXViewport extends IRegisteredViewportBase {
     /** Transforms an X data value to pixel coordinates */
     XTransform: (x: number) => number;
     /** Transforms a pixel coordinate to an X data value */
@@ -98,7 +98,7 @@ export const ViewportRegistryContext = React.createContext<IViewportRegistryCont
     UnregisterYViewport: noop,
     GetXViewports: () => [],
     GetYViewports: () => [],
-    Reset: () => { },
+    Reset: () => {/* */ },
 });
 
 export const useViewportRegistryContext = () => React.useContext(ViewportRegistryContext);

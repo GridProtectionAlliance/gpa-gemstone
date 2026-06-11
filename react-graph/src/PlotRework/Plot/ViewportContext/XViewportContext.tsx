@@ -72,9 +72,9 @@ export interface IXViewportContext extends IRegisteredXViewport {
     UnregisterData: React.MutableRefObject<(id: string) => void>;
 }
 
-const noopRegRef = { current: () => { } };
-const noopUnregRef = { current: () => { } };
-const noopFunc = () => { };
+const noopRegRef = { current: () => { /* */} };
+const noopUnregRef = { current: () => {/* */ } };
+const noopFunc = () => {/* */ };
 
 export const XViewportContext = React.createContext<IXViewportContext>({
     MinDomain: 0,

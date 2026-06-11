@@ -69,9 +69,9 @@ export interface IYViewportContext extends IRegisteredYViewport {
     UnregisterData: React.MutableRefObject<(id: string) => void>;
 }
 
-const noopRegRef = { current: () => { } };
-const noopUnregRef = { current: () => { } };
-const noopFunc = () => { };
+const noopRegRef = { current: () => { /* */} };
+const noopUnregRef = { current: () => {/* */ } };
+const noopFunc = () => {/* */ };
 
 export const YViewportContext = React.createContext<IYViewportContext>({
     MinDomain: 0,
