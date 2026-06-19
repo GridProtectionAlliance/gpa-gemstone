@@ -163,7 +163,7 @@ export default function SearchBar<T>(props: React.PropsWithChildren<IProps<T>>) 
             localStorage.setItem(`${props.StorageID}.Filters`, JSON.stringify(internalFilters));
             localStorage.setItem(`${props.StorageID}.Search`, debouncedSearch);
         }
-    }, [internalFilters, debouncedSearch, memoizedDefaultColumn, useQuickSearch]);
+    }, [internalFilters, debouncedSearch, memoizedDefaultColumn, useQuickSearch, props.OverrideFilterEquality]);
 
     const deleteFilter = (filterToDelete: Search.IFilter<T>) => {
         setHover(false);
