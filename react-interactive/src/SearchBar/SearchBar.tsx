@@ -88,6 +88,10 @@ interface IProps<T> {
      * Optional help message for the filter button
      */
     Help?: string
+    /**
+     * Overrides filter equality check
+     */
+    OverrideFilterEquality?: (newFilters: Search.IFilter<T>[], oldFilters: Search.IFilter<T>[]) => boolean
 }
 
 export interface IOptions { Value: string, Label: string }
@@ -149,7 +153,7 @@ export default function SearchBar<T>(props: React.PropsWithChildren<IProps<T>>) 
     React.useEffect(() => {
         const combined = buildCombinedFilters(internalFilters, debouncedSearch, memoizedDefaultColumn, useQuickSearch);
 
-        if (filtersEqual(combined, lastPushedFilters.current)) return;
+        if (props.OverrideFilterEquality != null ? props.OverrideFilterEquality(combined, lastPushedFilters.current) : filtersEqual(combined, lastPushedFilters.current)) return;
 
         lastPushedFilters.current = combined;
         props.SetFilter(combined);
