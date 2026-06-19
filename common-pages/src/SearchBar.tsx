@@ -70,11 +70,9 @@ export namespace DefaultSearch {
         const ascending = useSelector(props.Slice.Ascending)
         const data: SystemCenter.Types.DetailedMeter[] = useSelector(props.Slice.SearchResults);
 
-        const FilterEqualityOverride = (a: Search.IFilter<SystemCenter.Types.DetailedMeter>[], b: Search.IFilter<SystemCenter.Types.DetailedMeter>[]) => {
-            if (searchStatus === 'uninitiated')
-                dispatch(props.Slice.DBSearch({filter: []}))
-            return IsSearchBarFiltersEqual(a, b);   
-        }
+        const FilterEqualityOverride = React.useCallback((a: Search.IFilter<SystemCenter.Types.DetailedMeter>[], b: Search.IFilter<SystemCenter.Types.DetailedMeter>[]) => {
+            return searchStatus === 'uninitiated' ? false : IsSearchBarFiltersEqual(a, b);   
+        },[searchStatus])
 
         React.useEffect(() => {
           return props.GetAddlFields(setAddlFieldCols);
@@ -126,11 +124,9 @@ export namespace DefaultSearch {
             { label: 'Description', key: 'Description', type: 'string', isPivotField: false },
         ]; 
 
-        const FilterEqualityOverride = (a: Search.IFilter<SystemCenter.Types.DetailedLocation>[], b: Search.IFilter<SystemCenter.Types.DetailedLocation>[]) => {
-            if (searchStatus === 'uninitiated')
-                dispatch(props.Slice.DBSearch({filter: []}))
-            return IsSearchBarFiltersEqual(a, b);   
-        }
+        const FilterEqualityOverride = React.useCallback((a: Search.IFilter<SystemCenter.Types.DetailedLocation>[], b: Search.IFilter<SystemCenter.Types.DetailedLocation>[]) => {
+            return searchStatus === 'uninitiated' ? false : IsSearchBarFiltersEqual(a, b);
+        },[searchStatus])
 
         React.useEffect(() => {
           return props.GetAddlFields(setAddlFieldCols);
@@ -182,11 +178,9 @@ export namespace DefaultSearch {
             { label: 'Description', key: 'Description', type: 'string', isPivotField: false },
         ];
 
-        const FilterEqualityOverride = (a: Search.IFilter<SystemCenter.Types.DetailedAsset>[], b: Search.IFilter<SystemCenter.Types.DetailedAsset>[]) => {
-            if (searchStatus === 'uninitiated')
-                dispatch(props.Slice.DBSearch({filter: []}))
-            return IsSearchBarFiltersEqual(a, b);   
-        }
+        const FilterEqualityOverride = React.useCallback((a: Search.IFilter<SystemCenter.Types.DetailedAsset>[], b: Search.IFilter<SystemCenter.Types.DetailedAsset>[]) => {
+            return searchStatus === 'uninitiated' ? false : IsSearchBarFiltersEqual(a, b);   
+        },[searchStatus])
 
         React.useEffect(() => {
           return props.GetAddlFields(setAddlFieldCols);
@@ -235,11 +229,9 @@ export namespace DefaultSearch {
             { label: 'Show in Email Subscription', key: 'DisplayEmail', type: 'boolean', isPivotField: false },
         ];
 
-        const FilterEqualityOverride = (a: Search.IFilter<OpenXDA.Types.AssetGroup>[], b: Search.IFilter<OpenXDA.Types.AssetGroup>[]) => {
-            if (searchStatus === 'uninitiated')
-                dispatch(props.Slice.DBSearch({filter: []}))
-            return IsSearchBarFiltersEqual(a, b);   
-        }
+        const FilterEqualityOverride = React.useCallback((a: Search.IFilter<OpenXDA.Types.AssetGroup>[], b: Search.IFilter<OpenXDA.Types.AssetGroup>[]) => {
+            return searchStatus === 'uninitiated' ? false : IsSearchBarFiltersEqual(a, b); 
+        },[searchStatus])
 
         React.useEffect(() => {
           return props.GetAddlFields(setAddlFieldCols);
@@ -285,11 +277,9 @@ export namespace DefaultSearch {
             { label: 'Email', key: 'Email', type: 'string', isPivotField: false },    
         ];
 
-        const FilterEqualityOverride = (a: Search.IFilter<Application.Types.iUserAccount>[], b: Search.IFilter<Application.Types.iUserAccount>[]) => {
-            if (searchStatus === 'uninitiated')
-                dispatch(props.Slice.DBSearch({filter: []}))
-            return IsSearchBarFiltersEqual(a, b);   
-        }
+        const FilterEqualityOverride = React.useCallback((a: Search.IFilter<Application.Types.iUserAccount>[], b: Search.IFilter<Application.Types.iUserAccount>[]) => {
+            return searchStatus === 'uninitiated' ? false : IsSearchBarFiltersEqual(a, b);   
+        },[searchStatus])
 
         React.useEffect(() => {
           return props.GetAddlFields(setAddlFieldCols);
@@ -338,11 +328,9 @@ export namespace DefaultSearch {
         const ascending = useSelector(props.Slice.Ascending)
         const data: OpenXDA.Types.Customer[] = useSelector(props.Slice.SearchResults);
 
-        const FilterEqualityOverride = (a: Search.IFilter<OpenXDA.Types.Customer>[], b: Search.IFilter<OpenXDA.Types.Customer>[]) => {
-            if (searchStatus === 'uninitiated')
-                dispatch(props.Slice.DBSearch({filter: []}))
-            return IsSearchBarFiltersEqual(a, b);   
-        }
+        const FilterEqualityOverride = React.useCallback((a: Search.IFilter<OpenXDA.Types.Customer>[], b: Search.IFilter<OpenXDA.Types.Customer>[]) => {
+            return searchStatus === 'uninitiated' ? false : IsSearchBarFiltersEqual(a, b);   
+        },[searchStatus])
 
         React.useEffect(() => {
           return props.GetAddlFields(setAddlFieldCols);
