@@ -24,7 +24,7 @@
 import Modal from './Modal';
 import Warning from './Warning';
 import SearchBar from './SearchBar/SearchBar';
-import { Search, GetStoredFilters } from './SearchBar/SearchBar';
+import { Search, GetStoredFilters, IsSearchBarFiltersEqual } from './SearchBar/SearchBar';
 import LoadingScreen from './LoadingScreen';
 import LoadingIcon from './LoadingIcon';
 import { ToolTip } from '@gpa-gemstone/react-forms';
@@ -58,6 +58,7 @@ export {
   SearchBar,
   Search,
   GetStoredFilters,
+  IsSearchBarFiltersEqual,
   LoadingScreen,
   LoadingIcon,
   /**
