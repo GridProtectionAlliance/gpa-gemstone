@@ -88,6 +88,10 @@ interface IProps<T> {
      * Optional help message for the filter button
      */
     Help?: string
+    /**
+     * Optional override for filter equality check
+     */
+    OverrideFilterEquality?: (newFilters: Search.IFilter<T>[], oldFilters: Search.IFilter<T>[]) => boolean
 }
 
 export interface IOptions { Value: string, Label: string }
@@ -141,7 +145,7 @@ export default function SearchBar<T>(props: React.PropsWithChildren<IProps<T>>) 
     // Sync external filters into internal state when parent changes them
     React.useEffect(() => {
         if (props.Filters === undefined) return;
-        if (filtersEqual(props.Filters, lastPushedFilters.current)) return;
+        if (IsSearchBarFiltersEqual(props.Filters, lastPushedFilters.current)) return;
         setInternalFilters(props.Filters);
     }, [props.Filters]);
 
@@ -149,7 +153,7 @@ export default function SearchBar<T>(props: React.PropsWithChildren<IProps<T>>) 
     React.useEffect(() => {
         const combined = buildCombinedFilters(internalFilters, debouncedSearch, memoizedDefaultColumn, useQuickSearch);
 
-        if (filtersEqual(combined, lastPushedFilters.current)) return;
+        if (props.OverrideFilterEquality != null ? props.OverrideFilterEquality(combined, lastPushedFilters.current) : IsSearchBarFiltersEqual(combined, lastPushedFilters.current)) return;
 
         lastPushedFilters.current = combined;
         props.SetFilter(combined);
@@ -159,7 +163,7 @@ export default function SearchBar<T>(props: React.PropsWithChildren<IProps<T>>) 
             localStorage.setItem(`${props.StorageID}.Filters`, JSON.stringify(internalFilters));
             localStorage.setItem(`${props.StorageID}.Search`, debouncedSearch);
         }
-    }, [internalFilters, debouncedSearch, memoizedDefaultColumn, useQuickSearch]);
+    }, [internalFilters, debouncedSearch, memoizedDefaultColumn, useQuickSearch, props.OverrideFilterEquality]);
 
     const deleteFilter = (filterToDelete: Search.IFilter<T>) => {
         setHover(false);
@@ -395,8 +399,13 @@ function buildCombinedFilters<T>(
     return [...baseFilters, quick];
 }
 
-// Order-independent comparison of two filter arrays
-function filtersEqual<T>(a: Search.IFilter<T>[], b: Search.IFilter<T>[]): boolean {
+/**
+ * Order independent equality check for arrays of filters.
+ * @param a The first array of filters to check.
+ * @param b The second array of filters to check.
+ * @returns true if filters are the same, false if not
+ */
+export function IsSearchBarFiltersEqual<T>(a: Search.IFilter<T>[], b: Search.IFilter<T>[]): boolean {
     if (a === b) return true;
     if (a.length !== b.length) return false;
 

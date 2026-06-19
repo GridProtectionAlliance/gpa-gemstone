@@ -23,7 +23,7 @@
 // ******************************************************************************************************
 
 import * as React from 'react';
-import { GenericSlice, SearchBar as GenericSearchBar, Search } from '@gpa-gemstone/react-interactive';
+import { GenericSlice, SearchBar as GenericSearchBar, Search, IsSearchBarFiltersEqual } from '@gpa-gemstone/react-interactive';
 import { OpenXDA, SystemCenter, Application } from '@gpa-gemstone/application-typings';
 import { useDispatch, useSelector } from 'react-redux';
 import { Dispatch } from '@reduxjs/toolkit';
@@ -70,6 +70,10 @@ export namespace DefaultSearch {
         const ascending = useSelector(props.Slice.Ascending)
         const data: SystemCenter.Types.DetailedMeter[] = useSelector(props.Slice.SearchResults);
 
+        const FilterEqualityOverride = React.useCallback((a: Search.IFilter<SystemCenter.Types.DetailedMeter>[], b: Search.IFilter<SystemCenter.Types.DetailedMeter>[]) => {
+            return searchStatus === 'uninitiated' ? false : IsSearchBarFiltersEqual(a, b);   
+        },[searchStatus])
+
         React.useEffect(() => {
           return props.GetAddlFields(setAddlFieldCols);
         }, []);
@@ -91,6 +95,7 @@ export namespace DefaultSearch {
             ResultNote={searchStatus === 'error' ? 'Could not complete Search' : 'Found ' + data.length + ' Meter(s)'}
             GetEnum={props.GetEnum}
             StorageID={props.StorageID}
+            OverrideFilterEquality={FilterEqualityOverride}
         >
             {props.children}
         </GenericSearchBar>
@@ -119,6 +124,10 @@ export namespace DefaultSearch {
             { label: 'Description', key: 'Description', type: 'string', isPivotField: false },
         ]; 
 
+        const FilterEqualityOverride = React.useCallback((a: Search.IFilter<SystemCenter.Types.DetailedLocation>[], b: Search.IFilter<SystemCenter.Types.DetailedLocation>[]) => {
+            return searchStatus === 'uninitiated' ? false : IsSearchBarFiltersEqual(a, b);
+        },[searchStatus])
+
         React.useEffect(() => {
           return props.GetAddlFields(setAddlFieldCols);
         }, []);
@@ -138,6 +147,7 @@ export namespace DefaultSearch {
             ResultNote={searchStatus === 'error' ? 'Could not complete Search' : 'Found ' + data.length + '  Substation(s)'}
             GetEnum={props.GetEnum}
             StorageID={props.StorageID}
+            OverrideFilterEquality={FilterEqualityOverride}
         >
             {props.children}
         </GenericSearchBar>
@@ -168,6 +178,10 @@ export namespace DefaultSearch {
             { label: 'Description', key: 'Description', type: 'string', isPivotField: false },
         ];
 
+        const FilterEqualityOverride = React.useCallback((a: Search.IFilter<SystemCenter.Types.DetailedAsset>[], b: Search.IFilter<SystemCenter.Types.DetailedAsset>[]) => {
+            return searchStatus === 'uninitiated' ? false : IsSearchBarFiltersEqual(a, b);   
+        },[searchStatus])
+
         React.useEffect(() => {
           return props.GetAddlFields(setAddlFieldCols);
         }, []);
@@ -187,6 +201,7 @@ export namespace DefaultSearch {
             ResultNote={searchStatus === 'error' ? 'Could not complete Search' : 'Found ' + data.length + ' Transmission Asset(s)'}
             GetEnum={props.GetEnum}
             StorageID={props.StorageID}
+            OverrideFilterEquality={FilterEqualityOverride}
         >
             {props.children}
         </GenericSearchBar>
@@ -214,6 +229,10 @@ export namespace DefaultSearch {
             { label: 'Show in Email Subscription', key: 'DisplayEmail', type: 'boolean', isPivotField: false },
         ];
 
+        const FilterEqualityOverride = React.useCallback((a: Search.IFilter<OpenXDA.Types.AssetGroup>[], b: Search.IFilter<OpenXDA.Types.AssetGroup>[]) => {
+            return searchStatus === 'uninitiated' ? false : IsSearchBarFiltersEqual(a, b); 
+        },[searchStatus])
+
         React.useEffect(() => {
           return props.GetAddlFields(setAddlFieldCols);
         }, []);
@@ -233,6 +252,7 @@ export namespace DefaultSearch {
             ResultNote={searchStatus === 'error' ? 'Could not complete Search' : 'Found ' + data.length + ' Asset Group(s)'}
             GetEnum={props.GetEnum}
             StorageID={props.StorageID}
+            OverrideFilterEquality={FilterEqualityOverride}
         >
             {props.children}
         </GenericSearchBar>
@@ -257,6 +277,10 @@ export namespace DefaultSearch {
             { label: 'Email', key: 'Email', type: 'string', isPivotField: false },    
         ];
 
+        const FilterEqualityOverride = React.useCallback((a: Search.IFilter<Application.Types.iUserAccount>[], b: Search.IFilter<Application.Types.iUserAccount>[]) => {
+            return searchStatus === 'uninitiated' ? false : IsSearchBarFiltersEqual(a, b);   
+        },[searchStatus])
+
         React.useEffect(() => {
           return props.GetAddlFields(setAddlFieldCols);
         }, []);
@@ -276,6 +300,7 @@ export namespace DefaultSearch {
             ResultNote={searchStatus === 'error' ? 'Could not complete Search' : 'Found ' + data.length + ' User(s)'}
             GetEnum={props.GetEnum}
             StorageID={props.StorageID}
+            OverrideFilterEquality={FilterEqualityOverride}
         >
             {props.children}
         </GenericSearchBar>
@@ -296,11 +321,16 @@ export namespace DefaultSearch {
         const [addlFieldCols, setAddlFieldCols] = React.useState<Search.IField<OpenXDA.Types.Customer>[]>([]);
         const addlFilters = useStringMemonization<Search.IFilter<OpenXDA.Types.Customer>[]|undefined>(props.AddlFilters);
         
+        
         const dispatch = useDispatch<Dispatch<any>>();
         const searchStatus = useSelector(props.Slice.SearchStatus)
         const sortField = useSelector(props.Slice.SortField)
         const ascending = useSelector(props.Slice.Ascending)
         const data: OpenXDA.Types.Customer[] = useSelector(props.Slice.SearchResults);
+
+        const FilterEqualityOverride = React.useCallback((a: Search.IFilter<OpenXDA.Types.Customer>[], b: Search.IFilter<OpenXDA.Types.Customer>[]) => {
+            return searchStatus === 'uninitiated' ? false : IsSearchBarFiltersEqual(a, b);   
+        },[searchStatus])
 
         React.useEffect(() => {
           return props.GetAddlFields(setAddlFieldCols);
@@ -321,6 +351,7 @@ export namespace DefaultSearch {
             ResultNote={searchStatus === 'error' ? 'Could not complete Search' : 'Found ' + data.length + ' Customer(s)'}
             GetEnum={props.GetEnum}
             StorageID={props.StorageID}
+            OverrideFilterEquality={FilterEqualityOverride}
         >
             {props.children}
         </GenericSearchBar>
