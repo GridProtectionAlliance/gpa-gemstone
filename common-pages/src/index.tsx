@@ -76,5 +76,5 @@ export {
   useInitializeWithFetch as useInitializeWithFetch_Gemstone,
   ReadOnlyControllerFunctions as ReadOnlyControllerFunctions_Gemstone,
   ReadWriteControllerFunctions as ReadWriteControllerFunctions_Gemstone,
-  useSearchData
+  useSearchData as useSearchData_Gemstone
 };
