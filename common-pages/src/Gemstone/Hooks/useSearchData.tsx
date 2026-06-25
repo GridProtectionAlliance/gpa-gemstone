@@ -35,9 +35,8 @@ import { Gemstone } from '../Gemstone';
  * @param searchFilter - The search filters to apply to the query.
  * @param ascending - Whether the results should be sorted in ascending order.
  * @param controllerPath - The path to the read-only controller endpoint.
- * @param SetPageInfo - State setter used to update pagination information.
  * @param ReFetchDataCounter - Optional counter that triggers a re-fetch whenever its value changes.
- * @returns An object containing the search results, the search status, and the pagination status.
+ * @returns An object containing the search results, the search status, the pagination status and the pagination info.
  */
 const useSearchData = <T,>(
     page: number,
