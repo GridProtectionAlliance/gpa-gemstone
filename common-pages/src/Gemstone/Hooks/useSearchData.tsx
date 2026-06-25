@@ -45,7 +45,6 @@ const useSearchData = <T,>(
     searchFilter: Search.IFilter<T>[],
     ascending: boolean,
     controllerPath: string,
-    SetPageInfo: React.Dispatch<React.SetStateAction<Gemstone.Types.IPageInfo>>,
     ReFetchDataCounter?: number
 ) => {
     const fetchHandle = React.useRef<JQuery.jqXHR<T[]> | null>(null);
@@ -53,6 +52,11 @@ const useSearchData = <T,>(
     const [results, setResults] = React.useState<T[]>([]);
     const [searchStatus, setSearchStatus] = React.useState<Application.Types.Status>('uninitiated');
     const [paginationStatus, setPaginationStatus] = React.useState<Application.Types.Status>('uninitiated');
+    const [pageInfo, setPageInfo] = React.useState<Gemstone.Types.IPageInfo>({
+        TotalCount: 0,
+        PageCount: 0,
+        PageSize: 0
+    });
 
     const Queries = React.useMemo(() => new ReadOnlyControllerFunctions<T>(controllerPath), [controllerPath]);
 
@@ -71,7 +75,7 @@ const useSearchData = <T,>(
         }).fail(() => setSearchStatus('error'))
 
         paginationHandle.current = Queries.GetPageInfo(memoizedSearchFilter).done((d: Gemstone.Types.IPageInfo) => {
-            SetPageInfo(d);
+            setPageInfo(d);
             setPaginationStatus('idle');
         }).fail(() => setPaginationStatus('error'));
 
@@ -84,7 +88,7 @@ const useSearchData = <T,>(
             fetchHandle: fetchHandle.current,
             cleanup
         };
-    }, [Queries, page, sortField, ascending, memoizedSearchFilter, SetPageInfo]);
+    }, [Queries, page, sortField, ascending, memoizedSearchFilter]);
 
     React.useEffect(() => {
         const { cleanup } = reFetchData();
@@ -95,6 +99,7 @@ const useSearchData = <T,>(
         SearchResults: results,
         SearchStatus: searchStatus,
         PaginationStatus: paginationStatus,
+        PageInfo: pageInfo
     }
 }
 
