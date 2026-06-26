@@ -42,6 +42,7 @@ import ReadOnlyGenericSlice from './Gemstone/GenericSlices/ReadOnlyGenericSlice'
 import ReadWriteGenericSlice from './Gemstone/GenericSlices/ReadWriteGenericSlice';
 import { useInitializeWithFetch } from './Gemstone/GenericSlices/useInitializeData';
 import { ReadOnlyControllerFunctions, ReadWriteControllerFunctions } from './Gemstone/ControllerFunctions';
+import HeartBeatCheck from './HeartBeatCheck';
 import useSearchData from './Gemstone/Hooks/useSearchData';
 
 const Pipelines = {
@@ -69,6 +70,7 @@ export {
   IStartDuration,
   IEndDuration,
   Gemstone,
+  HeartBeatCheck,
 
   //.NET Gemstone related exports
   ReadOnlyGenericSlice as ReadOnlyGenericSlice_Gemstone,
