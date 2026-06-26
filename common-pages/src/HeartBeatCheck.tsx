@@ -25,10 +25,23 @@ import { LoadingIcon, Modal } from '@gpa-gemstone/react-interactive';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 
 interface IProps {
+    /**
+    * Function invoked on each interval to check whether the application can still
+    * reach the server. Should return an AbortablePromise that resolves when the
+    * server is reachable and rejects when it is not.
+    * */
     HeartBeat: () => Gemstone.TSX.Interfaces.AbortablePromise<unknown>,
+    /**
+    * Interval, in milliseconds, between successive HeartBeat checks
+    * */
     IntervalMS: number,
 }
 
+/**
+* Periodically calls HeartBeat to verify connectivity to the server and, when a
+* check fails, displays a blocking modal indicating the application is trying to
+* reconnect. Renders nothing while the server is reachable.
+*/
 const HeartBeatCheck = (props: IProps) => {
     const [showError, setShowError] = React.useState<boolean>(false);
 
