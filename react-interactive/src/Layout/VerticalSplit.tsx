@@ -254,6 +254,7 @@ const VerticalSplit = (props: React.PropsWithChildren<IProps>) => {
         })
 
     }, [elements])
+
     function CompareElements(one: ISection, two: ISection) {
         return one.Label === two.Label && one.MaxWidth === two.MaxWidth && one.MinWidth === two.MinWidth && one.Percentage === two.Percentage && one.ShowClosed === two.ShowClosed;
     }
@@ -304,10 +305,15 @@ const VerticalSplit = (props: React.PropsWithChildren<IProps>) => {
         return result;
     }
 
-    function MouseMove(evt: any)  {
-
+    function MouseMove(evt: React.MouseEvent<HTMLDivElement, MouseEvent>)  {
         if (activeSlider < 0)
             return;
+
+        // If the button was released off-window, and the next move back in has no button held - stop dragging.
+        if (evt.buttons === 0) {
+            setActiveSlider(-1);
+            return;
+        }
 
         // compute ammount moved
         const deltaX = evt.clientX - sliderOriginal;
