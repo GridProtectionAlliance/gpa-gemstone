@@ -395,6 +395,16 @@ export namespace ReactIcons {
             <line x1="12" y1="2" x2="12" y2="22"></line>
         </svg>
 
+    export const PhasorArrows = (props: IProps) =>
+        <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24, }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-phasor-arrows">
+            <polyline points="9 5 12 2 15 5"></polyline>
+            <polyline points="6.22 20.47 2 20 2.47 15.78"></polyline>
+            <polyline points="21.53 15.78 22 20 17.78 20.47"></polyline>
+            <line x1="12" y1="12" x2="12" y2="2"></line>
+            <line x1="12" y1="12" x2="2" y2="20"></line>
+            <line x1="12" y1="12" x2="22" y2="20"></line>
+        </svg>
+
     export const ChevronLeft = (props: IProps) =>
         <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24, }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-chevron-left">
             <polyline points="15 18 9 12 15 6"></polyline>
