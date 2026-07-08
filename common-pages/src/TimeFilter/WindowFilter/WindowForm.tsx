@@ -50,7 +50,7 @@ const WindowForm = (props: IProps) => {
     }, [props.Window, props.Format, props.SetActiveQP, props.SetActiveQP])
 
     return (
-        <div className='form-group'>
+        <div className='form-group' style={{ marginBottom: 0 }}>
             <label style={{ width: '100%', position: 'relative', float: "left" }}>
                 Span({props.Window === 'start' ? '+' : '-'})
             </label>
