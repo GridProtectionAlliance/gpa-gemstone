@@ -165,7 +165,7 @@ export default function ConfigurableTable<T>(props: React.PropsWithChildren<ITab
                 {...props}
                 LastColumn={
                     <div
-                        style={{ marginLeft: -5, marginBottom: 12, cursor: 'pointer' }}
+                        style={{ marginBottom: 12, cursor: 'pointer' }}
                         onMouseEnter={() => setHover(true)}
                         onMouseLeave={() => setHover(false)}
                         id={guid + '-tooltip'}

@@ -25,18 +25,11 @@
 //
 //  ******************************************************************************************************
 import * as React from 'react';
-import * as _ from 'lodash';
+import * as  _ from 'lodash';
 import * as ReactTableProps from './Types';
-import { ColumnDataWrapper, ColumnHeaderWrapper } from './Column';
-import { CreateGuid, GetScrollbarWidth } from '@gpa-gemstone/helper-functions';
-import { Search } from '@gpa-gemstone/react-interactive';
-import FilterableColumn, { FilterableColumnHeader } from './FilterableColumn';
-
-type width = {
-    width: number,
-    minWidth: number,
-    maxWidth?: number
-}
+import { GetScrollbarWidth } from '@gpa-gemstone/helper-functions';
+import Rows, { IsColumnProps, width } from './Rows';
+import Header from './Header';
 
 const defaultTableStyle: React.CSSProperties = {
     padding: 0,
@@ -50,9 +43,9 @@ const defaultTableStyle: React.CSSProperties = {
 };
 
 const defaultHeadStyle: React.CSSProperties = {
-    fontSize: 'auto', 
-    tableLayout: 'fixed', 
-    display: 'table', 
+    fontSize: 'auto',
+    tableLayout: 'fixed',
+    display: 'table',
     width: '100%'
 };
 
@@ -68,42 +61,21 @@ const defaultRowStyle: React.CSSProperties = {
     width: '100%'
 };
 
-const defaultDataHeadStyle: React.CSSProperties = {
-    display: 'inline-block',
-    position: 'relative',
-    borderTop: 'none',
-    width: 'auto'
-};
-
-const defaultDataCellStyle: React.CSSProperties = {
-    overflowX: 'hidden',
-    display: 'inline-block',
-    width: 'auto'
-};
-
-const IsColumnProps = (props: unknown) => ((props as ReactTableProps.IColumn<unknown>)?.['Key'] != null);
-const IsColumnAdjustable = (props: unknown) => {
-    const propValue = (props as ReactTableProps.IColumn<unknown>)?.['Adjustable'];
-    if (propValue === false || propValue === true) return propValue as boolean;
-    return false;
-}
-
-const lastColumnWidth = 17;
-
 export function Table<T>(props: React.PropsWithChildren<ReactTableProps.ITable<T>>) {
     const bodyRef = React.useRef<HTMLTableSectionElement | null>(null);
     const colWidthsRef = React.useRef<Map<string, width>>(new Map<string, width>());
     const oldWidthRef = React.useRef<number>(0);
-    
+
+    const [lastColumnWidth, setLastColumnWidth] = React.useState<number>(0);
     const [currentTableWidth, setCurrentTableWidth] = React.useState<number>(0);
     const [scrolled, setScrolled] = React.useState<boolean>(false);
     const [trigger, setTrigger] = React.useState<number>(0);
 
     // Style consts
-    const tableStyle = React.useMemo(() => ({...defaultTableStyle, ...props.TableStyle}),[props.TableStyle]);
-    const headStyle = React.useMemo(() => ({...defaultHeadStyle, ...props.TheadStyle}),[props.TheadStyle]);
-    const bodyStyle = React.useMemo(() => ({...defaultBodyStyle, ...props.TbodyStyle}),[props.TbodyStyle]);
-    const rowStyle = React.useMemo(() => ({...defaultRowStyle, ...props.RowStyle}),[props.RowStyle]);
+    const tableStyle = React.useMemo(() => ({ ...defaultTableStyle, ...props.TableStyle }), [props.TableStyle]);
+    const headStyle = React.useMemo(() => ({ ...defaultHeadStyle, ...props.TheadStyle }), [props.TheadStyle]);
+    const bodyStyle = React.useMemo(() => ({ ...defaultBodyStyle, ...props.TbodyStyle }), [props.TbodyStyle]);
+    const rowStyle = React.useMemo(() => ({ ...defaultRowStyle, ...props.RowStyle }), [props.RowStyle]);
 
     // Send warning if styles are overridden
     React.useEffect(() => {
@@ -116,14 +88,13 @@ export function Table<T>(props: React.PropsWithChildren<ReactTableProps.ITable<T
         if (props.RowStyle !== undefined)
             console.warn('RowStyle properties may be overridden if needed. consider using the defaults');
     }, []);
-    
 
     // Measure widths and hide columns
     React.useLayoutEffect(() => {
         if (currentTableWidth <= 0) return;
 
         // Helper functions for the calculations
-        const getWidthfromProps = (p: ReactTableProps.IColumn<T>, type: 'width'|'maxWidth'|'minWidth') => {
+        const getWidthfromProps = (p: ReactTableProps.IColumn<T>, type: 'width' | 'maxWidth' | 'minWidth') => {
             // This priotizes rowstyling for width over header, since it was decided that they need to be the same
             if (p?.RowStyle?.[type] !== undefined)
                 return p.RowStyle[type];
@@ -137,14 +108,14 @@ export function Table<T>(props: React.PropsWithChildren<ReactTableProps.ITable<T
         React.Children.forEach(props.children, (element) => {
             if (React.isValidElement(element) && IsColumnProps(element.props)) {
                 if (newMap.get(element.props.Key) != null) console.error("Multiple of the same key detected in table, this will cause issues.");
-                newMap.set(element.props.Key, {minWidth: 10, maxWidth: undefined, width: 100})
+                newMap.set(element.props.Key, { minWidth: 10, maxWidth: undefined, width: 100 })
             }
         });
 
         // If width is the same and keys are identical, we can skip the operation
-        if (currentTableWidth === oldWidthRef.current && 
+        if (currentTableWidth === oldWidthRef.current &&
             (
-                newMap.size === colWidthsRef.current.size && 
+                newMap.size === colWidthsRef.current.size &&
                 ![...newMap.keys()].some(key => !colWidthsRef.current.has(key))
             )
         ) return;
@@ -160,11 +131,11 @@ export function Table<T>(props: React.PropsWithChildren<ReactTableProps.ITable<T
             const measureKeys: string[] = [];
             React.Children.forEach(props.children, (element) => {
                 if (React.isValidElement(element) && IsColumnProps(element.props)) {
-                    let widthValue = getWidthfromProps(element.props, type as 'minWidth'|'width'|'maxWidth');
+                    let widthValue = getWidthfromProps(element.props, type as 'minWidth' | 'width' | 'maxWidth');
                     if (type === 'width' && widthValue == null)
                         widthValue = 'auto';
                     if (widthValue != null) {
-                        if (widthValue === 'auto') 
+                        if (widthValue === 'auto')
                             autoKeys.push(element.props.Key);
                         else {
                             const widthElement = document.createElement("div");
@@ -172,7 +143,7 @@ export function Table<T>(props: React.PropsWithChildren<ReactTableProps.ITable<T
                             widthElement.style.height = '0px';
                             if ((widthValue as string)?.length != null)
                                 widthElement.style.width = widthValue as string;
-                            else 
+                            else
                                 widthElement.style.width = `${widthValue}px`;
                             widthsContainer.appendChild(widthElement);
                             measureKeys.push(element.props.Key);
@@ -186,32 +157,32 @@ export function Table<T>(props: React.PropsWithChildren<ReactTableProps.ITable<T
             // Handle Measurements
             let autoSpace = currentTableWidth;
             measureKeys.forEach(key => {
-                const element = document.getElementById(key+"_measurement");
+                const element = document.getElementById(key + "_measurement");
                 const elementWidth = element?.getBoundingClientRect().width;
                 if (elementWidth != null) {
                     const widthObj = newMap.get(key);
                     if (widthObj != null) {
                         autoSpace -= elementWidth;
-                        widthObj[type as 'minWidth'|'width'|'maxWidth'] = elementWidth;
+                        widthObj[type as 'minWidth' | 'width' | 'maxWidth'] = elementWidth;
                     }
                     else console.error("Could not find width object for Key: " + key);
                 }
                 else console.error("Could not find measurement div with Key: " + key);
             });
             document.body.removeChild(widthsContainer);
-        
+
             // Handle Autos (width type only)
             if (type === 'width' && autoKeys.length > 0) {
                 const spacePerElement = autoSpace / autoKeys.length;
                 autoKeys.forEach(key => {
                     const widthObj = newMap.get(key);
                     if (widthObj != null)
-                         widthObj[type] = spacePerElement;
+                        widthObj[type] = spacePerElement;
                     else console.error("Could not find width object for Key: " + key);
                 });
             }
         });
-        
+
         let remainingSpace = currentTableWidth;
         [...newMap.keys()].forEach(key => {
             const widthObj = newMap.get(key);
@@ -219,17 +190,17 @@ export function Table<T>(props: React.PropsWithChildren<ReactTableProps.ITable<T
                 if (widthObj.minWidth <= remainingSpace) {
                     // This follows behavior consistent with MDN documentation on how these width types should behave
                     if (widthObj.minWidth > widthObj.width)
-                         widthObj.width = widthObj.minWidth;
+                        widthObj.width = widthObj.minWidth;
 
                     if (widthObj.maxWidth != null && widthObj.minWidth > widthObj.maxWidth)
-                         widthObj.maxWidth = widthObj.minWidth;
+                        widthObj.maxWidth = widthObj.minWidth;
 
                     if (widthObj.maxWidth != null && widthObj.width > widthObj.maxWidth)
-                         widthObj.width = widthObj.maxWidth;
+                        widthObj.width = widthObj.maxWidth;
 
                     // Constrain Width to remainingSpace
                     if (widthObj.width > remainingSpace)
-                         widthObj.width = remainingSpace;
+                        widthObj.width = remainingSpace;
 
                     remainingSpace -= widthObj.width;
                 }
@@ -244,31 +215,30 @@ export function Table<T>(props: React.PropsWithChildren<ReactTableProps.ITable<T
 
         colWidthsRef.current = newMap;
         oldWidthRef.current = currentTableWidth;
-        setTrigger(c => c+1);
+        setTrigger(c => c + 1);
     }, [props.children, currentTableWidth]);
 
-
-    const setTableWidth = React.useCallback(_.debounce(() => {
-        if (bodyRef.current == null) return;
-
-        // Note: certain body classes may break this check if they set overflow to scroll
-        let newScroll = false;
-        const dims = bodyRef.current?.getBoundingClientRect(); //use getBoundClientRect() to get un rounded values
-        if (props.TbodyStyle?.overflowY === 'scroll' || props.TbodyStyle?.overflow === 'scroll') newScroll = true;
-        else newScroll = dims?.height < bodyRef.current.scrollHeight
-        
-        setScrolled(newScroll);
-
-        // Pick whichever is larger so we dont double subtract
-        const scrollbar = newScroll ? GetScrollbarWidth() : 0;
-        const last = props.LastColumn !== undefined ? lastColumnWidth : 0;
-        const spacer = Math.max(scrollbar, last);
- 
-        setCurrentTableWidth((dims.width ?? 17) - spacer);
-    }, 100), []);
-    
     React.useEffect(() => {
         let resizeObserver: ResizeObserver;
+
+        const setTableWidth = () => {
+            if (bodyRef.current == null) return;
+
+            // Note: certain body classes may break this check if they set overflow to scroll
+            let newScroll = false;
+            const dims = bodyRef.current?.getBoundingClientRect(); //use getBoundClientRect() to get un rounded values
+            if (props.TbodyStyle?.overflowY === 'scroll' || props.TbodyStyle?.overflow === 'scroll') newScroll = true;
+            else newScroll = dims?.height < bodyRef.current.scrollHeight
+
+            setScrolled(newScroll);
+
+            // Pick whichever is larger so we dont double subtract
+            const scrollbar = newScroll ? GetScrollbarWidth() : 0;
+            const last = props.LastColumn !== undefined ? lastColumnWidth : 0;
+            const spacer = Math.max(scrollbar, last);
+
+            setCurrentTableWidth((dims.width ?? 17) - spacer);
+        }
 
         const intervalHandle = setInterval(() => {
             if (bodyRef?.current == null) return;
@@ -278,15 +248,15 @@ export function Table<T>(props: React.PropsWithChildren<ReactTableProps.ITable<T
             resizeObserver.observe(bodyRef.current);
             clearInterval(intervalHandle);
         }, 10);
-        
+
         return () => {
             clearInterval(intervalHandle);
             if (resizeObserver != null && resizeObserver.disconnect != null) resizeObserver.disconnect();
         };
-    }, []);
-    
+    }, [lastColumnWidth]);
+
     const handleSort = React.useCallback((data: { colKey: string; colField?: keyof T; ascending: boolean }, event: React.MouseEvent<HTMLElement, MouseEvent>) => {
-            if (data.colKey !== null) props.OnSort(data, event);
+        if (data.colKey !== null) props.OnSort(data, event);
     }, [props.OnSort]);
 
     return (
@@ -304,7 +274,9 @@ export function Table<T>(props: React.PropsWithChildren<ReactTableProps.ITable<T
                 SetFilters={props.SetFilters}
                 Filters={props.Filters}
                 Trigger={trigger}
-                TriggerRerender={() => setTrigger(c => c+1)}>
+                TriggerRerender={() => setTrigger(c => c + 1)}
+                SetLastColumnWidth={setLastColumnWidth}
+            >
                 {props.children}
             </Header>
             <Rows<T>
@@ -332,358 +304,5 @@ export function Table<T>(props: React.PropsWithChildren<ReactTableProps.ITable<T
                 ) : null
             }
         </table>
-    );
-}
-
-interface IRowProps<T> {
-    Data: T[];
-    RowStyle?: React.CSSProperties;
-    BodyStyle?: React.CSSProperties;
-    BodyClass?: string;
-    OnClick?: (
-        data: { colKey?: string; colField?: keyof T; row: T; data: T[keyof T] | null; index: number },
-        e: React.MouseEvent<HTMLElement, MouseEvent>,
-    ) => void;
-    DragStart?: (
-        data: { colKey: string; colField?: keyof T; row: T; data: T[keyof T] | null; index: number },
-        e: React.DragEvent<Element>,
-    ) => void;
-    Selected?: (data: T, index: number) => boolean;
-    KeySelector: (data: T, index?: number) => string | number;
-    BodyRef?: React.MutableRefObject<HTMLTableSectionElement | null>;
-    BodyScrolled: boolean;
-    ColWidths: React.MutableRefObject<Map<string, width>>;
-    Trigger: number;
-}
-    
-function Rows<T>(props: React.PropsWithChildren<IRowProps<T>>) {
-    const bodyStyle = React.useMemo(() => ({ ...props.BodyStyle, display: "block" }), [props.BodyStyle]);
-
-    const onClick = React.useCallback((e: React.MouseEvent<HTMLTableRowElement, MouseEvent>, item: T, index: number) => {
-        if (props.OnClick !== undefined)
-            props.OnClick(
-                {
-                    colKey: undefined,
-                    colField: undefined,
-                    row: item,
-                    data: null,
-                    index: index,
-                },
-                e,
-            );
-    }, [props.OnClick]);
-    
-    return (
-        <tbody style={bodyStyle} className={props.BodyClass} ref={props.BodyRef}>
-        {props.Data.map((d, i) => {
-            const style: React.CSSProperties = props.RowStyle !== undefined ? { ...props.RowStyle } : {};
-            
-            if (style.cursor === undefined && (props.OnClick !== undefined || props.DragStart !== undefined))
-                style.cursor = 'pointer';
-            
-            if (props.Selected !== undefined && props.Selected(d, i)) style.backgroundColor = 'var(--warning)';
-            
-            const key = props.KeySelector(d, i);
-            return (
-                <tr key={key} style={style} onClick={(e) => onClick(e, d, i)}>
-                    {React.Children.map(props.children, (element) => {
-                        if (!React.isValidElement(element)) return null;
-                        if (!IsColumnProps(element.props)) return null;
-                        const colWidth = props.ColWidths.current.get(element.props.Key);
-                        if (colWidth == null || colWidth.width === 0) return null;
-                        let cursor = undefined;
-                        if (element.props?.RowStyle?.cursor != null) cursor = element.props.RowStyle.cursor
-                        else if (props?.OnClick != null) {
-                            cursor = 'pointer';
-                        }
-                        else if (props?.DragStart != null) cursor = 'grab';
-                        const style = {
-                            ...defaultDataCellStyle,
-                            ...(element.props?.RowStyle), 
-                            width: colWidth.width, 
-                            cursor: cursor
-                        };
-                        return (
-                            <ColumnDataWrapper
-                                key={element.key}
-                                onClick={
-                                    (e) => {
-                                        if (props.OnClick == null) return;
-                                        return props.OnClick(
-                                            {
-                                                colKey: element.props.Key,
-                                                colField: element.props?.Field,
-                                                row: d,
-                                                data: d[element.props?.Field as keyof T],
-                                                index: i,
-                                            },
-                                            e,
-                                        )
-                                    }
-                                }
-                                dragStart={
-                                    props.DragStart == null ? undefined :
-                                    (e) => {
-                                        if (props.DragStart == null) return;
-                                        return props.DragStart(
-                                            {
-                                                colKey: element.props.Key,
-                                                colField: element.props?.Field,
-                                                row: d,
-                                                data: d[element.props?.Field as keyof T],
-                                                index: i,
-                                            },
-                                            e,
-                                        )
-                                    }
-                                }
-                                style={style}
-                                >
-                                {element.props?.Content != null
-                                    ? element.props.Content({
-                                        item: d,
-                                        key: element.props.Key,
-                                        field: element.props?.Field,
-                                        style: style,
-                                        index: i,
-                                    })
-                                    : element.props?.Field != null
-                                    ? d[element.props.Field as keyof T]
-                                    : null}
-                            </ColumnDataWrapper>
-                        );
-                    })}
-                </tr>
-            );
-        })}
-        </tbody>
-    );
-}
-
-interface IHeaderProps<T> {
-    Class?: string;
-    Style?: React.CSSProperties;
-    SortKey: string;
-    Ascending: boolean;
-    OnSort: (
-        data: { colKey: string; colField?: keyof T; ascending: boolean },
-        event: React.MouseEvent<HTMLElement, MouseEvent>,
-    ) => void;
-    ColWidths: React.MutableRefObject<Map<string, width>>;
-    TriggerRerender: ()=>void;
-    Trigger: number;
-    LastColumn?: string | React.ReactNode;
-    SetFilters?: (filters: Search.IFilter<T>[]) => void;
-    Filters?: Search.IFilter<T>[];
-}
-
-function Header<T>(props: React.PropsWithChildren<IHeaderProps<T>>) {
-    const headStyle = React.useMemo(() => ({ ...defaultHeadStyle, ...props.Style }), [props.Style]);
-
-    // Consts for adjustable columns
-    const [mouseDown, setMouseDown] = React.useState<number>(0);
-    const [currentKeys, setCurrentKeys] = React.useState<[string, string] | undefined>(undefined);
-    const [deltaW, setDeltaW] = React.useState<number>(0);
-    const [tentativeLimits, setTentativeLimits] = React.useState<{min: number, max: number}>({min: -Infinity, max: Infinity});
-
-    // Consts for filterable columns
-    const [filters, setFilters] = React.useState<Search.IFilter<T>[]>((props.Filters ?? []));
-    const [guid] = React.useState<string>(CreateGuid());
-
-    const getLeftKey = React.useCallback((key: string, colWidthsRef: React.MutableRefObject<Map<string, width>>) => {
-        // Filtering down to shown adjustables only
-
-        const mapCallback = (element: React.ReactNode) => {
-            if (!React.isValidElement(element))
-                return null;
-            const keyWidth = colWidthsRef.current.get(key)?.width;
-            if (keyWidth == null || keyWidth <= 0)
-                return null;
-            if (IsColumnProps(element.props) && IsColumnAdjustable(element.props))
-                return (element.props as ReactTableProps.IColumn<T>).Key;
-            return null;
-        }
-
-        const children = props.children ?? [];
-
-        const keys = (React.Children.map(children, mapCallback) ?? []).filter((item) => item !== null);
-
-        const index = keys.indexOf(key);
-        if (index <= 0) return undefined;
-
-        return keys[index - 1];
-    }, [props.children]);
-
-    const calculateDeltaLimits = React.useCallback((mapKeys: [string, string] | undefined, colWidthsRef: React.MutableRefObject<Map<string, width>>) => {
-        if (mapKeys === undefined) return ({min: -Infinity, max: Infinity});
-
-        const widthObjLeft = colWidthsRef.current.get(mapKeys[0]);
-        const widthObjRight = colWidthsRef.current.get(mapKeys[1]);
-
-        if (widthObjLeft == null || widthObjRight == null) return ({min: -Infinity, max: Infinity});
-
-        const limitByShrinkLeft = widthObjLeft.width - widthObjLeft.minWidth;
-        const limitByGrowthLeft = widthObjLeft.maxWidth == null ? Number.MAX_SAFE_INTEGER : (widthObjLeft.maxWidth - widthObjLeft.width);
-        const limitByShrinkRight = widthObjRight.width - widthObjRight.minWidth;
-        const limitByGrowthRight = widthObjRight.maxWidth == null ? Number.MAX_SAFE_INTEGER : (widthObjRight.maxWidth - widthObjRight.width);
-
-        // Recall that a left movement is a negative deltaW
-        const minDeltaW = -(limitByShrinkLeft < limitByGrowthRight ? limitByShrinkLeft : limitByGrowthRight);
-        const maxDeltaW = limitByShrinkRight < limitByGrowthLeft ? limitByShrinkRight : limitByGrowthLeft;
-
-        return ({min: minDeltaW, max: maxDeltaW});
-    }, []);
-
-    const getDeltaSign = React.useCallback((index: number) => {
-        // Recall that a left movement is a negative deltaW
-        if (index === 0) return 1;
-        else if (index === 1) return -1;
-        else return 0;
-    }, []);
-
-    const finishAdjustment = React.useCallback((adjustment: number, adjustKeys: [string,string], colWidthsRef: React.MutableRefObject<Map<string, width>>) => {
-        const deltaLimits = calculateDeltaLimits(adjustKeys, colWidthsRef);
-
-        let delta: number;
-        if (adjustment > deltaLimits.max) delta = deltaLimits.max;
-        else if (adjustment < deltaLimits.min) delta = deltaLimits.min;
-        else delta = adjustment;
-
-        if (Math.abs(delta) > 5) {
-            const leftWidthObj = colWidthsRef.current.get(adjustKeys[0]);
-            const rightWidthObj = colWidthsRef.current.get(adjustKeys[1]);
-            if (leftWidthObj == null || rightWidthObj == null) {
-                console.error(`Unable to finalize adjustment on keys ${adjustKeys[0]}, ${adjustKeys[1]}`);
-            }
-            else {
-                leftWidthObj.width += (getDeltaSign(0) * delta);
-                rightWidthObj.width += (getDeltaSign(1) * delta);
-            }
-        }
-
-        setMouseDown(0);
-        setTentativeLimits({min: -Infinity, max: Infinity});
-        setCurrentKeys(undefined);
-        setDeltaW(0);
-    }, [calculateDeltaLimits, getDeltaSign]);
-
-    const onMove = React.useCallback((e: MouseEvent) => {
-        if (currentKeys === undefined) return;
-        const w = e.screenX - mouseDown;
-        setDeltaW(w);
-    }, [mouseDown, currentKeys]);
-
-    const updateFilters = React.useCallback((flts: Search.IFilter<T>[], fld: string | number | symbol| undefined) => {
-        setFilters((fls) => {
-            const newFilters = fls.filter(item => item.FieldName !== fld).concat(flts);
-            if (props.SetFilters == null)
-                console.error("Attempted to set filters from column when no set filter arguement to table was provided. Data has not been filtered!");
-            else props.SetFilters(newFilters);
-            return newFilters;
-        });
-    }, [props.SetFilters]);
-
-    React.useEffect(() => setFilters(props.Filters ?? []), [props.Filters]);
-    
-    return (
-        <thead
-            className={props.Class}
-            style={headStyle}
-            onMouseMove={(e) => {
-                onMove(e.nativeEvent);
-                e.stopPropagation();
-            }}
-            onMouseUp={(e) => {
-                e.stopPropagation();
-                if (currentKeys == null) return;
-                finishAdjustment(deltaW, currentKeys, props.ColWidths);
-                props.TriggerRerender();
-            }}
-            onMouseLeave={(e) => {
-                e.stopPropagation();
-                if (currentKeys == null) return;
-                finishAdjustment(deltaW, currentKeys, props.ColWidths);
-                props.TriggerRerender();
-            }}
-        >
-        <tr style={{width: '100%', display: 'table'}}>
-        {React.Children.map(props.children, (element) => {
-            if (!React.isValidElement(element)) return null;
-            if (!IsColumnProps(element.props)) return null;
-            const colWidth = props.ColWidths.current.get(element.props.Key);
-            if (colWidth == null || colWidth.width === 0) return null;
-            // Handling temporary width changes due to being in mid-adjustments
-            let currentWidth = colWidth.width;
-            const keyIndex = currentKeys?.indexOf(element.props.Key) ?? -1;
-            if (keyIndex > -1) {
-                let delta: number;
-                if (deltaW > tentativeLimits.max) delta = tentativeLimits.max;
-                else if (deltaW < tentativeLimits.min) delta = tentativeLimits.min;
-                else delta = deltaW;
-                currentWidth += (getDeltaSign(keyIndex) * delta);
-            }
-            let cursor = undefined;
-            if (element.props?.HeaderStyle?.cursor != null) cursor = element.props.HeaderStyle.cursor
-            else if ((element.props?.AllowSort ?? true) as boolean) cursor = 'pointer';
-            const style = {
-                ...defaultDataHeadStyle,
-                ...element.props?.HeaderStyle,
-                width: currentWidth,
-                cursor: cursor
-            };
-            let startAdjustment: React.MouseEventHandler<HTMLDivElement> | undefined;
-            if (IsColumnAdjustable(element.props))
-                startAdjustment = (e) => {
-                    const leftKey = getLeftKey(element.props.Key, props.ColWidths);
-                    if (leftKey != null) {
-                        const newCurrentKeys: [string, string] = [leftKey, element.props.Key as string];
-                        setCurrentKeys(newCurrentKeys);
-                        setMouseDown(e.screenX);
-                        setTentativeLimits(calculateDeltaLimits(newCurrentKeys, props.ColWidths));
-                        setDeltaW(0);
-                    }
-
-                }
-                return (
-                    <ColumnHeaderWrapper
-                        onSort={(e) =>
-                            props.OnSort(
-                                { colKey: element.props.Key, colField: element.props?.Field, ascending: props.Ascending },
-                                e,
-                            )
-                        }
-                        sorted={props.SortKey === element.props.Key && (element.props?.AllowSort ?? true)}
-                        asc={props.Ascending}
-                        colKey={element.props.Key}
-                        key={element.props.Key}
-                        allowSort={element.props?.AllowSort}
-                        startAdjustment={startAdjustment}
-                        style={style}
-                    >
-                        {' '}
-                        {
-                            ((element as React.ReactElement).type === FilterableColumn) ?
-                                <FilterableColumnHeader
-                                    Label={element.props?.children}
-                                    Filter={filters.filter(f => f.FieldName === element.props?.Field?.toString())}
-                                    SetFilter={(f) => updateFilters(f, element.props?.Field)}
-                                    Field={element.props?.Field}
-                                    Type={element.props?.Type}
-                                    Options={element.props?.Enum}
-                                    ExpandedLabel={element.props?.ExpandedLabel}
-                                    Guid={guid}
-                                    Unit={element.props?.Unit}
-                                /> :
-                                (element.props.children ?? element.props.Key)
-                        }
-                        {' '}
-                    </ColumnHeaderWrapper>
-                );
-            })}
-        {props.LastColumn !== undefined ?
-            <th style={{ width: lastColumnWidth, padding: 0, maxWidth: lastColumnWidth }}>{props.LastColumn}</th> 
-        : null}
-        </tr>
-        </thead>
     );
 }
