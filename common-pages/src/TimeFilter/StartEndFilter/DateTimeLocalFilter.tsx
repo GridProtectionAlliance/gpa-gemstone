@@ -30,6 +30,7 @@ import { IFilterProps } from './StartEndFilter';
 const DateTimeLocalFilter = (props: IFilterProps) => {
     const FirstFallbackBreakpointQS = 1768;
     const SecondFallbackBreakpointQS = 612, FirstFallbacKBreakpointNoQS = 612;
+    const ModalBreakpointQS = 450;
 
     const [showQuickPickModal, setShowQuickPickModal] = React.useState<boolean>(false);
 
@@ -94,7 +95,6 @@ const DateTimeLocalFilter = (props: IFilterProps) => {
                 {props.ShowQuickSelects ?
                     <div className={quickSelectCol}>
                         <QuickSelects
-                            DateTimeSetting={'startEnd'}
                             Timezone={props.Timezone}
                             ActiveQP={props.ActiveQP}
                             SetActiveQP={props.SetActiveQP}
@@ -107,7 +107,7 @@ const DateTimeLocalFilter = (props: IFilterProps) => {
             </div>
         )
     }
-    else if (props.ContainerWidth > SecondFallbackBreakpointQS) {
+    else if (props.ContainerWidth > ModalBreakpointQS) {
         return (
             <div className='row m-0'>
                 <div className={startEndCol}>
@@ -140,7 +140,7 @@ const DateTimeLocalFilter = (props: IFilterProps) => {
                     {props.ShowQuickSelects ?
                         <div className={quickSelectCol}>
                             <QuickSelects
-                                DateTimeSetting={'startEnd'}
+                                SplitSelects={true}
                                 Timezone={props.Timezone}
                                 ActiveQP={props.ActiveQP}
                                 SetActiveQP={props.SetActiveQP}
@@ -202,7 +202,7 @@ const DateTimeLocalFilter = (props: IFilterProps) => {
                         >
                             <div className={quickSelectCol}>
                                 <QuickSelects
-                                    DateTimeSetting={'startEnd'}
+                                    SplitSelects={true}
                                     Timezone={props.Timezone}
                                     ActiveQP={props.ActiveQP}
                                     SetActiveQP={props.SetActiveQP}
