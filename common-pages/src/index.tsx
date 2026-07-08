@@ -42,6 +42,7 @@ import ReadOnlyGenericSlice from './Gemstone/GenericSlices/ReadOnlyGenericSlice'
 import ReadWriteGenericSlice from './Gemstone/GenericSlices/ReadWriteGenericSlice';
 import { useInitializeWithFetch } from './Gemstone/GenericSlices/useInitializeData';
 import { ReadOnlyControllerFunctions, ReadWriteControllerFunctions } from './Gemstone/ControllerFunctions';
+import useSearchData from './Gemstone/Hooks/useSearchData';
 
 const Pipelines = {
   CSV: useCSVPipeline
@@ -74,5 +75,6 @@ export {
   ReadWriteGenericSlice as ReadWriteGenericSlice_Gemstone,
   useInitializeWithFetch as useInitializeWithFetch_Gemstone,
   ReadOnlyControllerFunctions as ReadOnlyControllerFunctions_Gemstone,
-  ReadWriteControllerFunctions as ReadWriteControllerFunctions_Gemstone
+  ReadWriteControllerFunctions as ReadWriteControllerFunctions_Gemstone,
+  useSearchData as useSearchData_Gemstone
 };
