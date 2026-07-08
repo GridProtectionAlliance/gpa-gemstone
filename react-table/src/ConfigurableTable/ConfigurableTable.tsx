@@ -286,63 +286,22 @@ function ColumnSelection(props: IColSelectionProps) {
     return (
         <>
             <div className="row">
-                <div className="col-4">
-                    {props.columns.map((c: IColDesc, i: number) =>
-                        i % 3 == 0 ? (
-                            <CheckBox
-                                Label={c.Label}
-                                Field={'Enabled'}
-                                Record={c}
-                                Setter={() => props.onChange(c.Key)}
-                                key={c.Key}
-                                Disabled={
-                                    c.Key === props.sortKey ||
-                                    (props.disableAdd && !c.Enabled) ||
-                                    (isOnlyOneEnabled && c.Enabled)
-                                }
-                                Help={helpMessage(c)}
-                            />
-                        ) : null,
-                    )}
-                </div>
-                <div className="col-4">
-                    {props.columns.map((c: IColDesc, i: number) =>
-                        i % 3 == 1 ? (
-                            <CheckBox
-                                Label={c.Label}
-                                Field={'Enabled'}
-                                Record={c}
-                                Setter={() => props.onChange(c.Key)}
-                                key={c.Key}
-                                Disabled={
-                                    c.Key === props.sortKey ||
-                                    (props.disableAdd && !c.Enabled) ||
-                                    (isOnlyOneEnabled && c.Enabled)
-                                }
-                                Help={helpMessage(c)}
-                            />
-                        ) : null,
-                    )}
-                </div>
-                <div className="col-4">
-                    {props.columns.map((c: IColDesc, i: number) =>
-                        i % 3 == 2 ? (
-                            <CheckBox
-                                Label={c.Label}
-                                Field={'Enabled'}
-                                Record={c}
-                                Setter={() => props.onChange(c.Key)}
-                                key={c.Key}
-                                Disabled={
-                                    c.Key === props.sortKey ||
-                                    (props.disableAdd && !c.Enabled) ||
-                                    (isOnlyOneEnabled && c.Enabled)
-                                }
-                                Help={helpMessage(c)}
-                            />
-                        ) : null,
-                    )}
-                </div>
+                {props.columns.map((c: IColDesc) =>
+                    <div className="col-4" key={c.Key}>
+                        <CheckBox
+                            Label={c.Label}
+                            Field={'Enabled'}
+                            Record={c}
+                            Setter={() => props.onChange(c.Key)}
+                            Disabled={
+                                c.Key === props.sortKey ||
+                                (props.disableAdd && !c.Enabled) ||
+                                (isOnlyOneEnabled && c.Enabled)
+                            }
+                            Help={helpMessage(c)}
+                        />
+                    </div>
+                )}
             </div>
             {props.disableAdd ?
                 <Alert Class='alert-primary' Style={{ marginBottom: 0, marginTop: '0.5em' }}>Additional columns disabled due to table size.</Alert>
