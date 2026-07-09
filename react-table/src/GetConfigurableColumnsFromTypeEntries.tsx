@@ -21,6 +21,7 @@
 //
 //******************************************************************************************************
 import * as React from 'react';
+import * as _ from 'lodash';
 import { Column } from './Table/Column';
 import * as moment from 'moment';
 import { Gemstone } from '@gpa-gemstone/application-typings';
@@ -32,7 +33,7 @@ const getTypedEntries = <T,>(obj: T): Array<[keyof T, T[keyof T]]> => {
 }
 
 export const GetConfigurableColumnsFromTypeEntries = <T,>(recordFields: Gemstone.TSX.Interfaces.IRecordFields<T>, timeFormat: string, configurable = true) => {
-    return getTypedEntries(recordFields)
+    return _.sortBy(getTypedEntries(recordFields), ([key, value]) => value?.Label ?? key as string)
         .map(([key, value]) => {
             if (value == null) return null
             if (configurable)
