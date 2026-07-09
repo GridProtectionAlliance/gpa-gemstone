@@ -22,7 +22,7 @@
 //******************************************************************************************************
 import * as React from 'react';
 import { Column } from './Table/Column';
-import moment from 'moment';
+import * as moment from 'moment';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import ConfigurableColumn from './ConfigurableTable/ConfigurableColumn';
@@ -44,7 +44,7 @@ export const GetConfigurableColumnsFromTypeEntries = <T,>(recordFields: Gemstone
                             Field={key as keyof T}
                             Content={({ item }) => getContent(item, key as keyof T, value, timeFormat)}
                         >
-                            {value.Label ?? key}
+                            {(value.Label ?? key) as string}
                         </Column>
                     </ConfigurableColumn>
                 )
@@ -55,20 +55,20 @@ export const GetConfigurableColumnsFromTypeEntries = <T,>(recordFields: Gemstone
                     Field={key as keyof T}
                     Content={({ item }) => getContent(item, key as keyof T, value, timeFormat)}
                 >
-                    {value.Label ?? key}
+                    {(value.Label ?? key) as string}
                 </Column>
             )
         })
 }
 
-const getContent = <T,>(record: T, field: keyof T, recordValue: Gemstone.TSX.Interfaces.IRecordField<T>, timeFormat: string) => {
+const getContent = <T,>(record: T, field: keyof T, recordValue: Gemstone.TSX.Interfaces.IRecordField<T>, timeFormat: string): React.ReactNode => {
     if (field === 'CreatedOn' || field == 'UpdatedOn')
-        return moment.utc(record[field as string]).format(timeFormat)
+        return moment.utc(record[field] as string).format(timeFormat);
 
     if (typeof record[field] === 'boolean')
         return record[field] ? <ReactIcons.CheckMark Color='green' /> : <ReactIcons.CrossMark Color='red' />
 
-    if (recordValue.Content == null) return record[field]
+    if (recordValue.Content == null) return record[field] as React.ReactNode;
 
     return recordValue.Content(record);
 };
