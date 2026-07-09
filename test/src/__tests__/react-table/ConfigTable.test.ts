@@ -195,7 +195,8 @@ describe.each(testIDS)('%s', (desc, testID) => {
         await driver.sleep(500); // removes flakieness. gives time for cols to fully adjust
 
         const totalCols = 4;
-        const settingsIconColWidth = 17;
+        // Config column sizes to the max-content width of the settings icon
+        const settingsIconColWidth = parseFloat(await tableCols[4].getCssValue('width'));
 
         const expectedTitleWidth = (tableTestContainerWidth - settingsIconColWidth) * 0.5;
 
