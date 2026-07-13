@@ -1,5 +1,5 @@
 //  ******************************************************************************************************
-//  Table.tsx - Gbtc
+//  Header.tsx - Gbtc
 //
 //  Copyright © 2023, Grid Protection Alliance.  All Rights Reserved.
 //

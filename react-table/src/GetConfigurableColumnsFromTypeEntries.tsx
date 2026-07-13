@@ -1,5 +1,5 @@
 //******************************************************************************************************
-//  RecordTable.tsx - Gbtc
+//  GetConfigurableColumnsFromTypeEntries.tsx - Gbtc
 //
 //  Copyright (c) 2024, Grid Protection Alliance.  All Rights Reserved.
 //

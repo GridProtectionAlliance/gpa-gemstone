@@ -1,5 +1,5 @@
 //  ******************************************************************************************************
-//  Table.tsx - Gbtc
+//  Rows.tsx - Gbtc
 //
 //  Copyright © 2023, Grid Protection Alliance.  All Rights Reserved.
 //
