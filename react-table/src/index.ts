@@ -30,11 +30,15 @@ import { Column } from './Table/Column';
 import FilterableColumn from './Table/FilterableColumn';
 import ConfigurableTable from './ConfigurableTable/ConfigurableTable';
 import ConfigurableColumn from './ConfigurableTable/ConfigurableColumn';
+import { GetConfigurableColumnsFromTypeEntries } from './GetConfigurableColumnsFromTypeEntries';
 
 export {
 	ReactTableProps,
-	Table, Column,
+	Table,
+	Column,
 	FilterableColumn,
-	ConfigurableTable, ConfigurableColumn,
-	Paging
+	ConfigurableTable,
+	ConfigurableColumn,
+	Paging,
+	GetConfigurableColumnsFromTypeEntries
 }

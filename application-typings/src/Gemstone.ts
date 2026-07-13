@@ -28,7 +28,7 @@ namespace Gemstone {
             export type BulkUploadStep = ('Upload' | 'Process' | 'Review' | 'Complete')
             export type Accuracy = ('minute' | 'second' | 'millisecond');
             export type ScreenSize = 'xs' | "sm" | 'md' | 'lg' | 'xl'
-            export type QuickSelectRange = 'cycles' | 'short' | 'medium' | 'long' | 'full' 
+            export type QuickSelectRange = 'cycles' | 'short' | 'medium' | 'long' | 'full'
             export type DateUnit = 'datetime-local' | 'date' | 'time'
         }
         export namespace Interfaces {
@@ -212,6 +212,23 @@ namespace Gemstone {
                 /** Starting node ID */
                 RootId: string;
             }
+            
+            export interface IRecordField<R> {
+                AllowSort: boolean,
+                IsDefaultColumn: boolean,
+                Label?: string,
+                Content?: (item: R) => JSX.Element,
+                /**
+                 * Function to convert the field value to a string for export purposes
+                 * @param item The record being exported
+                 * @returns The string representation of the field value for export
+                 */
+                ExportConverter?: (item: R) => string
+            }
+
+            export type IRecordFields<T> = {
+                [K in keyof T]?: IRecordField<T>;
+            };
 
         }
     }

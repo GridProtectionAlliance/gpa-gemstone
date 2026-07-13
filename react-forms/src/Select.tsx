@@ -50,6 +50,10 @@ interface IProps<T> extends Omit<Gemstone.TSX.Interfaces.IBaseFormProps<T>, 'Set
     * @param record - Updated Record
   */
   Setter: (record: T, selectedOption: Gemstone.TSX.Interfaces.ILabelValue<string | number>) => void;
+  /**
+   * Optional CSS styles to apply to the select component
+   */
+  Style?: React.CSSProperties;
 }
 
 export default function Select<T>(props: IProps<T>) {
@@ -90,7 +94,7 @@ export default function Select<T>(props: IProps<T>) {
   const label = props.Label === undefined ? props.Field as string : props.Label;
 
   return (
-    <div className="form-group">
+    <div className="form-group" style={props.Style}>
       {/* Rendering label and optional help icon */}
       {showLabel ?
         <label className="d-flex align-items-center">

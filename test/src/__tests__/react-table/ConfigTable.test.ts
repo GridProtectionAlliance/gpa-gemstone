@@ -189,13 +189,25 @@ describe.each(testIDS)('%s', (desc, testID) => {
         expect(configIcon).toBeDefined();
     });
 
+    it('Measures the settings column from the cog width', async () => {
+        const tableCols = await driver.findElements(By.css(`${tableSelector} thead tr th`));
+        const settingsColumn = tableCols[4];
+        const settingsCog = await settingsColumn.findElement(By.css('svg.feather-file-text'));
+
+        const settingsColumnWidth = parseFloat(await settingsColumn.getCssValue('width'));
+        const settingsCogWidth = parseFloat(await settingsCog.getCssValue('width'));
+
+        expect(settingsColumnWidth).toBeCloseTo(settingsCogWidth, 1);
+    });
+
     it('Renders col widths correctly', async () => {
         const tableCols = await driver.findElements(By.css(`${tableSelector} thead tr th`));
         const titleCol = tableCols[0];
         await driver.sleep(500); // removes flakieness. gives time for cols to fully adjust
 
         const totalCols = 4;
-        const settingsIconColWidth = 17;
+        // Config column sizes to the max-content width of the settings icon
+        const settingsIconColWidth = parseFloat(await tableCols[4].getCssValue('width'));
 
         const expectedTitleWidth = (tableTestContainerWidth - settingsIconColWidth) * 0.5;
 
