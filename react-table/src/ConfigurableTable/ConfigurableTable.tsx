@@ -31,6 +31,7 @@ import { CheckBox, ToolTip } from '@gpa-gemstone/react-forms';
 import * as _ from 'lodash';
 import ConfigurableColumn from './ConfigurableColumn';
 
+/** Extends table options with configurable-column behavior. */
 interface ITableProps<T> extends ReactTableProps.ITable<T> {
     /**
      * Optional stacking order applied to the column settings modal.
@@ -51,10 +52,15 @@ interface ITableProps<T> extends ReactTableProps.ITable<T> {
     LocalStorageKey?: string;
 }
 
+/** Describes a column shown in the column-selection dialog. */
 interface IColDesc {
+    /** Indicates whether the column is enabled by default. */
     Default: boolean;
+    /** Label displayed for the column. */
     Label: string;
+    /** Indicates whether the column is currently enabled. */
     Enabled: boolean;
+    /** Unique key identifying the column. */
     Key: string;
 }
 /**
@@ -265,6 +271,7 @@ export default function ConfigurableTable<T>(props: React.PropsWithChildren<ITab
         </>
     );
 }
+/** Defines the available columns and actions for the column-selection dialog. */
 interface IColSelectionProps<> {
     /**
      * Optional keys for columns that cannot be hidden.

@@ -22,6 +22,7 @@
 // ******************************************************************************************************
 import * as React from 'react';
 
+/** Defines the shared appearance options for Gemstone SVG icons. */
 interface IProps {
     /**
      * Optional width and height applied to the icon, defaulting to 24 pixels.

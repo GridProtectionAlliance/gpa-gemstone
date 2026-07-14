@@ -29,12 +29,17 @@ import momentTZ from 'moment-timezone';
 import { Gemstone } from '@gpa-gemstone/application-typings'
 import { TimeUnit } from './TimeWindowUtils';
 
+/** Defines a predefined time range available for quick selection. */
 interface IQuickSelect {
+    /** Label displayed for the quick selection. */
     label: string,
+    /** Determines whether the quick selection is hidden for a range. */
     hideQuickPick: (quickSelectRange?: Gemstone.TSX.Types.QuickSelectRange) => boolean,
+    /** Creates the time filter represented by the quick selection. */
     createFilter: (timeZone: string, format?: Gemstone.TSX.Types.DateUnit) => ITimeFilter,
 }
 
+/** Configures the available time-range quick selections. */
 interface IProps {
     /**
      * Time filter mode that determines the quick-select layout.
@@ -779,6 +784,7 @@ export const AvailableQuickSelects: IQuickSelect[] = [
     }
 ]
 
+/** Configures the optional row wrapper around quick-selection content. */
 interface IContainerProps {
     /**
      * Controls whether the child content is wrapped in a centered row.

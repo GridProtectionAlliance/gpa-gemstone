@@ -22,6 +22,7 @@
 
 import * as React from 'react';
 
+/** Configures a drawer displayed beside split-layout content. */
 interface IProps {
     /**
      * Minimum width as a percentage of the split container.

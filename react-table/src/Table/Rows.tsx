@@ -30,12 +30,17 @@ import * as _ from 'lodash';
 import * as ReactTableProps from './Types';
 import { ColumnDataWrapper } from './Column';
 
+/** Defines the current and minimum width allocated to a table column. */
 export type width = {
+    /** Current rendered width of the column, in pixels. */
     width: number,
+    /** Minimum width permitted for the column, in pixels. */
     minWidth: number,
+    /** Optional maximum width permitted for the column, in pixels. */
     maxWidth?: number
 }
 
+/** Defines the records, columns, and interaction behavior rendered by table rows. */
 interface IProps<T> {
     /**
      * Records rendered as table rows.

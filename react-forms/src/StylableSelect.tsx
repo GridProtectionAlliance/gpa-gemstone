@@ -29,14 +29,21 @@ import { Gemstone } from '@gpa-gemstone/application-typings';
 import * as _ from 'lodash';
 import HelpIcon from './HelpIcon';
 
+/** Describes a value and presentation metadata shown in the stylable select. */
 export interface IOption {
+  /** Value applied when the option is selected. */
   Value: any;
+  /** Element or text rendered for the option. */
   Element: React.ReactElement<any> | string,
+  /** Optional CSS class applied to the option row. */
   RowClass?: string;
+  /** Optional inline styles applied to the option row. */
   RowStyle?: React.CSSProperties;
+  /** Optional flag that prevents the option from being selected. */
   Disabled?: boolean;
 }
 
+/** Defines record binding and option presentation for the stylable select. */
 interface IProps<T> {
   /**
    * Optional callback that determines whether the selected field value is valid.

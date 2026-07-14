@@ -24,7 +24,9 @@
 import { MultiSearchableSelect } from '@gpa-gemstone/react-forms'
 import React from 'react'
 
+/** Defines the record edited by the Multi Searchable Select test fixture. */
 interface IExampleRecord {
+    /** Selected option values edited by the fixture. */
     Selections: number[]
 }
 

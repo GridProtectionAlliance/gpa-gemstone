@@ -25,6 +25,7 @@ import * as React from 'react';
 import {CreateGuid} from '@gpa-gemstone/helper-functions';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 
+/** Defines record binding and choices for the array-backed checkbox group. */
 interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
   /**
    * Choices rendered as checkboxes, using each ID as the stored field value.

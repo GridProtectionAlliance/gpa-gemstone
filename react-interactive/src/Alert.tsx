@@ -22,6 +22,7 @@
 //******************************************************************************************************
 import * as React from 'react';
 
+/** Configures the alert message, style, and dismissal behavior. */
 interface IProps {
     /**
      * Optional Bootstrap contextual class applied to the alert, defaulting to `alert-dark`.

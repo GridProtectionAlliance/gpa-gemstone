@@ -27,37 +27,59 @@ import { Draft } from 'immer';
 import { Application } from '@gpa-gemstone/application-typings';
 import { Gemstone } from '../Gemstone';
 
+/** Maps slice names to their read-only state. */
 type ThunkState<T> = Record<string, IState<T>>;
 
+/** Describes an error produced by a slice operation. */
 export interface IError {
+    /** Human-readable error message. */
     Message: string,
+    /** Slice operation that failed. */
     Action: 'FETCH' | 'UPDATE' | 'ADD' | 'DELETE'
+    /** Time at which the error occurred. */
     Time: string
 }
 
+/** Stores the records, paging, sorting, and request state of a read-only slice. */
 export interface IState<T> {
+    /** Current status of the fetch request. */
     FetchStatus: Application.Types.Status,
+    /** Records loaded by the slice. */
     Data: T[],
 
+    /** Field used to sort loaded records. */
     SortField: keyof T,
+    /** Whether loaded records are sorted in ascending order. */
     Ascending: boolean,
+    /** Search conditions applied to the fetch request. */
     Filter: Gemstone.Types.ISearchFilter<T>[],
+    /** Paging totals for the loaded records. */
     PageInfo: Gemstone.Types.IPageInfo,
 
+    /** Optional parent identifier used to scope loaded records. */
     ParentID: string | number | null,
 
+    /** Identifiers of records with active operations. */
     ActiveID: string[],
+    /** Most recent slice error, when present. */
     Error: (IError | null),
 }
 
+/** Supplies optional paging, sorting, and filtering overrides to a fetch request. */
 export interface IFetchThunkArg<T> {
+    /** Optional field used to sort the fetched records. */
     sortField?: keyof T,
+    /** Optional sort direction for the fetched records. */
     ascending?: boolean,
+    /** Optional parent identifier used to scope the fetch. */
     parentID?: string | number,
+    /** Optional search conditions applied to the fetch. */
     filter?: Gemstone.Types.ISearchFilter<T>[]
 }
 
+/** Contains records returned by a read-only fetch request. */
 export interface IReadOnlyThunkReturn<T> {
+    /** Records returned by the request. */
     Data: T[],
 }
 

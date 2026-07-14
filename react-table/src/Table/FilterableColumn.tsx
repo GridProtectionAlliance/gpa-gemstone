@@ -37,6 +37,7 @@ export default function FilterableColumn<T>(props: React.PropsWithChildren<React
     return <>{props.children}</>
 }
 
+/** Defines a filterable column header's content and filter behavior. */
 export interface IHeaderProps<T> {
     /**
      * Content shown as the column heading.

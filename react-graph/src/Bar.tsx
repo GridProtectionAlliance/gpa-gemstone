@@ -25,6 +25,7 @@ import * as React from 'react';
 import { GraphContext, AxisIdentifier, AxisMap, IDataSeries } from './GraphContext';
 import DataLegend from './DataLegend';
 
+/** Defines the position, value, and presentation of a graph bar. */
 export interface IBarProps {
     /**
      * Y-axis values used as boundaries for the stacked bar segments.
@@ -63,8 +64,10 @@ export interface IBarProps {
     GetBarStyle?: (yValues: [number, number], index: number) => IBarStyle
 }
 
+/** Identifies a supported bar fill treatment. */
 type FillStyles = 'Hatched' | 'Solid' | undefined;
 
+/** Defines visual styling returned for an individual bar. */
 export interface IBarStyle {
     /**
      * Optional opacity applied to a bar segment, defaulting to 0.5.

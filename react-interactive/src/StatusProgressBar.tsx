@@ -22,6 +22,7 @@
 
 import * as React from 'react';
 
+/** Configures a progress bar driven by an application status. */
 interface IProps {
     /**
     * Current completion percentage used for the bar width and accessible value.

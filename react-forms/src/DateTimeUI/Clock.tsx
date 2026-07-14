@@ -26,6 +26,7 @@ import * as moment from 'moment';
 import { IsInteger } from '@gpa-gemstone/helper-functions'
 import { Gemstone } from '@gpa-gemstone/application-typings';
 
+/** Defines the selected time and update behavior for the clock editor. */
 interface IProps {
     /**
      * Date and time whose clock fields are displayed and edited.
@@ -42,6 +43,7 @@ interface IProps {
     Accuracy?: Gemstone.TSX.Types.Accuracy
 }
 
+/** Identifies the time unit currently being edited. */
 type Parameter = ('h' | 'm' | 's' | 'ms');
 
 /**
@@ -263,5 +265,3 @@ const TimeInput = (props: { value: string, setValue: (v: string) => void, max: n
 
 
 }
-
-

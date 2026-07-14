@@ -35,6 +35,7 @@ import { useGetContainerPosition } from '@gpa-gemstone/helper-functions';
 import SideBarContent from "./SideBarContent";
 import HeaderContent from "./HeaderContent";
 
+/** Configures the application shell, navigation, and page content. */
 interface IProps {
     /** 
      * Root path prepended to every application route.
@@ -99,11 +100,15 @@ interface IProps {
     NavBarImgStyle?: React.CSSProperties
 }
 
+/** Exposes references to the application shell's primary layout elements. */
 export interface IApplicationRefs {
+    /** Reference to the main application content element. */
     mainDiv: HTMLDivElement | null;
+    /** Reference to the navigation bar element. */
     navBarDiv: HTMLDivElement | null;
 }
 
+/** Configures the styled main-content container. */
 interface IMainDivProps {
     /**
      * Horizontal offset in pixels reserved for the sidebar.

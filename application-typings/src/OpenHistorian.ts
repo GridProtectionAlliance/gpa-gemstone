@@ -23,21 +23,99 @@
 
 namespace OpenHistorian{
     export namespace Types{
+        /** Represents the historian data contract. */
         export interface iHistorian {
-            NodeID: string, ID: string, Acronym: string, Name: string,
-            AssemblyName: string, TypeName: string, ConnectionString: string, IsLocal: boolean, MeasurementReportingInterval: number, Description: string,
-            LoadOrder: number, Enabled: boolean, CreatedOn: string, CreatedBy: string, UpdatedOn: string, UpdatedBy: string
+            /** Identifier of the associated node. */
+            NodeID: string,
+            /** Unique identifier for the record. */
+            ID: string,
+            /** Acronym associated with the record. */
+            Acronym: string,
+            /** Name displayed for the record. */
+            Name: string,
+            /** Assembly Name associated with the record. */
+            AssemblyName: string,
+            /** Type Name associated with the record. */
+            TypeName: string,
+            /** Connection String associated with the record. */
+            ConnectionString: string,
+            /** Indicates whether local. */
+            IsLocal: boolean,
+            /** Measurement Reporting Interval associated with the record. */
+            MeasurementReportingInterval: number,
+            /** Description of the record. */
+            Description: string,
+            /** Load Order associated with the record. */
+            LoadOrder: number,
+            /** Indicates whether the record is enabled. */
+            Enabled: boolean,
+            /** Created On associated with the record. */
+            CreatedOn: string,
+            /** Created By associated with the record. */
+            CreatedBy: string,
+            /** Updated On associated with the record. */
+            UpdatedOn: string,
+            /** Updated By associated with the record. */
+            UpdatedBy: string
         }
+        /** Represents the active Measurement data contract. */
         export interface iActiveMeasurement {
-            NodeID: string, SourceNodeID: string, ID: string, SignalID: string, PointTag: string, AlternateTag: string,
-            SignalReference: string, Internal: boolean, Subscribed: boolean, Device: string, DeviceID: number, FramesPerSecond: number,
-            Protocol: string, SignalType: SignalType, EngineeringUnits: string, PhasorID: number, PhasorType: string, Phase: Phase,
-            Adder: number, Multiplier: number, Company: string, Longitude: number, Latitude: number, Description: string,
+            /** Identifier of the associated node. */
+            NodeID: string,
+            /** Identifier of the associated source Node. */
+            SourceNodeID: string,
+            /** Unique identifier for the record. */
+            ID: string,
+            /** Identifier of the associated signal. */
+            SignalID: string,
+            /** Point Tag associated with the record. */
+            PointTag: string,
+            /** Alternate Tag associated with the record. */
+            AlternateTag: string,
+            /** Signal Reference associated with the record. */
+            SignalReference: string,
+            /** Internal associated with the record. */
+            Internal: boolean,
+            /** Subscribed associated with the record. */
+            Subscribed: boolean,
+            /** Device associated with the record. */
+            Device: string,
+            /** Identifier of the associated device. */
+            DeviceID: number,
+            /** Frames Per Second associated with the record. */
+            FramesPerSecond: number,
+            /** Protocol associated with the record. */
+            Protocol: string,
+            /** Signal Type associated with the record. */
+            SignalType: SignalType,
+            /** Engineering Units associated with the record. */
+            EngineeringUnits: string,
+            /** Identifier of the associated phasor. */
+            PhasorID: number,
+            /** Phasor Type associated with the record. */
+            PhasorType: string,
+            /** Phase associated with the record. */
+            Phase: Phase,
+            /** Adder associated with the record. */
+            Adder: number,
+            /** Multiplier associated with the record. */
+            Multiplier: number,
+            /** Company associated with the record. */
+            Company: string,
+            /** Longitude associated with the record. */
+            Longitude: number,
+            /** Latitude associated with the record. */
+            Latitude: number,
+            /** Description of the record. */
+            Description: string,
+            /** Updated On associated with the record. */
             UpdatedOn: string
         }
     
         
+        /** Defines the supported signal Type values. */
         export type SignalType = 'IPHM' | 'IPHA' | 'VPHM' | 'VPHA' | 'FREQ' | 'DFDT' | 'ALOG' | 'FLAG' | 'DIGI' | 'CALC' | 'STAT' | 'ALARM' | 'QUAL'
+        /** Defines the supported phase values. */
         export type Phase = 'A' | 'B' | 'C' | '+' | '-' | '0' | 'None' 
     }
     

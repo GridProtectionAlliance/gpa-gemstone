@@ -26,6 +26,7 @@ import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 import HelpIcon from './HelpIcon';
 
+/** Defines record binding and nested nodes for the multi-node form. */
 interface IProps<T, U> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
     /**
      * Item appended when the user adds a new row.

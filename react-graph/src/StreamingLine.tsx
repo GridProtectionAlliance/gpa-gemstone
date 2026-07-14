@@ -26,6 +26,7 @@ import { InternalLine } from './Line';
 import { PointNode } from './PointNode';
 import { IProps as ILineProps } from './Line';
 
+/** Defines line properties and streaming update behavior. */
 interface IProps extends ILineProps {
     /** Interval in seconds between attempts to refresh the line. */
     Interval: number

@@ -27,6 +27,7 @@ import { CreateGuid } from '@gpa-gemstone/helper-functions'
 import { Gemstone } from '@gpa-gemstone/application-typings';
 import HelpIcon from './HelpIcon';
 
+/** Defines record binding and text-area behavior for the form control. */
 export interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
   /**
    * Number of visible text rows in the control.

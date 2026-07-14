@@ -29,6 +29,7 @@ import FilterRow from './FilterRow';
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import { CreateGuid, useStringMemonization } from '@gpa-gemstone/helper-functions';
 
+/** Configures searchable fields, active filters, and search actions. */
 interface IProps<T> {
     /**
      * Fields available for quick searches and filter creation.
@@ -99,14 +100,47 @@ interface IProps<T> {
     OverrideFilterEquality?: (newFilters: Search.IFilter<T>[], oldFilters: Search.IFilter<T>[]) => boolean
 }
 
-export interface IOptions { Value: string, Label: string }
+/** Represents an option available to an enumerated search field. */
+export interface IOptions {
+    /** Value submitted for the option. */
+    Value: string,
+    /** Label displayed for the option. */
+    Label: string
+}
+/** Loads the options available to an enumerated search field. */
 export type EnumSetter<T> = (setOptions: (options: IOptions[]) => void, field: Search.IField<T>) => () => void
 
 export namespace Search {
+    /** Data types supported by searchable fields. */
     export type FieldType = ('string' | 'number' | 'enum' | 'integer' | 'datetime' | 'boolean' | 'date' | 'time' | "query")
-    export interface IField<T> { label: string, key: string, type: FieldType, enum?: IOptions[], isPivotField: boolean }
+    /** Describes a record field available for searching. */
+    export interface IField<T> {
+        /** Label displayed for the field. */
+        label: string,
+        /** Record key searched by the field. */
+        key: string,
+        /** Data type used to edit and compare the field. */
+        type: FieldType,
+        /** Optional choices available to an enumerated field. */
+        enum?: IOptions[],
+        /** Whether the field represents a pivoted column. */
+        isPivotField: boolean
+    }
+    /** Comparison operators supported by search filters. */
     export type OperatorType = ('=' | '<>' | '>' | '<' | '>=' | '<=' | 'LIKE' | 'NOT LIKE' | 'IN' | 'NOT IN')
-    export interface IFilter<T> { FieldName: string, SearchText: string, Operator: Search.OperatorType, Type: Search.FieldType, IsPivotColumn: boolean }
+    /** Describes one comparison applied by a structured search. */
+    export interface IFilter<T> {
+        /** Name of the record field being compared. */
+        FieldName: string,
+        /** User-entered value used by the comparison. */
+        SearchText: string,
+        /** Comparison operator applied to the field. */
+        Operator: Search.OperatorType,
+        /** Data type used to interpret the search text. */
+        Type: Search.FieldType,
+        /** Whether the field represents a pivoted column. */
+        IsPivotColumn: boolean
+    }
 }
 
 /**

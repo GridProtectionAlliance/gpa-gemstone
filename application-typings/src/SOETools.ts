@@ -30,35 +30,168 @@ namespace SOETools {
     }
     
     export namespace Types {
+        /** Defines the supported measurement Type Name values. */
         export type MeasurementTypeName = 'Voltage' | 'Current';
+        /** Defines the supported measurement Characteristic Name values. */
         export type MeasurementCharacteristicName = 'AngleFund' | 'WaveAmplitude' | 'WaveError' | 'RMS'| 'Instantaneous';
+        /** Defines the supported phase Name values. */
         export type PhaseName = 'AN' | 'BN' | 'CN' | 'IN' | 'RES' | 'General1' | 'General2' | 'General3' | 'Worst';
     
-        export interface Channel { ID: number, MeterID: number, LineID: number, 
-            MeasurementTypeID: number, MeasurementCharacteristicID: number, PhaseID: number, 
-            Name: string, SamplesPerHour: number, PerUnitValue: number, HarmonicGroup: number, 
-            Description: string, Enabled: boolean }
+        /** Represents the channel data contract. */
+        export interface Channel {
+            /** Unique identifier for the record. */
+            ID: number,
+            /** Identifier of the associated meter. */
+            MeterID: number,
+            /** Identifier of the associated line. */
+            LineID: number,
+            /** Identifier of the associated measurement Type. */
+            MeasurementTypeID: number,
+            /** Identifier of the associated measurement Characteristic. */
+            MeasurementCharacteristicID: number,
+            /** Identifier of the associated phase. */
+            PhaseID: number,
+            /** Name displayed for the record. */
+            Name: string,
+            /** Samples Per Hour associated with the record. */
+            SamplesPerHour: number,
+            /** Per Unit Value associated with the record. */
+            PerUnitValue: number,
+            /** Harmonic Group associated with the record. */
+            HarmonicGroup: number,
+            /** Description of the record. */
+            Description: string,
+            /** Indicates whether the record is enabled. */
+            Enabled: boolean
+        }
     
-        export interface Meter { 
-            ID: number, AssetKey: string, SubStationID: number, MeterLocationID: number, 
-            ParentNormalID: number, ParentAlternateID: number, CircuitID: number, 
-            IsNormallyOpen: boolean, Alias: string, ShortName: string, Make: string, 
-            Model: string, Name: string, TimeZone: string, Description: string, 
-            Phasing: 'ABC' | 'BAC' | 'CAB' | 'CBA', Orientation: 'XY' |'YX' | '',
-            ExtraData: string }
+        /** Represents the meter data contract. */
+        export interface Meter {
+            /** Unique identifier for the record. */
+            ID: number,
+            /** Asset Key associated with the record. */
+            AssetKey: string,
+            /** Identifier of the associated sub Station. */
+            SubStationID: number,
+            /** Identifier of the associated meter Location. */
+            MeterLocationID: number,
+            /** Identifier of the associated parent Normal. */
+            ParentNormalID: number,
+            /** Identifier of the associated parent Alternate. */
+            ParentAlternateID: number,
+            /** Identifier of the associated circuit. */
+            CircuitID: number,
+            /** Indicates whether normally Open. */
+            IsNormallyOpen: boolean,
+            /** Alias associated with the record. */
+            Alias: string,
+            /** Short Name associated with the record. */
+            ShortName: string,
+            /** Make associated with the record. */
+            Make: string,
+            /** Model associated with the record. */
+            Model: string,
+            /** Name displayed for the record. */
+            Name: string,
+            /** Time Zone associated with the record. */
+            TimeZone: string,
+            /** Description of the record. */
+            Description: string,
+            /** Phasing associated with the record. */
+            Phasing: 'ABC' | 'BAC' | 'CAB' | 'CBA',
+            /** Orientation associated with the record. */
+            Orientation: 'XY' |'YX' | '',
+            /** Extra Data associated with the record. */
+            ExtraData: string
+        }
     
-        export interface MeterLocation { ID: number, AssetKey: string, Name: string, 
-            Alias: string, ShortName: string, Latitude: number, Longitude: number, Description: string }
+        /** Represents the meter Location data contract. */
+        export interface MeterLocation {
+            /** Unique identifier for the record. */
+            ID: number,
+            /** Asset Key associated with the record. */
+            AssetKey: string,
+            /** Name displayed for the record. */
+            Name: string,
+            /** Alias associated with the record. */
+            Alias: string,
+            /** Short Name associated with the record. */
+            ShortName: string,
+            /** Latitude associated with the record. */
+            Latitude: number,
+            /** Longitude associated with the record. */
+            Longitude: number,
+            /** Description of the record. */
+            Description: string
+        }
         
-        export interface Circuit{ ID: number, SystemID: number, Name: string }
-        export interface SubStation{ ID:number, Name: string}
-        export interface System{ ID:number, Name: string}
+        /** Represents the circuit data contract. */
+        export interface Circuit{
+            /** Unique identifier for the record. */
+            ID: number,
+            /** Identifier of the associated system. */
+            SystemID: number,
+            /** Name displayed for the record. */
+            Name: string
+        }
+        /** Represents the sub Station data contract. */
+        export interface SubStation{
+            /** Unique identifier for the record. */
+            ID:number,
+            /** Name displayed for the record. */
+            Name: string
+        }
+        /** Represents the system data contract. */
+        export interface System{
+            /** Unique identifier for the record. */
+            ID:number,
+            /** Name displayed for the record. */
+            Name: string
+        }
     
-        export interface Phase { ID: number, Name: PhaseName, Description: string }
-        export interface MeasurementType { ID: number, Name: MeasurementTypeName, Description: string }
-        export interface MeasurementCharacteristic { ID: number, Name: MeasurementCharacteristicName, Description: string }
+        /** Represents the phase data contract. */
+        export interface Phase {
+            /** Unique identifier for the record. */
+            ID: number,
+            /** Name displayed for the record. */
+            Name: PhaseName,
+            /** Description of the record. */
+            Description: string
+        }
+        /** Represents the measurement Type data contract. */
+        export interface MeasurementType {
+            /** Unique identifier for the record. */
+            ID: number,
+            /** Name displayed for the record. */
+            Name: MeasurementTypeName,
+            /** Description of the record. */
+            Description: string
+        }
+        /** Represents the measurement Characteristic data contract. */
+        export interface MeasurementCharacteristic {
+            /** Unique identifier for the record. */
+            ID: number,
+            /** Name displayed for the record. */
+            Name: MeasurementCharacteristicName,
+            /** Description of the record. */
+            Description: string
+        }
 
-        export interface SOE {ID: number, Name: string, StartTime: string, EndTime: string, Status: string, TimeWindows: number}
+        /** Represents the sOE data contract. */
+        export interface SOE {
+            /** Unique identifier for the record. */
+            ID: number,
+            /** Name displayed for the record. */
+            Name: string,
+            /** Start Time associated with the record. */
+            StartTime: string,
+            /** End Time associated with the record. */
+            EndTime: string,
+            /** Status associated with the record. */
+            Status: string,
+            /** Time Windows associated with the record. */
+            TimeWindows: number
+        }
     }
     
 }

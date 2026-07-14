@@ -25,6 +25,7 @@ import * as React from 'react';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 import HelpIcon from './HelpIcon';
 
+/** Defines record binding and formatting for the time picker. */
 interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
   /**
    * Determines whether the selected time is valid.

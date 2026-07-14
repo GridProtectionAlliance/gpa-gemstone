@@ -25,11 +25,15 @@ import * as React from 'react';
 import { ServerErrorIcon } from '@gpa-gemstone/react-interactive';
 import { CSSProperties } from 'styled-components';
 
+/** Describes an error captured by the boundary. */
 interface IError {
+    /** Name assigned to the captured error. */
     name: string,
+    /** Message reported by the captured error. */
     message: string
 }
 
+/** Configures the content and presentation of an error boundary. */
 interface IProps {
     /**
      * Optional message shown instead of the default error label when custom content is not provided.

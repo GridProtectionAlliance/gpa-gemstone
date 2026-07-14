@@ -28,6 +28,7 @@ import { IProps as ISearchableSelectProps } from './SearchableSelect';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 import HelpIcon from './HelpIcon';
 
+/** Defines record binding and search behavior for the multi-value searchable select. */
 interface IProps<T> extends Omit<ISearchableSelectProps<T>, 'Valid' | 'Feedback' | 'GetLabel' | 'Setter' | 'Search'> {
     /**
      * Value assigned when a selectable item is added to the array.

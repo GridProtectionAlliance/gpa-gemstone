@@ -27,6 +27,7 @@ import { Portal } from 'react-portal';
 import { isEqual } from 'lodash';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 
+/** Defines visibility and placement for the tooltip. */
 interface IProps {
   /**
    * Controls whether the tooltip is visible.
@@ -50,7 +51,7 @@ interface IProps {
   Class?: 'primary' | 'secondary' | 'success' | 'danger' | 'info'
 }
 
-// Props to style wrapper div around tooltip content.
+/** Defines position and colors for the tooltip wrapper. */
 interface IPopoverProps {
   /**
    * Controls whether the styled tooltip wrapper is visible and interactive.
@@ -103,8 +104,10 @@ const PopoverDiv = styled.div<IPopoverProps>`
   }
 `;
 
+/** Identifies a side of the target where the tooltip may be placed. */
 type Position = 'top' | 'bottom' | 'left' | 'right';
 
+/** Defines the appearance and placement of the tooltip arrow. */
 interface IArrowProps {
   /**
    * Fill color applied to the arrow facing the target.

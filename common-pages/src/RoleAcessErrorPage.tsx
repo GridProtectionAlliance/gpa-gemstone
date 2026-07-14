@@ -24,6 +24,7 @@
 import * as React from 'react';
 import { ServerErrorIcon } from '@gpa-gemstone/react-interactive';
 
+/** Configures the access-denied page and its return action. */
 interface IProps {
     /**
      * Optional CSS styles applied to the page container.

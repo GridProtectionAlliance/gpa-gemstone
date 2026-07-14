@@ -24,6 +24,7 @@
 import * as React from 'react';
 import { GraphContext, AxisMap, AxisIdentifier } from './GraphContext';
 
+/** Defines the bounds and presentation of a highlighted graph region. */
 interface IProps {
     /** Fill color applied to the highlighted region. */
     Color: string;

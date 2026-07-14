@@ -22,27 +22,47 @@
 // ******************************************************************************************************
 import * as React from 'react';
 
+/** Describes graph domains, pointer state, transformations, data, and interaction registrations. */
 export interface IGraphContext extends IHandlerRegistration, IDataRegistration {
+  /** Visible X-axis domain. */
   XDomain: [number, number],
+  /** Current unsnapped X pointer coordinate. */
   XHover: number,
+  /** Current snapped X pointer coordinate. */
   XHoverSnap: number,
 
+  /** Current unsnapped Y pointer coordinate for each axis. */
   YHover: number[],
+  /** Current snapped Y pointer coordinate for each axis. */
   YHoverSnap: number[],
+  /** Visible domain for each Y-axis. */
   YDomain: [number, number][],
 
+  /** Interaction mode currently active on the graph. */
   CurrentMode: SelectType,
+  /** Registered data series keyed by identifier. */
   Data: React.MutableRefObject<Map<string, IDataSeries>>,
+  /** Identifier associated with the current data update. */
   DataGuid: string,
+  /** Command coordinating enabled state across graph series. */
   MassEnableCommand: {requester: string, command: "disable-others"|"enable-all"|"none"},
+  /** Converts an X pixel offset into a plot pixel coordinate. */
   XApplyPixelOffset: (x: number) => number,
+  /** Converts a Y pixel offset into a plot pixel coordinate. */
   YApplyPixelOffset: (y: number) => number,
+  /** Converts an X data coordinate into a plot coordinate. */
   XTransformation: (x: number) => number,
+  /** Converts a Y data coordinate on the selected axis into a plot coordinate. */
   YTransformation: (y: number, axis: AxisIdentifier|number) => number,
+  /** Revision value used to notify consumers of graph updates. */
   UpdateFlag: number,
+  /** Converts an X plot coordinate back into a data coordinate. */
   XInverseTransformation: (p: number) => number,
+  /** Converts a Y plot coordinate on the selected axis back into a data coordinate. */
   YInverseTransformation: (p: number, axis: AxisIdentifier|number) => number,
+  /** State action or callback used to update the visible X domain. */
   SetXDomain: React.SetStateAction<[number,number]> | ((t: [number,number]) => void),
+  /** State action or callback used to update the visible Y domains. */
   SetYDomain:  React.SetStateAction<[number,number]> | ((t: [number,number][]) => void)
 }
 
@@ -78,15 +98,23 @@ export const GraphContext = React.createContext({
   UpdateFlag: 0
 } as IGraphContext);
 
+/** Describes a graph data series and its domain query operations. */
 export interface IDataSeries {
+  /** Returns the minimum series value inside an X-domain. */
   getMin: (tDomain: [number, number]) => number| undefined,
+  /** Returns the maximum series value inside an X-domain. */
   getMax: (tDomain: [number, number]) => number|undefined,
+  /** Returns series points surrounding an X value. */
   getPoints: (xValue: number, pointsAround?: number) => [...number[]][]|undefined,
+  /** Whether the series participates in rendering and domain calculations. */
   enabled: boolean,
+  /** Optional Y-axis associated with the series. */
   axis: AxisIdentifier|undefined,
+  /** Optional legend element representing the series. */
   legend?: React.ReactElement
 }
 
+/** Identifies the stroke pattern used to render a line. */
 export type LineStyle = '-'|':'|'solid'|'dash'|'short-dash'|'long-dash';
 
 export const LineMap = new Map<LineStyle, string>([
@@ -98,8 +126,11 @@ export const LineMap = new Map<LineStyle, string>([
   ['long-dash', '30,5']
 ]);
 
+/** Identifies the supported filled-area style. */
 export type FillStyle = 'fill';
+/** Identifies the left or right Y-axis. */
 export type AxisIdentifier = 'left'|'right'; 
+/** Identifies a graph selection, zoom, or pan interaction mode. */
 export type SelectType = 'zoom-rectangular' | 'zoom-vertical' | 'zoom-horizontal' | 'pan' | 'select';
 
 class AxisMapClass<T, U> {
@@ -123,33 +154,53 @@ export const AxisMap = new AxisMapClass<AxisIdentifier|undefined, number>([
   ['right', 1]
 ], 0);
 
+/** Defines pointer handlers registered with the graph. */
 export interface IHandlers {
+  /** Optional callback invoked when the graph is clicked. */
   onClick?: (x:number, y: number) => void,
+  /** Optional callback invoked when a pointer interaction is released. */
   onRelease?: (x: number, y: number) => void,
+  /** Optional callback invoked when the pointer leaves the plot. */
   onPlotLeave?: (x: number, y:number) => void,
+  /** Optional callback invoked as the pointer moves across the plot. */
   onMove?: (x: number, y: number) => void,
+  /** Y-axis used to interpret handler coordinates. */
   axis: number|AxisIdentifier,
+  /** Whether handler coordinates may snap to series points. */
   allowSnapping: boolean
 }
 
+/** Defines operations for registering graph data series and legends. */
 export interface IDataRegistration {
+  /** Registers a data series and returns its identifier. */
   AddData: ((d: IDataSeries) => string),
+  /** Removes the data series associated with an identifier. */
   RemoveData: (key: string) => void,
+  /** Replaces the data series associated with an identifier. */
   UpdateData: (key: string, d: IDataSeries) => void,
+  /** Sets the legend element associated with a data series. */
   SetLegend: (key: string, legend?: React.ReactElement) => void,
 }
 
+/** Defines operations for registering graph interaction handlers. */
 export interface IHandlerRegistration {
+  /** Registers interaction handlers and returns their identifier. */
   RegisterSelect: (handlers: IHandlers) => string,
+  /** Removes the interaction handlers associated with an identifier. */
   RemoveSelect: (key: string) => void,
+  /** Replaces the interaction handlers associated with an identifier. */
   UpdateSelect: (key: string, handlers: IHandlers) => void,
 }
 
+/** Defines state actions used to update graph domains. */
 export interface IActionFunctions {
+  /** State action that updates the X domain. */
   setTDomain: React.SetStateAction<[number,number]>,
+  /** State action that updates the Y domains. */
   setYDomain: React.SetStateAction<[number,number][]>
 }
 
+/** Defines graph state supplied by the context wrapper. */
 interface IContextWrapperProps extends IHandlerRegistration, IDataRegistration {
   /** Visible X-axis domain. */
   XDomain: [number, number],

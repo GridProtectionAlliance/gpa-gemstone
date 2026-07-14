@@ -24,6 +24,7 @@ import * as React from 'react';
 import { Search } from '@gpa-gemstone/react-interactive';
 import { DatePicker } from '@gpa-gemstone/react-forms';
 
+/** Defines the date/time filter state and update behavior. */
 interface IProps<T> {
     /**
      * Applies the selected date or time filter.
@@ -45,8 +46,13 @@ const momentDateFormat = "MM/DD/YYYY";
 const momentTimeFormat = "HH:mm:ss.SSS"; // Also is the gemstone format
 
 // Defines filtering types
+/** Identifies the supported date/time comparison modes. */
 type FilterTypes = 'before' | 'after' | 'between';
-interface IValue { Value: string }
+/** Wraps a date/time value used by the filter editor. */
+interface IValue {
+    /** Date/time value entered for a comparison boundary. */
+    Value: string
+}
 
 // Filter for date only
 /**

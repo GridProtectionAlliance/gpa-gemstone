@@ -24,7 +24,9 @@ import React from 'react';
 import 'moment';
 import { OpenXDA, SystemCenter } from '@gpa-gemstone/application-typings';
 
+/** Records supported by the navigation filter summary. */
 type S = SystemCenter.Types.DetailedMeter|SystemCenter.Types.DetailedAsset|SystemCenter.Types.DetailedLocation|OpenXDA.Types.AssetGroup;
+/** Configures a navigation filter button and its selected records. */
 interface IProps<S> {
     /**
      * Selected records summarized by the button and its hover table.

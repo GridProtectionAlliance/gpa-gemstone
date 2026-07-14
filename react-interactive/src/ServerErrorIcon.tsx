@@ -22,6 +22,7 @@
 
 import * as React from 'react';
 
+/** Configures the server-error icon, label, and visibility. */
 interface IProps {
     /**
      * Controls whether the server-error indicator is visible.

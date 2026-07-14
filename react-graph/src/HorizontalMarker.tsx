@@ -25,6 +25,7 @@
 import * as React from 'react';
 import {AxisIdentifier, AxisMap, GraphContext, IHandlers, LineMap, LineStyle} from './GraphContext';
 
+/** Defines the position and presentation of a horizontal graph marker. */
 export interface IProps {
     /** Optional X coordinate where the horizontal marker begins, defaulting to the visible domain start. */
     start?: number,

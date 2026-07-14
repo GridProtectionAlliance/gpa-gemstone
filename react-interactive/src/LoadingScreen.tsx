@@ -26,6 +26,7 @@ import LoadingIcon from './LoadingIcon'
 /**
  * Props interface for LoadingScreen.
  */
+/** Configures the loading-screen message and visibility. */
 interface IProps {
   /**
    * Controls whether the full-screen loading overlay is visible.

@@ -27,6 +27,7 @@ import { ILegendRequiredProps, LegendContext } from './LegendContext';
 import { CreateGuid } from '@gpa-gemstone/helper-functions';
 
 
+/** Defines the color scale and labels displayed by a heat legend. */
 export interface IProps extends ILegendRequiredProps {
   /** Optional unit appended to the minimum and maximum labels. */
   unitLabel?: string,

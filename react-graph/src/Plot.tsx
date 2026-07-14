@@ -56,6 +56,7 @@ const html2canvas: any = _html2canvas;
 // A yDomain of AutoValue means it will zoom on time, and auto Adjust the Value to fit the data.
 // HalfAutoValue is the same as AutoValue except it "pins" either max or min at zero
 // divCaptureId allows the div to be captured to be external to this plot
+/** Defines domains, dimensions, and interaction behavior for a graph plot. */
 export interface IProps {
   /** Initial X-axis domain used by the plot. */
   defaultTdomain: [number, number],

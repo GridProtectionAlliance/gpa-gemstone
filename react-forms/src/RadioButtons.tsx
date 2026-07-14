@@ -25,10 +25,13 @@ import * as React from 'react';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 import HelpIcon from './HelpIcon';
 
+/** Describes a radio option and whether users may select it. */
 interface IOption extends Gemstone.TSX.Interfaces.ILabelValue<string | number> {
-    Disabled?: boolean
+  /** Optional flag that prevents the option from being selected. */
+  Disabled?: boolean
 }
 
+/** Defines record binding and choices for the radio button group. */
 interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
     /**
      * Optional layout direction for the radio choices, defaulting to horizontal.

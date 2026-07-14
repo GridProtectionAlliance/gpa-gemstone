@@ -22,6 +22,7 @@
 
 import * as React from 'react';
 
+/** Defines a configurable column's display and selection state. */
 interface IProps {
     /**
      * Optional flag that shows the column when no saved configuration exists, defaulting to false.

@@ -24,6 +24,7 @@
 import { Search } from "@gpa-gemstone/react-interactive";
 import { IUnit } from "../Filters/NumberFilter";
 
+/** Defines the records, columns, and behavior of a Gemstone table. */
 export interface ITable<T> {
     /**
      * Records rendered as table rows.
@@ -138,6 +139,7 @@ export interface ITable<T> {
     Filters?: Search.IFilter<T>[];
 }
 
+/** Defines how a record field is displayed as a table column. */
 export interface IColumn<T> {
     /**
      * Unique key used to identify the column.
@@ -171,8 +173,15 @@ export interface IColumn<T> {
     Adjustable?: boolean
 }
 
-export interface IOptions { Value: string | number, Label: string }
+/** Defines a value and label presented by an enumeration filter. */
+export interface IOptions {
+    /** Value submitted by the option. */
+    Value: string | number,
+    /** Label displayed for the option. */
+    Label: string
+}
 
+/** Extends a table column with filter editor configuration. */
 export interface IFilterableCollumn<T> extends IColumn<T> {
     /**
      * Optional field type that determines which filter editor is displayed.

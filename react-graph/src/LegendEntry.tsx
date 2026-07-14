@@ -25,6 +25,7 @@ import * as React from 'react';
 import { GraphContext, IDataSeries } from './GraphContext';
 import DataLegend, { LegendStyle } from './DataLegend';
 
+/** Defines content and enabled-state behavior for a legend entry. */
 interface IProps {
     /**
      * Optional callback invoked when the legend entry is clicked.

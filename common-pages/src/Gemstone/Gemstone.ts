@@ -25,18 +25,23 @@ import { Search } from "@gpa-gemstone/react-interactive";
 
 export namespace Gemstone {
     export namespace Types {
+        /** Represents a normalized search condition for a record field. */
         export interface ISearchFilter<T> {
+            /** Record field evaluated by the condition. */
             FieldName: keyof T,
+            /** Value or values compared with the record field. */
             SearchParameter: string | boolean | number | string[] | number[] | boolean[],
+            /** Comparison operator applied to the search parameter. */
             Operator: Search.OperatorType
         }
 
+        /** Describes paging totals for a collection of records. */
         export interface IPageInfo {
-            /* Number of Models per Page */
+            /** Number of records displayed per page. */
             PageSize: number;
-            /* Total Number of Pages */
+            /** Total number of pages available. */
             PageCount: number
-            /* Number of Models */
+            /** Total number of records available. */
             TotalCount: number
         }
 

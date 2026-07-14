@@ -23,6 +23,7 @@
 import * as React from 'react';
 import { GetTextWidth, useGetContainerPosition } from '@gpa-gemstone/helper-functions';
 
+/** Describes one selectable tab and its rendered content. */
 interface ITab {
     /**
      * Text displayed for the tab.
@@ -34,6 +35,7 @@ interface ITab {
     Id: string,
 }
 
+/** Configures the tabs and active selection of a tab selector. */
 interface IProps {
     /**
      * Ordered tabs displayed directly or in the overflow menu.

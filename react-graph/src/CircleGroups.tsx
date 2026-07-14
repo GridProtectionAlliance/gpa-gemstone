@@ -27,6 +27,7 @@ import { AxisIdentifier, AxisMap, GraphContext, IDataSeries } from './GraphConte
 import Circle from './Circle';
 import DataLegend from './DataLegend';
 
+/** Defines grouped circle data and styling behavior. */
 export interface IProps {
   /** Optional label displayed for the circle series in the legend. */
   Legend?: string,
@@ -51,6 +52,7 @@ export interface IProps {
   OnClick?: (dataPoint: [number, number], index: number) => void
 }
 
+/** Defines visual styling returned for a circle group entry. */
 export interface ICircleStyle {
   /** Optional fill color that replaces the series color for one circle. */
   ColorOverride?: string,

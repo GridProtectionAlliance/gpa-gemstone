@@ -23,7 +23,7 @@ import * as React from 'react';
 import { Search } from '@gpa-gemstone/react-interactive';
 
 /**
- * Interface defining the properties expected by the BooleanFilter component.
+ * Defines the filter state and update behavior used by the boolean filter.
  */
 interface IFilterProps<T> {
     /**
@@ -42,9 +42,9 @@ interface IFilterProps<T> {
 }
 
 /**
- * Component to handle boolean filtering based on provided filter props.
- * @param {IFilterProps<T>} props - Props passed to the BooleanFilter component.
- * @returns JSX element representing the BooleanFilter component.
+ * Renders controls for including true and false field values.
+ * @param props - Current boolean filters and the callback used to update them.
+ * @returns Boolean filter controls.
  */
 export function BooleanFilter<T>(props: IFilterProps<T>) {
     const [selected, setSelected] = React.useState<boolean>(false);

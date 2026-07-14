@@ -25,6 +25,7 @@ import { ToolTip } from '@gpa-gemstone/react-forms';
 import {CreateGuid} from '@gpa-gemstone/helper-functions';
 import { Portal } from 'react-portal';
 
+/** Configures modal content, visibility, sizing, and actions. */
 interface IProps {
     /**
      * Text displayed in the modal header.

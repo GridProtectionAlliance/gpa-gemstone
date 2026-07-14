@@ -24,6 +24,7 @@
 import * as React from 'react';
 import { ReactIcons } from "@gpa-gemstone/gpa-symbols";
 
+/** Configures the content displayed in the application header. */
 interface IProps {
     /**
      * Updates whether the application sidebar is collapsed.

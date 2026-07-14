@@ -26,6 +26,7 @@ import { CreateGuid } from '@gpa-gemstone/helper-functions';
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import ToolTip from './ToolTip';
 
+/** Defines help content and presentation for the help icon. */
 interface IProps {
     /**
      * Optional help content shown in the tooltip; no icon is rendered when omitted or empty.

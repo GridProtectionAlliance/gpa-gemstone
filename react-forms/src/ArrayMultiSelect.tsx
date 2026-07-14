@@ -24,6 +24,7 @@
 import * as React from 'react';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 
+/** Defines record binding and choices for the array-backed multi-select. */
 interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
   /**
    * Choices rendered in the multi-select dropdown.

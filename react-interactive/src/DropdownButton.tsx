@@ -62,6 +62,7 @@ interface IButton {
     Key?: string | number
 }
 
+/** Supported Bootstrap-inspired button sizes. */
 type BtnSize = 'sm' | 'lg' | 'xlg' | 'std';
 
 /**
@@ -186,6 +187,7 @@ const getBtnClass = (size: BtnSize) => {
     return `btn-group btn-group-${size}`
 }
 
+/** Configures an individual option in a dropdown button. */
 interface DropDownProps extends IButton {
     /**
      * Updates whether the parent dropdown menu is visible.

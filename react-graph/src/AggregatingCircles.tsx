@@ -26,10 +26,15 @@ import * as React from 'react';
 import { AxisIdentifier, GraphContext } from './GraphContext';
 import { ContextlessCircle, IProps as ICircleProps} from './Circle';
 
+/** Defines coordinate transformations used while grouping circles. */
 interface IAggregationFunctions {
+  /** Converts an X data coordinate into a plot coordinate. */
   XTransformation: (x: number) => number,
+  /** Converts a Y data coordinate on an axis into a plot coordinate. */
   YTransformation: (y: number, a: AxisIdentifier) => number,
+  /** Converts an X plot coordinate back into a data coordinate. */
   XInverseTransformation: (p: number) => number,
+  /** Converts a Y plot coordinate on an axis back into a data coordinate. */
   YInverseTransformation: (p: number, a: AxisIdentifier) => number,
 }
 
@@ -39,6 +44,7 @@ interface IAggregationFunctions {
   data is the full circle data
   useSingleAggregation - if true groups will not be aggregated. 
 */
+/** Defines circle data and rules used to build aggregates. */
 export interface IProps {
     /**
      * Determines whether two circles can be combined into one aggregate.
@@ -99,8 +105,11 @@ const AggregatingCircles = (props: IProps) => {
       XTransformation: context.XTransformation
      }
 
+    /** Describes source-circle indices and the circle representing their aggregate. */
     interface ICluster { 
+      /** Indices of source circles included in the cluster. */
       Indices: number[],
+      /** Aggregated circle, or `null` until the cluster has been combined. */
       Aggregate: ICircleProps|null
     }
 

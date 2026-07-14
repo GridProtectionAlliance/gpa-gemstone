@@ -28,26 +28,35 @@ import moment from 'moment';
  * Interface represents picking a time based on Start Date and End Date
  */
 export interface IStartEnd {
+    /** Start of the selected time range. */
     start: string;
+    /** End of the selected time range. */
     end: string;
 }
 /**
  * Interface represents picking a time based on Start Date and Duration
  */
 export interface IStartDuration {
+    /** Start of the selected time range. */
     start: string;
+    /** Length of the selected time range. */
     duration: number;
+    /** Unit used by the duration. */
     unit: TimeUnit;
 }
 /**
  * Interface represents picking a time based on End Date and Duration
  */
 export interface IEndDuration {
+    /** End of the selected time range. */
     end: string,
+    /** Length of the selected time range. */
     duration: number;
+    /** Unit used by the duration. */
     unit: TimeUnit;
 }
 
+/** Unit used to express a time-window duration. */
 export type TimeUnit = 'y' | 'M' | 'w' | 'd' | 'h' | 'm' | 's' | 'ms'
 export const units = ['ms', 's', 'm', 'h', 'd', 'w', 'M', 'y'] as TimeUnit[]
 export const dateTimeFormat = 'DD MM YYYY hh:mm:ss.SSS';

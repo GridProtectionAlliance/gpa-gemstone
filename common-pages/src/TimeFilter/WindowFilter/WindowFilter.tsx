@@ -30,6 +30,7 @@ import WindowForm, { Window } from './WindowForm';
 const WINDOW_FirstFallbackBreakpoint = 898;
 const WINDOW_SecondFallbackBreakpoint = 611;
 
+/** Configures a time filter anchored at the start or end of its window. */
 export interface IProps extends IFilterProps {
     /**
      * End of the time window anchored by the date input.

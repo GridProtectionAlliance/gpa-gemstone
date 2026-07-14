@@ -32,8 +32,10 @@ import { fontFamily } from './Legend'
 import { CreateGuid } from '@gpa-gemstone/helper-functions';
 import { ToolTip } from '@gpa-gemstone/react-forms';
 
+/** Identifies the symbol style displayed for a data legend entry. */
 export type LegendStyle = LineStyle | 'none' | 'square' | 'circle';
 
+/** Defines content and symbol styling for a data legend entry. */
 export interface IProps extends ILegendRequiredProps {
     /**
      * Color applied to the legend symbol.
@@ -125,6 +127,7 @@ const DataLegend = (props: IProps) => {
     );
 }
 
+/** Defines color and style for the legend's graphical symbol. */
 interface ISymbolProps {
     /** Shape or line style rendered for the legend symbol. */
     symbol: LegendStyle,

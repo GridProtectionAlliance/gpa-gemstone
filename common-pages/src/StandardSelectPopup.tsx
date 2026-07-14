@@ -28,8 +28,13 @@ import _ = require("lodash");
 import { ReactIcons } from "@gpa-gemstone/gpa-symbols";
 import { Dispatch } from "@reduxjs/toolkit";
 
-interface U { ID: number|string }
+/** Identifies records that can be selected by the popup. */
+interface U {
+    /** Unique identifier of the selectable record. */
+    ID: number|string
+}
 
+/** Configures searchable record selection in a modal. */
 interface IProps<T extends U> {
     /**
      * Redux slice used to search and sort selectable records.

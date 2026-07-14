@@ -27,6 +27,7 @@ import * as React from 'react';
 import { IDataSeries, GraphContext, IHandlers, IActionFunctions, AxisIdentifier, AxisMap } from './GraphContext';
 import useLegend from './Hooks/useLegend';
 
+/** Defines content, placement, and styling for a graph pill annotation. */
 export interface IProps {
     /**
      * X-axis coordinates of the pill's left and right edges.

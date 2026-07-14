@@ -22,6 +22,7 @@
 import * as React from 'react';
 import { Search } from '@gpa-gemstone/react-interactive';
 
+/** Defines the text filter state and update behavior. */
 interface IProps<T> { 
     /**
      * Applies the entered text filter.

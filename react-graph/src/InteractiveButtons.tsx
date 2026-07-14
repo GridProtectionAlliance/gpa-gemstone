@@ -26,6 +26,7 @@ import {MagnifyingGlass, House, Pan, InputNumbers, Point, Scroll} from '@gpa-gem
 import {SelectType} from './GraphContext'
 import Button from './Button'
 
+/** Defines available controls and callbacks for graph interaction buttons. */
 interface IProps {
     /** Controls whether the combined zoom button is available. */
     showZoom: boolean,
@@ -68,7 +69,9 @@ interface IProps {
     children: React.ReactNode
 }
 
+/** Identifies a built-in or custom graph interaction button. */
 type ButtonType = SelectType | 'reset' | 'download' | 'capture' | 'collaspe' | 'custom';
+/** Represents an optional cleanup callback returned by a custom action. */
 type Cleanup = ((() => void) | void);
 const heightPerButton = 25;
 
@@ -283,6 +286,7 @@ const InteractiveButtons = React.memo((props: IProps) => {
 
 });
 
+/** Defines placement and styling for a circular interaction-button icon. */
 interface ICircleProps {
   /** Button icon rendered inside the circular control. */
   button: React.ReactElement, 

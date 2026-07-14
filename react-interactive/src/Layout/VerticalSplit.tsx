@@ -28,6 +28,7 @@ import { ToolTip } from '@gpa-gemstone/react-forms';
 import SplitDrawer from './SplitDrawer';
 import SplitSection from './SplitSection';
 
+/** Configures vertically stacked resizable sections. */
 interface IProps {
     /**
      * Optional inline styles applied to the split container.
@@ -39,6 +40,7 @@ interface IProps {
     sliderStyle?: any,
 }
 
+/** Describes one section managed by the vertical split layout. */
 interface ISection {
     /**
      * Current live width units for this element. Dragging a divider updates this value.
@@ -431,6 +433,7 @@ const VerticalSplit = (props: React.PropsWithChildren<IProps>) => {
 
 export default VerticalSplit;
 
+/** Configures a draggable divider between vertical sections. */
 interface IDividerProps {
     /**
      * Optional inline style override applied to the divider bar.
@@ -457,6 +460,7 @@ const VerticalSplitDivider = (props: IDividerProps) => {
     ></div>
 }
 
+/** Configures the header shown for a collapsible split section. */
 interface IDrawerHeaderProps {
     /**
      * Drawer label displayed in the header and optional tooltip.

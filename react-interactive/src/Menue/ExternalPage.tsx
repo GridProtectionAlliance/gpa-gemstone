@@ -26,6 +26,7 @@ import { ToolTip } from '@gpa-gemstone/react-forms';
 import * as React from 'react';
 import { Context } from './Context';
 
+/** Configures a menu page that opens an external destination. */
 export interface IExternalPageProps {
     /**
      * Callback fired when the external navigation item is clicked.

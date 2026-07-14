@@ -31,14 +31,19 @@ import {GetTextWidth} from '@gpa-gemstone/helper-functions';
 import {IProps as ILineProps} from './Line';
 import DataLegend from './DataLegend';
 
+/** Defines line data and thresholds used to override segment colors. */
 export interface IProps extends ILineProps {
     /** Threshold definitions used to override line color across value ranges. */
     threshHolds: IThreshold[],
 }
 
+/** Describes a value threshold and the color applied beyond it. */
 export interface IThreshold {
+  /** Numeric threshold where the line color changes. */
   Value: number,
+  /** Color applied to segments that meet the threshold. */
   Color: string,
+  /** Optional Y-axis used to evaluate the threshold. */
   axis?: AxisIdentifier,
 }
 

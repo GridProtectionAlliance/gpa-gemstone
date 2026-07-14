@@ -24,6 +24,7 @@
 import * as React from 'react';
 import * as moment from 'moment';
 
+/** Defines the selected date and update callback for the calendar. */
 interface IProps {
   /**
    * Date currently displayed and edited by the calendar.
@@ -36,13 +37,21 @@ interface IProps {
   Setter: (record: moment.Moment) => void;
 }
 
+/** Maps each weekday to its date in a rendered calendar row. */
 interface IWeek {
+  /** Date displayed in the Sunday column. */
   sunday: moment.Moment,
+  /** Date displayed in the Monday column. */
   monday:  moment.Moment,
+  /** Date displayed in the Tuesday column. */
   tuesday: moment.Moment,
+  /** Date displayed in the Wednesday column. */
   wednesday: moment.Moment,
+  /** Date displayed in the Thursday column. */
   thursday: moment.Moment,
+  /** Date displayed in the Friday column. */
   friday: moment.Moment,
+  /** Date displayed in the Saturday column. */
   saturday: moment.Moment
 }
 /**
@@ -257,5 +266,3 @@ const MonthCell = (props: {date: moment.Moment, onClick: (evt: any) => void, dat
   </td>
 
 }
-
-
