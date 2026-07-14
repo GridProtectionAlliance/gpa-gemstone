@@ -27,129 +27,126 @@ import { Portal } from 'react-portal';
 
 interface IProps {
     /**
-     * Title of the modal
+     * Text displayed in the modal header.
      */
     Title: string,
     /**
-     * Show or hide the X button (default true)
+     * Optional flag that shows the header close button, defaulting to false.
      */
     ShowX?: boolean,
     /**
-     * Callback function used when the modal is closed or a button is clicked.
-     * @param confirmed - true if Confirm was clicked
-     * @param isButton - true if closed via a button (not by clicking X)
-     * @param tertiary - true if the Tertiary button was clicked
+     * Callback fired when the close control or a footer action is clicked.
+     * @param confirmed - Whether the confirm button triggered the callback.
+     * @param isButton - Whether a footer button, rather than the header close control, triggered the callback.
+     * @param tertiary - Whether the tertiary button triggered the callback.
      */
     CallBack: ((confirmed: boolean, isButton: boolean, tertiary: boolean) => void),
     /**
-     * Flag to show modal
+     * Controls whether the modal and backdrop are visible.
      */
     Show: boolean,
     /**
-     * Size of the modal
+     * Optional modal width preset, defaulting to the standard dialog width.
      */
     Size?: ('lg' | 'sm' | 'xlg'),
     /**
-     * Optional style to be used on the modal body
+     * Optional inline styles applied to the modal body, defaulting to a viewport-limited scrolling body.
      */
     BodyStyle?: React.CSSProperties,
     /**
-     * Optional style to be used on the modal header
+     * Optional inline styles applied to the modal header.
      */
     HeaderStyle?: React.CSSProperties,
 
 
     /**
-     * Optional flag to show confirm button in modal footer, defaulting to true
+     * Optional flag that shows the confirm button, defaulting to true.
      */
     ShowConfirm?: boolean,
     /**
-     * Optional flag to disable the confirm button
+     * Optional flag that prevents the confirm action, defaulting to false.
      */
     DisableConfirm?: boolean,
     /**
-     * Optional text to be used inside the confirm button, defaulting to 'Save'
+     * Optional confirm button text, defaulting to `Save`.
      */
     ConfirmText?: string,
     /**
-     * Optional class to be used on the confirm button, defaulting to btn-primary
+     * Optional class applied to the confirm button, defaulting to `btn-primary`.
      */
     ConfirmBtnClass?: string,
     /**
-     * Optional flag to show tooltip on confirm button
+     * Optional flag that shows the confirm tooltip while hovering, defaulting to false.
      */
     ConfirmShowToolTip?: boolean,
     /**
-     * Optional content to render inside of the confirm button's tooltip
+     * Optional content displayed in the confirm button tooltip.
      */
     ConfirmToolTipContent?: React.ReactNode,
 
     /**
-     * Optional flag to show cancel button in modal footer, defaulting to true
+     * Optional flag that shows the cancel button, defaulting to true.
      */
     ShowCancel?: boolean,
     /**
-     * Optional flag to disable the cancel button
+     * Optional flag that prevents the cancel action, defaulting to false.
      */
     DisableCancel?: boolean,
     /**
-     * Optional text to be used in cancel button, defaulting to 'Cancel'
+     * Optional cancel button text, defaulting to `Cancel`.
      */
     CancelText?: string,
     /**
-     * Optional class to be used on the cancel button, defaulting to 'btn-danger'
+     * Optional class applied to the cancel button, defaulting to `btn-danger`.
      */
     CancelBtnClass?: string,
     /**
-     * Optional flag to show tooltip on the cancel button
+     * Optional flag that shows the cancel tooltip while hovering, defaulting to false.
      */
     CancelShowToolTip?: boolean,
     /**
-     * Optional content to render inside of cancel button's tooltip
+     * Optional content displayed in the cancel button tooltip.
      */
     CancelToolTipContent?: React.ReactNode,
 
 
     /**
-     * Optional flag to show a third action button
+     * Optional flag that shows the tertiary action button, defaulting to false.
      */
     ShowTertiary?: boolean,
     /**
-     * Optional flag to disable the third button
+     * Optional flag that prevents the tertiary action, defaulting to false.
      */
     DisableTertiary?: boolean,
     /**
-     * Optional text to be used in the third button
+     * Optional tertiary button text, defaulting to `Action`.
      */
     TertiaryText?: string,
     /**
-     * Optional class to be used on the third button, defaulting to btn-secondary
+     * Optional class applied to the tertiary button, defaulting to `btn-secondary`.
      */
     TertiaryBtnClass?: string,
     /**
-     * Optional flag to show tooltip on the third button
+     * Optional flag that shows the tertiary tooltip while hovering, defaulting to false.
      */
     TertiaryShowToolTip?: boolean,
     /**
-     * Optional content to render inside the third button's tooltip
+     * Optional content displayed in the tertiary button tooltip.
      */
     TertiaryToolTipContent?: React.ReactNode,
 
     
     /**
-     * Optional z-index of the modal, defaulting to 9990
+     * Optional stacking order applied to the modal, defaulting to 9990.
      */
     ZIndex?: number
 }
 
-// Props Description:
-// ShowCancel => Whether to show the cancel button
-// ShowConfirm => Whether to show the confirm button
-// DisableConfirm => Disables the Confirm button
-// CancelText => Text on Cancel Button
-// Confirm text => Text on Confirm button
-// ConfirmBtnClass => Class of the Confirm Button
-// CancelBtnClass =>> Class of the Cancel Button
+/**
+ * Renders a portal-based modal with configurable confirm, cancel, and tertiary actions.
+ * @param props - Configures modal visibility, content, styling, actions, and tooltips.
+ * @returns The modal, action tooltips, and backdrop.
+ */
 const Modal = (props: React.PropsWithChildren<IProps>) => {
     const [hover, setHover] = React.useState<'confirm'|'cancel'|'tertiary'|'none'>('none');
     const [guid, setGuid] = React.useState<string>('');

@@ -36,21 +36,21 @@ export type LegendStyle = LineStyle | 'none' | 'square' | 'circle';
 
 export interface IProps extends ILegendRequiredProps {
     /**
-     * The color of the legend symbol
+     * Color applied to the legend symbol.
      */
     color: string,
     /**
-     * The style of the legend symbol to display
+     * Shape or line style used for the legend symbol.
      */
     legendSymbol: LegendStyle,
     /**
-     * Handler to set the enabled state of the data series
-     * @param arg The new enabled state
-     * @param e The mouse event that triggered the change
+     * Callback invoked to change the data series enabled state.
+     * @param arg - New enabled state for the data series.
+     * @param e - Mouse event that triggered the change.
      */
     setEnabled: (arg: boolean, e: React.MouseEvent<HTMLDivElement>) => void,
     /**
-     * Flag that indicates whether the data series has no data
+     * Indicates whether the legend should mark the data series as empty.
      */
     hasNoData: boolean,
     /**
@@ -58,11 +58,16 @@ export interface IProps extends ILegendRequiredProps {
      */
     label: string,
     /**
-     * Optional text that will enable a tooltip when hovering over the legend entry
+     * Optional tooltip text displayed while hovering over the legend entry.
      */
     toolTipText?: string
 }
 
+/**
+ * Renders a clickable legend entry for a graph data series.
+ * @param props - Legend identity, label, symbol, and enabled-state behavior.
+ * @returns Interactive legend entry.
+ */
 const DataLegend = (props: IProps) => {
     const context = React.useContext(LegendContext);
     const [label, setLabel] = React.useState<string>(props.label ?? "");
@@ -121,11 +126,19 @@ const DataLegend = (props: IProps) => {
 }
 
 interface ISymbolProps {
+    /** Shape or line style rendered for the legend symbol. */
     symbol: LegendStyle,
+    /** Color applied to the legend symbol. */
     color: string,
+    /** Controls whether the symbol is rendered at full or reduced opacity. */
     enabled: boolean
 }
 
+/**
+ * Renders the shape representing a data series in the legend.
+ * @param props - Symbol style, color, and enabled state.
+ * @returns Styled legend symbol.
+ */
 const DataSymbol = (props: ISymbolProps) => {
     /* Total width of symbol element should be 15px with a 5px margin */
     switch (props.symbol) {

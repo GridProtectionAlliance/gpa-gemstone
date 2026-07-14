@@ -31,17 +31,42 @@ import { Gemstone } from '@gpa-gemstone/application-typings';
 import HelpIcon from '../HelpIcon';
 
 export interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
+    /**
+     * Determines whether the current date or time field is valid.
+     * @param field - Record field containing the selected value.
+     * @returns Whether the field is valid.
+     */
     Valid: (field: keyof T) => boolean;
+    /**
+     * Optional message shown when the selected value is invalid.
+     */
     Feedback?: string;
+    /**
+     * Optional Moment format used to read and write the record value, defaulting to the selected input type's ISO-like format.
+     */
     Format?: string;
+    /**
+     * Optional date unit displayed by the picker, defaulting to `date`.
+     */
     Type?: Gemstone.TSX.Types.DateUnit; // Default to date
+    /**
+     * Optional flag that permits an empty value, defaulting to false.
+     */
     AllowEmpty?: boolean,
+    /**
+     * Optional precision of editable time values, defaulting to seconds.
+     */
     Accuracy?: Gemstone.TSX.Types.Accuracy    //Default to second
+    /**
+     * Optional earliest accepted date, defaulting to January 1, 1753.
+     */
     MinDate?: moment.Moment // Default to 01/01/1753 (SQL Database limit)
 }
 
 /**
- * Component that allows a user to pick a date or datetime.
+ * Renders a validated date or time input with an interactive picker popup.
+ * @param props - Record binding, formatting, precision, and validation configuration.
+ * @returns A labeled date-time input and its picker popup.
 */
 export default function DateTimePickerBase<T>(props: IProps<T>) {
     const inputRef = React.useRef<HTMLInputElement | null>(null);

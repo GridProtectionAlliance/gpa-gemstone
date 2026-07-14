@@ -26,21 +26,27 @@ import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import { Application } from '@gpa-gemstone/application-typings';
 
 interface IProps {
-    /** 
-        * Callback function that will be called when a file is uploaded
-    * */
+    /**
+     * Handles a file selected by the user.
+     * @param result - File selected through the upload control.
+     * @returns Promise that settles after the file is processed.
+     */
     OnLoadHandler: (result: File) => Promise<any>
-    /** 
-        * Callback function that will be called when clear button is clicked
-    * */
+    /**
+     * Optional callback fired when the user clears the selected file.
+     */
     OnClearHandler?: () => void,
-    /** 
-        * Attribute used to control what type of files are filtered by default in file explorer
-        * @type {string}
-    * */
+    /**
+     * File type filter passed to the upload input's `accept` attribute.
+     */
     FileTypeAttribute: string
 }
 
+/**
+ * Renders a file chooser with upload and optional clear handling.
+ * @param props - Accepted file types and callbacks for loading or clearing a file.
+ * @returns File selection controls for uploading a single file.
+ */
 const FileUpload = (props: IProps) => {
     const [fileName, setFileName] = React.useState<string | null>(null);
     const [fileSize, setFileSize] = React.useState<number | null>(null);

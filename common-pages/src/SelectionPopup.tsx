@@ -31,17 +31,60 @@ interface U { ID: number|string }
 // Pass columns in via children
 
 interface IProps<T extends U> {
+    /**
+     * Redux slice used to search and sort selectable records.
+     */
     Slice: GenericSlice<T>,
+    /**
+     * Records selected when the popup opens.
+     */
     Selection: T[],
+    /**
+     * Handles confirmation or cancellation of the selection.
+     * @param selected - Records selected when the popup closes.
+     * @param conf - Whether the user confirmed the selection.
+     */
     OnClose: (selected: T[], conf: boolean ) => void
+    /**
+     * Controls whether the selection popup is visible.
+     */
     Show: boolean,
+    /**
+     * Optional selection mode, defaulting to `single`.
+     */
     Type?: 'single'|'multiple',
+    /**
+     * Title shown in the popup header.
+     */
     Title: string,
+    /**
+     * Loads the available values for an enumerated search field.
+     * @param setOptions - Callback that stores the loaded options.
+     * @param field - Search field whose options should be loaded.
+     * @returns Cleanup callback for the option request.
+     */
     GetEnum: (setOptions: (options: IOptions[]) => void, field: Search.IField<T>) => () => void,
+    /**
+     * Loads additional searchable fields for the selected record type.
+     * @param setAddlFields - Callback that stores the loaded field definitions.
+     * @returns Cleanup callback for the field request.
+     */
     GetAddlFields: (setAddlFields: (cols: Search.IField<T>[]) => void) => () => void,
+    /**
+     * Optional filters appended to filters entered through the search bar.
+     */
     AddlFilters?: Search.IFilter<T>[],
+    /**
+     * Optional number of records required before confirmation is enabled.
+     */
     MinSelection?: number,
+    /**
+     * Optional table columns and search controls rendered by the popup.
+     */
     children?: React.ReactNode,
+    /**
+     * Optional identifier used to persist the search configuration.
+     */
     StorageID?: string
 }
 

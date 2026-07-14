@@ -26,6 +26,10 @@ import React from "react";
 
 export const CHECKBOX_TEST_ID = 'checkbox-test-text';
 
+/**
+ * Renders the Check Box integration test fixture.
+ * @returns Component state and controls exercised by integration tests.
+ */
 const CheckBoxTestComponent = () => {
     type FormType = {
         FormData: string,

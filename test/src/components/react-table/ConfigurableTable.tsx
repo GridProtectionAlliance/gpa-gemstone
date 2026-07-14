@@ -34,6 +34,10 @@ export const tableTestContainerWidth = 650;
 export const CONFIGTABLE1_TEST_ID = 'configtable-test-id-1';
 export const CONFIGTABLE2_TEST_ID = 'configtable-test-id-2';
 
+/**
+ * Renders the Configurable Table integration test fixture.
+ * @returns Component state and controls exercised by integration tests.
+ */
 const ConfigurableTableTestComponent = () => {
     const data = tableData.slice();
     const [sortKey, setSortKey] = React.useState<keyof IBook>('Title');

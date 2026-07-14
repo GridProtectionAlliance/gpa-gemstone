@@ -40,6 +40,10 @@ export const Default_Tile_Layer_Options = {
     Subdomains: `abcd`,
 };
 
+/**
+ * Renders the Map integration test fixture.
+ * @returns Component state and controls exercised by integration tests.
+ */
 const MapTestComponent = () => {
     const map = React.useRef<LeafletMap | null>(null);
 

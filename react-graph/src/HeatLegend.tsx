@@ -28,10 +28,15 @@ import { CreateGuid } from '@gpa-gemstone/helper-functions';
 
 
 export interface IProps extends ILegendRequiredProps {
+  /** Optional unit appended to the minimum and maximum labels. */
   unitLabel?: string,
+  /** Minimum value displayed at the start of the gradient. */
   minValue: number,
+  /** Color displayed at the minimum end of the gradient. */
   minColor: string,
+  /** Maximum value displayed at the end of the gradient. */
   maxValue: number,
+  /** Color displayed at the maximum end of the gradient. */
   maxColor: string
 }
 
@@ -53,6 +58,11 @@ const TextStyle: React.CSSProperties = {
   transition: 'x 0.5s, y 0.5s' 
 };
 
+/**
+ * Renders a color gradient legend with formatted minimum and maximum values.
+ * @param props - Gradient colors, value range, unit, and legend identity.
+ * @returns Responsive heat-map legend.
+ */
 function HeatLegend(props: IProps) {
   const [nDigits, setNdigits] = React.useState<number>(1);
   const context = React.useContext(LegendContext);

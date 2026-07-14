@@ -26,15 +26,31 @@ import { GraphContext, IDataSeries } from './GraphContext';
 import DataLegend, { LegendStyle } from './DataLegend';
 
 interface IProps {
+    /**
+     * Optional callback invoked when the legend entry is clicked.
+     * @param e - Mouse event that triggered the click.
+     * @param legendLabel - Label of the clicked legend entry.
+     */
     OnClick?: (e: React.MouseEvent<HTMLDivElement>, legendLabel: string) => void,
+    /** Text displayed by the legend entry. */
     Label: string,
+    /** Optional color applied to the legend symbol, defaulting to black. */
     Color?: string,
+    /** Optional symbol style displayed beside the label, defaulting to solid. */
     LegendSymbol?: LegendStyle,
+    /** Optional enabled state controlling symbol opacity, defaulting to true. */
     Enabled?: boolean,
+    /** Optional flag that marks the legend entry as having no data, defaulting to false. */
     HasNoData?: boolean,
+    /** Optional tooltip text displayed while hovering over the legend entry. */
     ToolTipText?: string
 }
 
+/**
+ * Adapts a simple legend entry contract to the shared data legend.
+ * @param props - Entry label, appearance, enabled state, and click behavior.
+ * @returns Configured data legend entry.
+ */
 const LegendEntry = (props: IProps) => {
     const [guid, setGuid] = React.useState<string | null>(null);
     const context = React.useContext(GraphContext);

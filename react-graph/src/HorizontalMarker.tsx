@@ -26,16 +26,32 @@ import * as React from 'react';
 import {AxisIdentifier, AxisMap, GraphContext, IHandlers, LineMap, LineStyle} from './GraphContext';
 
 export interface IProps {
+    /** Optional X coordinate where the horizontal marker begins, defaulting to the visible domain start. */
     start?: number,
+    /** Optional X coordinate where the horizontal marker ends, defaulting to the visible domain end. */
     end?: number,
+    /** Y-axis value marked by the line. */
     Value: number,
+    /**
+     * Optional callback invoked after dragging changes the marker value.
+     * @param y - Updated Y-axis value.
+     */
     setValue?: (y: number) => void,
+    /** Stroke color applied to the marker. */
     color: string,
+    /** Dash pattern used to render the marker. */
     lineStyle: LineStyle,
+    /** Stroke width and drag-selection tolerance in pixels. */
     width: number,
+    /** Optional Y-axis associated with the marker. */
     axis?: AxisIdentifier,
 }
 
+/**
+ * Renders an optionally draggable line marking a Y-axis value.
+ * @param props - Marker value, extent, appearance, and change callback.
+ * @returns Interactive horizontal SVG marker.
+ */
 function HorizontalMarker(props: IProps) {
   /*
     Marks a Y Value horizontally as a line.

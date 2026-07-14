@@ -25,43 +25,38 @@ import * as React from 'react';
 
 interface IProps<T>{
   /**
-    * Record to be used in form
-    * @type {T}
-  */
+   * Record containing the array of selected enumeration values.
+   */
   Record: T;
   /**
-    * Field of the record to be edited
-    * @type {keyof T}
-  */
+   * Record field that stores the selected enumeration values.
+   */
   Field: keyof T;
   /**
-    * Setter function to update the Record
-    * @param record - Updated Record
-  */
+   * Updates the record when a checkbox selection changes.
+   * @param record - Record containing the updated selection.
+   */
   Setter: (record: T) => void;
   /**
-    * Array of enumerable values to create checkboxes for
-    * @type {string[]}
-  */
+   * Enumeration values rendered as individual checkboxes.
+   */
   Enum: string[];
   /**
-    * Label to display for the form, defaults to the Field prop
-    * @type {string}
-    * @optional
-  */
+   * Optional text shown above the checkboxes, defaulting to the field name.
+   */
   Label?: string;
   /**
-    * Function to determine if a checkbox should be disabled
-    * @param item - The enumeration value
-    * @returns {boolean}
-    * @optional
-  */
+   * Optional callback that determines whether an enumeration choice is disabled.
+   * @param item - Enumeration value represented by the checkbox.
+   * @returns Whether the checkbox is disabled.
+   */
   IsDisabled?: (item: string) => boolean
 }
 
 /**
- * EnumCheckBoxes Component.
- * Renders a set of checkboxes based on an enumeration, allowing multiple selection.
+ * Renders enumeration choices as checkboxes backed by a numeric flag field.
+ * @param props - Record binding, enumeration values, and optional disabled-state callback.
+ * @returns Checkbox controls for modifying the field's bit flags.
  */
 export default function EnumCheckBoxes<T>(props: IProps<T>) {
   // Determine if an enum flag is set.

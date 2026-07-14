@@ -61,6 +61,11 @@ const defaultRowStyle: React.CSSProperties = {
     width: '100%'
 };
 
+/**
+ * Renders a typed table with sortable columns and responsive width management.
+ * @param props - Table data, columns, styles, sorting, filtering, and interaction behavior.
+ * @returns Configured table element.
+ */
 export function Table<T>(props: React.PropsWithChildren<ReactTableProps.ITable<T>>) {
     const bodyRef = React.useRef<HTMLTableSectionElement | null>(null);
     const colWidthsRef = React.useRef<Map<string, width>>(new Map<string, width>());

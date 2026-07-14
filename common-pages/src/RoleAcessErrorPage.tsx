@@ -25,11 +25,25 @@ import * as React from 'react';
 import { ServerErrorIcon } from '@gpa-gemstone/react-interactive';
 
 interface IProps {
+    /**
+     * Optional CSS styles applied to the page container.
+     */
     Style?: React.CSSProperties,
+    /**
+     * Optional class name applied to the page container.
+     */
     ClassName?: string,
+    /**
+     * Optional logo displayed above the access-denied message.
+     */
     Logo?: string
 }
 
+/**
+ * Displays an access-denied page for users without the required role.
+ * @param props - Optional page styling and logo.
+ * @returns Access-denied page content.
+ */
 const RoleAccessErrorPage = (props: IProps) => 
 (
     <div style={props.Style ?? { width: '100%', height: '100%' }} className={props.ClassName ?? undefined}>

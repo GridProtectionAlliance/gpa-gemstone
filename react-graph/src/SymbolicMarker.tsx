@@ -26,16 +26,33 @@ import * as React from 'react';
 import {AxisIdentifier, AxisMap, GraphContext, IHandlers} from './GraphContext';
 
 export interface IProps {
+  /** X coordinate of the marker anchor. */
   xPos: number,
+  /** Y coordinate of the marker anchor. */
   yPos: number,
+  /** Optional per-axis flags that interpret coordinates as pixel offsets. */
   usePixelPositioning?: {x?: boolean, y?: boolean},
+  /** Half-size in pixels of the marker and its interaction area. */
   radius: number,
+  /**
+   * Optional callback invoked after dragging changes the marker position.
+   * @param x - Updated X coordinate.
+   * @param y - Updated Y coordinate.
+   */
   setPosition?: (x: number, y: number) => void,
+  /** Optional callback invoked while the pointer is over the marker. */
   onHover?: () => void,
+  /** Optional Y-axis associated with the marker. */
   axis?: AxisIdentifier,
+  /** Optional CSS styles applied to the marker container. */
   style?: React.CSSProperties
 }
 
+/**
+ * Positions draggable symbolic content at graph or pixel coordinates.
+ * @param props - Marker position, size, behavior, appearance, and content.
+ * @returns Interactive marker graphic.
+ */
 const SymbolicMarker = (props: React.PropsWithChildren<IProps>) => {
   const context = React.useContext(GraphContext);
   const [position, setPosition] = React.useState<{x: number, y: number}>({x: props.xPos, y: props.yPos});
@@ -119,13 +136,24 @@ const SymbolicMarker = (props: React.PropsWithChildren<IProps>) => {
 }
 
 interface IGraphicProps {
+  /** X coordinate of the graphic anchor. */
   x: number,
+  /** Y coordinate of the graphic anchor. */
   y: number,
+  /** Half-size of the graphic in pixels. */
   r: number,
+  /** Y-axis used to transform the vertical coordinate. */
   a: number|AxisIdentifier,
+  /** Optional CSS styles applied to the graphic container. */
   style?: React.CSSProperties, 
+  /** Optional per-axis flags that interpret coordinates as pixel offsets. */
   inPixels?: {x?: boolean, y?: boolean}
 }
+/**
+ * Positions symbolic HTML content inside the graph SVG.
+ * @param props - Anchor, size, axis, positioning mode, style, and content.
+ * @returns SVG foreign object containing the symbol.
+ */
 const SymbolicGraphic = (props: React.PropsWithChildren<IGraphicProps>) => {
   const context = React.useContext(GraphContext);
   const xPixels: number = (props.inPixels?.x ?? false) ? context.XApplyPixelOffset(props.x) : context.XTransformation(props.x); 

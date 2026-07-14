@@ -29,51 +29,53 @@ import HelpIcon from './HelpIcon';
 
 interface IProps<T> extends Omit<Gemstone.TSX.Interfaces.IBaseFormProps<T>, 'Valid' | 'Feedback'> {
     /**
-      * Type of the input field
-      * @type {'number' | 'text' | 'password' | 'email' | 'color' | 'integer'}
-      * @optional
-    */
+     * Optional value mode used by each item input, defaulting to `text`.
+     */
     Type?: 'number' | 'text' | 'password' | 'email' | 'color' | 'integer';
     /**
-    * CSS styles to apply to the Input component
-    * @type {React.CSSProperties}
-    * @optional
-    */
+     * Optional CSS styles applied to each item input.
+     */
     Style?: React.CSSProperties,
     /**
-      * Default value to use when adding an item and when value is null
-      * @type {number}
-    */
+     * Value assigned when an item is added or a disallowed null value is replaced.
+     */
     DefaultValue: number | string,
     /**
-        * Flag to allow null values
-        * @type {boolean}
-        * @optional
-    */
+     * Optional flag that permits null item values, defaulting to true.
+     */
     AllowNull?: boolean,
     /**
-      * Function to determine the validity of a field
-      * @param field - Field of the record to check
-      * @returns {boolean}
-    */
+     * Optional callback that determines whether an item is valid.
+     * @param value - Item value to validate.
+     * @param index - Position of the item in the array.
+     * @param arr - Complete array of item values.
+     * @returns Whether the item is valid.
+     */
     ItemValid?: (value: string | number, index: number, arr: Array<string | number>) => boolean;
     /**
-      * Feedback message to show when input is invalid
-      * @type {string}
-      * @optional
-    */
+     * Optional callback that provides validation feedback for an item.
+     * @param value - Item value to evaluate.
+     * @param index - Position of the item in the array.
+     * @param arr - Complete array of item values.
+     * @returns Feedback to display, or undefined when none is needed.
+     */
     ItemFeedback?: (value: string | number, index: number, arr: Array<string | number>) => string | undefined;
     /**
-     * Flag to disable add button
+     * Optional flag that hides controls for adding items, defaulting to false.
      */
     DisableAdd?: boolean;
     /**
-     * Flag to disable all input fields
+     * Optional flag that disables item inputs and controls, defaulting to false.
      */
     Disabled?: boolean; //redeclared for better jsdoc
 }
 
 //Only supporting string/number arrays for now
+/**
+ * Renders an editable array of inputs with add and remove controls.
+ * @param props - Array field binding, item defaults, and per-item validation behavior.
+ * @returns Input controls for each value in the array field.
+ */
 function MultiInput<T>(props: IProps<T>) {
     const fieldArray = props.Record[props.Field as keyof T] as Array<string | number>
 

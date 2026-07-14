@@ -29,13 +29,30 @@ import DataLegend from './DataLegend';
 import HeatLegend from './HeatLegend';
 
 interface IProps {
+  /** Direction in which legend entries are arranged. */
   orientation: 'horizontal' | 'vertical',
+  /** Available legend height in pixels. */
   height: number,
+  /** Available legend width in pixels. */
   width: number,
+  /**
+   * Optional callback that reports the width required by a vertical legend.
+   * @param width - Required legend width in pixels.
+   */
   RequestLegendWidth?: (width: number) => void,
+  /**
+   * Optional callback that reports the height required by a horizontal legend.
+   * @param height - Required legend height in pixels.
+   */
   RequestLegendHeight?: (height: number) => void,
+  /**
+   * Optional callback that broadcasts an enable or disable command to legend entries.
+   * @param args - Requesting entry and command to broadcast.
+   */
   SendMassCommand?: (args: {requester: string, command: "disable-others"|"enable-all"}) => void, 
+  /** Optional flag that removes disabled entries from the legend, defaulting to false. */
   HideDisabled?: boolean,
+  /** Legend entries rendered inside the container. */
   LegendElements: JSX.Element[]
 }
 
@@ -50,6 +67,11 @@ const cssStyle = `margin: auto auto auto 0px; display: inline-block; font-weight
 // heat legend consts
 const heatWidth = 50;
 
+/**
+ * Lays out graph legend entries horizontally or vertically.
+ * @param props - Legend entries, dimensions, orientation, and sizing callbacks.
+ * @returns Legend context provider containing the arranged entries.
+ */
 export const Legend = React.memo((props: IProps) => {
   const massEnableRef = React.useRef((_: string)=>{ /* do nothing */ });
 

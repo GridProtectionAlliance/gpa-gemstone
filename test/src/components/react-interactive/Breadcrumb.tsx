@@ -25,6 +25,10 @@ import * as React from 'react';
 
 export const BREADCRUMB_TEST_ID = 'breadcrumb-test-id';
 
+/**
+ * Renders the Breadcrumb integration test fixture.
+ * @returns Component state and controls exercised by integration tests.
+ */
 const BreadcrumbTestComponent = () => {
     type IStep = { Label: string; ID: string | number; IsNavigable?: boolean }
     const steps = [{

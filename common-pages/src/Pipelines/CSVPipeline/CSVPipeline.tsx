@@ -33,21 +33,60 @@ import ErrorBoundary from '../../ErrorBoundary';
 import { CSVFieldEditContext } from './CSVFieldContext';
 
 interface IAdditionalProps<T> {
+    /**
+     * Field definitions used to map and validate CSV columns.
+     */
     Fields: Gemstone.TSX.Interfaces.ICSVField<T>[],
+    /**
+     * Indicates whether the uploaded CSV includes a header row.
+     */
     DataHasHeaders: boolean,
+    /**
+     * Column headings parsed from or generated for the CSV.
+     */
     Headers: string[],
+    /**
+     * Updates the column headings used by the pipeline.
+     * @param headers - Headings to associate with the CSV columns.
+     */
     SetHeaders: (headers: string[]) => void,
+    /**
+     * Parsed CSV rows processed by the pipeline.
+     */
     Data: string[][],
+    /**
+     * Updates the parsed CSV rows.
+     * @param d - Parsed rows to store.
+     */
     SetData: (d: string[][]) => void,
+    /**
+     * Maps CSV headings to fields in the output record.
+     */
     HeaderMap: Map<string, keyof T | undefined>,
+    /**
+     * Updates the mapping between CSV headings and output fields.
+     * @param map - Heading-to-field associations to store.
+     */
     SetHeaderMap: (map: Map<string, keyof T | undefined>) => void
 }
 
 interface IAdditionalUIProps {
+    /**
+     * Indicates whether the uploaded CSV includes a header row.
+     */
     HasHeaders: boolean,
+    /**
+     * Updates whether the uploaded CSV includes a header row.
+     * @param hasHeaders - Whether the first row contains headings.
+     */
     SetHasHeaders: (hasHeaders: boolean) => void
 }
 
+/**
+ * Lets the user indicate whether an uploaded CSV contains column headings.
+ * @param props - Current header-row setting and its update handler.
+ * @returns Header-row selection control.
+ */
 const AdditionalUploadUI = (props: IAdditionalUIProps) => {
     return (
         <div className='row justify-content-center'>
@@ -89,6 +128,11 @@ export function useCSVPipeline<T = unknown, U extends IAdditionalProps<T> = IAdd
     }
 }
 
+/**
+ * Maps CSV columns to record fields and reports validation errors before processing.
+ * @param props - Parsed CSV data, field definitions, and pipeline state handlers.
+ * @returns CSV mapping and validation step UI.
+ */
 function CsvPipelineEditStep<T>(props: Gemstone.TSX.Interfaces.IPipelineStepProps<T, IAdditionalProps<T>>) {
     const rawDataRef = React.useRef<string>();
 

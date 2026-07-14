@@ -25,39 +25,37 @@ import Modal from './Modal';
 
 interface IProps {
     /**
-     * Title of the warning
+     * Title shown in the warning header.
      */
     Title: string,
     /**
-     * Callback function used when warning is closed
-     * @param confirmed Cancel Button(false) or Confirm Button(true)
+     * Handles the user's confirmation or cancellation of the warning.
+     * @param confirmed - True when confirmed; false when canceled.
      */
     CallBack: ((confirmed: boolean) => void),
     /**
-     * Flag to show the warning
+     * Controls whether the warning is visible.
      */
     Show: boolean,
     /**
-     * Message shown in the body of the warning
+     * Message shown in the warning body.
      */
     Message: string,
     /**
-     * Optional flag to show a cancel button
+     * Optional flag that shows the cancel button, defaulting to true.
      */
     ShowCancel?: boolean,
     /**
-     * Optional zIndex for the modal
+     * Optional stacking order applied to the warning modal, defaulting to 9990.
      */
     ZIndex?: number
 }
 
-// Usage:
-// <Warning Title='This is a Warning' Message={'Are you sure you want to Continue?'} Callback={(canceled) => setShow(false)} Show={show} />
-//
-
-// Props Description:
-// CallBack => Function to be called when closing the Modal either through Cancel (confirmed=false) or Confirm Button (confirmed=true)
-// Show => Whether to show the modal
+/**
+ * Renders a confirmation warning with a message and confirm or optional cancel actions.
+ * @param props - Configures warning visibility, text, actions, stacking order, and additional modal content.
+ * @returns The configured warning modal.
+ */
 const Warning = (props: React.PropsWithChildren<IProps>) => {
     return (
         <Modal

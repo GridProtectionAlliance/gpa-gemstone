@@ -29,14 +29,32 @@ import { OpenXDA } from '@gpa-gemstone/application-typings';
 
 
 interface IProps {
+    /**
+     * Updates the selected event type identifiers.
+     * @param typeIDs - Identifiers that should remain selected.
+     */
     SetSelectedTypeIDs: (typeIDs: number[]) => void;
+    /**
+     * Optional height used to distribute event categories across columns.
+     */
     Height?: number;
+    /**
+     * Event types available for selection.
+     */
     EventTypes: OpenXDA.Types.EventType[];
+    /**
+     * Identifiers of the currently selected event types.
+     */
     SelectedTypeID: number[];
 }
 interface ICategory { label: string, height: number }
 
 
+/**
+ * Groups event types by category and allows their selection to be toggled.
+ * @param props - Event types, selected identifiers, and selection handler.
+ * @returns Categorized event type selection controls.
+ */
 const EventTypeFilter = (props: IProps) => {
     const [evtTypeCategories, setEvtTypeCategories] = React.useState<ICategory[]>([]);
     const [nCol, setnCol] = React.useState<number>(1);
@@ -137,14 +155,41 @@ const EventTypeFilter = (props: IProps) => {
 }
 
 interface ICategoryProps {
+    /**
+     * Category name shown above the event type choices.
+     */
     Label: string,
+    /**
+     * Reports the rendered height of the category fieldset.
+     * @param h - Current fieldset height in pixels.
+     */
     SetHeight: (h: number) => void,
+    /**
+     * Event types displayed in this category.
+     */
     Data: OpenXDA.Types.EventType[],
+    /**
+     * Identifiers of the currently selected event types.
+     */
     SelectedID: number[],
+    /**
+     * Handles a change to one event type selection.
+     * @param record - Event type whose selection changed.
+     * @param selected - Whether the event type is now selected.
+     */
     OnChange: (record: OpenXDA.Types.EventType, selected: boolean) => void
+    /**
+     * Selects or clears every event type in the category.
+     * @param selected - Current all-selected state to toggle.
+     */
     SelectAll: (selected: boolean) => void
 }
 
+/**
+ * Renders the selectable event types belonging to one category.
+ * @param props - Category label, event types, and selection handlers.
+ * @returns Fieldset containing the category's event type choices.
+ */
 const EventSearchTypeCategory = (props: ICategoryProps) => {
     const formRef = React.useRef<HTMLFieldSetElement>(null);
 

@@ -28,18 +28,34 @@ import { GetTextHeight, GetTextWidth } from '@gpa-gemstone/helper-functions';
 import { cloneDeep } from 'lodash';
 
 export interface IProps {
+  /** Left plot offset in pixels. */
   offsetLeft: number,
+  /** Right plot offset in pixels. */
   offsetRight: number,
+  /** Bottom plot offset in pixels. */
   offsetBottom: number,
+  /** Reserved height for the axis in pixels. */
   heightAxis: number,
+  /** Available plot height in pixels. */
   height: number
+  /** Available plot width in pixels. */
   width: number,
+  /**
+   * Callback that reports the height required by the axis.
+   * @param h - Required axis height in pixels.
+   */
   setHeight: (h: number) => void,
+  /** Optional title displayed below the axis. */
   label?: string,
+  /** Optional flag that displays tick labels, defaulting to true. */
   showTicks?: boolean,
+  /** Optional flag that includes the date in tick labels, defaulting to true. */
   showDate?: boolean,
+  /** Optional flag that displays the rightmost tick label, defaulting to true. */
   showRightMostTick?: boolean,
+  /** Optional flag that displays the leftmost tick label, defaulting to true. */
   showLeftMostTick?: boolean,
+  /** Optional flag that formats times in UTC instead of local time, defaulting to false. */
   useUTC?: boolean
 }
 
@@ -52,6 +68,11 @@ const msPerYear = msPerDay * 365;
 type TimeStep = ('y' | 'M' | 'w' | 'd' | 'h' | 'm' | 's' | 'ms');
 type TimeFormat = 'SSS' | 'ss.SS' | 'ss' | 'mm:ss' | 'mm' | 'HH:mm' | 'HH' | 'DD HH' | 'MM/DD' | 'MM YY' | 'YYYY';
 
+/**
+ * Renders a formatted time X-axis and reports its required layout height.
+ * @param props - Axis dimensions, offsets, formatting, labels, and visibility options.
+ * @returns SVG group containing time ticks and labels.
+ */
 function TimeAxis(props: IProps) {
   /*
     Used on bottom of Plot.

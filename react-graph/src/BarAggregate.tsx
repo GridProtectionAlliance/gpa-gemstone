@@ -25,9 +25,17 @@ import * as React from 'react';
 import Bar, { IBarProps } from './Bar';
 
 interface IProps extends Omit<IBarProps, "GetBarStyle"> {
+    /**
+     * Optional method used to reduce the supplied values, defaulting to minimum, maximum, and average values.
+     */
     AggregationType?: "min_max_avg"
 }
 
+/**
+ * Reduces a value set into aggregate boundaries and renders a stacked bar.
+ * @param props - Bar properties and aggregation method.
+ * @returns Stacked bar containing the aggregate values.
+ */
 const BarAggregate = (props: IProps) => {
     const data = React.useMemo(() => {
         switch (props.AggregationType){

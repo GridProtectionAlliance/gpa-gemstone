@@ -25,15 +25,27 @@ import * as React from 'react';
 import { GraphContext, AxisMap, AxisIdentifier } from './GraphContext';
 
 interface IProps {
+    /** Fill color applied to the highlighted region. */
     Color: string;
+    /** Opacity applied to the highlighted region. */
     Opacity: number;
+    /** X-axis bounds of the highlighted region. */
     XVals: [number, number];
+    /** Optional lower Y-axis bound, defaulting to the visible domain minimum. */
     StartY?: number;
+    /** Optional upper Y-axis bound, defaulting to the visible domain maximum. */
     EndY?: number;
+    /** Optional Y-axis associated with the highlighted region. */
     Axis?: AxisIdentifier;
+    /** Optional stroke color applied around the highlighted region. */
     Stroke?: string
 }
 
+/**
+ * Renders a rectangular highlight over a bounded graph region.
+ * @param props - Highlight bounds, color, opacity, and axis.
+ * @returns SVG rectangle covering the selected region.
+ */
 const HighlightBox = (props: IProps) => {
     const context = React.useContext(GraphContext);
     const axisIndex = AxisMap.get(props.Axis);

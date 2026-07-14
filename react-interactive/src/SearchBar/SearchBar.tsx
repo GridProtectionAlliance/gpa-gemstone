@@ -31,65 +31,70 @@ import { CreateGuid, useStringMemonization } from '@gpa-gemstone/helper-function
 
 interface IProps<T> {
     /**
-     * List of available fields to be searched/filtered by
+     * Fields available for quick searches and filter creation.
      */
     CollumnList: Search.IField<T>[],
     /**
-     * Optional list of current filters, this will act as the source of truth if provided ignoring filters from StorageID.
+     * Optional controlled filter list that takes precedence over filters loaded from `StorageID`.
      */
     Filters?: Search.IFilter<T>[],
     /**
-     * Called whenever internal filters change, if Filters props is provided this must update the Filters prop to keep in sync.
-     * @param filters current filters
-     * @returns
+     * Callback fired whenever the combined filter list changes.
+     * @param filters - Current filters, including any active quick-search filter.
      */
     SetFilter: (filters: Search.IFilter<T>[]) => void,
     /**
-     * Optional default column to be used for searching via the input box
+     * Optional field searched by the debounced quick-search input.
      */
     defaultCollumn?: Search.IField<T>,
     /**
-     * Optional direction to control where filter popover is placed
+     * Optional alignment for the filter popover and child content.
      */
     Direction?: 'left' | 'right',
     /**
-     * Optional width to be used on the search bar
+     * Optional width applied to the search-bar item.
      */
     Width?: string | number,
     /**
-     * Optional label to used for search filter
+     * Optional legend displayed around the search controls.
      */
     Label?: string,
     /**
-     * Optional function used to populate enum-type filter options dynamically, will be called when enum filter is being added or edited.
+     * Optional function that loads options when an enum filter is added or edited.
+     * @param setOptions - Setter used to provide the loaded enum options.
+     * @param field - Field whose enum options should be loaded.
+     * @returns Cleanup callback invoked when the effect is replaced or unmounted.
      */
     GetEnum?: EnumSetter<T>,
     /**
-     * Optional flag to render a loading icon in quick search input box
+     * Optional flag that shows a loading indicator beside the quick-search input, defaulting to false.
      */
     ShowLoading?: boolean,
     /**
-     * Optional note to be used under quick search input
+     * Optional note displayed beneath the quick-search input.
      */
     ResultNote?: string,
     /**
-     * If provided, component stores and loads filters to/from localStorage using this key
+     * Optional local-storage key used to persist uncontrolled filters and quick-search text.
      */
     StorageID?: string
     /**
-     * Optional class to apply to outer div
+     * Optional class applied to the outer container, defaulting to `w-100`.
      */
     Class?: string
     /**
-     * Optional disabled flag
+     * Optional flag that disables the quick-search input and filter button, defaulting to false.
      */
     Disabled?: boolean,
     /**
-     * Optional help message for the filter button
+     * Optional help text displayed in a tooltip beside the filter button.
      */
     Help?: string
     /**
-     * Optional override for filter equality check
+     * Optional equality function used to decide whether changed filters should be emitted.
+     * @param newFilters - Newly combined filters to compare.
+     * @param oldFilters - Filters most recently emitted to the parent.
+     * @returns Whether the two filter lists should be treated as equal.
      */
     OverrideFilterEquality?: (newFilters: Search.IFilter<T>[], oldFilters: Search.IFilter<T>[]) => boolean
 }
@@ -104,6 +109,11 @@ export namespace Search {
     export interface IFilter<T> { FieldName: string, SearchText: string, Operator: Search.OperatorType, Type: Search.FieldType, IsPivotColumn: boolean }
 }
 
+/**
+ * Renders quick-search and structured-filter controls with optional controlled or persisted state.
+ * @param props - Configures searchable fields, filter state, persistence, layout, and option loading.
+ * @returns The search controls, active-filter popover, and filter editor modal.
+ */
 export default function SearchBar<T>(props: React.PropsWithChildren<IProps<T>>) {
     const useQuickSearch = props.defaultCollumn !== undefined;
 

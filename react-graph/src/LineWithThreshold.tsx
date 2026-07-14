@@ -32,6 +32,7 @@ import {IProps as ILineProps} from './Line';
 import DataLegend from './DataLegend';
 
 export interface IProps extends ILineProps {
+    /** Threshold definitions used to override line color across value ranges. */
     threshHolds: IThreshold[],
 }
 
@@ -41,6 +42,11 @@ export interface IThreshold {
   axis?: AxisIdentifier,
 }
 
+/**
+ * Renders a line whose segment colors change across configured thresholds.
+ * @param props - Line configuration and threshold definitions.
+ * @returns Line graphic with threshold-based style overrides.
+ */
 function LineWithThreshold(props: IProps) {
   /*
     Single Line with ability to turn off and on.

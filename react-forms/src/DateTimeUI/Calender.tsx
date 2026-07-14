@@ -25,7 +25,14 @@ import * as React from 'react';
 import * as moment from 'moment';
 
 interface IProps {
+  /**
+   * Date currently displayed and edited by the calendar.
+   */
   DateTime: moment.Moment|undefined
+  /**
+   * Updates the selected date while preserving the time fields.
+   * @param record - Newly selected date and time.
+   */
   Setter: (record: moment.Moment) => void;
 }
 
@@ -38,6 +45,11 @@ interface IWeek {
   friday: moment.Moment,
   saturday: moment.Moment
 }
+/**
+ * Renders calendar views for choosing a day, month, or year.
+ * @param props - Current date and callback used to apply a selection.
+ * @returns Navigable calendar controls for the selected date.
+ */
 export default function Calender(props: IProps) {
  
   const [weeks,setWeeks] = React.useState<IWeek[]>([]);
@@ -182,6 +194,11 @@ export default function Calender(props: IProps) {
   );
 }
 
+/**
+ * Renders one selectable day in the calendar grid.
+ * @param props - Day value, active month, current selection, and click handler.
+ * @returns A styled calendar table cell for the day.
+ */
 const DayCell = (props: {date: moment.Moment, onClick: (evt: any) => void, month: number, dateTime: moment.Moment | undefined}) => {
    const [active, setActive] = React.useState<boolean>(false);
    const [hover, setHover] = React.useState<boolean>(false);
@@ -210,6 +227,11 @@ const DayCell = (props: {date: moment.Moment, onClick: (evt: any) => void, month
     </td>
 }
 
+/**
+ * Renders one selectable month in the calendar grid.
+ * @param props - Month value, current selection, and click handler.
+ * @returns A styled calendar table cell for the month.
+ */
 const MonthCell = (props: {date: moment.Moment, onClick: (evt: any) => void, dateTime: moment.Moment | undefined}) => {
   const [active, setActive] = React.useState<boolean>(false);
   const [hover, setHover] = React.useState<boolean>(false);

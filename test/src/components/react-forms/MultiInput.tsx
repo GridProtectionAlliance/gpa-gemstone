@@ -31,6 +31,10 @@ interface IExampleRecord {
 export const MultiInputEmptyID = "MultiInputEmptyID"
 export const MultiInputPopulatedID = "MultiInputPopulatedID"
 
+/**
+ * Renders the Multi Input integration test fixture.
+ * @returns Component state and controls exercised by integration tests.
+ */
 const MultiInputTestComponent = () => {
     const [emptyRecord, setEmptyRecord] = React.useState<IExampleRecord>({ Values: [] })
     const [populatedRecord, setPopulatedRecord] = React.useState<IExampleRecord>({ Values: ['Alpha', 'Beta'] })

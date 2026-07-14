@@ -28,28 +28,29 @@ import HelpIcon from './HelpIcon';
 
 interface IProps<T, U> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
     /**
-      * Default item to append when adding a new row or when the array is empty
-      * @type {U}
-    */
+     * Item appended when the user adds a new row.
+     */
     DefaultValue: U;
     /**
-     * Flag to disable the add button
-     * @type {boolean}
-     * @optional
-    */
+     * Optional flag that hides the add button, defaulting to false.
+     */
     DisableAdd?: boolean;
     /**
-      * Render function for a single row. Receives the current item, its index, the full array,
-      * and a setter that replaces just this item in the array.
-      * @param item - Current item
-      * @param index - Index of the item in the array
-      * @param arr - Full array of items
-      * @param setItem - Callback to replace this item with an updated value
-      * @returns {React.ReactNode}
-    */
+     * Renders the content for one item in the record field's array.
+     * @param item - Item rendered in the current row.
+     * @param index - Position of the item in the array.
+     * @param arr - Complete array of items.
+     * @param setItem - Callback that replaces the current item.
+     * @returns Content rendered for the item row.
+     */
     Item: (item: U, index: number, arr: U[], setItem: (updated: U) => void) => React.ReactNode;
 }
 
+/**
+ * Renders a custom form row for each item in an array-valued record field.
+ * @param props - Array field binding, default item, and item rendering callback.
+ * @returns Custom item rows with add and remove controls.
+ */
 function MultiNodeForm<T, U>(props: IProps<T, U>) {
     const items = (props.Record[props.Field] as unknown as U[]) ?? [];
 

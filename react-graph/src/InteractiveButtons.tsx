@@ -27,22 +27,44 @@ import {SelectType} from './GraphContext'
 import Button from './Button'
 
 interface IProps {
+    /** Controls whether the combined zoom button is available. */
     showZoom: boolean,
+    /** Controls whether the horizontal zoom button is available. */
     showHorizontalZoom: boolean,
+    /** Controls whether the vertical zoom button is available. */
     showVerticalZoom: boolean,
+    /** Controls whether the pan button is available. */
     showPan: boolean,
+    /** Controls whether the reset button is available. */
     showReset: boolean,
+    /** Controls whether the custom selection button is available. */
     showSelect: boolean,
+    /** Controls whether the data-download button is available. */
     showDownload: boolean,
+    /** Controls whether the image-capture button is available. */
     showCapture: boolean,
+    /** Interaction mode currently selected by the graph. */
     currentSelection: SelectType,
+    /**
+     * Callback invoked when a toolbar button selects an interaction mode.
+     * @param selection - Button mode selected by the user.
+     */
     setSelection: (selection: ButtonType) => void,
+    /** Horizontal toolbar origin in pixels. */
     x: number,
+    /** Vertical toolbar origin in pixels. */
     y: number,
+    /** Optional flag that keeps the toolbar expanded, defaulting to false. */
     holdOpen?: boolean,
+    /** Vertical space available for laying out the toolbar in pixels. */
     heightAvaliable: number,
     /* Callback that sets the neccesarry Width */
+    /**
+     * Callback that reports the width required by the toolbar.
+     * @param w - Required toolbar width in pixels.
+     */
     setWidth: (w: number) => void,
+    /** Custom selection control rendered in the toolbar. */
     children: React.ReactNode
 }
 
@@ -50,6 +72,11 @@ type ButtonType = SelectType | 'reset' | 'download' | 'capture' | 'collaspe' | '
 type Cleanup = ((() => void) | void);
 const heightPerButton = 25;
 
+/**
+ * Renders the graph interaction toolbar and coordinates selected actions.
+ * @param props - Available actions, selection state, layout, and custom controls.
+ * @returns SVG toolbar containing the configured action buttons.
+ */
 const InteractiveButtons = React.memo((props: IProps) => {
     const btnCleanup = React.useRef<Cleanup>(undefined);
     const [selectIcon, setSelectIcon] = React.useState<React.ReactElement>(<>{Point}</>);
@@ -257,15 +284,31 @@ const InteractiveButtons = React.memo((props: IProps) => {
 });
 
 interface ICircleProps {
+  /** Button icon rendered inside the circular control. */
   button: React.ReactElement, 
+  /** Horizontal center of the control in pixels. */
   x: number,
+  /** Vertical center of the control in pixels. */
   y: number, 
+  /** Controls whether the control is rendered as active. */
   active: boolean, 
+  /** Mutable cleanup callback for the active button action. */
   btnCleanup: React.MutableRefObject<Cleanup>, 
+  /** Interaction mode selected by the control. */
   selectId: ButtonType|string,
+  /**
+   * Optional callback that replaces the custom selection icon.
+   * @param children - New icon to display.
+   * @param id - Interaction mode associated with the icon.
+   */
   setSelectIcon?: (children: React.ReactElement, id: ButtonType|string) => void
 }
 
+/**
+ * Renders one circular action control within the graph toolbar.
+ * @param props - Button icon, position, selection identity, and cleanup state.
+ * @returns Interactive SVG circle and icon.
+ */
 function CircleButton(props: ICircleProps) {
   return ( <>
     <circle r={10} cx={props.x} cy={props.y} style={{ fill: (props.active ? '#002eff' : '#1e90ff'), pointerEvents: 'all' }}

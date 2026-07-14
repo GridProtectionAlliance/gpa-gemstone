@@ -25,6 +25,11 @@ import * as React from 'react';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 import HelpIcon from './HelpIcon';
 
+/**
+ * Renders a record-bound checkbox for a Boolean field.
+ * @param props - Record binding and display configuration for the checkbox.
+ * @returns A labeled checkbox form control.
+ */
 const CheckBox = <T,>(props: Gemstone.TSX.Interfaces.IBaseFormProps<T>) => {
   const showLabel = props.Label !== "";
   const label = props.Label === undefined ? props.Field as string : props.Label;

@@ -28,31 +28,27 @@ import ToolTip from './ToolTip';
 
 interface IProps {
     /**
-     * Help content to display in the tooltip.
-     * If undefined, nothing is rendered.
-     * @type {string | JSX.Element}
+     * Optional help content shown in the tooltip; no icon is rendered when omitted or empty.
      */
     Help?: string | JSX.Element;
     /**
-     * Optional icon size in pixels. Defaults to 20.
-     * @type {number}
+     * Optional icon size in pixels, defaulting to 20.
      */
     Size?: number;
     /**
-     * Optional icon color. Defaults to 'var(--info)'.
-     * @type {string}
+     * Optional icon color, defaulting to `var(--info)`.
      */
     Color?: string;
     /**
-     * Optional CSS class for the icon.
-     * @type {string}
+     * Optional CSS class applied to the icon wrapper.
      */
     Class?: string;
 }
 
 /**
- * HelpIcon component.
- * Renders a question-mark icon that displays a tooltip on hover.
+ * Renders a question-mark icon that reveals help content on hover.
+ * @param props - Help content and optional icon presentation settings.
+ * @returns A tooltip-enabled help icon, or null when no help is provided.
  */
 const HelpIcon = (props: IProps) => {
     const [showHelp, setShowHelp] = React.useState<boolean>(false);

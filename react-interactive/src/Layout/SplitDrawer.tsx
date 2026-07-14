@@ -24,40 +24,46 @@ import * as React from 'react';
 
 interface IProps {
     /**
-     * Minimum width (in % of total)
+     * Minimum width as a percentage of the split container.
      */
     MinWidth: number,
     /**
-     * Maximum Width (in % of total)
+     * Maximum width as a percentage of the split container.
      */
     MaxWidth: number,
     /**
-     * Default Width (in % of total) 
+     * Initial width as a percentage of the split container.
      */
     Width: number,
     /**
-     * Indicates the initial state of the drawer
+     * Initial open state of the drawer.
      */
     Open: boolean,
     /**
-     * The Title used for this drawer
+     * Text displayed in the drawer header.
      */
     Title: string,
     /**
-     * This will be called with a callback to set the Drawer to open or closed form the parent
-     * @param func 
-     * @returns 
+     * Optional callback that exposes a function for opening or closing the drawer from its parent.
+     * @param func - Function the parent can call with the desired open state.
      */
     GetOverride?: (func: (open: boolean) => void) => void,
     /**
-     * Callback when the Drawer changes 
-     * @param open 
-     * @returns 
+     * Optional callback fired when the drawer's open state changes.
+     * @param open - Whether the drawer is now open.
      */
     OnChange?: (open: boolean) => void,
+    /**
+     * Optional flag that displays the drawer title while closed, defaulting to true.
+     */
     ShowClosed?: boolean
 }
 
+/**
+ * Declares a collapsible child region consumed and laid out by `VerticalSplit`.
+ * @param props - Supplies drawer sizing, state, title, callbacks, and content.
+ * @returns The drawer's child content for `VerticalSplit` to render.
+ */
 const SplitDrawer = (props: React.PropsWithChildren<IProps>) => {
     return <>{props.children}</>
 }

@@ -48,56 +48,61 @@ export type DateTimeSetting = 'startWindow' | 'endWindow' | 'startEnd';
 
 interface IProps {
     /**
-     * Filter to be used in form
+     * Time filter values edited by the component.
      */
     filter: ITimeFilter;
     /**
-     * Setter function to update filter
-     * @param start - Start Time
-     * @param end - End Time
-     * @param unit - Time Unit
-     * @param duration - Duration
-     * @returns 
+     * Applies updated time filter values.
+     * @param start - Updated start value.
+     * @param end - Updated end value.
+     * @param unit - Unit used by the duration.
+     * @param duration - Length of the time window.
      */
     setFilter: (start: string, end: string, unit: TimeUnit, duration: number) => void,
     /**
-     * Flag to toggle QuickSelects UI
+     * Controls whether quick-selection shortcuts are displayed.
      */
     showQuickSelect: boolean;
     /**
-     * Type of TimeFilter to render
+     * Filter mode used to render start, end, or window controls.
      */
     dateTimeSetting: DateTimeSetting;
     /**
-     * Time zone to use
+     * Time zone represented by the filter values.
      */
     timeZone: string;
     /**
-     * Format for date/time input
+     * Optional date and time input mode, defaulting to `datetime-local`.
      */
     format?: Gemstone.TSX.Types.DateUnit;
     /**
-     * Accuracy of the time input
+     * Optional precision applied to time input values.
      */
     accuracy?: Gemstone.TSX.Types.Accuracy
     /**
-     * Flag to toggle usage of helper message
+     * Optional flag that shows the time-zone help message, defaulting to true.
      */
     showHelpMessage?: boolean,
     /**
-    * Optional choice of QuickSelect buttons
-    */
+     * Optional range used to limit the available quick selections.
+     */
     quickSelectRange?: Gemstone.TSX.Types.QuickSelectRange
     /**
-     * Optional Flag to enable collapsing of TimeFilter
+     * Optional flag that allows the filter controls to be collapsed, defaulting to false.
      */
     enableCollapse?: boolean
     /**
-     * Optional setter to push collapse state to parent 
-    */
+     * Optional callback that reports changes to the collapsed state.
+     * @param collapsed - Whether the filter controls are collapsed.
+     */
     setCollapsed?: (collapsed: boolean) => void
 }
 
+/**
+ * Provides start/end or anchored-window filtering with optional quick selections.
+ * @param props - Active filter values, display settings, and update handlers.
+ * @returns Responsive date and time filter controls.
+ */
 const TimeFilter = (props: IProps) => {
     const containerRef = React.useRef<HTMLFieldSetElement | null>(null);
     const { width } = useGetContainerPosition(containerRef as any);

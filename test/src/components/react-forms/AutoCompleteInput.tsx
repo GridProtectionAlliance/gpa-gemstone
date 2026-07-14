@@ -31,6 +31,10 @@ interface IExampleRecord {
 const ExampleOptions = ["Emerson", "Thoreau", "Descartes", "Kierkegaard", "deNavarre", "Porete"]
 export const AutoCompleteInputID = "autoCompleteInputID"
 
+/**
+ * Renders the Auto Complete Input integration test fixture.
+ * @returns Component state and controls exercised by integration tests.
+ */
 const AutoCompleteInputTestComponent = () => {
 
     const [exampleRecord, setExampleRecord] = React.useState<IExampleRecord>({Name: ""})

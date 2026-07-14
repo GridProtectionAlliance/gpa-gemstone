@@ -29,53 +29,52 @@ import HelpIcon from './HelpIcon';
 
 interface IProps<T> extends Omit<Gemstone.TSX.Interfaces.IBaseFormProps<T>, 'Valid' | 'Feedback'> {
     /**
-    * CSS styles to apply to the Input component
-    * @type {React.CSSProperties}
-    * @optional
-    */
+     * Optional CSS styles applied to each autocomplete input.
+     */
     Style?: React.CSSProperties,
     /**
-      * Default value to use when adding an item and when value is null
-      * @type {number | string}
-    */
+     * Value assigned when an item is added or a disallowed null value is replaced.
+     */
     DefaultValue: number | string,
     /**
-      * Flag to allow null values
-      * @type {boolean}
-      * @optional
-    */
+     * Optional flag that permits null item values, defaulting to true.
+     */
     AllowNull?: boolean,
     /**
-      * Function to determine the validity of a field
-      * @param value - The value of the item to check
-      * @param index - The index of the item in the array
-      * @param arr - The full array of items
-      * @returns {boolean}
-    */
+     * Optional callback that determines whether an item is valid.
+     * @param value - Item value to validate.
+     * @param index - Position of the item in the array.
+     * @param arr - Complete array of item values.
+     * @returns Whether the item is valid.
+     */
     ItemValid?: (value: string | number, index: number, arr: Array<string | number>) => boolean;
     /**
-      * Feedback message to show when input is invalid
-      * @param value - The value of the item to check
-      * @param index - The index of the item in the array
-      * @param arr - The full array of items
-      * @returns {string | undefined}
-    */
+     * Optional callback that provides feedback for an item.
+     * @param value - Item value to evaluate.
+     * @param index - Position of the item in the array.
+     * @param arr - Complete array of item values.
+     * @returns Feedback to display, or undefined when no feedback is needed.
+     */
     ItemFeedback?: (value: string | number, index: number, arr: Array<string | number>) => string | undefined;
     /**
-     * Flag to disable add button
+     * Optional flag that hides controls for adding items, defaulting to false.
      */
     DisableAdd?: boolean;
     /**
-     * Flag to disable all input fields
+     * Optional flag that disables inputs and item controls, defaulting to false.
      */
     Disabled?: boolean;
     /**
-     * List of autocomplete suggestion options
-     * @type {string[]}
+     * Values offered as autocomplete suggestions for each item.
      */
     Options: string[];
 }
 
+/**
+ * Renders an editable array of autocomplete inputs with add and remove controls.
+ * @param props - Array field binding, suggestion values, and item behavior.
+ * @returns Autocomplete controls for each value in the array field.
+ */
 function AutoCompleteMultiInput<T>(props: IProps<T>) {
     const fieldArray = props.Record[props.Field as keyof T] as Array<string | number>
 

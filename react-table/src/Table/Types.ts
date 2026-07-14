@@ -26,150 +26,147 @@ import { IUnit } from "../Filters/NumberFilter";
 
 export interface ITable<T> {
     /**
-    * List of T objects used to generate rows
-    */
+     * Records rendered as table rows.
+     */
     Data: T[];
     /**
-    * Callback when the user clicks on a data entry
-    * @param data contains the data including the columnKey
-    * @param event the onClick Event to allow propagation as needed
-    * @returns
-    */
+     * Optional handler fired when a row or cell is clicked.
+     * @param data - Row and column information for the clicked location.
+     * @param event - Mouse event raised by the row or cell.
+     */
     OnClick?: (
         data: { colKey?: string; colField?: keyof T; row: T; data: T[keyof T] | null; index: number },
         event: React.MouseEvent<HTMLElement, MouseEvent>,
     ) => void;
     /**
-    * Key of the collumn to sort by
-    */
+     * Key of the column currently used to sort the table.
+     */
     SortKey: string;
     /**
-    * Boolen to indicate whether the sort is ascending or descending
-    */
+     * Indicates whether the active sort direction is ascending.
+     */
     Ascending: boolean;
     /**
-    * Callback when the data should be sorted
-    * @param data the information of the collumn including the Key of the collumn
-    * @param event The onCLick event to allow Propagation as needed
-    */
+     * Handles a request to sort by a column.
+     * @param data - Column and direction requested for sorting.
+     * @param event - Mouse event raised by the column header.
+     */
     OnSort(data: { colKey: string; colField?: keyof T; ascending: boolean }, event: React.MouseEvent<HTMLElement, MouseEvent>): void;
     /**
-    * Class of the table component
-    */
+     * Optional class name applied to the table element.
+     */
     TableClass?: string;
     /**
-    * style of the table component
-    */
+     * Optional CSS styles applied to the table element.
+     */
     TableStyle?: React.CSSProperties;
     /**
-    * style of the thead component
-    */
+     * Optional CSS styles applied to the table header.
+     */
     TheadStyle?: React.CSSProperties;
     /**
-    * Class of the thead component
-    */
+     * Optional class name applied to the table header.
+     */
     TheadClass?: string;
     /**
-    * style of the tbody component
-    * Note: Display style overwritten to "block"
-    */
+     * Optional CSS styles applied to the table body; its display remains `block`.
+     */
     TbodyStyle?: React.CSSProperties;
     /**
-    * Class of the tbody component
-    */
+     * Optional class name applied to the table body.
+     */
     TbodyClass?: string;
     /**
-    * style of the tfoot component
-    */
+     * Optional CSS styles applied to the table footer.
+     */
     TfootStyle?: React.CSSProperties;
     /**
-    * Class of the tfoot component
-    */
+     * Optional class name applied to the table footer.
+     */
     TfootClass?: string;
 
     /**
-    * determines if a row should be styled as selected
-    * @param data the item to be checked
-    * @returns true if the row should be styled as selected
-    */
+     * Optional callback that determines whether a row uses selected styling.
+     * @param data - Record represented by the row.
+     * @param index - Position of the record in the table data.
+     * @returns Whether the row is selected.
+     */
     Selected?: (data: T, index: number) => boolean;
     /**
-    *
-    * @param data the information of the row including the item of the row
-    * @param e the event triggering this
-    * @returns
-    */
+     * Optional handler fired when dragging begins from a table cell.
+     * @param data - Row and column information for the dragged location.
+     * @param e - Drag event raised by the cell.
+     */
     OnDragStart?: (
         data: { colKey?: string; colField?: keyof T; row: T; data: T[keyof T] | null; index: number },
         e: React.DragEvent<Element>,
     ) => void;
     /**
-    * The default style for the tr element
-    */
+     * Optional CSS styles applied to each table row.
+     */
     RowStyle?: React.CSSProperties;
     /**
-    * a Function that retrieves a unique key used for React key properties
-    * @param data the item to be turned into a key
-    * @returns a unique Key
-    */
+     * Produces a stable React key for a row.
+     * @param data - Record represented by the row.
+     * @param index - Optional position of the record in the table data.
+     * @returns Key used to identify the rendered row.
+     */
     KeySelector: (data: T, index?: number) => string | number;
     
     /**
-    * Optional Element to display in the last row of the Table
-    * use this for displaying warnings when the Table content gets cut off.
-    * Data appears in the tfoot element
-    */
+     * Optional content displayed in the table footer, such as a truncation warning.
+     */
     LastRow?: string | React.ReactNode;
     /**
-    * Optional Element to display on upper Right corner
-    */
+     * Optional content displayed in the upper-right trailing column.
+     */
     LastColumn?: string | React.ReactNode;
     
     /**
-    * Optional Callback that gets called when there is not enough space to display columns
-    * @param disabled takes in string of disabled keys
-    */
+     * Optional callback fired when columns are hidden because the table is too narrow.
+     * @param disabled - Keys of columns hidden to reduce the table width.
+     */
     ReduceWidthCallback?: (disabled: string[]) => void;
     /**
-    * Callback to set filters for data. Required if using filterable columns.
-    * @param filters sets the set of filters
-    */
+     * Optional callback that applies filters edited through filterable columns.
+     * @param filters - Complete filter definitions to apply.
+     */
     SetFilters?: (filters: Search.IFilter<T>[]) => void;
     /**
-    * Filters currently filtering the data, required if using filterable columns.
-    */
+     * Optional filter definitions currently applied to filterable columns.
+     */
     Filters?: Search.IFilter<T>[];
 }
 
 export interface IColumn<T> {
     /**
-     * a unique Key for this Collumn
+     * Unique key used to identify the column.
      */
     Key: string;
     /**
-     * Flag indicating whether sorting by this Collumn is allowed
+     * Optional flag that permits sorting by the column, defaulting to true.
      */
     AllowSort?: boolean;
     /**
-     * Optional - the Field to be used 
+     * Optional record field whose value is displayed by the column.
      */
     Field?: keyof T;
     /**
-     * The Default style for the th element
+     * Optional CSS styles applied to the column header.
      */
     HeaderStyle?: React.CSSProperties;
     /**
-     * The Default style for the td element
+     * Optional CSS styles applied to the column's data cells.
      */
     RowStyle?: React.CSSProperties;
     /**
-     * Determines the Content to be displayed
-     * @param d the data to be turned into content
-     * @returns the content displayed
+     * Optional callback that renders content for a data cell.
+     * @param d - Record, field, key, index, and styles for the cell.
+     * @returns Content displayed in the data cell.
      */
     Content?: (d: { item: T, key: string, field: keyof T | undefined, index: number, style?: React.CSSProperties }) => React.ReactNode;
     /**
-     * Determines if a column's width is adjustable, undefined is read as false.
+     * Optional flag that allows the column width to be adjusted, defaulting to false.
      */
     Adjustable?: boolean
 }
@@ -178,19 +175,19 @@ export interface IOptions { Value: string | number, Label: string }
 
 export interface IFilterableCollumn<T> extends IColumn<T> {
     /**
-     * Type of field, determines filter entry UI of header.
+     * Optional field type that determines which filter editor is displayed.
      */
     Type?: Search.FieldType, 
     /**
-     * Enumeration for field, required for 'enum' type fields (has no effect otherwise)
+     * Optional values offered when the field uses an enumeration filter.
      */
     Enum?: IOptions[],
     /**
-     * Definition for a different label on hover of header.
+     * Optional detailed label shown inside the expanded filter menu.
      */
     ExpandedLabel?: string,
     /**
-     * Definition for units on a number filter (has no effect if field type is not 'number')
+     * Optional units used to display and convert numeric filter values.
      */
     Unit?: IUnit[]
 }

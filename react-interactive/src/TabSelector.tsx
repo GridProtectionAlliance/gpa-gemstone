@@ -24,30 +24,36 @@ import * as React from 'react';
 import { GetTextWidth, useGetContainerPosition } from '@gpa-gemstone/helper-functions';
 
 interface ITab {
+    /**
+     * Text displayed for the tab.
+     */
     Label: string,
+    /**
+     * Identifier passed to the selection callback and used to mark the active tab.
+     */
     Id: string,
 }
 
 interface IProps {
     /**
-     * List of tabs to be used in the TabSelector
+     * Ordered tabs displayed directly or in the overflow menu.
      */
     Tabs: ITab[],
     /**
-     * Setter function to set tab that was clicked
-     * @param t tab that was clicked
-     * @returns 
+     * Callback fired with the identifier of the selected tab.
+     * @param tab - Identifier of the tab selected by the user.
      */
     SetTab: (tab: string) => void,
     /**
-     * Id of the current tab
+     * Identifier of the tab currently marked active.
      */
     CurrentTab: string,
 }
 
 /**
- * Component for rendering a dropdown tab selector.
- * @param props - configures and manages tab selector.
+ * Renders as many tabs as fit and moves overflow tabs into a dropdown menu.
+ * @param props - Supplies available tabs, the active identifier, and the selection callback.
+ * @returns The responsive tab selector.
  */
 const TabSelector = (props: IProps) => {
     // State to manage things like visible tabs and container width.

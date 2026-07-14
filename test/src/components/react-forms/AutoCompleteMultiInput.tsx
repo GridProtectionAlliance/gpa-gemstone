@@ -33,6 +33,10 @@ const ExampleOptions = ["Emerson", "Thoreau", "Descartes", "Kierkegaard", "deNav
 export const AutoCompleteMultiInputEmptyID = "AutoCompleteMultiInputEmptyID"
 export const AutoCompleteMultiInputPopulatedID = "AutoCompleteMultiInputPopulatedID"
 
+/**
+ * Renders the Auto Complete Multi Input integration test fixture.
+ * @returns Component state and controls exercised by integration tests.
+ */
 const AutoCompleteMultiInputTestComponent = () => {
     const [emptyRecord, setEmptyRecord] = React.useState<IExampleRecord>({ Values: [] })
     const [populatedRecord, setPopulatedRecord] = React.useState<IExampleRecord>({ Values: ['Emerson', 'Thoreau'] })

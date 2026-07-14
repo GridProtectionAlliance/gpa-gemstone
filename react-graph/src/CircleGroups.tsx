@@ -28,21 +28,45 @@ import Circle from './Circle';
 import DataLegend from './DataLegend';
 
 export interface IProps {
+  /** Optional label displayed for the circle series in the legend. */
   Legend?: string,
+  /** Default fill color applied to every circle in the series. */
   Color: string,
+  /** Data-space coordinates rendered as circles. */
   Data: [number, number][],
+  /** Optional Y-axis associated with the series. */
   Axis?: AxisIdentifier,
+  /**
+   * Optional callback that customizes an individual circle.
+   * @param dataPoint - Coordinates of the circle being styled.
+   * @param index - Position of the circle in the data array.
+   * @returns Style overrides for the circle.
+   */
   GetCircleStyle?: (dataPoint: [number, number], index: number) => ICircleStyle
+  /**
+   * Optional callback invoked when an individual circle is clicked.
+   * @param dataPoint - Coordinates of the clicked circle.
+   * @param index - Position of the circle in the data array.
+   */
   OnClick?: (dataPoint: [number, number], index: number) => void
 }
 
 export interface ICircleStyle {
+  /** Optional fill color that replaces the series color for one circle. */
   ColorOverride?: string,
+  /** Optional opacity applied to one circle, defaulting to 1. */
   Opacity?: number,
+  /** Optional radius in pixels for one circle, defaulting to 5. */
   Radius?: number,
+  /** Optional stroke color applied around one circle. */
   BorderColor?: string
 }
 
+/**
+ * Renders and registers a legend-enabled series of circle data points.
+ * @param props - Series data, styling callbacks, and legend options.
+ * @returns SVG group containing visible circles in the current domain.
+ */
 const CircleGroup = React.memo((props: IProps) => {
 	const [guid, setGuid] = React.useState<string|undefined>(undefined);
 	const [enabled, setEnabled] = React.useState<boolean>(true);

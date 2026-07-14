@@ -28,54 +28,48 @@ import { Gemstone } from '@gpa-gemstone/application-typings';
 
 export interface IProps<T> extends Omit<Gemstone.TSX.Interfaces.IBaseFormProps<T>, 'Setter'> {
     /**
-    * Function to determine the validity of a field
-    * @param field - Field of the record to check
-    * @returns {boolean}
-    */
+     * Optional callback that determines whether the selected field value is valid.
+     * @param field - Record field to validate.
+     * @returns Whether the field is valid.
+     */
     Valid?: (field: keyof T) => boolean;
     /**
-      * Feedback message to show when input is invalid
-      * @type {string}
-      * @optional
-    */
+     * Optional message shown when the selection is invalid.
+     */
     Feedback?: string;
     /**
-    * Flag to allow custom input values
-    * @type {boolean}
-    * @optional
-    */
+     * Optional flag that accepts the entered search text as a custom value, defaulting to false.
+     */
     AllowCustom?: boolean
     /**
-    * Function to perform a search and return a promiselike object with a list of IOption and an optional callback
-    * @param search - Search string
-    * @returns {AbortablePromise<T>}
-    */
+     * Searches for options matching the current input text.
+     * @param search - Text entered in the search control.
+     * @returns Abortable request for matching options.
+     */
     Search: (search: string) => Gemstone.TSX.Interfaces.AbortablePromise<Gemstone.TSX.Interfaces.ILabelValue<string | number>[]>;
     /**
-    * CSS styles to apply to the form group
-    * @type {React.CSSProperties}
-    * @optional
-    */
+     * Optional CSS styles applied to the surrounding form group.
+     */
     Style?: React.CSSProperties;
     /**
-    * CSS style to apply to the button holding the selected value
-    * @type {React.CSSProperties}
-    * @optional    
-    */
+     * Optional CSS styles applied to the control that displays the selected value.
+     */
     BtnStyle?: React.CSSProperties
-    /*
-    * Function to get the initial search text or when the element loses focus or when an option is selected
-    */
+    /**
+     * Optional callback that resolves the search text used initially and after selection or blur.
+     * @returns Abortable request for the display label.
+     */
     GetLabel?: () => Gemstone.TSX.Interfaces.AbortablePromise<string>
     /**
-     * Flag to reset search text to an empty string when a user selects an option or when the element loses focus. Defaulting to false
+     * Optional flag that clears search text after selection or blur, defaulting to false.
      */
     ResetSearchOnSelect?: boolean,
 
     /**
-    * Setter function to update the Record
-    * @param record - Updated Record
-    */
+     * Updates the record after an option is selected.
+     * @param record - Record containing the selected value.
+     * @param selectedOption - Option selected by the user.
+     */
     Setter: (record: T, selectedOption: Gemstone.TSX.Interfaces.ILabelValue<string | number>) => void;
 }
 
@@ -87,6 +81,11 @@ interface IStylableOptionOverride extends IStylableOption {
     Label: string
 }
 
+/**
+ * Renders a record-bound selector that asynchronously searches for matching options.
+ * @param props - Record binding and callbacks for searching, labeling, validation, and updates.
+ * @returns A searchable dropdown with validation and loading feedback.
+ */
 export default function SearchableSelect<T>(props: IProps<T>) {
     const [search, setSearch] = React.useState<string>(() =>
         getInitialSearchText(props.ResetSearchOnSelect ?? false, (props.Record[props.Field] as any)?.toString() ?? '')

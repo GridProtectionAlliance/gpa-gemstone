@@ -23,9 +23,22 @@ import * as React from 'react';
 import { Search } from '@gpa-gemstone/react-interactive';
 
 interface IProps<T> { 
+    /**
+     * Applies the selected numeric filter.
+     * @param evt - Filter definitions to apply.
+     */
     SetFilter: (evt: Search.IFilter<T>[]) => void,
+    /**
+     * Numeric filter definitions currently applied to the field.
+     */
     Filter: Search.IFilter<T>[],
+    /**
+     * Name of the record field filtered by the component.
+     */
     FieldName: string,
+    /**
+     * Optional units used to display and convert numeric filter values.
+     */
     Unit?: IUnit[]
 }
 

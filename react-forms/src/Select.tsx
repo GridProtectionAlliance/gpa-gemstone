@@ -29,33 +29,34 @@ import HelpIcon from './HelpIcon';
 
 interface IProps<T> extends Omit<Gemstone.TSX.Interfaces.IBaseFormProps<T>, 'Setter'> {
   /**
-    * Options for the select dropdown
-    * @type {{ Value: string; Label: string }[]}
-  */
+   * Choices rendered in the select dropdown.
+   */
   Options: Gemstone.TSX.Interfaces.ILabelValue<string | number>[];
   /**
-    * Flag to include an empty option in the select dropdown
-    * @type {boolean}
-    * @optional
-  */
+   * Optional flag that includes an empty dropdown choice, defaulting to false.
+   */
   EmptyOption?: boolean;
   /**
-    * Label to display for the empty option
-    * @type {string}
-    * @optional
-  */
+   * Optional text shown for the empty choice, defaulting to an empty string.
+   */
   EmptyLabel?: string;
   /**
-    * Setter function to update the Record
-    * @param record - Updated Record
-  */
+   * Updates the record after an option is selected.
+   * @param record - Record containing the selected value.
+   * @param selectedOption - Option selected by the user.
+   */
   Setter: (record: T, selectedOption: Gemstone.TSX.Interfaces.ILabelValue<string | number>) => void;
   /**
-   * Optional CSS styles to apply to the select component
+   * Optional CSS styles applied to the select component.
    */
   Style?: React.CSSProperties;
 }
 
+/**
+ * Renders a record-bound dropdown for selecting one labeled value.
+ * @param props - Record binding, option choices, and selection behavior.
+ * @returns A labeled select control with validation feedback.
+ */
 export default function Select<T>(props: IProps<T>) {
 
   // Effect to validate the current value against the available options.

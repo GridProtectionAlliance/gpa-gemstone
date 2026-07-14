@@ -25,11 +25,11 @@ import React from 'react'
 
 interface IProps {
      /**
-     * Maximum rows to display without scrolling
+     * Maximum number of rows shown before the grid scrolls vertically.
      */
     RowsPerPage: number
     /**
-     * Optional maximum number of columns per row
+     * Optional maximum number of child items placed in each row.
      */
     ColMax?: number
 }
@@ -45,6 +45,11 @@ interface IRow {
     NumOfCols: number
 }
 
+/**
+ * Arranges child elements into balanced rows and columns within a scrolling grid.
+ * @param props - Configures row capacity, column limits, and grid content.
+ * @returns The responsive grid of child elements.
+ */
 const LayoutGrid = (props: React.PropsWithChildren<IProps>) => {
     const [rows, setRows] = React.useState<IRow[]>([]);
     const totalNumOfItems = React.Children.count(props.children);

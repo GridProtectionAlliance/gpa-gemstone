@@ -28,91 +28,72 @@ import HelpIcon from './HelpIcon';
 
 interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
     /**
-      * Function to determine the validity of a field
-      * @param field - Field of the record to check
-      * @returns {boolean}
-    */
+     * Determines whether the edited field is valid.
+     * @param field - Record field to validate.
+     * @returns Whether the field is valid.
+     */
     Valid: (field: keyof T) => boolean;
     /**
-      * Feedback message to show when input is invalid
-      * @type {string}
-      * @optional
-    */
+     * Optional message shown when the input is invalid.
+     */
     Feedback?: string;
     /**
-    * Flag to disable the input element
-    * @type {boolean}
-    * @optional
-    */
+     * Optional flag that disables the input while leaving the button independently configurable, defaulting to false.
+     */
     InputDisabled?: boolean;
     /**
-    * Type of the input field
-    * @type {'number' | 'text' | 'password' | 'email' | 'color' | 'integer'}
-    * @optional
-   */
+     * Optional input value mode, defaulting to `text`.
+     */
     Type?: 'number' | 'text' | 'password' | 'email' | 'color' | 'integer';
     /**
-    * Help message or element to display
-    * @type {string | JSX.Element}
-    * @optional
-   */
+     * Optional help content displayed beside the input label.
+     */
     Help?: string | JSX.Element;
     /**
-    * CSS styles to apply to the input group
-    * @type {React.CSSProperties}
-    * @optional
-    */
+     * Optional CSS styles applied to the surrounding form group.
+     */
     InputStyle?: React.CSSProperties;
     /**
-    * Flag to allow null values
-    * @type {boolean}
-    * @optional
-   */
+     * Optional flag that permits null values, defaulting to false.
+     */
     AllowNull?: boolean;
     /**
-    * Size of the input field
-    * @type {'small' | 'large'}
-    * @optional
-    */
+     * Optional Bootstrap sizing applied to the input group.
+     */
     Size?: 'small' | 'large',
     /**
-    * Default value for the input field if it's null
-    * @type {number}
-    * @optional
-    */
+     * Optional numeric value substituted when null is not allowed, defaulting to 0.
+     */
     DefaultValue?: number,
     /**
-    * Function to handle button click event
-    * @param evt - React mouse event
-    * @returns {void}
-    */
+     * Handles activation of the button beside the input.
+     * @param evt - Mouse event produced by the button click.
+     */
     OnBtnClick: (evt: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
     /**
-    * Label for the button
-    * @type {string}
-    */
+     * Text displayed inside the button.
+     */
     BtnLabel: string;
     /**
-    * CSS class for the button
-    * @type {string}
-    * @optional
-   */
+     * Optional CSS class applied to the button, defaulting to `btn btn-outline-secondary`.
+     */
     BtnClass?: string;
     /**
-    * Flag to disable the button
-    * @type {boolean}
-    * @optional
-    */
+     * Optional flag that disables the button, defaulting to false.
+     */
     BtnDisabled?: boolean;
     /**
-    * CSS styles to apply to the button
-    * @type {React.CSSProperties}
-    * @optional
-   */
+     * Optional CSS styles applied to the button.
+     */
     BtnStyle?: React.CSSProperties;
 }
 
 
+/**
+ * Renders a validated record-bound input with an adjacent action button.
+ * @param props - Input configuration and presentation or behavior for the action button.
+ * @returns A labeled input group with validation feedback and a button.
+ */
 function InputWithButton<T>(props: IProps<T>) {
     const internal = React.useRef<boolean>(false);
     const [heldVal, setHeldVal] = React.useState<string>(''); // Need to buffer tha value because parseFloat will throw away trailing decimals or zeros

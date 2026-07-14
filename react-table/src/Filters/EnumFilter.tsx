@@ -32,20 +32,20 @@ interface IOptions { Value: string | number, Label: string }
 */
 interface IProps<T> { 
     /**
-    * Function to set the filter based on Search.IFilter<T> array.
-    * @param evt - Event handler that updates the filter.
-    */
+     * Applies the selected enumeration filter.
+     * @param evt - Filter definitions to apply.
+     */
     SetFilter: (evt: Search.IFilter<T>[]) => void,
     /**
-    * Array of filters of type Search.IFilter<T>.
-    */
+     * Enumeration filter definitions currently applied to the field.
+     */
     Filter: Search.IFilter<T>[],
     /**
-     * Name of filtering field.
+     * Name of the record field filtered by the component.
      */
     FieldName: string,
     /**
-     * The array of IOptions[] for filtering.
+     * Enumeration values available for selection.
      */
     Options: IOptions[]
     }

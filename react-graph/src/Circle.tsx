@@ -27,22 +27,41 @@ import * as React from 'react';
 import {IDataSeries, GraphContext, IGraphContext, IHandlers, IActionFunctions, AxisIdentifier, AxisMap} from './GraphContext';
 
 export interface IProps {
+  /** Data-space coordinates used to position the circle. */
   data: [number, number],
+  /** Fill color applied to the circle. */
   color: string,
+  /** Circle radius in pixels. */
   radius: number,
+  /** Optional stroke color applied around the circle. */
   borderColor?: string,
+  /** Optional stroke width applied around the circle. */
   borderThickness?: number,
+  /** Optional text displayed inside the circle. */
   text?: string,
+  /** Optional circle opacity, defaulting to 1. */
   opacity?: number,
+  /** Optional Y-axis used to transform the vertical coordinate. */
   axis?: AxisIdentifier,
+  /**
+   * Optional callback invoked when the circle is clicked.
+   * @param actions - Helpers for changing the circle's position and selection state.
+   */
   onClick?: (actions: IActionFunctions) => void
 }
 
 interface IContextlessProps{
+  /** Graph context used to transform and interact with the circle. */
   context: IGraphContext
+  /** Circle properties forwarded to the rendered graphic. */
   circleProps: IProps
 }
 
+/**
+ * Renders an interactive circle using an explicitly supplied graph context.
+ * @param props - Graph context and circle definition to render.
+ * @returns Interactive SVG circle graphic.
+ */
 export function ContextlessCircle(props: IContextlessProps) {
   /*
     Circle with basic styling
@@ -152,6 +171,11 @@ export function ContextlessCircle(props: IContextlessProps) {
 }
 
 // Higher-order component that uses GraphContext to pass down context to the ContextlessCircle
+/**
+ * Renders an interactive circle using the nearest graph context.
+ * @param props - Circle position, appearance, and click behavior.
+ * @returns Context-aware circle graphic.
+ */
 const Circle = (props: IProps) => {
   const context = React.useContext(GraphContext);
   return <ContextlessCircle circleProps={props} context={context}/>

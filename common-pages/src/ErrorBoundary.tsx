@@ -32,27 +32,32 @@ interface IError {
 
 interface IProps {
     /**
-     * If provided, this message will be shown instead of the default error message. This is useful for providing a more user-friendly message or additional context about the error. NOTE: This will only be applied if ErrorContent is not provided, as ErrorContent is expected to provide its own error display.
+     * Optional message shown instead of the default error label when custom content is not provided.
      */
     ErrorMessage?: string,
     /**
-     * If provided, this content will be shown instead of the default error content. This is useful for providing a more customized error display. NOTE: This will take precedence over ErrorMessage and ErrorIconSize, as it is expected to provide its own error display.
+     * Optional callback that renders custom error content instead of the default display.
+     * @param props - Error captured by the boundary.
+     * @returns Content displayed for the captured error.
      */
     ErrorContent?: (props: IError) => React.ReactNode,
     /**
-     * If provided, this style will be applied to the error container. This is useful for customizing the appearance of the error display.
+     * Optional CSS styles applied to the error container.
      */
     Style?: CSSProperties,
     /**
-     * If provided, this class name will be applied to the error container. This is useful for applying custom styles to the error display.
+     * Optional class name applied to the error container.
      */
     ClassName?: string,
     /**
-     * If provided, this size will be applied to the error icon. This is useful for customizing the appearance of the error display. NOTE: This will only be applied if ErrorContent is not provided, as ErrorContent is expected to provide its own error display.
+     * Optional size applied to the default error icon, defaulting to 150 pixels.
      */
     ErrorIconSize?: number
 }
 
+/**
+ * Catches rendering errors and displays either a default or caller-provided error view.
+ */
 export default class ErrorBoundary extends React.Component<React.PropsWithChildren<IProps>, IError> {
     constructor(props: IProps) {
         super(props);

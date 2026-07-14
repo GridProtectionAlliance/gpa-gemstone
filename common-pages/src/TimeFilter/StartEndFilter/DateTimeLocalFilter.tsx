@@ -27,10 +27,21 @@ import QuickSelects, { getQuickSelectRange } from '../QuickSelects';
 import { Modal } from '@gpa-gemstone/react-interactive';
 import { IFilterProps } from './StartEndFilter';
 
+<<<<<<< HEAD
 const FirstFallbackBreakpointQS = 1768;
 const SecondFallbackBreakpointQS = 550;
 const FirstFallbacKBreakpointNoQS = 612;
 const ModalBreakpointQS = 350;
+=======
+/**
+ * Edits the local start and end date-time values of a normalized time window.
+ * @param props - Current time window, date-time settings, and update handlers.
+ * @returns Start and end local date-time filter controls.
+ */
+const DateTimeLocalFilter = (props: IFilterProps) => {
+    const FirstFallbackBreakpointQS = 1768;
+    const SecondFallbackBreakpointQS = 612, FirstFallbacKBreakpointNoQS = 612;
+>>>>>>> 5d8b83a (First documentation pass)
 
 const DateTimeLocalFilter = (props: IFilterProps) => {
     const [showQuickPickModal, setShowQuickPickModal] = React.useState<boolean>(false);

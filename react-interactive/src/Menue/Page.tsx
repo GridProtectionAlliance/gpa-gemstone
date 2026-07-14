@@ -28,20 +28,37 @@ import { NavLink, useLocation } from 'react-router-dom';
 import { Context, SectionContext } from './Context';
 
 export interface IProps {
-    /** Needed to specify whether a user can access a NavLink via Administrator role. */
+    /**
+     * Optional roles allowed to see and navigate to the page.
+     */
     RequiredRoles?: Application.Types.SecurityRoleName[];
-    /** Name of the page thats needed for Routing */
+    /**
+     * Route segment appended to the application's home path.
+     */
     Name: string;
-    /** Name of the NavLink on the sidebar */
+    /**
+     * Optional text displayed for the page in the sidebar.
+     */
     Label?: string,
-    /** Icon that will show next to your NavLink */
+    /**
+     * Optional icon displayed beside the page label.
+     */
     Icon?: React.ReactNode,
-    /** Name of the path or paths thats used for Dynamic Routing with Name being the root of the path*/
+    /**
+     * Optional child route suffixes registered beneath `Name`.
+     */
     Paths?: string[],
-    /** Pages where this link should remain acitive */
+    /**
+     * Optional path fragments that keep this page's navigation link active.
+     */
     OtherActivePages?: string[]
 }
 
+/**
+ * Renders a role-restricted sidebar link and tracks whether its route is active.
+ * @param props - Configures the route, access, label, icon, active aliases, and page content.
+ * @returns The navigation link and collapsed tooltip, or null when hidden.
+ */
 const Page = (props: React.PropsWithChildren<IProps>) => {
     const [hover, setHover] = React.useState<boolean>(false);
     const [className, setClassName] = React.useState<string>("nav-link");

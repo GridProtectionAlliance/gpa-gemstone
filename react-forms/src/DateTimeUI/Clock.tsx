@@ -27,13 +27,28 @@ import { IsInteger } from '@gpa-gemstone/helper-functions'
 import { Gemstone } from '@gpa-gemstone/application-typings';
 
 interface IProps {
+    /**
+     * Date and time whose clock fields are displayed and edited.
+     */
     DateTime: moment.Moment| undefined,
+    /**
+     * Updates the selected time.
+     * @param record - Date and time containing the updated clock fields.
+     */
     Setter: (record: moment.Moment) => void,
+    /**
+     * Optional precision of the editable time fields, defaulting to seconds.
+     */
     Accuracy?: Gemstone.TSX.Types.Accuracy
 }
 
 type Parameter = ('h' | 'm' | 's' | 'ms');
 
+/**
+ * Renders precision-aware controls for editing a time value.
+ * @param props - Current date-time, update callback, and requested time precision.
+ * @returns Clock fields with increment and decrement controls.
+ */
 export default function Clock(props: IProps) {
     const [hour, setHour] = React.useState<string>(props.DateTime?.format("HH") ?? '00');
     const [minute, setMinute] = React.useState<string>(props.DateTime?.format("mm") ?? '00');
@@ -204,6 +219,11 @@ export default function Clock(props: IProps) {
     );
 }
 
+/**
+ * Renders a bounded numeric field used by the clock component.
+ * @param props - Display value, maximum accepted value, and update callback.
+ * @returns A validated text input for one time segment.
+ */
 const TimeInput = (props: { value: string, setValue: (v: string) => void, max: number }) => {
     const [val, setVal] = React.useState<string>(props.value.toString());
     const [error, setError] = React.useState<boolean>(false);

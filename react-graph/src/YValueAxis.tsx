@@ -1,4 +1,4 @@
-﻿﻿// ******************************************************************************************************
+﻿// ******************************************************************************************************
 //  ValueAxis.tsx - Gbtc
 //
 //  Copyright © 2021, Grid Protection Alliance.  All Rights Reserved.
@@ -26,22 +26,47 @@ import { AxisIdentifier, AxisMap, GraphContext } from './GraphContext'
 import { GetTextHeight, GetTextWidth } from '@gpa-gemstone/helper-functions';
 
 interface IProps {
+  /** Height reserved for tick labels in pixels. */
   hAxis: number,
+  /** Height reserved for the metric factor label in pixels. */
   hFactor: number,
+  /**
+   * Callback that reports the height required by the metric factor label.
+   * @param h - Required factor-label height in pixels.
+   */
   setHeightFactor: (h: number) => void,
+  /**
+   * Callback that reports the width required by the axis.
+   * @param w - Required axis width in pixels.
+   */
   setWidthAxis: (w: number) => void,
+  /** Top plot offset in pixels. */
   offsetTop: number,
+  /** Bottom plot offset in pixels. */
   offsetBottom: number,
+  /** Left plot offset in pixels. */
   offsetLeft: number,
+  /** Right plot offset in pixels. */
   offsetRight: number,
+  /** Available plot height in pixels. */
   height: number,
+  /** Available plot width in pixels. */
   width: number,
+  /** Controls whether values are displayed using an SI magnitude factor. */
   useFactor: boolean,
+  /** Optional flag that displays grid lines at tick positions, defaulting to false. */
   showGrid?: boolean,
+  /** Optional title displayed beside the axis. */
   label?: string,
+  /** Optional Y-axis represented by this component. */
   axis?: AxisIdentifier
 }
 
+/**
+ * Renders a numeric Y-axis and reports its required layout dimensions.
+ * @param props - Axis dimensions, offsets, label, factor, and grid options.
+ * @returns SVG group containing Y-axis ticks, labels, and grid lines.
+ */
 function ValueAxis(props: IProps) {
   const context = React.useContext(GraphContext)
   const [ticks, setTicks] = React.useState<number[]>([]);

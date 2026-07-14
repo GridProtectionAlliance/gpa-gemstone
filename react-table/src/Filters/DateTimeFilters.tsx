@@ -25,8 +25,18 @@ import { Search } from '@gpa-gemstone/react-interactive';
 import { DatePicker } from '@gpa-gemstone/react-forms';
 
 interface IProps<T> {
+    /**
+     * Applies the selected date or time filter.
+     * @param evt - Filter definitions to apply.
+     */
     SetFilter: (evt: Search.IFilter<T>[]) => void;
+    /**
+     * Date or time filter definitions currently applied to the field.
+     */
     Filter: Search.IFilter<T>[],
+    /**
+     * Name of the record field filtered by the component.
+     */
     FieldName: string
 }
 
@@ -39,6 +49,11 @@ type FilterTypes = 'before' | 'after' | 'between';
 interface IValue { Value: string }
 
 // Filter for date only
+/**
+ * Edits before, after, or between filters for a date field.
+ * @param props - Current filters, field name, and update handler.
+ * @returns Date filter controls.
+ */
 export function DateFilter<T>(props: IProps<T>) {
     const [date, setDate] = React.useState<string>('');
     const [secondDate, setSecondDate] = React.useState<string>('')
@@ -157,6 +172,11 @@ export function DateFilter<T>(props: IProps<T>) {
 }
 
 // Time filter only
+/**
+ * Edits before, after, or between filters for a time field.
+ * @param props - Current filters, field name, and update handler.
+ * @returns Time filter controls.
+ */
 export function TimeFilter<T>(props: IProps<T>) {
     const [time, setTime] = React.useState<string>('');
     const [secondTime, setSecondTime] = React.useState<string>('')
@@ -276,6 +296,11 @@ export function TimeFilter<T>(props: IProps<T>) {
 }
 
 // DateTime combination filter
+/**
+ * Edits before, after, or between filters for a date-time field.
+ * @param props - Current filters, field name, and update handler.
+ * @returns Date-time filter controls.
+ */
 export function DateTimeFilter<T>(props: IProps<T>) {
     const [dateTime, setDateTime] = React.useState<string>('');
     const [secondDateTime, setSecondDateTime] = React.useState<string>('')

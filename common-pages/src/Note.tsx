@@ -33,23 +33,69 @@ import { Dispatch } from '@reduxjs/toolkit';
 
 // Add additional columns as children
 interface IProps {
+    /**
+     * Note types offered when creating or editing a note.
+     */
     NoteTypes: OpenXDA.Types.NoteType[],
+    /**
+     * Note tags offered when creating or editing a note.
+     */
     NoteTags: OpenXDA.Types.NoteTag[],
+    /**
+     * Applications offered when assigning a note.
+     */
     NoteApplications: OpenXDA.Types.NoteApplication[],
+    /**
+     * Maximum height, in pixels, available to the notes card and table.
+     */
     MaxHeight: number,
+    /**
+     * Optional heading shown above the notes, defaulting to `Notes:`.
+     */
     Title?: string,
+    /**
+     * Optional identifier of the record whose notes are displayed.
+     */
     ReferenceTableID?: number,
+    /**
+     * Redux slice used to load, sort, add, edit, and remove notes.
+     */
     NoteSlice: IGenericSlice<OpenXDA.Types.Note>
+    /**
+     * Optional flag that permits editing notes, defaulting to true.
+     */
     AllowEdit?: boolean,
+    /**
+     * Optional flag that permits removing notes, defaulting to true.
+     */
     AllowRemove?: boolean,
+    /**
+     * Optional flag that permits adding notes, defaulting to true.
+     */
     AllowAdd?: boolean,
+    /**
+     * Optional flag that wraps the notes UI in a card, defaulting to true.
+     */
     ShowCard?: boolean,
+    /**
+     * Optional application assigned to new notes instead of the first available application.
+     */
     DefaultApplication?: OpenXDA.Types.NoteApplication,
+    /**
+     * Optional callback that determines which loaded notes are displayed.
+     * @param note - Loaded note to evaluate.
+     * @returns Whether the note should be displayed.
+     */
     Filter?: (note: OpenXDA.Types.Note) => boolean
 }
 
 
 
+/**
+ * Displays and manages notes associated with a referenced record.
+ * @param props - Note metadata, permissions, storage slice, and display options.
+ * @returns Note editor and notes table.
+ */
 function Note(props: React.PropsWithChildren<IProps>)  {
     const dispatch = useDispatch<Dispatch<any>>();
 
@@ -314,14 +360,38 @@ function Note(props: React.PropsWithChildren<IProps>)  {
 }
 
 interface OptionProps {
+    /**
+     * Note being created or edited by the option fields.
+     */
     Record: OpenXDA.Types.Note,
+    /**
+     * Updates the note being edited.
+     * @param d - Updated note record.
+     */
     Setter: (d: OpenXDA.Types.Note) => void,
+    /**
+     * Note types offered by the type selector.
+     */
     NoteTypes: OpenXDA.Types.NoteType[],
+    /**
+     * Note tags offered by the tag selector.
+     */
     NoteTags: OpenXDA.Types.NoteTag[],
+    /**
+     * Applications offered by the application selector.
+     */
     NoteApplications: OpenXDA.Types.NoteApplication[],
+    /**
+     * Controls whether the application selector can be displayed.
+     */
     ShowApplications: boolean,
 }
 
+/**
+ * Renders the note text and classification fields used while editing a note.
+ * @param props - Note record, available classifications, and update handler.
+ * @returns Form controls for the editable note fields.
+ */
 function NoteOptions(props: OptionProps) {
 
     const showOptions = props.NoteTags.length > 1 || props.NoteTypes.length > 1 || props.NoteApplications.length > 1;

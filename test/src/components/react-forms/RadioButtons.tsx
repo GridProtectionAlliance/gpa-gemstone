@@ -72,6 +72,10 @@ const options: {
 
 export const RadioButtonsTestID = "RadioButtonsTestID";
 
+/**
+ * Renders the Radio Buttons integration test fixture.
+ * @returns Component state and controls exercised by integration tests.
+ */
 const RadioButtonsTestComponent = () => {
     const [text, setText] = React.useState<ITestRecord>({ textValue: 'blank' });
 
