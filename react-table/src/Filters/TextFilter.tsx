@@ -23,9 +23,22 @@ import * as React from 'react';
 import { Search } from '@gpa-gemstone/react-interactive';
 
 interface IProps<T> { 
+    /**
+     * Applies the entered text filter.
+     * @param evt - Filter definitions to apply.
+     */
     SetFilter: (evt: Search.IFilter<T>[]) => void,
+    /**
+     * Text filter definitions currently applied to the field.
+     */
     Filter: Search.IFilter<T>[],
+    /**
+     * Name of the record field filtered by the component.
+     */
     FieldName: string,
+    /**
+     * Optional flag that wraps entered text in wildcards, defaulting to true.
+     */
     ApproxMatches?: boolean,
 }
 

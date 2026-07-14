@@ -24,23 +24,23 @@ import * as React from 'react';
 
 interface IProps {
     /**
-     * Flag to show server error icon
+     * Controls whether the server-error indicator is visible.
      */
     Show: boolean,
     /**
-     * Label to be used next to icon, defaulting to 'A Server Error Occurred. Please Reload the Application.'
+     * Optional message displayed beside the icon, defaulting to the standard server-error message.
      */
     Label?: string,
     /**
-     * Optional number(in px) to be used for the height of the icon
+     * Optional icon height in pixels, defaulting to 25.
      */
     Size?: number,
 }
 
 /**
- * Component for rendering the icon that appears during server error.
- * @param props renders and manages the details of the server error icon.
- * @returns a center aligned dark red server error icon.
+ * Renders a centered server-error icon with an optional explanatory message.
+ * @param props - Controls visibility, message text, and icon size.
+ * @returns The server-error indicator container.
  */
 function ServerErrorIcon(props: IProps) {
 	const h = (props.Size === undefined? 25 : props.Size);

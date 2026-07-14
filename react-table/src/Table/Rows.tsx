@@ -37,23 +37,69 @@ export type width = {
 }
 
 interface IProps<T> {
+    /**
+     * Records rendered as table rows.
+     */
     Data: T[];
+    /**
+     * Optional CSS styles applied to each row.
+     */
     RowStyle?: React.CSSProperties;
+    /**
+     * Optional CSS styles applied to the table body.
+     */
     BodyStyle?: React.CSSProperties;
+    /**
+     * Optional class name applied to the table body.
+     */
     BodyClass?: string;
+    /**
+     * Optional handler fired when a row or cell is clicked.
+     * @param data - Row and column information for the clicked location.
+     * @param e - Mouse event raised by the row or cell.
+     */
     OnClick?: (
         data: { colKey?: string; colField?: keyof T; row: T; data: T[keyof T] | null; index: number },
         e: React.MouseEvent<HTMLElement, MouseEvent>,
     ) => void;
+    /**
+     * Optional handler fired when dragging begins from a table cell.
+     * @param data - Row and column information for the dragged location.
+     * @param e - Drag event raised by the cell.
+     */
     DragStart?: (
         data: { colKey: string; colField?: keyof T; row: T; data: T[keyof T] | null; index: number },
         e: React.DragEvent<Element>,
     ) => void;
+    /**
+     * Optional callback that determines whether a row uses selected styling.
+     * @param data - Record represented by the row.
+     * @param index - Position of the record in the table data.
+     * @returns Whether the row is selected.
+     */
     Selected?: (data: T, index: number) => boolean;
+    /**
+     * Produces a stable React key for a row.
+     * @param data - Record represented by the row.
+     * @param index - Optional position of the record in the table data.
+     * @returns Key used to identify the rendered row.
+     */
     KeySelector: (data: T, index?: number) => string | number;
+    /**
+     * Optional mutable reference attached to the table body.
+     */
     BodyRef?: React.MutableRefObject<HTMLTableSectionElement | null>;
+    /**
+     * Indicates whether the table body currently has a vertical scrollbar.
+     */
     BodyScrolled: boolean;
+    /**
+     * Mutable column widths shared with the table header.
+     */
     ColWidths: React.MutableRefObject<Map<string, width>>;
+    /**
+     * Value changed by the parent to request recalculation of row layout.
+     */
     Trigger: number;
 }
 
@@ -63,6 +109,11 @@ const defaultDataCellStyle: React.CSSProperties = {
     width: 'auto'
 };
 
+/**
+ * Renders table records into interactive rows and data cells.
+ * @param props - Records, columns, widths, row state, and interaction handlers.
+ * @returns Configured table body rows.
+ */
 const Rows = <T,>(props: React.PropsWithChildren<IProps<T>>) => {
     const bodyStyle = React.useMemo(() => ({ ...props.BodyStyle, display: "block" }), [props.BodyStyle]);
 

@@ -37,64 +37,64 @@ import HeaderContent from "./HeaderContent";
 
 interface IProps {
     /** 
-     * Root path for all routes
+     * Root path prepended to every application route.
      */
     HomePath: string;
 
     /**
-     *  Default sub-path to navigate to when landing on HomePath 
+     * Default subpath opened when the user lands on `HomePath`.
      */
     DefaultPath: string;
 
     /** 
-     * Optional logo URL to display in the top navigation bar 
+     * Optional logo URL displayed in the top navigation bar.
      */
     Logo?: string;
 
     /** 
-     * Callback function used when user clicks "Sign out"
+     * Optional callback fired when the user clicks the sign-out link.
      */
     OnSignOut?: () => void;
 
     /** 
-     * Optional version string used in sidebar footer
+     * Optional version text displayed in the expanded sidebar footer.
      */
     Version?: string;
 
     /**
-     * Optional elemetn to add in sidebar footer
+     * Optional custom content displayed in the expanded sidebar footer.
      */
     SidebarUI?: JSX.Element;
     /** 
-     * List of user roles used for access control and conditional route rendering
+     * Optional roles used for navigation and route access checks, defaulting to `Viewer`.
      */
     UserRoles?: Application.Types.SecurityRoleName[];
 
     /**
-     *  Allows toggling of the sidebar collapse/expand functionality
+     * Optional flag that allows users to collapse and expand the sidebar, defaulting to false.
      */
     AllowCollapsed?: boolean;
 
     /**
-     *  Optional JSX to be rendered on the top navigation bar
+     * Optional content rendered at the end of the top navigation bar.
      */
     NavBarContent?: React.ReactNode;
 
     /** 
-     * Flag to hide sidebar completely
+     * Optional flag that hides the sidebar completely, defaulting to false.
      */
     HideSideBar?: boolean;
 
     /**
-     * Optional flag that disables modern navigation and layout, defaulting to false
+     * Optional flag that uses legacy navigation and layout, defaulting to false.
      */
     UseLegacyNavigation?: boolean;
     /**
-     * Optional style to be applied to the NavBar container.
+     * Optional inline styles applied to the navigation bar.
      */
     NavBarStyle?: React.CSSProperties;
     /**
-     * Optional style to be applied to the logo image in the NavBar. Default is { maxHeight: 35, margin: -5 }
+     * Optional inline styles applied to the navigation logo, defaulting to `{ maxHeight: 35, margin: -5 }`.
      */
     NavBarImgStyle?: React.CSSProperties
 }
@@ -104,8 +104,22 @@ export interface IApplicationRefs {
     navBarDiv: HTMLDivElement | null;
 }
 
-interface IMainDivProps { left: number, top: number }
+interface IMainDivProps {
+    /**
+     * Horizontal offset in pixels reserved for the sidebar.
+     */
+    left: number,
+    /**
+     * Vertical offset in pixels reserved for the navigation bar.
+     */
+    top: number
+}
 
+/**
+ * Positions the application content beside the sidebar and beneath the navigation bar.
+ * @param props - Supplies the measured sidebar and navigation offsets.
+ * @returns The styled main-content container.
+ */
 const MainDiv = styled.div<IMainDivProps>`
 & {
     top: ${props => props.top}px;
@@ -119,6 +133,12 @@ const MainDiv = styled.div<IMainDivProps>`
     user-select: none;
  }`;
 
+/**
+ * Renders the application shell, responsive navigation, authorized routes, and page content.
+ * @param props - Configures routing, navigation, access control, branding, and page children.
+ * @param ref - Receives references to the main content and navigation elements.
+ * @returns The modern routed shell or legacy application layout.
+ */
 const Applications: React.ForwardRefRenderFunction<IApplicationRefs, React.PropsWithChildren<IProps>> = (props, ref) => {
     const [collapsed, setCollapsed] = React.useState<boolean>(false)
     const navBarRef = React.useRef<HTMLDivElement>(null);

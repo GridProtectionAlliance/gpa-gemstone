@@ -33,20 +33,21 @@ import ConfigurableColumn from './ConfigurableColumn';
 
 interface ITableProps<T> extends ReactTableProps.ITable<T> {
     /**
-     * Optional ZIndex for the configurable column modal
+     * Optional stacking order applied to the column settings modal.
      */
     ModalZIndex?: number
     /**
-    * ID of the Portal used for tunneling Collumn settings
-    */
+     * Optional portal identifier used to render the column settings controls.
+     */
     SettingsPortal?: string;
     /**
-    * Callback when Settings modal opens or closes
-    */
+     * Optional callback fired when the column settings modal opens or closes.
+     * @param open - Whether the settings modal is open.
+     */
     OnSettingsChange?: (open: boolean) => void;
     /**
-    * The key used to store columns in local storage
-    */
+     * Optional key used to persist enabled columns in local storage.
+     */
     LocalStorageKey?: string;
 }
 
@@ -265,13 +266,34 @@ export default function ConfigurableTable<T>(props: React.PropsWithChildren<ITab
     );
 }
 interface IColSelectionProps<> {
+    /**
+     * Optional keys for columns that cannot be hidden.
+     */
     requiredColumns?: string[];
+    /**
+     * Column configurations displayed in the settings dialog.
+     */
     columns: IColDesc[];
+    /**
+     * Toggles whether a column is enabled.
+     * @param key - Key of the column to toggle.
+     */
     onChange: (key: string) => void;
+    /**
+     * Key of the column currently used to sort the table.
+     */
     sortKey: string;
+    /**
+     * Prevents additional columns from being enabled when the table is too wide.
+     */
     disableAdd: boolean;
 }
 
+/**
+ * Displays controls for enabling and disabling configurable table columns.
+ * @param props - Column configurations, constraints, and toggle handler.
+ * @returns Column selection controls and any width warning.
+ */
 function ColumnSelection(props: IColSelectionProps) {
     const enabledCols = props.columns.filter((column) => column.Enabled);
     const isOnlyOneEnabled = enabledCols.length === 1;

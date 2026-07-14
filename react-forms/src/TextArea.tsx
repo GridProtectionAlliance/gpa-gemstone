@@ -29,43 +29,39 @@ import HelpIcon from './HelpIcon';
 
 export interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
   /**
-    * Number of rows for the textarea
-    * @type {number}
-  */
+   * Number of visible text rows in the control.
+   */
   Rows: number;
   /**
-    * Function to determine the validity of a field
-    * @param field - Field of the record to check
-    * @returns {boolean}
-  */
+   * Determines whether the edited field is valid.
+   * @param field - Record field to validate.
+   * @returns Whether the field is valid.
+   */
   Valid: (field: keyof T) => boolean;
   /**
-    * Feedback message to show when input is invalid
-    * @type {string}
-    * @optional
-  */
+   * Optional message shown when the text area is invalid.
+   */
   Feedback?: string;
   /**
-    * Help message or element to display
-    * @type {string | JSX.Element}
-    * @optional
-  */
+   * Optional help content displayed beside the label.
+   */
   Help?: string | JSX.Element;
   /**
-   * Optional reference to internal text area for features like autocomplete.
-   * @type {React.RefObject<HTMLTextAreaElement>}
-   * @optional
+   * Optional reference attached to the internal text area element.
    */
   TextAreaRef?: React.RefObject<HTMLTextAreaElement>
 
   /**
-   * Optional setting to enable/disable spellcheck.
-   * @type {boolean}
-   * @optional
+   * Optional browser spell-check setting passed to the text area.
    */
   SpellCheck?: boolean;
 }
 
+/**
+ * Renders a validated record-bound multiline text control.
+ * @param props - Record binding, row count, validation, and text area configuration.
+ * @returns A labeled text area with validation feedback.
+ */
 export default function TextArea<T>(props: IProps<T>) {
   const [heldVal, setHeldVal] = React.useState<string>('');
   const [isFocused, setIsFocused] = React.useState<boolean>(false);

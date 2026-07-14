@@ -26,6 +26,10 @@ import React from "react";
 
 export const BTN_DROPDOWN_ID = 'btn-dropdown-test';
 
+/**
+ * Renders the Btn Dropdown integration test fixture.
+ * @returns Component state and controls exercised by integration tests.
+ */
 const BtnDropdownTestComponent = () => {
     const [message, setMessage] = React.useState<string>(``);
 

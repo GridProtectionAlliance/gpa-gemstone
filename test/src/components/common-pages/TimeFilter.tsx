@@ -32,6 +32,10 @@ export const EndWindowTimeFilterID = 'endWindow-timeFilter-id';
 export const NonUTCStartEndTimeFilterID = 'nonUTC-startEnd-timeFilter-id';
 export const NonUTCTimeZone = 'America/Chicago';
 
+/**
+ * Renders the Time Filter integration test fixture.
+ * @returns Component state and controls exercised by integration tests.
+ */
 const TimeFilterTestComponent = () => {
 
     const [timeFilter, setTimeFilter] = React.useState<{ start: string, end: string }>({

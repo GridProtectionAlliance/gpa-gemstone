@@ -27,21 +27,30 @@ import * as React from 'react';
 import { Context } from './Context';
 
 export interface IExternalPageProps {
+    /**
+     * Callback fired when the external navigation item is clicked.
+     * @param e - Mouse event from the navigation link.
+     */
     OnClick: (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => void
     /**
-     * Roles allowed to see this item
+     * Optional roles allowed to see the navigation item.
      */
     RequiredRoles?: Application.Types.SecurityRoleName[];
     /**
-     * Text label for the nav item
+     * Optional text displayed for the navigation item; the item is hidden when omitted.
      */
     Label?: string;
     /**
-     * Icon to display next to the label
+     * Optional icon displayed beside the navigation label.
      */
     Icon?: React.ReactNode;
 }
 
+/**
+ * Renders a role-restricted sidebar item that delegates navigation to a click callback.
+ * @param props - Configures access, label, icon, and click behavior.
+ * @returns The external navigation item, its tooltip, or null when hidden.
+ */
 const ExternalPage = (props: React.PropsWithChildren<IExternalPageProps>) => {
     const [hover, setHover] = React.useState<boolean>(false);
     const context = React.useContext(Context);

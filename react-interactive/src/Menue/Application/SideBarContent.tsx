@@ -27,11 +27,30 @@ import Section from '../Section';
 import { useGetContainerPosition } from '@gpa-gemstone/helper-functions';
 
 interface IProps {
+    /**
+     * Controls whether the sidebar uses its compact width and hides footer content.
+     */
     Collapsed: boolean,
+    /**
+     * Optional version text displayed in the expanded sidebar footer.
+     */
     Version?: string,
+    /**
+     * Optional custom content displayed in the expanded sidebar footer.
+     */
     SidebarUI?: JSX.Element;
+    /**
+     * Controls whether the sidebar is omitted from the layout.
+     */
     HideSide: boolean,
+    /**
+     * Top padding in pixels reserved for the navigation bar.
+     */
     NavbarHeight: number
+    /**
+     * State setter updated with the sidebar's measured width.
+     * @param value - New width or updater function supplied by React state management.
+     */
     SetSideBarWidth: React.Dispatch<React.SetStateAction<number>>
 }
 
@@ -50,6 +69,11 @@ const SidebarBodyStyle: React.CSSProperties = {
     overflowX: 'hidden'
 };
 
+/**
+ * Renders page and section navigation with optional expanded-sidebar footer content.
+ * @param props - Configures sidebar visibility, dimensions, collapsed state, footer, and navigation children.
+ * @returns The sidebar navigation or an empty fragment when hidden.
+ */
 const SideBarContent = (props: React.PropsWithChildren<IProps>) => {
     const sideBarRef = React.useRef<HTMLDivElement | null>(null);
 

@@ -26,6 +26,11 @@ import { getTimeWindowFromFilter, ITimeWindow } from "../TimeFilter";
 import QuickSelects, { getQuickSelectRange } from '../QuickSelects';
 import { IFilterProps } from './StartEndFilter';
 
+/**
+ * Edits the start and end dates of a normalized time window.
+ * @param props - Current time window, date settings, and update handlers.
+ * @returns Start and end date filter controls.
+ */
 const DateFilter = (props: IFilterProps) => {
     const FirstFallbackBreakpoint = 1050;
     const SecondFallbackBreakpoint = 541;

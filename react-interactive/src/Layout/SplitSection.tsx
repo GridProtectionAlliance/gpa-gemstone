@@ -23,15 +23,25 @@
 import * as React from 'react';
 
 interface IProps {
+    /**
+     * Minimum width as a percentage of the split container.
+     */
     MinWidth: number,
+    /**
+     * Maximum width as a percentage of the split container.
+     */
     MaxWidth: number,
+    /**
+     * Initial width as a percentage of the split container.
+     */
     Width: number,
 }
 
-// Props Description:
-// Min Windth: minimum width (in % of total)
-// Max Width: maximum Width (in % of total)
-// Width: Default Width (in % of total) 
+/**
+ * Declares a fixed child region consumed and laid out by `VerticalSplit`.
+ * @param props - Supplies section width constraints, initial width, and content.
+ * @returns The section's child content for `VerticalSplit` to render.
+ */
 const SplitSection = (props: React.PropsWithChildren<IProps>) => {
 
     return <>{props.children}</>

@@ -27,56 +27,63 @@ import { Gemstone } from '@gpa-gemstone/application-typings';
 import { FileUpload } from '@gpa-gemstone/react-forms';
 
 interface IProps<T> {
-    /** 
-    * Attribute used to control what type of files are filtered by default in file explorer
-    * */
+    /**
+     * File type accepted by the system file picker.
+     */
     FileTypeAttribute: string,
-    /** 
-    * Array of available pipelines to use
-    * */
+    /**
+     * Processing pipelines available for the uploaded file.
+     */
     Pipelines: Gemstone.TSX.Interfaces.IPipeline<T, any>[]
-    /** 
-    * React Component to be used in the Review Step
-    * */
+    /**
+     * Renders the processed records during the review step.
+     * @param props - Data made available to the review UI.
+     */
     ReviewUI: (props: { Data: T[] }) => JSX.Element
-    /** 
-    * React Component to be used in the Complete Step
-    * */
+    /**
+     * Optional content rendered during the complete step.
+     */
     CompleteUI?: JSX.Element
-    /** 
-    * Index of the steps array in the current pipline
-    * */
+    /**
+     * Index of the active step within the selected pipeline.
+     */
     CurrentPipelineStep: number;
-    /** 
-    * Setter to pass into the pipeline UI Components
-    * */
+    /**
+     * Updates the active step within the selected pipeline.
+     * @param step - Index of the pipeline step to activate.
+     */
     SetCurrentPipelineStep: (step: number) => void;
-    /** 
-    * Step to represent current stage of component
-    * */
+    /**
+     * Stage currently displayed by the bulk upload workflow.
+     */
     Step: Gemstone.TSX.Types.BulkUploadStep
     /**
-     * Callback function invoked when the Step prop is set to Complete.
-     * @param {T[]} records - The processed records.
+     * Handles completion of the upload workflow.
+     * @param records - Processed records produced by the selected pipeline.
      */
     OnComplete: (records: T[]) => void;
     /**
-     * Callback function to set validation errors during processing.
-     * @param {string[]} errors - Array of error messages.
+     * Updates validation errors reported by the upload workflow.
+     * @param errors - Error messages to display.
      */
     SetErrors: (errors: string[]) => void;
     /**
-     * Optional Progress Bar component to replace internal Progress Bar. 
+     * Optional progress indicator rendered instead of the built-in progress bar.
      */
     ProgressBar?: JSX.Element,
     /**
-     * Optional flag to call OnComplete handler when the review step is hit.
+     * Optional flag that completes the workflow upon reaching the review step, defaulting to false.
      */
     CompleteOnReview?: boolean
 }
 const steps = [{ short: 'Upload', long: 'Upload', id: 'Upload' }, { short: 'Process', long: 'Process', id: 'Process' }, { short: "Review", id: 'Review', long: 'Review' }, { short: 'Complete', long: 'Complete', id: 'Complete' }]
 const fileExtRegex = /(\.[^.]+)$/;
 
+/**
+ * Guides an uploaded file through selection, processing, review, and completion steps.
+ * @param props - Pipeline configuration and state for the bulk upload workflow.
+ * @returns Bulk upload workflow UI for the active step.
+ */
 export default function BulkUpload<T>(props: IProps<T>) {
     const [data, setData] = React.useState<T[]>([]);
 

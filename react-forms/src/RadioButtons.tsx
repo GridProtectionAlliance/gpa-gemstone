@@ -31,22 +31,24 @@ interface IOption extends Gemstone.TSX.Interfaces.ILabelValue<string | number> {
 
 interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
     /**
-        * Position to display radion buttons in
-        * @type {'vertical' | 'horizontal'}
-        * @optional
-    */
+     * Optional layout direction for the radio choices, defaulting to horizontal.
+     */
     Position?: ('vertical' | 'horizontal'),
     /**
-        * Options for the radion buttons
-        * @type {IOption[]}
-    */
+     * Choices rendered as radio buttons.
+     */
     Options: IOption[];
     /**
-     * Optional Style to be applied to the form-group container div
-    */
+     * Optional CSS styles applied to the surrounding form group.
+     */
     Style?: React.CSSProperties;
 }
 
+/**
+ * Renders mutually exclusive options as record-bound radio buttons.
+ * @param props - Record binding, option choices, layout, and optional styling.
+ * @returns A labeled horizontal or vertical group of radio buttons.
+ */
 export default function RadioButtons<T>(props: IProps<T>) {
     const label = props.Label === undefined ? props.Field as string : props.Label;
 

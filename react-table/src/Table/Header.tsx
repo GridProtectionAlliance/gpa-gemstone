@@ -60,23 +60,68 @@ const IsColumnAdjustable = (props: unknown) => {
 }
 
 interface IProps<T> {
+    /**
+     * Optional class name applied to the table header.
+     */
     Class?: string;
+    /**
+     * Optional CSS styles applied to the table header.
+     */
     Style?: React.CSSProperties;
+    /**
+     * Key of the column currently used to sort the table.
+     */
     SortKey: string;
+    /**
+     * Indicates whether the active sort direction is ascending.
+     */
     Ascending: boolean;
+    /**
+     * Handles a request to sort by a column.
+     * @param data - Column and direction requested for sorting.
+     * @param event - Mouse event raised by the column header.
+     */
     OnSort: (
         data: { colKey: string; colField?: keyof T; ascending: boolean },
         event: React.MouseEvent<HTMLElement, MouseEvent>,
     ) => void;
+    /**
+     * Mutable column widths shared with the table body.
+     */
     ColWidths: React.MutableRefObject<Map<string, width>>;
+    /**
+     * Requests a render after column widths change.
+     */
     TriggerRerender: () => void;
+    /**
+     * Value changed by the parent to request recalculation of header layout.
+     */
     Trigger: number;
+    /**
+     * Reports the rendered width of the trailing column.
+     * @param width - Current trailing-column width in pixels.
+     */
     SetLastColumnWidth: (width: number) => void;
+    /**
+     * Optional content displayed in the trailing header cell.
+     */
     LastColumn?: string | React.ReactNode;
+    /**
+     * Optional callback that applies filters edited through column headers.
+     * @param filters - Complete filter definitions to apply.
+     */
     SetFilters?: (filters: Search.IFilter<T>[]) => void;
+    /**
+     * Optional filter definitions currently applied to the table.
+     */
     Filters?: Search.IFilter<T>[];
 }
 
+/**
+ * Renders sortable, filterable, and resizable table column headers.
+ * @param props - Column content, sort state, filters, widths, and update handlers.
+ * @returns Configured table header.
+ */
 const Header = <T,>(props: React.PropsWithChildren<IProps<T>>) => {
     const headStyle = React.useMemo(() => ({ ...defaultHeadStyle, ...props.Style }), [props.Style]);
     const lastColRef = React.useRef<HTMLDivElement | null>(null);

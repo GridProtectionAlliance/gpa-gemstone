@@ -30,56 +30,47 @@ import HelpIcon from './HelpIcon';
 
 export interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
   /**
-    * Function to determine the validity of a field
-    * @param field - Field of the record to check
-    * @returns {boolean}
-  */
+   * Determines whether the edited field is valid.
+   * @param field - Record field to validate.
+   * @returns Whether the field is valid.
+   */
   Valid: (field: keyof T) => boolean;
   /**
-    * Feedback message to show when input is invalid
-    * @type {string}
-    * @optional
-  */
+   * Optional message shown when the input is invalid.
+   */
   Feedback?: string;
   /**
-    * Type of the input field
-    * @type {'number' | 'text' | 'password' | 'email' | 'color' | 'integer'}
-    * @optional
-  */
+   * Optional input value mode, defaulting to `text`.
+   */
   Type?: 'number' | 'text' | 'password' | 'email' | 'color' | 'integer';
   /**
-    * CSS styles to apply to the form group
-    * @type {React.CSSProperties}
-    * @optional
-  */
+   * Optional CSS styles applied to the surrounding form group.
+   */
   Style?: React.CSSProperties;
   /**
-    * Flag to allow null values
-    * @type {boolean}
-    * @optional
-  */
+   * Optional flag that permits null values, defaulting to false.
+   */
   AllowNull?: boolean;
   /**
-    * Size of the input field
-    * @type {'small' | 'large'}
-    * @optional
-  */
+   * Optional Bootstrap sizing applied to the input.
+   */
   Size?: 'small' | 'large',
   /**
-    * Default value for the input field if it's null
-    * @type {number}
-    * @optional
-  */
+   * Optional numeric value substituted when null is not allowed, defaulting to 0.
+   */
   DefaultValue?: number
   /**
-   * Optional reference to internal input for features like autocomplete.
-   * @type {React.RefObject<HTMLInputElement>}
-   * @optional
+   * Optional reference attached to the internal input element.
    */
   InputRef?: React.RefObject<HTMLInputElement>
 }
 
 
+/**
+ * Renders a validated record-bound input for text or numeric values.
+ * @param props - Record binding, input mode, validation, and display configuration.
+ * @returns A labeled input with validation feedback.
+ */
 export default function Input<T>(props: IProps<T>) {
   const internal = React.useRef<boolean>(false);
   const [heldVal, setHeldVal] = React.useState<string>(''); // Need to buffer tha value because parseFloat will throw away trailing decimals or zeros

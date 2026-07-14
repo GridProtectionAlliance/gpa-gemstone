@@ -26,38 +26,33 @@ import { Gemstone } from '@gpa-gemstone/application-typings';
 
 interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> { 
     /**
-      * First field of the record to be edited
-      * @type {keyof T}
-    */
+     * Record field edited by the first input.
+     */
     Field1: keyof T;
     /**
-      * Second field of the record to be edited
-      * @type {keyof T}
-    */
+     * Record field edited by the second input.
+     */
     Field2: keyof T;
     /**
-    * Function to determine the validity of a field
-    * @param field - Field of the record to check
-    * @returns {boolean}
-   */
+     * Determines whether one of the edited fields is valid.
+     * @param field - Record field to validate.
+     * @returns Whether the field is valid.
+     */
     Valid: (field: keyof T) => boolean;
     /**
-    * Feedback message to show when input is invalid
-    * @type {string}
-    * @optional
-    */
+     * Optional message shown when either input is invalid.
+     */
     Feedback?: string;
     /**
-      * Type of the input fields
-      * @type {'number' | 'text' | 'password' | 'email' | 'color'}
-      * @optional
-    */
+     * Optional HTML input type used by both controls, defaulting to `text`.
+     */
     Type?: 'number' | 'text' | 'password' | 'email' | 'color';
 }
 
 /**
- * DoubleInput Component.
- * A component that renders two input fields, allowing input for two related fields in a single record.
+ * Renders two related inputs that update separate fields on the same record.
+ * @param props - Record bindings, input type, and validation behavior for both fields.
+ * @returns A paired set of labeled form inputs.
  */
 export default function DoubleInput<T>(props: IProps<T>) {
     return (

@@ -30,20 +30,31 @@ import HeatLegend from './HeatLegend';
 
 
 export interface IProps {
+    /** Triplets containing the X coordinate, Y coordinate, and heat value for each cell. */
     data: [number, number, number][],
-    // Hue/Value are part of color, HSV. Both values are assumed [0-1] and saturation is determined by z-value.
+    /** Base HSV hue used to color cells, expressed from 0 through 1. */
     hue: number,
+    /** HSV saturation used to color cells, expressed from 0 through 1. */
     saturation: number,
+    /** Optional fill style associated with the heat-map data. */
     fillStyle?: FillStyle,
+    /** Optional Y-axis associated with the heat-map values. */
     axis?: AxisIdentifier,
+    /** Optional unit appended to values in the heat legend. */
     legendUnit?: string,
-    // Aligns bars with timestamp associated (i.e. left aligns the timestamp to the left bar edge)
+    /** Optional alignment of each cell relative to its X coordinate, defaulting to left. */
     barAlign?: 'left'|'center'|'right',
-    // Makes bars this size, so that multiple can be dispalyed on the same time value
+    /** Optional Y-axis size of each bin, allowing multiple cells at the same X coordinate. */
     binSize?: number,
+    /** Optional sample interval in milliseconds used to calculate cell width. */
     sampleMs?: number
 }
 
+/**
+ * Renders heat-map cells and registers their range with the graph context.
+ * @param props - Heat-map samples, color settings, and bin geometry.
+ * @returns SVG group containing the heat-map cells.
+ */
 function HeatMapChart(props: IProps) {
     /*
         Single Line with ability to turn off and on.

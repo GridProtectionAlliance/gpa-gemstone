@@ -39,79 +39,69 @@ export interface IOption {
 
 interface IProps<T> {
   /**
-  * Function to determine the validity of a field
-  * @param field - Field of the record to check
-  * @returns {boolean}
-  */
+   * Optional callback that determines whether the selected field value is valid.
+   * @param field - Record field to validate.
+   * @returns Whether the field is valid.
+   */
   Valid?: (field: keyof T) => boolean;
   /**
-    * Feedback message to show when input is invalid
-    * @type {string}
-    * @optional
-  */
+   * Optional message shown when the selection is invalid.
+   */
   Feedback?: string;
   /**
-    * Record to be used in form
-    * @type {T}
-  */
+   * Record containing the currently selected value.
+   */
   Record: T;
   /**
-      * Field of the record to be edited
-      * @type {keyof T}
-  */
+   * Record field updated by the selected option.
+   */
   Field: keyof T;
   /**
-      * Label to display for the form, defaults to the Field prop
-      * @type {string | JSX.Element}
-      * @optional
-  */
+   * Optional content shown above the select, defaulting to the field name.
+   */
   Label?: string | JSX.Element;
 
   /**
-    * Help message or element to display
-    * @type {string | JSX.Element}
-    * @optional
-  */
+   * Optional help content displayed beside the label.
+   */
   Help?: string | JSX.Element;
   /**
-    * Flag to disable the input field
-    * @type {boolean}
-    * @optional
-  */
+   * Optional flag that disables option selection, defaulting to false.
+   */
   Disabled?: boolean;
   /**
-    * Setter function to update the Record
-    * @param record - Updated Record
-  */
+   * Updates the record after an option is selected.
+   * @param record - Record containing the selected value.
+   * @param option - Option selected by the user.
+   */
   Setter: (record: T, option: IOption) => void
   /**
-* Options for the select dropdown
-* @type {{  Value: any, Element: React.ReactElement<any> }[]}
-*/
+   * Choices rendered in the dropdown with custom React content.
+   */
   Options: IOption[];
   /**
-    * CSS styles to apply to the selected value
-    * @type {React.CSSProperties}
-    * @optional
-  */
+   * Optional CSS styles applied to the selected option content.
+   */
   Style?: React.CSSProperties;
   /**
-   * CSS style to apply to the button holding the selected value
-    * @type {React.CSSProperties}
-    * @optional
-    *    
-    */
+   * Optional CSS styles applied to the button that displays the selected option.
+   */
   BtnStyle?: React.CSSProperties
   /**
-   * Callback fired after the dropdown opens and its contents are rendered
+   * Optional callback fired after the dropdown opens and its contents are rendered.
    */
   OnDropdownOpen?: () => void;
   /**
-   * Callback fired after the dropdown closes
+   * Optional callback fired after the dropdown closes.
    */
   OnDropdownClose?: () => void;
 }
 
+/**
+ * Renders a dropdown whose options and selected value use custom React content.
+ * @param props - Record binding, custom option content, and dropdown behavior.
+ * @returns A stylable single-selection dropdown.
+ */
 export default function StylableSelect<T>(props: IProps<T>) {
   // State hooks and ref for managing component state and interactions.
   const stylableSelect = React.useRef<HTMLDivElement>(null);

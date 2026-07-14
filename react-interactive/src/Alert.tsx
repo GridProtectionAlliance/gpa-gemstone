@@ -24,31 +24,33 @@ import * as React from 'react';
 
 interface IProps {
     /**
-     * Optional Class to be used on alert
+     * Optional Bootstrap contextual class applied to the alert, defaulting to `alert-dark`.
      */
     Class?: 'alert-primary' | 'alert-secondary' | 'alert-success' | 'alert-danger' | 'alert-warning' | 'alert-info' | 'alert-light'
     /**
-     * Optional Style to be used on alert
+     * Optional inline styles applied to the alert container.
      */
     Style?: React.CSSProperties,
     /**
-     * Optional Flag to render the X
+     * Optional flag that shows the dismiss button, defaulting to true.
      */
     ShowX?: boolean,
     /**
-     * Optional Value to trigger re-showing the alert
-     * @optional
+     * Optional value whose changes make a dismissed alert visible again.
      */
     ReTrigger?: unknown
     /**
-     * Optional Callback function for onClick event
-     * @optional
-     * @param e mouse event
-     * @returns 
+     * Optional callback fired after the dismiss button is clicked.
+     * @param e - Mouse event from the dismiss button.
      */
     OnClick?: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void
 }
 
+/**
+ * Renders a dismissible Bootstrap alert that can be shown again when its trigger changes.
+ * @param props - Configures the alert appearance, dismissal behavior, and content.
+ * @returns The alert element in its current visibility state.
+ */
 const Alert = (props: React.PropsWithChildren<IProps>) => {
     const [show, setShow] = React.useState<boolean>(true);
 

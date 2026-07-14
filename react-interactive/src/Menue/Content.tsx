@@ -24,6 +24,11 @@
 import * as React from 'react';
 import { useParams } from 'react-router-dom';
 
+/**
+ * Injects the current route parameters into each valid child page element.
+ * @param props - Supplies the page elements that receive route parameters.
+ * @returns The cloned child elements with current route parameters.
+ */
 const Content = (props: React.PropsWithChildren<{}>) => {
     const params = useParams();
 

@@ -57,58 +57,107 @@ const html2canvas: any = _html2canvas;
 // HalfAutoValue is the same as AutoValue except it "pins" either max or min at zero
 // divCaptureId allows the div to be captured to be external to this plot
 export interface IProps {
+  /** Initial X-axis domain used by the plot. */
   defaultTdomain: [number, number],
+  /** Optional initial domain for one or more Y-axes. */
   defaultYdomain?: [number, number] | [number, number][],
   /**
-   * Optional, allows for external control of the time domain.
+   * Optional externally controlled X-axis domain.
    */
   tDomain?: [number, number]
+  /** Optional interaction mode selected when the plot mounts. */
   defaultMouseMode?: SelectType,
+  /** Optional strategy used to calculate Y-axis domains. */
   yDomain?: 'Manual' | 'AutoValue' | 'HalfAutoValue',
+  /** Optional flag that hides all Y-axes, defaulting to false. */
   hideYAxis?: boolean,
+  /** Optional flag that hides the X-axis, defaulting to false. */
   hideXAxis?: boolean,
+  /** Optional flag that prevents zooming beyond configured bounds. */
   limitZoom?: boolean,
+  /** Total plot height in pixels. */
   height: number,
+  /** Total plot width in pixels. */
   width: number,
-
+  /** Optional flag that displays axis grid lines, defaulting to false. */
   showGrid?: boolean,
+  /** Optional X-axis scale and formatting type, defaulting to time. */
   XAxisType?: 'time' | 'log' | 'value',
   /**
-   * Flag to enable all zooming features.
+   * Optional flag that enables combined X- and Y-axis zoom controls.
    */
   zoom?: boolean,
   /**
-   * Flag to enable zooming on the y-axis.
+   * Optional flag that enables Y-axis zoom controls.
    */
   yZoom?: boolean,
   /**
-   * Flag to enable zooming on the x-axis.
+   * Optional flag that enables X-axis zoom controls.
    */
   xZoom?: boolean,
+  /** Optional flag that enables the pan control. */
   pan?: boolean,
+  /** Optional minimum X-axis bound allowed during interaction. */
   Tmin?: number,
+  /** Optional maximum X-axis bound allowed during interaction. */
   Tmax?: number,
+  /** Optional flag that draws a border around the plotting area. */
   showBorder?: boolean,
+  /** Optional title displayed on the X-axis. */
   Tlabel?: string,
+  /** Optional title or per-axis titles displayed on Y-axes. */
   Ylabel?: string | string[],
+  /** Optional flag that keeps the interaction toolbar expanded. */
   holdMenuOpen?: boolean,
+  /** Optional side where the interaction toolbar is displayed, or hide to remove it. */
   menuLocation?: 'left' | 'right' | 'hide',
+  /** Optional placement of the legend, defaulting to hidden. */
   legend?: 'hidden' | 'bottom' | 'right',
   // Boolean arguements deprecated
+  /** Optional deprecated setting controlling which mouse crosshair lines are displayed. */
   showMouse?: boolean | 'horizontal' | 'vertical' | 'none',
+  /** Optional reserved height for a bottom legend in pixels. */
   legendHeight?: number,
+  /** Optional reserved width for a right legend in pixels. */
   legendWidth?: number,
+  /** Optional flag that displays Y-axis values using SI magnitude factors. */
   useMetricFactors?: boolean,
+  /** Optional flag that includes dates on a time axis. */
   showDateOnTimeAxis?: boolean,
+  /** Optional CSS cursor displayed over the plotting area. */
   cursorOverride?: string,
+  /**
+   * Optional callback invoked when the plot is selected.
+   * @param x - Selected X coordinate.
+   * @param y - Selected value for each Y-axis.
+   * @param actions - Helpers for updating graph state.
+   */
   onSelect?: (x: number, y: number[], actions: IActionFunctions) => void,
+  /**
+   * Optional callback that prepares content for image capture.
+   * @param legendHeightRequired - Height required to include the legend in pixels.
+   * @returns An optional capture identifier.
+   */
   onCapture?: (legendHeightRequired: number) => string | undefined,
+  /** Optional callback invoked after image capture finishes. */
   onCaptureComplete?: () => void,
+  /**
+   * Optional callback invoked to inspect data in the visible domain.
+   * @param tDomain - Visible X-axis bounds.
+   */
   onDataInspect?: (tDomain: [number, number]) => void,
+  /**
+   * Optional callback invoked when the X-axis domain changes.
+   * @param tDomain - Updated X-axis bounds.
+   */
   onTDomainChange?: (tDomain: [number, number]) => void,
+  /** Optional minimum bound for one or more Y-axes. */
   Ymin?: number | number[],
+  /** Optional maximum bound for one or more Y-axes. */
   Ymax?: number | number[],
+  /** Optional flag that snaps pointer coordinates to registered data points. */
   snapMouse?: boolean,
+  /** Optional flag that formats time-axis values in UTC instead of local time. */
   useUTC?: boolean
 }
 
@@ -126,6 +175,11 @@ const SvgStyle: React.CSSProperties = {
 const defaultLegendHeight = 50;
 const defaultLegendWidth = 100;
 
+/**
+ * Composes graph axes, legend, interactions, and data children into a complete plot.
+ * @param props - Plot domains, dimensions, controls, callbacks, and child graphics.
+ * @returns Interactive graph with shared plotting context.
+ */
 const Plot = (props: React.PropsWithChildren<IProps>) => {
   /*
     Actual plot that will handle Axis etc.

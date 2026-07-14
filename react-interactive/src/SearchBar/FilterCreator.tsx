@@ -27,12 +27,33 @@ import { DatePicker } from '@gpa-gemstone/react-forms';
 
 
 interface IProps<T> {
+    /**
+     * Draft filter edited by the generated controls.
+     */
     Filter: Search.IFilter<T>,
+    /**
+     * State setter used to apply changes to the draft filter.
+     * @param filter - Updated filter or updater function produced by an input control.
+     */
     Setter: (filter: React.SetStateAction<Search.IFilter<T>>) => void,
+    /**
+     * Field definition that selects which editor and operators are rendered.
+     */
     Field: Search.IField<T> | undefined,
+    /**
+     * Optional function that loads options for enum fields and returns an effect cleanup callback.
+     * @param setOptions - Setter used to provide the loaded enum options.
+     * @param field - Field whose enum options should be loaded.
+     * @returns Cleanup callback invoked when the effect is replaced or unmounted.
+     */
     Enum?: EnumSetter<T>
 }
 
+/**
+ * Renders the appropriate editor for a draft filter's selected field type.
+ * @param props - Supplies the draft filter, selected field, setter, and optional enum loader.
+ * @returns The field-specific filter controls or null when no field is selected.
+ */
 const FilterCreator = <T,>(props: IProps<T>) => {
     const [options, setOptions] = React.useState<IOptions[]>([]);
 

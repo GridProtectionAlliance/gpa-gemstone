@@ -37,36 +37,34 @@ interface IOption {
 
 interface IProps {
   /**
-    * Label to display for the form, defaults to the Field prop
-    * @type {string}
-    * @optional
-  */
+   * Optional text shown above the checkbox choices.
+   */
   Label?: string;
   /**
-    * Array of options for the multi-select checkboxe
-    * @type {{ Value: number | string; Text: string; Selected: boolean }[]}
-  */
+   * Choices rendered as checkboxes, including their current selected state.
+   */
   Options: IOption[];
   /**
-    * Function to handle changes in the selection
-    * @param evt - The change event
-    * @param Options - The updated options array
-    * @returns {void}
-  */
+   * Handles a change to one of the checkbox selections.
+   * @param evt - Change event produced by the checkbox.
+   * @param Options - Options with the updated selected states.
+   */
   OnChange: (evt: any, Options: IOption[]) => void;
   /**
-    * Help message or element to display
-    * @type {string | JSX.Element}
-    * @optional
-  */
+   * Optional help content displayed beside the label.
+   */
   Help?: string | JSX.Element;
   /**
-    * Flag to show or hide the selected options tooltip
-    * @optional
-  */
+   * Optional flag that shows selected option text in a tooltip, defaulting to false.
+   */
   ShowToolTip?: boolean;
 }
 
+/**
+ * Renders multiple selectable options as checkboxes with optional selection help.
+ * @param props - Checkbox options, change handler, and optional label or tooltip settings.
+ * @returns A labeled group of checkbox choices.
+ */
 const MultiSelect = (props: IProps) => {
   // State hooks for managing the visibility of the dropdown and help message.
   const multiSelect = React.useRef<HTMLDivElement>(null);

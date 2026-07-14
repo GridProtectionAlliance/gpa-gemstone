@@ -25,19 +25,29 @@ import { Gemstone } from '@gpa-gemstone/application-typings';
 import * as React from 'react';
 
 interface IProps {
-    /** The decision tree data */
+    /**
+     * Decision-tree definition used to render prompts and resolve the root node.
+     */
     Data: Gemstone.TSX.Interfaces.IDecisionTreeData;
-    /** Fallback UI in the case where a node isn't found*/
+    /**
+     * Optional content rendered when the current node cannot be found, defaulting to an empty fragment.
+     */
     FallbackHelp?: JSX.Element;
-    /** Optional Value to reset to root node when it changes */
+    /**
+     * Optional value whose changes reset navigation to the root node.
+     */
     ResetToRoot?: any;
-    /**Optional Func to call when a leaf node is reached */
+    /**
+     * Optional callback fired when navigation reaches a leaf node.
+     * @param value - Recommended value associated with the leaf node.
+     */
     OnComplete?: (value: any) => void; //figure out how to type value,
 }
 
 /**
- * A generic decision-tree walker.
- * Renders one node at a time and advances on button click.
+ * Renders one decision-tree node at a time and advances through its selected options.
+ * @param props - Supplies the tree data, reset trigger, fallback content, and completion callback.
+ * @returns The current prompt and options, the fallback, or an empty fragment.
  */
 const DecisionHelpTree = (props: IProps) => {
     const [currentId, setCurrentId] = React.useState<string>(props.Data.RootId);

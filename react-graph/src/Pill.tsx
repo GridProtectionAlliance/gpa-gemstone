@@ -29,17 +29,11 @@ import useLegend from './Hooks/useLegend';
 
 export interface IProps {
     /**
-     * Data for the pill and circles:
-     * [x1, x2]
-     * - x1: The x-coordinate of the left edge of the pill.
-     * - x2: The x-coordinate of the right edge of the pill.
+     * X-axis coordinates of the pill's left and right edges.
      */
     XData: [number, number],
     /**
-     * Data for the pill and circles:
-     * [y1, y2]
-     * - y1: The y-coordinate of the bottom edge of the pill.
-     * - y2: The y-coordinate of the top edge of the pill.
+     * Y-axis coordinates of the pill's bottom and top edges.
      */
     YData: [number, number],
     /**
@@ -47,74 +41,66 @@ export interface IProps {
      */
     RadiusPX: number,
     /**
-     * Fill color of the pill.
-     * @type {string}
+     * Fill color applied to the pill.
      */
     Color: string,
     /**
-     * Color of text in pill.
-     * @type {string}
+     * Optional color applied to text inside the pill.
      */
     TextColor?: string,
 
     /**
-     * Stroke color of the pill and circles.
-     * @optional
-     * @type {string}
+     * Optional stroke color applied around the pill.
      */
     BorderColor?: string,
 
     /**
-     * Stroke thickness of the pill and circles.
-     * @optional
-     * @type {number}
+     * Optional stroke thickness applied around the pill.
      */
     BorderThickness?: number,
 
     /**
-     * Optional text to display inside the pill.
-     * @optional
-     * @type {string}
+     * Optional text displayed inside the pill.
      */
     Text?: string,
 
     /**
-     * Where to place text in the pill
+     * Optional horizontal placement of text inside the pill, defaulting to center.
      */
     TextPlacement?: 'center' | 'left' | 'right'
 
     /**
-     * Opacity of the pill and circles.
-     * @optional
-     * @type {number}
+     * Optional opacity applied to the pill, defaulting to 1.
      */
     Opacity?: number,
 
     /**
-     * Axis identifier used for vertical positioning.
-     * @optional
-     * @type {AxisIdentifier}
+     * Optional Y-axis used for vertical positioning.
      */
     Axis?: AxisIdentifier,
 
     /**
-     * Callback function to handle click events on the pill. Provides action functions to update domains.
-     * @optional
-     * @type {(actions: IActionFunctions) => void}
+     * Optional callback invoked when the pill is clicked.
+     * @param x - Clicked X coordinate.
+     * @param y - Clicked Y coordinate.
+     * @param actions - Helpers for updating graph state.
      */
     OnClick?: (x: number, y: number, actions: IActionFunctions) => void,
     /**
-     * Legend text for the pill.
-     * @optional
-     * @type {string}
+     * Optional label displayed for the pill in the legend.
      */
     Legend?: string,
     /**
-     * Optional flag to set enabled/disabled state of the pill.
+     * Optional controlled enabled state of the pill.
      */
     Enabled?: boolean
 }
 
+/**
+ * Renders an interactive rounded pill spanning graph coordinates.
+ * @param props - Pill bounds, appearance, legend, and click behavior.
+ * @returns SVG pill graphic with optional text.
+ */
 const Pill = (props: IProps) => {
     const context = React.useContext(GraphContext);
 

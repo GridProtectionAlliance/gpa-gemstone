@@ -42,6 +42,10 @@ const searchFn = (search: string) => Promise.resolve(
 export const MultiSearchableSelectEmptyID = "MultiSearchableSelectEmptyID"
 export const MultiSearchableSelectPopulatedID = "MultiSearchableSelectPopulatedID"
 
+/**
+ * Renders the Multi Searchable Select integration test fixture.
+ * @returns Component state and controls exercised by integration tests.
+ */
 const MultiSearchableSelectTestComponent = () => {
     const [emptyRecord, setEmptyRecord] = React.useState<IExampleRecord>({ Selections: [] })
     const [populatedRecord, setPopulatedRecord] = React.useState<IExampleRecord>({ Selections: [1, 2] })

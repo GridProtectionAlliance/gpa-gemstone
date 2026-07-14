@@ -34,42 +34,50 @@ const circleStyle: React.CSSProperties = {
 }
 
 interface IStep {
+    /**
+     * Short label displayed for inactive steps.
+     */
     short: string,
+    /**
+     * Detailed label displayed for the active step.
+     */
     long: string,
+    /**
+     * Identifier used to select and compare the step.
+     */
     id: string | number
 }
 
 interface IProps {
     /**
-     * List of steps for the ProgressBar
+     * Ordered steps rendered along the progress bar.
      */
     steps: IStep[],
     /**
-     * id of the active step
+     * Identifier of the step currently marked active.
      */
     activeStep: string | number,
     /**
-     * Optional height of the ProgressBar, defaulting to 100%
+     * Optional height of the progress-bar container, defaulting to `100%`.
      */
     height?: string | number,
     /**
-     * Optional width of the ProgressBar, defaulting to 100%
+     * Optional width of the progress-bar container, defaulting to `100%`.
      */
     width?: string | number,
     /**
-     * Optional callback used when a step is clicked on
-     * @param currentStep the value of activeStep
-     * @param clickedStep the id of the clicked step
-     * @returns 
+     * Optional callback fired when the user clicks a step marker or label.
+     * @param currentStep - Identifier supplied through `activeStep`.
+     * @param clickedStep - Identifier of the step selected by the user.
      */
     onClick?: (currentStep: string|number, clickedStep: string|number) => void
 }
 
 /**
-* Functional component representing a progress bar with steps.
-* @param props - Props for configuring the progress bar.
-* @returns JSX elements for the progress bar.
-*/
+ * Renders labeled progress steps with visual completion through the active step.
+ * @param props - Configures the steps, active identifier, dimensions, and click behavior.
+ * @returns The interactive stepped progress bar.
+ */
 function ProgressBar(props: IProps) {
     const [activeStep, setActiveStep] = React.useState<number>(0);
 

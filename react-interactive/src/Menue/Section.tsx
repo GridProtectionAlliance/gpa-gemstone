@@ -29,20 +29,28 @@ import { CreateGuid } from '@gpa-gemstone/helper-functions';
 
 export interface IProps {
     /**
-     * Optional label to be used
+     * Optional heading displayed above the section when the sidebar is expanded.
      */
     Label?: string,
     /**
-     * Optional style to be used on component
+     * Optional inline styles applied to the section's navigation list.
      */
     Style?: React.CSSProperties
-    /** Needed to specify whether a user can access a section via roles. 
-     * Note: Individual pages will still need to be marked with roles as well for page access control if using non-legacy navigation. */
+    /**
+     * Optional roles allowed to see the section; child pages still require their own role restrictions.
+     */
     RequiredRoles?: Application.Types.SecurityRoleName[];
-    /** Allows section to be collapsable when navbar isn't, default true */
+    /**
+     * Optional flag that lets users collapse the section while the sidebar is expanded, defaulting to true.
+     */
     AllowCollapse?: boolean
 }
 
+/**
+ * Groups role-restricted navigation items beneath an optionally collapsible sidebar heading.
+ * @param props - Configures the heading, access, collapse behavior, styling, and child items.
+ * @returns The navigation section or null when access is denied.
+ */
 const Section = (props: React.PropsWithChildren<IProps>) => {
     const context = React.useContext(Context);
     const [show, setShow] = React.useState<boolean>(true);

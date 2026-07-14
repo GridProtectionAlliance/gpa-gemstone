@@ -32,50 +32,55 @@ import HelpIcon from './HelpIcon';
 
 interface IProps<T> extends Omit<Gemstone.TSX.Interfaces.IBaseFormProps<T>, "Setter"> {
   /**
-    * Setter function to update the Record
-    * @param record - Updated record of type T
-    * @param color - Color result from the picker
-    * @returns {void}
-  */
+   * Updates the record after a color is selected.
+   * @param record - Record containing the selected color.
+   * @param color - Complete result returned by the color picker.
+   */
   Setter: (record: T, color: ColorResult) => void;
   /**
-    * Function to determine the validity of a field
-    * @param field - Field of the record to check
-    * @returns {boolean}
-  */
+   * Optional callback that determines whether the color field is valid.
+   * @param field - Record field containing the selected color.
+   * @returns Whether the field is valid.
+   */
   Valid?: (field: keyof T) => boolean;
   /**
-    * Feedback message to show when input is invalid
-    * @type {string}
-    * @optional
-  */
+   * Optional message shown when the selected color is invalid.
+   */
   Feedback?: string;
   /**
-    * CSS styles to apply to the button
-    * @type {React.CSSProperties}
-    * @optional
-  */
+   * Optional CSS styles applied to the form group and color button.
+   */
   Style?: React.CSSProperties;
   /**
-    * List of colors to be used in the color picker
-    * @type {string[]}
-    * @optional
-  */
+   * Optional palette displayed by the picker, defaulting to the built-in color list.
+   */
   Colors?: string[];
   /**
-    * Position of the triangle pointer in the color picker
-    * @type {'hide' | 'top'}
-    * @optional
-  */
+   * Optional triangle pointer position, defaulting to `hide`.
+   */
   Triangle?: 'hide' | 'top';
 }
 
 interface IWrapperProps {
+  /**
+   * Controls whether the color picker wrapper is visible and interactive.
+   */
   Show: boolean,
+  /**
+   * Vertical viewport position of the wrapper in pixels.
+   */
   Top: number,
+  /**
+   * Horizontal viewport position of the wrapper in pixels.
+   */
   Left: number,
 }
 
+/**
+ * Positions and fades the floating color palette relative to its trigger.
+ * @param props - Visibility and viewport coordinates for the palette.
+ * @returns A styled wrapper for the color palette.
+ */
 const WrapperDiv = styled.div<IWrapperProps>`
   & {
     border-radius: 3px;
@@ -100,6 +105,11 @@ interface ISize {
   Width: number,
   Height: number
 }
+/**
+ * Renders a button that opens a palette for editing a record's color field.
+ * @param props - Record binding, palette configuration, and change handler.
+ * @returns A labeled color picker control and floating palette.
+ */
 const ColorPicker = <T,>(props: IProps<T>) => {
   const toolTipRef = React.useRef<HTMLDivElement>(null);
   const buttonRef = React.useRef<HTMLButtonElement>(null);

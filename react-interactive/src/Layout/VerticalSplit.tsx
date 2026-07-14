@@ -30,11 +30,11 @@ import SplitSection from './SplitSection';
 
 interface IProps {
     /**
-     * Optional style to be used on the container div
+     * Optional inline styles applied to the split container.
      */
     style?: any,
     /**
-     * Optional style for the draggable divider bars between sections
+     * Optional inline styles applied to each draggable divider.
      */
     sliderStyle?: any,
 }
@@ -53,7 +53,7 @@ interface ISection {
      */
     MaxWidth: number,
     /**
-     * Whether a drawer is currently open. Undefined for SplitSection elements.
+     * Optional open state for drawer elements; omitted for split sections.
      */
     Open?: boolean,
     /**
@@ -82,12 +82,15 @@ interface ISection {
     Order: number,
     /**
      * Optional callback registration that lets a parent open or close the drawer.
+     * @param func - Function the parent can call with the desired open state.
      */
     GetOverride?: (func: (open: boolean) => void) => void,
 }
-// Props Description:
-// style => style of the encompasing div
-
+/**
+ * Lays out resizable sections and collapsible drawers across a horizontal split view.
+ * @param props - Configures container styles, divider styles, and split-view children.
+ * @returns The interactive split layout.
+ */
 const VerticalSplit = (props: React.PropsWithChildren<IProps>) => {
     const divRef = React.useRef<any>(null);
 
@@ -430,14 +433,20 @@ export default VerticalSplit;
 
 interface IDividerProps {
     /**
-     * Optional style override for the divider bar.
+     * Optional inline style override applied to the divider bar.
      */
     style?: any,
     /**
-     * Called with the divider's starting clientX when dragging begins.
+     * Callback fired when dragging begins.
+     * @param position - Divider's starting horizontal client coordinate.
      */
     onClick: (position: number) => void
 }
+/**
+ * Renders a draggable divider between adjacent split-view regions.
+ * @param props - Configures the divider style and drag-start callback.
+ * @returns The divider element.
+ */
 const VerticalSplitDivider = (props: IDividerProps) => {
 
     const style = props.style === undefined? {float: 'left', background: '#6c757d', cursor: 'col-resize'} : props.style;
@@ -450,22 +459,27 @@ const VerticalSplitDivider = (props: IDividerProps) => {
 
 interface IDrawerHeaderProps {
     /**
-     * Drawer label shown in the header and optional tooltip.
+     * Drawer label displayed in the header and optional tooltip.
      */
     title: string,
     /**
-     * Called when the user clicks the drawer header.
+     * Callback fired when the user clicks the drawer header.
      */
     onClick: () => void,
     /**
-     * Icon shown in the drawer header.
+     * Icon displayed in the drawer header.
      */
     symbol: 'Open'|'Close'|'X',
     /**
-     * Whether to show the drawer title tooltip on hover.
+     * Controls whether the drawer title tooltip appears while hovering.
      */
     showTooltip: boolean
 }
+/**
+ * Renders a vertical drawer header with an action icon and optional title tooltip.
+ * @param props - Configures the title, icon, click behavior, and tooltip visibility.
+ * @returns The drawer header and optional tooltip.
+ */
 const DrawerHeader = (props: IDrawerHeaderProps) => {
     const [hover, setHover] = React.useState<boolean>(false);
     const [guid, setGuid] = React.useState<string>(CreateGuid());

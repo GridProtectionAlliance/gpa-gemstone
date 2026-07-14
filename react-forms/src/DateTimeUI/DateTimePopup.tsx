@@ -31,12 +31,26 @@ import { Gemstone } from '@gpa-gemstone/application-typings';
 import { useGetContainerPosition } from '@gpa-gemstone/helper-functions';
 
 interface IWrapperProps {
+    /**
+     * Vertical viewport position of the popup in pixels.
+     */
     Top: number,
+    /**
+     * Horizontal viewport position of the popup in pixels.
+     */
     Left: number,
+    /**
+     * Horizontal position of the popup indicator as a percentage.
+     */
     Indicator: number
 }
 
 //TODO: this eventually should be moved into a css class
+/**
+ * Positions the date-time popup and draws its indicator above the panel.
+ * @param props - Viewport coordinates and indicator placement for the popup.
+ * @returns A styled wrapper for date-time controls.
+ */
 const WrapperDiv = styled.div<IWrapperProps>`
   & {
     border-radius: 3px;
@@ -66,18 +80,46 @@ const WrapperDiv = styled.div<IWrapperProps>`
   }`
 
 interface IProps {
+    /**
+     * Date and time displayed in the popup controls.
+     */
     DateTime: moment.Moment | undefined,
+    /**
+     * Updates the selected date and time.
+     * @param record - Newly selected date and time.
+     */
     Setter: (record: moment.Moment) => void,
+    /**
+     * Determines whether the popup shows date controls, time controls, or both.
+     */
     Type: Gemstone.TSX.Types.DateUnit,
+    /**
+     * Controls whether the popup is rendered.
+     */
     Show: boolean,
+    /**
+     * Vertical viewport position of the popup in pixels.
+     */
     Top: number,
+    /**
+     * Horizontal viewport coordinate around which the popup is centered.
+     */
     Center: number,
+    /**
+     * Optional precision of the popup's time controls, defaulting to seconds.
+     */
     Accuracy?: Gemstone.TSX.Types.Accuracy
 }
 
 //This is merely used to provide a class name for the popup for indentification purposes
 const DateTimePopupClass = "gpa-gemstone-datetime-popup";
 
+/**
+ * Renders the calendar, clock, or both in a floating date-time panel.
+ * @param props - Selected value, visibility, placement, and date-time mode.
+ * @param ref - Forwarded reference attached to the popup wrapper.
+ * @returns The visible date-time popup, or null when hidden.
+ */
 function DateTimePopup(props: IProps, ref: React.ForwardedRef<HTMLDivElement | null>) {
     const divRef = React.useRef<HTMLDivElement | null>(null);
 

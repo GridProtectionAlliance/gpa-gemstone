@@ -31,18 +31,54 @@ import { Dispatch } from "@reduxjs/toolkit";
 interface U { ID: number|string }
 
 interface IProps<T extends U> {
+    /**
+     * Redux slice used to search and sort selectable records.
+     */
     Slice: GenericSlice<T>,
+    /**
+     * Records selected when the popup opens.
+     */
     Selection: T[],
+    /**
+     * Handles confirmation or cancellation of the selection.
+     * @param selected - Records selected when the popup closes.
+     * @param conf - Whether the user confirmed the selection.
+     */
     OnClose: (selected: T[], conf: boolean ) => void
+    /**
+     * Controls whether the selection popup is visible.
+     */
     Show: boolean,
+    /**
+     * Renders the search controls shown above the results table.
+     * @param children - Additional controls supplied to the search bar.
+     * @returns Search UI containing the supplied controls.
+     */
     Searchbar: (children: React.ReactNode) => React.ReactNode,
+    /**
+     * Optional selection mode, defaulting to `single`.
+     */
     Type?: 'single'|'multiple',
+    /**
+     * Title shown in the popup header.
+     */
     Title: string,
+    /**
+     * Optional number of records required before confirmation is enabled.
+     */
     MinSelection?: number,
+    /**
+     * Optional table columns and controls rendered by the popup.
+     */
     children?: React.ReactNode
 }
 
 
+/**
+ * Provides searchable single- or multiple-record selection in a modal.
+ * @param props - Search, selection, display, and close behavior for the popup.
+ * @returns Searchable record selection modal.
+ */
 export default function SelectPopup<T extends U>(props: IProps<T>) {
     const dispatch = useDispatch<Dispatch<any>>();
     const sortField = useSelector(props.Slice.SortField) as keyof T;

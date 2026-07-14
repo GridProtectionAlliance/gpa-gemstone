@@ -31,10 +31,27 @@ import { OpenXDA } from '@gpa-gemstone/application-typings';
 
 
 interface IProps {
+    /**
+     * Updates the active characteristic and event type filters.
+     * @param characteristics - Validated characteristic filters, or undefined when invalid.
+     * @param types - Optional event type identifiers to select.
+     */
     setEventFilters: (characteristics?: IEventCharacteristicFilters, types?: number[]) => void,
+    /**
+     * Event types used to determine which characteristic controls are relevant.
+     */
     eventTypes: OpenXDA.Types.EventType[]
+    /**
+     * Characteristic filter values edited by the form.
+     */
     eventCharacteristicFilter: IEventCharacteristicFilters,
+    /**
+     * Magnitude-duration curves available to the curve controls.
+     */
     magDurCurves: OpenXDA.Types.MagDurCurve[],
+    /**
+     * Identifiers of the currently selected event types.
+     */
     eventTypeFilter: number[]
 }
 
@@ -49,6 +66,11 @@ interface IEventCharacteristicFilters {
     curveID: number, curveInside: boolean, curveOutside: boolean
 }
 
+/**
+ * Edits magnitude, duration, phase, and curve filters for selected event types.
+ * @param props - Available event metadata and active characteristic filters.
+ * @returns Event characteristic filter controls.
+ */
 const EventCharacteristicFilter = (props: IProps) => {
     const [newEventCharacteristicFilter, setNewEventCharacteristicFilter] = React.useState<IEventCharacteristicFilters>(props.eventCharacteristicFilter);
     const [newPhases, setNewPhases] = React.useState<{ Value: number, Label: string, Selected: boolean }[]>([]);

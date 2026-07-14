@@ -33,7 +33,9 @@ export interface ILegendContext {
 }
 
 export interface ILegendRequiredProps {
+    /** Controls whether the legend entry is shown as enabled. */
     enabled: boolean,
+    /** Unique identifier used to coordinate the legend entry with graph data. */
     id: string
 }
 

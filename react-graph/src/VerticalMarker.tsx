@@ -26,17 +26,37 @@ import * as React from 'react';
 import {AxisIdentifier, AxisMap, GraphContext, IHandlers, LineMap, LineStyle} from './GraphContext';
 
 export interface IProps {
+    /** Optional Y coordinate where the vertical marker begins, defaulting to the visible domain start. */
     start?: number,
+    /** Optional Y coordinate where the vertical marker ends, defaulting to the visible domain end. */
     end?: number,
+    /** X-axis value marked by the line. */
     Value: number,
+    /**
+     * Optional callback invoked after dragging changes the marker value.
+     * @param x - Updated X-axis value.
+     */
     setValue?: (x: number) => void,
+    /**
+     * Optional callback invoked when the marker is clicked.
+     * @param x - Current X-axis value of the marker.
+     */
     onClick?: (x: number) => void,
+    /** Stroke color applied to the marker. */
     color: string,
+    /** Dash pattern used to render the marker. */
     lineStyle: LineStyle,
+    /** Stroke width and drag-selection tolerance in pixels. */
     width: number,
+    /** Optional Y-axis used to determine the marker's vertical extent. */
     axis?: AxisIdentifier,
 }
 
+/**
+ * Renders an optionally draggable line marking an X-axis value.
+ * @param props - Marker value, extent, appearance, and interaction callbacks.
+ * @returns Interactive vertical SVG marker.
+ */
 function VerticalMarker(props: IProps) {
   /*
     Marks an X Value vertically as a line.

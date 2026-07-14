@@ -25,23 +25,43 @@ import * as React from 'react';
 import { AxisIdentifier, AxisMap, GraphContext, IHandlers } from './GraphContext';
 
 interface IProps {
-  // Specifies the upper left corner of the box (or other spots depending on origin)
+  /** X coordinate of the box anchor. */
   x: number,
+  /** Y coordinate of the box anchor. */
   y: number,
+  /** Optional flag that interprets the anchor as a pixel offset, defaulting to false. */
   usePixelPositioning?: boolean,
+  /** Optional flag that disables snapping while dragging, defaulting to false. */
   disallowSnapping?: boolean,
+  /** Optional Y-axis associated with the box anchor. */
   axis?: AxisIdentifier,
+  /** Optional corner or edge positioned at the anchor, defaulting to upper-left. */
   origin?: "upper-right" | "upper-left" | "upper-center" | "lower-right" | "lower-left" | "lower-center" | 'middle-left' | 'middle-right',
-  // Specifies the offset of the pox from the origin point, In pixels
+  /** Optional distance in pixels between the box and its anchor. */
   offset?: number,
-  // Dom ID of child, used for sizing of child
+  /** DOM identifier of the child element measured to size the box. */
   childId: string,
+  /** Optional background opacity applied to the box. */
   opacity?: number,
-  // Function to move box
+  /**
+   * Optional callback invoked after dragging changes the anchor.
+   * @param x - Updated X coordinate.
+   * @param y - Updated Y coordinate.
+   */
   setPosition?: (x: number, y: number) => void,
+  /**
+   * Optional callback invoked when the pointer moves over the plot.
+   * @param x - Pointer X coordinate.
+   * @param y - Pointer Y coordinate.
+   */
   onMouseMove?: (x: number, y: number) => void
 }
 
+/**
+ * Positions interactive HTML content at a graph or pixel coordinate.
+ * @param props - Anchor, positioning behavior, appearance, and child content.
+ * @returns SVG group containing the infobox background and content.
+ */
 const Infobox = (props: React.PropsWithChildren<IProps>) => {
   const context = React.useContext(GraphContext);
   const [isSelected, setSelected] = React.useState<boolean>(false);
@@ -195,12 +215,22 @@ const Infobox = (props: React.PropsWithChildren<IProps>) => {
 }
 
 interface IGraphicProps {
+  /** Pixel X coordinate of the graphic. */
   x: number,
+  /** Pixel Y coordinate of the graphic. */
   y: number,
+  /** Width of the graphic in pixels. */
   width: number,
+  /** Height of the graphic in pixels. */
   height: number,
+  /** Optional background opacity applied to the graphic. */
   opacity?: number
 }
+/**
+ * Renders the bordered background used by an infobox.
+ * @param props - Pixel bounds and opacity of the background.
+ * @returns SVG path forming the infobox background.
+ */
 const InfoGraphic = (props: IGraphicProps) => {
   return (
     <path d={`M ${props.x} ${props.y} h ${props.width} v ${props.height} h -${props.width} v -${props.height}`} stroke={'black'} style={{opacity: props.opacity ?? 1}} />

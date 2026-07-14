@@ -151,26 +151,81 @@ export interface IActionFunctions {
 }
 
 interface IContextWrapperProps extends IHandlerRegistration, IDataRegistration {
+  /** Visible X-axis domain. */
   XDomain: [number, number],
+  /** Current unsnapped pointer position in data coordinates. */
   MousePosition: [number,number],
+  /** Current snapped pointer position in data coordinates. */
   MousePositionSnap: [number,number],
+  /** Visible domains for each Y-axis. */
   YDomain: [number,number][],
+  /** Interaction mode currently active on the graph. */
   CurrentMode: SelectType,
+  /** Indicates whether the pointer is inside the plotting area. */
   MouseIn: boolean,
+  /** Revision value used to notify consumers of context updates. */
   UpdateFlag: number,
+  /** Registered data series keyed by identifier. */
   Data: React.MutableRefObject<Map<string, IDataSeries>>,
+  /** Identifier of the data series associated with the current update. */
   DataGuid: string,
+  /** Command used to coordinate enabled state across legend entries. */
   MassEnableCommand: {requester: string, command: "disable-others"|"enable-all"|"none"},
+  /**
+   * Converts an X pixel offset into a plot pixel coordinate.
+   * @param _ - X offset in pixels.
+   * @returns Plot-relative X coordinate in pixels.
+   */
   XApplyPixelOffset: (_: number) => number,
+  /**
+   * Converts a Y pixel offset into a plot pixel coordinate.
+   * @param _ - Y offset in pixels.
+   * @returns Plot-relative Y coordinate in pixels.
+   */
   YApplyPixelOffset: (_: number) => number, 
+  /**
+   * Transforms an X data value into a pixel coordinate.
+   * @param x - X value in data coordinates.
+   * @returns X coordinate in pixels.
+   */
   XTransform: (x: number) => number,
+  /**
+   * Transforms a Y data value into a pixel coordinate.
+   * @param y - Y value in data coordinates.
+   * @param axis - Y-axis used for the transformation.
+   * @returns Y coordinate in pixels.
+   */
   YTransform: (y: number, axis: AxisIdentifier|number) => number,
+  /**
+   * Converts an X pixel coordinate into a data value.
+   * @param p - X coordinate in pixels.
+   * @returns X value in data coordinates.
+   */
   XInvTransform: (p: number) => number,
+  /**
+   * Converts a Y pixel coordinate into a data value.
+   * @param p - Y coordinate in pixels.
+   * @param axis - Y-axis used for the transformation.
+   * @returns Y value in data coordinates.
+   */
   YInvTransform: (p: number, axis: AxisIdentifier|number) => number,
+  /**
+   * Replaces the visible X-axis domain.
+   * @param x - New X-axis bounds.
+   */
   SetXDomain: (x: [number,number]) => void,
+  /**
+   * Replaces the visible domains for all Y-axes.
+   * @param y - New bounds for each Y-axis.
+   */
   SetYDomain: (y: [number, number][]) => void
 }
 
+/**
+ * Publishes graph domains, transformations, data, and interaction handlers to descendants.
+ * @param props - Graph state, registrations, transformations, and child content.
+ * @returns Graph context provider wrapping the supplied children.
+ */
 export const ContextWrapper = (props: React.PropsWithChildren<IContextWrapperProps>) => {
 
   const context = React.useMemo(GetContext, [

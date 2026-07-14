@@ -26,44 +26,65 @@ import styled from 'styled-components';
 
 interface IProps {
     /**
-     * Title displayed when the drawer is closed but hovered over
+     * Text displayed on the closed drawer handle.
      */
     Title: string
     /**
-     * Indicates the initial state of the drawer
+     * Initial open state of the drawer.
      */
     Open: boolean,
     /**
-     * Location of the drawer in the component refferenced
+     * Edge of the target element where the drawer is positioned.
      */
     Location: 'left' | 'right' | 'top' | 'bottom',
     /**
-     * This will be called with a callback to set the Drawer to open or closed form the parent
-     * @param func 
-     * @returns 
+     * Optional callback that exposes a function for opening or closing the drawer from its parent.
+     * @param func - Function the parent can call with the desired open state.
      */
     GetOverride?: (func: (open: boolean) => void) => void,
     /**
-     * Callback when the Drawer changes 
-     * @param open 
-     * @returns 
+     * Optional callback fired when the drawer's open state changes.
+     * @param open - Whether the drawer is now open.
      */
     OnChange?: (open: boolean) => void,
     /**
-     * The data-drawer property of the target containing the drawer
+     * Value of the target element's `data-drawer` attribute.
      */
     Target: string,
+    /**
+     * Optional flag that hides the closed drawer handle, defaulting to false.
+     */
     HideHandle?: boolean
 }
 
 interface IClosedOverlayProps {
+    /**
+     * Edge that controls the handle's orientation and corner rounding.
+     */
     Location: 'left' | 'right' | 'top' | 'bottom',
+    /**
+     * Horizontal viewport position in pixels.
+     */
     Left: number,
+    /**
+     * Vertical viewport position in pixels.
+     */
     Top: number,
+    /**
+     * Handle width in pixels.
+     */
     Width: number,
+    /**
+     * Handle height in pixels.
+     */
     Height: number,
 }
 /* top-left | top-right | bottom-right | bottom-left */
+/**
+ * Positions and styles the interactive handle shown while the overlay drawer is closed.
+ * @param props - Supplies the target edge, viewport position, and handle dimensions.
+ * @returns The styled closed-drawer handle.
+ */
 const ClosedOverlayDiv = styled.div<IClosedOverlayProps>`
   & {
     border-radius: ${props => props.Location === 'bottom' || props.Location === 'right' ? 4 : 0}px
@@ -88,13 +109,30 @@ const ClosedOverlayDiv = styled.div<IClosedOverlayProps>`
   }`
 
 interface IOpenOverlayProps {
+    /**
+     * Edge associated with the open overlay.
+     */
     Location: 'left' | 'right' | 'top' | 'bottom',
+    /**
+     * Horizontal viewport position in pixels.
+     */
     Left: number,
+    /**
+     * Vertical viewport position in pixels.
+     */
     Top: number,
+    /**
+     * Controls the overlay's opacity and pointer-event state.
+     */
     Open: boolean,
 
 }
 
+/**
+ * Positions and fades the drawer content over its target element.
+ * @param props - Supplies the target edge, viewport position, and open state.
+ * @returns The styled open-drawer overlay.
+ */
 const OpenOverlayDiv = styled.div<IOpenOverlayProps>`
   & {
     display: inline-block;
@@ -113,6 +151,11 @@ const OpenOverlayDiv = styled.div<IOpenOverlayProps>`
     ${props => !props.Open ? 'pointer-events: none;' : ''}
   }`
 
+/**
+ * Renders content in an overlay drawer anchored to a matching `data-drawer` target.
+ * @param props - Configures the target, edge, initial state, handle, callbacks, and content.
+ * @returns The positioned drawer overlay and optional closed handle.
+ */
 const OverlayDrawer = (props: React.PropsWithChildren<IProps>) => {
     const divRef = React.useRef<any>(null);
 

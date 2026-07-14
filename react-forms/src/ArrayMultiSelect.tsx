@@ -26,20 +26,24 @@ import { Gemstone } from '@gpa-gemstone/application-typings';
 
 interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
   /**
-    * Options for the select dropdown
-    * @type {{ Value: string; Label: string }[]}
-  */
+   * Choices rendered in the multi-select dropdown.
+   */
   Options: { Value: string; Label: string }[];
   /**
-    * CSS styles to apply to the select element
-    * @type {React.CSSProperties}
-    * @optional
-  */
+   * Optional CSS styles applied to the select element.
+   */
   Style?: React.CSSProperties;
+  /**
+   * Optional CSS styles applied to the surrounding form group.
+   */
   GroupStyle?: React.CSSProperties;
 }
 
-// Generic component designed for selecting multiple options from a dropdown
+/**
+ * Renders a multi-select control that stores selected option values in an array field.
+ * @param props - Record binding, choices, and optional styling for the control.
+ * @returns A labeled multi-select form control.
+ */
 export default function ArrayMultiSelect<T>(props: IProps<T>) {
   return (
     <div className="form-group" style={props.GroupStyle}>

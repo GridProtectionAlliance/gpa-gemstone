@@ -23,6 +23,11 @@
 import * as React from 'react';
 import PlotGroupContext, { IPlotGroupContext } from './PlotGroupContext';
 
+/**
+ * Shares horizontal domain updates among a group of plots.
+ * @param props - Plot components participating in the shared group.
+ * @returns Plot-group context provider wrapping the supplied children.
+ */
 const PlotGroup = (props: React.PropsWithChildren<unknown>) => {
     const legendWidthMap = React.useRef<Map<string, number>>(new Map());
     const [maxLegendWidth, setMaxLegendWidth] = React.useState<number>(0);

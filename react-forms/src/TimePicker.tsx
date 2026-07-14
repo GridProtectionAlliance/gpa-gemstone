@@ -27,25 +27,26 @@ import HelpIcon from './HelpIcon';
 
 interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
   /**
-    * Function to determine the validity of a field
-    * @param field - Field of the record to check
-    * @returns {boolean}
-  */
+   * Determines whether the selected time is valid.
+   * @param field - Record field containing the selected time.
+   * @returns Whether the field is valid.
+   */
   Valid: (field: keyof T) => boolean;
   /**
-    * Feedback message to show when input is invalid
-    * @type {string}
-    * @optional
-  */
+   * Optional message shown when the selected time is invalid.
+   */
   Feedback?: string;
   /**
-    * Defines the number of intervals for time value
-    * @type {number}
-    * @optional
-  */
+   * Optional increment in seconds used by the time input, defaulting to the browser behavior unless explicitly null.
+   */
   Step?: number;
 }
 
+/**
+ * Renders a validated time input bound to a record field.
+ * @param props - Record binding, time increment, and validation behavior.
+ * @returns A labeled time input with validation feedback.
+ */
 export default function DatePicker<T>(props: IProps<T>) {
   // Variables to control the rendering of label and help icon.
   const showLabel = props.Label !== "";

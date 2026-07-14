@@ -27,17 +27,40 @@ import { GraphContext } from './GraphContext';
 import { Legend } from './Legend';
 
 interface IProps {
+  /** Side of the graph where the legend is displayed. */
   location: 'bottom' | 'right',
+  /** Graph height available for sizing the legend in pixels. */
   graphHeight: number,
+  /** Graph width available for sizing the legend in pixels. */
   graphWidth: number,
+  /** Current legend height in pixels. */
   height: number,
+  /** Current legend width in pixels. */
   width: number,
+  /**
+   * Callback that reports the width required by the legend.
+   * @param width - Required legend width in pixels.
+   */
   RequestLegendWidth: (width: number) => void,
+  /**
+   * Callback that reports the height required by the legend.
+   * @param height - Required legend height in pixels.
+   */
   RequestLegendHeight: (height: number) => void,
+  /**
+   * Callback that broadcasts an enable or disable command to legend entries.
+   * @param args - Requesting entry and command to broadcast.
+   */
   SendMassCommand: (args: {requester: string, command: "disable-others"|"enable-all"}) => void, 
+  /** Controls whether disabled entries are removed from the legend. */
   HideDisabled: boolean
 }
 
+/**
+ * Builds a legend from data series registered in the graph context.
+ * @param props - Legend placement, dimensions, sizing callbacks, and visibility rules.
+ * @returns Context-driven graph legend.
+ */
 function LegendWithContext(props: IProps) {
   const context = React.useContext(GraphContext);
 

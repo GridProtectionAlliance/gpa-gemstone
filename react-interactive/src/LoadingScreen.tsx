@@ -27,12 +27,16 @@ import LoadingIcon from './LoadingIcon'
  * Props interface for LoadingScreen.
  */
 interface IProps {
+  /**
+   * Controls whether the full-screen loading overlay is visible.
+   */
   Show: boolean
 }
 
 /**
- * Functional component for rendering loading screen.
- * @param props Properties for the loading screen component.
+ * Renders a full-screen loading overlay centered in the current viewport.
+ * @param props - Controls whether the loading screen is visible.
+ * @returns The loading overlay or null when hidden.
  */
 const LoadingScreen = (props: IProps) => {
 

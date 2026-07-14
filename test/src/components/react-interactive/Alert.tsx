@@ -28,6 +28,10 @@ const ALERT_TEST_ID = 'alert-test-id';
 export const AlertID1 = ALERT_TEST_ID + '1'
 export const AlertID2 = ALERT_TEST_ID + '2'
 
+/**
+ * Renders the Alert integration test fixture.
+ * @returns Component state and controls exercised by integration tests.
+ */
 const AlertTestComponent = () => {
     const [retriggerFlag, setRetriggerFlag] = React.useState<number>(0);
     const [alertGone, setAlertGone] = React.useState<boolean>(false);

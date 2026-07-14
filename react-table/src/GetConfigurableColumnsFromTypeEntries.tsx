@@ -32,6 +32,13 @@ const getTypedEntries = <T,>(obj: T): Array<[keyof T, T[keyof T]]> => {
     return Object.entries(obj as object) as Array<[keyof T, T[keyof T]]>;
 }
 
+/**
+ * Builds table column elements from record field definitions.
+ * @param recordFields - Field definitions used to configure each column.
+ * @param timeFormat - Format applied to created and updated timestamps.
+ * @param configurable - Whether each generated column can be enabled or disabled.
+ * @returns Generated configurable or fixed column elements.
+ */
 export const GetConfigurableColumnsFromTypeEntries = <T,>(recordFields: Gemstone.TSX.Interfaces.IRecordFields<T>, timeFormat: string, configurable = true) => {
     return _.sortBy(getTypedEntries(recordFields), ([key, value]) => value?.Label ?? key as string)
         .map(([key, value]) => {

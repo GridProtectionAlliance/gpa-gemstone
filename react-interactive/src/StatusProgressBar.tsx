@@ -24,16 +24,21 @@ import * as React from 'react';
 
 interface IProps {
     /**
-    * Current Percentage out of 100
+    * Current completion percentage used for the bar width and accessible value.
     */
     CurrentPercentage: number,
 
     /**
-     * Class for progress div
+     * Optional class applied to the progress container, defaulting to `w-75`.
      */
     Class?: string
 }
 
+/**
+ * Renders an animated Bootstrap progress bar with custom or percentage content.
+ * @param props - Supplies the completion percentage, container class, and optional content.
+ * @returns The status progress bar.
+ */
 const StatusProgressBar = (props: React.PropsWithChildren<IProps>) => {
     return (
         <div className={`progress ${props.Class ?? "w-75"}`}>

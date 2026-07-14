@@ -30,6 +30,10 @@ export const LegendEntry_P_ID = `legend-entry-p-test-id`;
 export const LegendEntry_Starting_Click_Count = 0;
 
 /* NOTE: dont change the limits on the plot as we depend on them for the # of ticks displayed in the jest test */
+/**
+ * Renders the Legend Entry integration test fixture.
+ * @returns Component state and controls exercised by integration tests.
+ */
 const LegendEntryTestComponent = () => {
     const [onClickCounter, setOnClickCounter] = React.useState<number>(LegendEntry_Starting_Click_Count);
 

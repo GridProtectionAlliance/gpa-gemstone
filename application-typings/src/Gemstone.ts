@@ -34,37 +34,29 @@ namespace Gemstone {
         export namespace Interfaces {
             export interface IBaseFormProps<T> {
                 /**
-                  * Record to be used in form
-                  * @type {T}
-                */
+                 * Record containing the field edited by the form control.
+                 */
                 Record: T,
                 /**
-                    * Field of the record to be edited
-                    * @type {keyof T}
-                */
+                 * Key of the record field edited by the form control.
+                 */
                 Field: keyof T;
                 /**
-                    * Label to display for the form, defaults to the Field prop
-                    * @type {string | JSX.Element}
-                    * @optional
-                */
+                 * Optional label shown for the form control, defaulting to the field name.
+                 */
                 Label?: string | JSX.Element;
                 /**
-                    * Setter function to update the Record
-                    * @param record - Updated Record
-                */
+                 * Updates the record after the field value changes.
+                 * @param record - Record containing the updated field value.
+                 */
                 Setter: (record: T) => void;
                 /**
-                  * Help message or element to display
-                  * @type {string | JSX.Element}
-                  * @optional
-                */
+                 * Optional help content displayed with the form control.
+                 */
                 Help?: string | JSX.Element,
                 /**
-                  * Flag to disable the input field
-                  * @type {boolean}
-                  * @optional
-                */
+                 * Optional flag that disables the form control, defaulting to false.
+                 */
                 Disabled?: boolean;
             }
             export interface IElementPosition {
@@ -162,13 +154,39 @@ namespace Gemstone {
             }
 
             export interface IPipelineStepProps<T, U = null> {
+                /**
+                 * Unprocessed text read from the uploaded file.
+                 */
                 RawFileData: string | null,
+                /**
+                 * Records produced by the pipeline so far.
+                 */
                 Data: T[],
+                /**
+                 * Updates the records produced by the pipeline.
+                 * @param data - Processed records to store.
+                 */
                 SetData: (data: T[]) => void,
+                /**
+                 * Index of the active pipeline step.
+                 */
                 CurrentPipelineStep: number,
+                /**
+                 * Updates the active pipeline step.
+                 * @param step - Index of the step to activate.
+                 */
                 SetPipelineStep: (step: number) => void,
+                /**
+                 * Validation or processing errors reported by the pipeline.
+                 */
                 Errors: string[],
+                /**
+                 * Updates validation or processing errors reported by the pipeline.
+                 */
                 SetErrors: React.Dispatch<React.SetStateAction<string[]>>,
+                /**
+                 * Optional package-specific data supplied to the pipeline step.
+                 */
                 AdditionalProps?: U,
             }
 

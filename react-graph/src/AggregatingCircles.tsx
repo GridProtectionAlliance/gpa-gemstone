@@ -40,12 +40,35 @@ interface IAggregationFunctions {
   useSingleAggregation - if true groups will not be aggregated. 
 */
 export interface IProps {
+    /**
+     * Determines whether two circles can be combined into one aggregate.
+     * @param d1 - First circle considered for aggregation.
+     * @param d2 - Second circle considered for aggregation.
+     * @param fxn - Coordinate transformation helpers for comparing the circles.
+     */
     canAggregate: (d1: ICircleProps, d2: ICircleProps, fxn: IAggregationFunctions) => boolean,
+    /**
+     * Combines a group of circles into the circle rendered for that group.
+     * @param data - Circles included in the aggregate.
+     * @param fxn - Coordinate transformation helpers for positioning the aggregate.
+     * @returns The circle representing the aggregated group.
+     */
     onAggregation: (data: ICircleProps[], fxn: IAggregationFunctions) => ICircleProps,
+    /**
+     * Circle definitions to render and group.
+     */
     data: ICircleProps[],
+    /**
+     * Optional flag that prevents aggregated groups from being combined again, defaulting to false.
+     */
     useSingleAggregation?: boolean
 }
 
+/**
+ * Groups nearby circles and renders each aggregate through the graph context.
+ * @param props - Aggregation rules and circle data to render.
+ * @returns SVG group containing individual and aggregated circles.
+ */
 const AggregatingCircles = (props: IProps) => {
   /*
     Circle that will aggregate into larger circles

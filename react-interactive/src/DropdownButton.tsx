@@ -29,36 +29,35 @@ import { ToolTip } from '@gpa-gemstone/react-forms';
  */
 interface IButton {
     /** 
-     * Text label that appears on the button
+     * Content displayed in the dropdown option.
      */
     Label: JSX.Element | string,
     /**
-     * Callback function for when a button is clicked
-     * @returns 
+     * Callback fired when the enabled dropdown option is clicked.
      */
     Callback: () => void,
     /**
-     * Optional group number for grouping items visually with dividers
+     * Optional group identifier used to insert dividers between adjacent groups.
      */
     Group?: number,
     /**
-     * Optional flag to disable button
+     * Optional flag that prevents the dropdown option callback from running, defaulting to false.
      */
     Disabled?: boolean
     /**
-     * Optional content to render inside tooltip
+     * Optional content displayed in the dropdown option tooltip.
      */
     ToolTipContent?: JSX.Element,
     /**
-     * Optional flag to render tooltip on button
+     * Optional flag that shows the dropdown option tooltip while hovering, defaulting to false.
      */
     ShowToolTip?: boolean,
     /**
-     * Optional location of tooltip, defaulting to top
+     * Optional dropdown option tooltip position, defaulting to `top`.
      */
     ToolTipLocation?: ('top' | 'bottom' | 'left' | 'right'),
     /**
-     * Optional key to be used on the fragment that is parent of the dropdown option.
+     * Optional stable React key for the dropdown option, defaulting to its array index.
      */
     Key?: string | number
 }
@@ -70,48 +69,52 @@ type BtnSize = 'sm' | 'lg' | 'xlg' | 'std';
 */
 interface IProps {
     /**
-     * Text label that appears on the main button
+     * Content displayed in the primary button.
      */
     Label: JSX.Element | string,
     /**
-     * Callback function for when the main button is clicked
-     * @returns
+     * Callback fired when the enabled primary button is clicked.
      */
     Callback: () => void,
     /**
-     * Optional flag to disable the main button
+     * Optional flag that prevents the primary button callback from running, defaulting to false.
      */
     Disabled?: boolean,
     /**
-     * Array of button options rendered inside the dropdown menu
+     * Options rendered in the dropdown menu.
      */
     Options: IButton[],
     /**
-     * Optional size of the button group
+     * Optional Bootstrap size of the button group, defaulting to `sm`.
      */
     Size?: 'sm' | 'lg' | 'xlg' | 'std',
     /**
-     * Optional CSS applied to the container
+     * Optional inline styles applied to the button-group container.
      */
     ContainerStyle?: React.CSSProperties,
     /**
-     * Optional CSS class applied to the buttons, defaulting to 'btn-primary'
+     * Optional class applied to both buttons, defaulting to `btn-primary`.
      */
     BtnClass?: string,
     /**
-     * Optional content to render inside the tooltip
+     * Optional content displayed in the primary button tooltip.
      */
     TooltipContent?: JSX.Element,
     /**
-     * Optional location of the tooltip, defaulting to top
+     * Optional primary button tooltip position, defaulting to `top`.
      */
     TooltipLocation?: ('top' | 'bottom' | 'left' | 'right'),
     /**
-     * Optional flag to render a tooltip on the main button
+     * Optional flag that shows the primary button tooltip while hovering, defaulting to false.
      */
     ShowToolTip?: boolean,
 }
 
+/**
+ * Renders a primary action button paired with a toggleable menu of related actions.
+ * @param props - Configures the primary button, dropdown options, styling, and tooltip.
+ * @returns The split-button dropdown group.
+ */
 const BtnDropdown = (props: IProps) => {
     const guid = React.useRef<string>(CreateGuid());
     const containerRef = React.useRef<HTMLDivElement | null>(null);
@@ -184,9 +187,18 @@ const getBtnClass = (size: BtnSize) => {
 }
 
 interface DropDownProps extends IButton {
+    /**
+     * Updates whether the parent dropdown menu is visible.
+     * @param show - Whether the dropdown menu should remain open.
+     */
     setShowDropDown: (show: boolean) => void,
 }
 
+/**
+ * Renders one selectable action inside the dropdown menu.
+ * @param props - Configures the option behavior, appearance, tooltip, and menu state setter.
+ * @returns The dropdown option and its optional tooltip.
+ */
 const DropDownOption = (props: DropDownProps) => {
     const [dropDownHover, setDropDownHover] = React.useState<boolean>(false);
     const guid = React.useRef<string>(CreateGuid());

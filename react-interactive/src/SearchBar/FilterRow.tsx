@@ -26,12 +26,29 @@ import { Search } from './SearchBar';
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 
 interface IFilterRowProps<T> {
+    /**
+     * Filter whose field, operator, and search text are displayed in the row.
+     */
     Filter: Search.IFilter<T>,
+    /**
+     * Callback fired when the row's edit button is clicked.
+     */
     Edit: () => void,
+    /**
+     * Callback fired when the row's delete button is clicked.
+     */
     Delete: () => void,
+    /**
+     * Available fields used to resolve the filter's display label.
+     */
     Collumns: Search.IField<T>[]
 }
 
+/**
+ * Renders one active filter with controls for editing or deleting it.
+ * @param props - Supplies the filter, available fields, and row action callbacks.
+ * @returns The filter table row.
+ */
 const FilterRow = <T,>(props: IFilterRowProps<T>) => {
     const column = React.useMemo(() => props.Collumns.find(c => c.key === props.Filter.FieldName), [props.Filter, props.Collumns]);
 

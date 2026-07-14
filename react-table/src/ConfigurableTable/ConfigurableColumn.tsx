@@ -23,8 +23,17 @@
 import * as React from 'react';
 
 interface IProps {
+    /**
+     * Optional flag that shows the column when no saved configuration exists, defaulting to false.
+     */
     Default?: boolean,
+    /**
+     * Optional label shown for the column in the settings dialog, defaulting to its key.
+     */
     Label?: string,
+    /**
+     * Unique key used to identify and persist the configurable column.
+     */
     Key: string
 }
 

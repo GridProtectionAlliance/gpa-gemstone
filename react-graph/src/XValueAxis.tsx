@@ -26,20 +26,40 @@ import { GraphContext } from './GraphContext';
 import { GetTextHeight } from '@gpa-gemstone/helper-functions';
 
 export interface IProps {
+    /** Left plot offset in pixels. */
     offsetLeft: number;
+    /** Right plot offset in pixels. */
     offsetRight: number;
+    /** Bottom plot offset in pixels. */
     offsetBottom: number;
+    /** Top plot offset in pixels. */
     offsetTop: number;
+    /** Reserved height for the axis in pixels. */
     heightAxis: number;
+    /** Available plot height in pixels. */
     height: number;
+    /** Available plot width in pixels. */
     width: number;
+    /**
+     * Callback that reports the height required by the axis.
+     * @param h - Required axis height in pixels.
+     */
     setHeight: (h: number) => void;
+    /** Optional title displayed below the axis. */
     label?: string;
+    /** Optional flag that displays grid lines at tick positions, defaulting to false. */
     showGrid?: boolean;
+    /** Optional flag that displays the rightmost tick label, defaulting to true. */
     showRightMostTick?: boolean;
+    /** Optional flag that displays the leftmost tick label, defaulting to true. */
     showLeftMostTick?: boolean;
 }
 
+/**
+ * Renders a numeric X-axis and reports its required layout height.
+ * @param props - Axis dimensions, offsets, label, and grid visibility options.
+ * @returns SVG group containing numeric ticks, labels, and grid lines.
+ */
 function XValueAxis(props: IProps) {
     const context = React.useContext(GraphContext);
     const [tick, setTick] = React.useState<number[]>([]);

@@ -29,38 +29,61 @@ import { Gemstone } from '@gpa-gemstone/application-typings';
 
 interface IProps {
   /**
-   * Flag to show or hide the tooltip.
+   * Controls whether the tooltip is visible.
    */
   Show: boolean,
   /**
-   * Optional position for the tooltip. If not provided, 'top' is used.
+   * Optional preferred placement relative to the target, defaulting to `top`.
    */
   Position?: Position,
   /**
-   * If provided, the tooltip will look for an element with a matching data-tooltip attribute to position itself to.
+   * Optional identifier of the element whose matching `data-tooltip` attribute anchors the tooltip.
    */
   Target?: string,
   /**
-   * Optional z-index for the tooltip. Defaults to 9999.
+   * Optional stacking order for the tooltip, defaulting to 9999.
    */
   Zindex?: number,
   /**
-   * Optional class to style the tooltip. Uses Bootstrap alert classes if provided.
+   * Optional Bootstrap alert color variant applied to the tooltip.
    */
   Class?: 'primary' | 'secondary' | 'success' | 'danger' | 'info'
 }
 
 // Props to style wrapper div around tooltip content.
 interface IPopoverProps {
+  /**
+   * Controls whether the styled tooltip wrapper is visible and interactive.
+   */
   Show: boolean,
+  /**
+   * Vertical viewport position of the tooltip in pixels.
+   */
   Top: number,
+  /**
+   * Horizontal viewport position of the tooltip in pixels.
+   */
   Left: number,
+  /**
+   * Stacking order applied to the tooltip wrapper.
+   */
   Zindex: number,
+  /**
+   * Background color applied to the tooltip body.
+   */
   BgColor: string,
+  /**
+   * Foreground and border color applied to the tooltip.
+   */
   Color: string
 }
 
 // The styled tooltip wrapper component.
+/**
+ * Positions, colors, and fades the floating tooltip body.
+ * @param props - Visibility, placement, stacking, and color values for the tooltip.
+ * @returns A styled wrapper for tooltip content.
+ */
 const PopoverDiv = styled.div<IPopoverProps>`
   & {
     display: inline-block;
@@ -83,13 +106,30 @@ const PopoverDiv = styled.div<IPopoverProps>`
 type Position = 'top' | 'bottom' | 'left' | 'right';
 
 interface IArrowProps {
+  /**
+   * Fill color applied to the arrow facing the target.
+   */
   BackgroundColor: string,
+  /**
+   * Border color applied to the tooltip arrow.
+   */
   Color: string
+  /**
+   * Side of the tooltip on which the arrow is rendered.
+   */
   Position: Position,
+  /**
+   * Arrow offset along the tooltip edge as a percentage.
+   */
   ArrowPositionPercent: number
 }
 
 //Arrow needs to be a styled div as the arrow class has pseduo elements
+/**
+ * Renders the directional arrow that connects a tooltip to its target.
+ * @param props - Arrow placement, offset, and color values.
+ * @returns A styled tooltip arrow element.
+ */
 const Arrow = styled.div<IArrowProps>`
   &.arrow {
     ${props => (props.Position === 'left' || props.Position === 'right')
@@ -110,6 +150,11 @@ const Arrow = styled.div<IArrowProps>`
 const defaultTargetPosition = { Top: -999, Left: -999, Width: 0, Height: 0 }
 
 // The other element needs to have data-tooltip attribute equal the target prop used for positioning
+/**
+ * Renders hoverable content in a floating panel anchored to a target element.
+ * @param props - Tooltip content, visibility, target, placement, and color configuration.
+ * @returns A positioned tooltip rendered through a portal.
+ */
 export const Tooltip = (props: React.PropsWithChildren<IProps>) => {
   const targetPosition = props.Position ?? 'top';
 

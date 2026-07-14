@@ -27,28 +27,27 @@ import DataLegend from './DataLegend';
 
 export interface IBarProps {
     /**
-     * Array of data points to be represented by bar as segments of the bar.
+     * Y-axis values used as boundaries for the stacked bar segments.
     */
     Data: number[],
     /**
-     * Origin of the Bar on the X-Axis
+     * X-axis coordinate used to position the bar.
      */
     BarOrigin: number,
     /**
-     * Reference point of data, if the x data represents the left side, center, or right side of the bar.
+     * Optional edge or center aligned to the bar origin, defaulting to left.
     */
     XBarOrigin?: 'left' | 'right' | 'center',
     /**
-     * Width of the bar
+     * Bar width in X-axis units.
     */
     BarWidth: number,
     /**
-     * Identifier for the axis the bars are associated with.
-     * @type {AxisIdentifier}
+     * Optional Y-axis associated with the bar.
     */
     Axis?: AxisIdentifier,
     /**
-     * Legend text for the bar.
+     * Optional label displayed for the bar in the legend.
     */
     Legend?: string,
     /**
@@ -56,9 +55,10 @@ export interface IBarProps {
     */
     Color: string,
     /**
-     * Function retrieves an override of the portion of the bar. 
-     * @param {[number, number]} yValues - The bottom and top of this portion of the bar.
-     * @param {number} index - Index of this portion with regard to all bar segments. Counting begins from the lowest portion in ascending order.
+     * Optional callback that customizes an individual bar segment.
+     * @param yValues - Bottom and top values of the segment.
+     * @param index - Position of the segment from lowest to highest.
+     * @returns Style overrides for the segment.
     */
     GetBarStyle?: (yValues: [number, number], index: number) => IBarStyle
 }
@@ -67,23 +67,23 @@ type FillStyles = 'Hatched' | 'Solid' | undefined;
 
 export interface IBarStyle {
     /**
-     * Opacity of this portion bar.
+     * Optional opacity applied to a bar segment, defaulting to 0.5.
     */
     Opacity?: number,
     /**
-     * Color of this portion of the bar.
+     * Optional fill color applied to a bar segment.
     */
     Color?: string,
     /**
-     * Stroke color of this portion bar.
+     * Optional stroke color applied around a bar segment, defaulting to black.
     */
     StrokeColor?: string,
     /**
-     * Stroke width of this portion bar.
+     * Optional stroke width applied around a bar segment.
     */
     StrokeWidth?: number,
     /**
-     * Fill property of the bars, defaults to solid if undefined.
+     * Optional fill pattern applied to a bar segment, defaulting to solid.
     */
     Fill?: FillStyles,
 }
@@ -93,6 +93,11 @@ const defaultStyle: IBarStyle = {
     StrokeColor: "black"
 }
 
+/**
+ * Renders a stacked bar and registers its values with the graph context.
+ * @param props - Bar geometry, data, legend, and styling options.
+ * @returns SVG group containing the rendered bar segments.
+ */
 export const StackedBar = (props: IBarProps) => {
     const [guid, setGuid] = React.useState<string|undefined>(undefined);
     const context = React.useContext(GraphContext);

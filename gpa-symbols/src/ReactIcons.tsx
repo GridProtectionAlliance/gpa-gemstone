@@ -24,33 +24,39 @@ import * as React from 'react';
 
 interface IProps {
     /**
-    * Width and height of icon
-    * @type {number | string}
-    * @optional
-   */
+     * Optional width and height applied to the icon, defaulting to 24 pixels.
+     */
     Size?: number | string,
     /**
-    * Color of the icon
-    * @type {string}
-    * @optional
-   */
+     * Optional color applied to the icon, defaulting to the current text color.
+     */
     Color?: string,
     /**
-     * Optional style object to apply to the icon
+     * Optional CSS styles applied to the icon.
      */
     Style?: React.CSSProperties
     /**
-     * Optional Stroke Width to apply to the icon
-    */
+     * Optional width applied to the icon strokes, defaulting to 2.
+     */
     StrokeWidth?: number | string
 }
 
 export namespace ReactIcons {
 
+    /**
+     * Renders the Data Container icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const DataContainer = (props: IProps) => <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-file">
         <path d="M 3,4.5 a 9,4.5 0,0,0 18 3 a 9,4.5 0,0,0 -18 0 l 0,11 a 9,4.5 0,0,0 18 0 l 0,-11" />
     </svg>;
 
+    /**
+     * Renders the Cube icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const Cube = (props: IProps) => <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-file">
         <rect x="1" y="8" width="15" height="15" />
         <rect x="6" y="3" width="15" height="15" />
@@ -60,11 +66,21 @@ export namespace ReactIcons {
         <line x1="1" x2="6" y1="23" y2="18" />
     </svg>
 
+    /**
+     * Renders the House icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const House = (props: IProps) => <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-home">
         <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
         <polyline points="9 22 9 12 15 12 15 22"></polyline>
     </svg>
 
+    /**
+     * Renders the Document icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const Document = (props: IProps) => <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-file-text">
         <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
         <polyline points="14 2 14 8 20 8"></polyline>
@@ -72,49 +88,104 @@ export namespace ReactIcons {
         <polyline points="10 9 9 9 8 9"></polyline>
     </svg>
 
+    /**
+     * Renders the Arrow Forward icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const ArrowForward = (props: IProps) => <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill={props.Color ?? "currentColor"} stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-file-text">
         <polygon points="6.23,20.23 8,22 18,12 8,2 6.23,3.77 14.46,12" />
     </svg>
 
+    /**
+     * Renders the Arrow Backward icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const ArrowBackward = (props: IProps) => <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill={props.Color ?? "currentColor"} stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-file-text">
         <polygon points="17.77,3.77 16,2 6,12 16,22 17.77,20.23 9.54,12" />
     </svg>
 
+    /**
+     * Renders the Arrow Drop Up icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const ArrowDropUp = (props: IProps) => <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill={props.Color ?? "currentColor"} stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-file-text">
         <path d="M7 14l5-5 5 5z" />
     </svg>
 
+    /**
+     * Renders the Arrow Drop Down icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const ArrowDropDown = (props: IProps) => <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill={props.Color ?? "currentColor"} stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-file-text">
         <path d="M7 10l5 5 5-5z" />
     </svg>
 
+    /**
+     * Renders the Settings icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const Settings = (props: IProps) => <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-file-text">
         <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z" />
     </svg>
 
+    /**
+     * Renders the Filter icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const Filter = (props: IProps) => <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-file-text">
         <path d="M4.25,5.61C6.27,8.2,10,13,10,13v6c0,0.55,0.45,1,1,1h2c0.55,0,1-0.45,1-1v-6c0,0,3.72-4.8,5.74-7.39 C20.25,4.95,19.78,4,18.95,4H5.04C4.21,4,3.74,4.95,4.25,5.61z" />
     </svg>
 
+    /**
+     * Renders the Folder icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const Folder = (props: IProps) => <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-file-text">
         <path d="M2.5,6.5H22.5V22.5H2.5V2.5 H 10.5 L 12.5,4.5" />
     </svg>
 
+    /**
+     * Renders the Alert Person icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const AlertPerson = (props: IProps) => <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-file-text">
         <path d="m21.43,11.36a3.71,3.71 0 1 1 -7.43,0a3.71,3.71 0 0 1 7.43,0zm-3.71,6.5a6.5,6.5 0 0 0 -6.5,6.5l13,0a6.5,6.5 0 0 0 -6.5,-6.5z" />
         <path d="m8.46,11.36l3.75,0l-1.06,-1.05a1.52,1.52 0 0 1 -0.44,-1.08l0,-2.37a4.5,4.5 0 0 0 -3,-4.25l0,-0.25a1.5,1.5 0 1 0 -3,0l0,0.25c-1.75,0.62 -3,2.29 -3,4.25l0,2.37c0,0.4 -0.16,0.79 -0.44,1.07l-1.06,1.06l3.75,0m4.5,0l0,0.75a2.25,2.25 0 1 1 -4.5,0l0,-0.75m4.5,0l-4.5,0" />
     </svg>
 
+    /**
+     * Renders the Alert People icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const AlertPeople = (props: IProps) => <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-file-text">
         <path d="m23.25,22s0.75,0 0.75,-0.75s-0.75,-3 -3.75,-3s-3.75,2.25 -3.75,3s0.75,0.75 0.75,0.75l6,0zm-5.99,-0.75a0.2,0.2 0 0 1 -0.01,0c0,-0.2 0.13,-0.77 0.57,-1.29c0.41,-0.49 1.14,-0.96 2.43,-0.96c1.29,0 2.02,0.47 2.43,0.96c0.44,0.52 0.57,1.09 0.57,1.29l-0.01,0a0.2,0.2 0 0 1 -0.01,0l-5.97,0zm2.99,-4.5a1.5,1.5 0 1 0 0,-3a1.5,1.5 0 0 0 0,3zm2.25,-1.5a2.25,2.25 0 1 1 -4.5,0a2.25,2.25 0 0 1 4.5,0zm-5.29,3.21a4.41,4.41 0 0 0 -0.92,-0.19a5.51,5.51 0 0 0 -0.53,-0.02c-3,0 -3.75,2.25 -3.75,3c0,0.5 0.25,0.75 0.75,0.75l3.17,0a1.68,1.68 0 0 1 -0.17,-0.75c0,-0.76 0.29,-1.53 0.82,-2.18c0.18,-0.22 0.4,-0.43 0.64,-0.62l-0.01,0.01zm-1.52,0.54a4.12,4.12 0 0 0 -0.69,2.25l-2.25,0c0,-0.2 0.12,-0.77 0.57,-1.29c0.41,-0.48 1.12,-0.94 2.37,-0.96zm-2.57,-3.38a2.25,2.25 0 1 1 4.5,0a2.25,2.25 0 0 1 -4.5,0zm2.25,-1.5a1.5,1.5 0 1 0 0,3a1.5,1.5 0 0 0 0,-3z" />
         <path d="m8.46,11.36l3.75,0l-1.06,-1.05a1.52,1.52 0 0 1 -0.44,-1.08l0,-2.37a4.5,4.5 0 0 0 -3,-4.25l0,-0.25a1.5,1.5 0 1 0 -3,0l0,0.25c-1.75,0.62 -3,2.29 -3,4.25l0,2.37c0,0.4 -0.16,0.79 -0.44,1.07l-1.06,1.06l3.75,0m4.5,0l0,0.75a2.25,2.25 0 1 1 -4.5,0l0,-0.75m4.5,0l-4.5,0" />
     </svg>
 
 
+    /**
+     * Renders the Alert icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const Alert = (props: IProps) => <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-file-text">
         <path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
     </svg>
 
+    /**
+     * Renders the Trash Can icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const TrashCan = (props: IProps) =>
         <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-trash-2">
             <polyline points="3 6 5 6 21 6"></polyline>
@@ -122,12 +193,22 @@ export namespace ReactIcons {
             <line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line>
         </svg>
 
+    /**
+     * Renders the Cross Mark icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const CrossMark = (props: IProps) =>
         <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-x">
             <line x1="18" y1="6" x2="6" y2="18"></line>
             <line x1="6" y1="6" x2="18" y2="18"></line>
         </svg>
 
+    /**
+     * Renders the Circled X icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const CircledX = (props: IProps) =>
         <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-x-circle">
             <circle cx="12" cy="12" r="10"></circle>
@@ -135,21 +216,41 @@ export namespace ReactIcons {
             <line x1="9" y1="9" x2="15" y2="15"></line>
         </svg>
 
+    /**
+     * Renders the Phone icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const Phone = (props: IProps) => <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-file">
         <path d="m16.73442,2.78512l-9.40284,0c-0.29313,0 -0.53158,0.23844 -0.53158,0.53158l0,17.28407c0,0.29313 0.23848,0.53158 0.53158,0.53158l9.40284,0c0.29313,0 0.53158,-0.23848 0.53158,-0.53158l0,-17.28407c0,-0.29313 -0.23876,-0.53158 -0.53158,-0.53158zm-1.11059,0.89185c0.15403,0 0.27917,0.12515 0.27917,0.27948c0,0.154 -0.12513,0.27917 -0.27917,0.27917c-0.15428,0 -0.27945,-0.12513 -0.27945,-0.27917c-0.00003,-0.154 0.12545,-0.27948 0.27945,-0.27948zm-0.56653,0.15187c0.0705,0 0.12761,0.05711 0.12761,0.12761c0,0.07046 -0.05711,0.12758 -0.12761,0.12758c-0.07078,0 -0.12761,-0.05711 -0.12761,-0.12758c0,-0.0705 0.05711,-0.12761 0.12761,-0.12761zm-0.33749,0c0.0705,0 0.12761,0.05711 0.12761,0.12761c0,0.07046 -0.05711,0.12758 -0.12761,0.12758s-0.12758,-0.05711 -0.12758,-0.12758c-0.00032,-0.0705 0.0568,-0.12761 0.12758,-0.12761zm-3.73451,-0.15187l2.09509,0l0,0.55861l-2.09509,0l0,-0.55861zm2.09506,16.63767l-2.09509,0l0,-0.55864l2.09509,0l0,0.55864zm3.07656,-1.226l-8.24819,0l0,-14.20085l8.24819,0l0,14.20085z" stroke="null" />
     </svg>
 
+    /**
+     * Renders the Phone Settings icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const PhoneSettings = (props: IProps) => <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-file">
         <path d="m10.72,16.17l-0.5,-0.09c-0.23,-0.05 -0.42,-0.2 -0.51,-0.42c-0.09,-0.22 -0.06,-0.46 0.09,-0.65l0.31,-0.43c0.1,-0.14 0.09,-0.33 -0.03,-0.45l-0.68,-0.68c-0.12,-0.12 -0.3,-0.14 -0.44,-0.04l-0.42,0.29c-0.11,0.08 -0.25,0.12 -0.38,0.12c-0.29,0 -0.62,-0.2 -0.68,-0.58l-0.08,-0.52c-0.02,-0.17 -0.17,-0.29 -0.34,-0.29l-0.96,0c-0.16,0 -0.31,0.12 -0.34,0.28l-0.12,0.65c-0.07,0.36 -0.39,0.55 -0.67,0.55c-0.14,0 -0.27,-0.04 -0.38,-0.12l-0.54,-0.37c-0.14,-0.09 -0.32,-0.08 -0.44,0.04l-0.68,0.68c-0.12,0.12 -0.14,0.31 -0.03,0.45l0.32,0.43c0.14,0.19 0.17,0.43 0.09,0.65c-0.09,0.22 -0.27,0.38 -0.51,0.42l-0.5,0.09c-0.16,0.03 -0.28,0.18 -0.28,0.34l0,0.96c0,0.17 0.12,0.32 0.29,0.34l0.52,0.08c0.24,0.03 0.43,0.18 0.52,0.4c0.1,0.22 0.07,0.46 -0.06,0.65l-0.29,0.42c-0.09,0.14 -0.08,0.32 0.04,0.44l0.68,0.68c0.12,0.12 0.31,0.14 0.45,0.03l0.43,-0.32c0.12,-0.09 0.26,-0.14 0.4,-0.14c0.28,0 0.6,0.19 0.68,0.56l0.09,0.5c0.03,0.16 0.18,0.28 0.34,0.28l0.96,0c0.17,0 0.32,-0.12 0.34,-0.29l0.06,-0.37c0.06,-0.38 0.38,-0.58 0.68,-0.58c0.15,0 0.28,0.05 0.4,0.14l0.3,0.22c0.14,0.1 0.33,0.09 0.45,-0.03l0.68,-0.68c0.12,-0.12 0.14,-0.3 0.04,-0.44l-0.29,-0.42c-0.13,-0.2 -0.16,-0.44 -0.06,-0.65c0.09,-0.22 0.28,-0.37 0.52,-0.4l0.52,-0.08c0.17,-0.03 0.29,-0.17 0.29,-0.34l0,-0.96c0,-0.17 -0.12,-0.31 -0.28,-0.34zm-0.41,1l-0.23,0.03c-0.47,0.07 -0.86,0.37 -1.05,0.81c-0.19,0.43 -0.15,0.93 0.12,1.32l0.12,0.19l-0.27,0.26l-0.06,-0.05c-0.24,-0.17 -0.52,-0.27 -0.81,-0.27c-0.68,0 -1.26,0.49 -1.36,1.17l-0.01,0.08l-0.38,0l-0.04,-0.22c-0.12,-0.65 -0.69,-1.12 -1.35,-1.12c-0.29,0 -0.57,0.09 -0.81,0.27l-0.19,0.14l-0.27,-0.26l0.12,-0.19c0.27,-0.39 0.31,-0.89 0.12,-1.32c-0.19,-0.44 -0.58,-0.74 -1.05,-0.81l-0.23,-0.03l0,-0.38l0.22,-0.04c0.47,-0.09 0.85,-0.41 1.02,-0.85c0.17,-0.44 0.11,-0.93 -0.17,-1.32l-0.14,-0.19l0.27,-0.27l0.3,0.21c0.23,0.16 0.5,0.24 0.77,0.24c0.66,0 1.23,-0.47 1.35,-1.12l0.07,-0.36l0.38,0l0.03,0.23c0.1,0.68 0.68,1.17 1.36,1.17c0.27,0 0.54,-0.08 0.77,-0.24l0.18,-0.12l0.27,0.27l-0.14,0.19c-0.28,0.38 -0.35,0.88 -0.17,1.32c0.17,0.44 0.56,0.76 1.02,0.85l0.22,0.04l0,0.38z" />
         <path d="m22.69,16.12c-0.71,-1.36 -3.15,-2.83 -3.26,-2.89c-0.32,-0.18 -0.64,-0.28 -0.95,-0.28c-0.46,0 -0.83,0.21 -1.06,0.6c-0.36,0.44 -0.8,0.94 -0.91,1.02c-0.83,0.58 -1.49,0.51 -2.21,-0.23l-4.04,-4.11c-0.72,-0.73 -0.78,-1.41 -0.22,-2.25c0.08,-0.11 0.58,-0.57 1.01,-0.93c0.27,-0.16 0.46,-0.41 0.54,-0.71c0.11,-0.4 0.03,-0.88 -0.23,-1.34c-0.06,-0.1 -1.51,-2.6 -2.84,-3.32c-0.25,-0.14 -0.53,-0.2 -0.81,-0.2c-0.46,0 -0.9,0.18 -1.23,0.52l-0.89,0.91c-1.41,1.43 -1.92,3.06 -1.52,4.84c0.26,1.12 0.88,2.29 1.86,3.5c0.06,-0.08 0.16,-0.13 0.26,-0.13l2.75,0c0.17,0 0.32,0.13 0.35,0.3l0.13,0.88l0.68,-0.47c0.14,-0.1 0.33,-0.08 0.44,0.04l1.95,1.98c0.12,0.13 0.14,0.32 0.04,0.47l-0.52,0.72l0.8,0.16c0.17,0.03 0.28,0.18 0.28,0.35l0,2.8c0,0.07 -0.02,0.13 -0.06,0.18c1.7,1.5 3.32,2.25 4.83,2.25c1.31,0 2.53,-0.57 3.62,-1.68l0.89,-0.91c0.54,-0.55 0.66,-1.38 0.31,-2.07z" fill="black" />
     </svg>
 
+    /**
+     * Renders the Alert Add icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const AlertAdd = (props: IProps) => <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-file">
         <path d="m8.46,11.36l3.75,0l-1.06,-1.05a1.52,1.52 0 0 1 -0.44,-1.08l0,-2.37a4.5,4.5 0 0 0 -3,-4.25l0,-0.25a1.5,1.5 0 1 0 -3,0l0,0.25c-1.75,0.62 -3,2.29 -3,4.25l0,2.37c0,0.4 -0.16,0.79 -0.44,1.07l-1.06,1.06l3.75,0m4.5,0l0,0.75a2.25,2.25 0 1 1 -4.5,0l0,-0.75m4.5,0l-4.5,0" />
         <path d="m15.77,11.17l0,3.69l-3.69,0c-0.65,0 -1.18,0.53 -1.18,1.18s0.53,1.18 1.18,1.18l3.69,0l0,3.69c0,0.65 0.53,1.18 1.18,1.18s1.17,-0.53 1.17,-1.18l0,-3.69l3.69,0c0.65,0 1.18,-0.53 1.18,-1.18s-0.53,-1.18 -1.18,-1.18l-3.69,0l0,-3.69c0,-0.65 -0.53,-1.18 -1.17,-1.18s-1.18,0.53 -1.18,1.18z" fill={'currentColor'} />
         <path d="m11.34,10.34c-1.51,1.51 -2.34,3.52 -2.34,5.66s0.83,4.15 2.34,5.66c1.51,1.51 3.52,2.34 5.66,2.34s4.15,-0.83 5.66,-2.34c1.51,-1.51 2.34,-3.52 2.34,-5.66s-0.83,-4.15 -2.34,-5.66c-1.51,-1.51 -3.52,-2.34 -5.66,-2.34c-2.14,0 -4.15,0.83 -5.66,2.34z" />
     </svg>
 
+    /**
+     * Renders the Report Add icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const ReportAdd = (props: IProps) => <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-file">
         <path d="m 0 0 l 0 15 l 10 0 l 0 -15z" />
         <path d="m 2 2 l 6 0" />
@@ -162,32 +263,62 @@ export namespace ReactIcons {
         <path d="m11.34,10.34c-1.51,1.51 -2.34,3.52 -2.34,5.66s0.83,4.15 2.34,5.66c1.51,1.51 3.52,2.34 5.66,2.34s4.15,-0.83 5.66,-2.34c1.51,-1.51 2.34,-3.52 2.34,-5.66s-0.83,-4.15 -2.34,-5.66c-1.51,-1.51 -3.52,-2.34 -5.66,-2.34c-2.14,0 -4.15,0.83 -5.66,2.34z" />
     </svg>
 
+    /**
+     * Renders the Pencil icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const Pencil = (props: IProps) => <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-edit-2">
         <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
     </svg>
 
+    /**
+     * Renders the Floppy Disk icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const FloppyDisk = (props: IProps) => <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-save">
         <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
         <polyline points="17 21 17 13 7 13 7 21"></polyline>
         <polyline points="7 3 7 8 15 8"></polyline>
     </svg>
 
+    /**
+     * Renders the Download icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const Download = (props: IProps) => <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-download">
         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
         <polyline points="7 10 12 15 17 10"></polyline>
         <line x1="12" y1="15" x2="12" y2="3"></line>
     </svg>
 
+    /**
+     * Renders the Minus icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const Minus = (props: IProps) => <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-minus">
         <line x1="5" y1="12" x2="19" y2="12"></line>
     </svg>
 
+    /**
+     * Renders the Plus icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const Plus = (props: IProps) =>
         <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-plus">
             <line x1="12" y1="5" x2="12" y2="19"></line>
             <line x1="5" y1="12" x2="19" y2="12"></line>
         </svg>
 
+    /**
+     * Renders the Warning icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const Warning = (props: IProps) =>
         <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-alert-triangle">
             <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
@@ -195,11 +326,21 @@ export namespace ReactIcons {
             <line x1="12" y1="17" x2="12.01" y2="17"></line>
         </svg>
 
+    /**
+     * Renders the Check Mark icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const CheckMark = (props: IProps) =>
         <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-check">
             <polyline points="20 6 9 17 4 12"></polyline>
         </svg>
 
+    /**
+     * Renders the Circle Check Mark icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const CircleCheckMark = (props: IProps) =>
         <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-check-circle">
             <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
@@ -207,6 +348,11 @@ export namespace ReactIcons {
         </svg>
 
 
+    /**
+     * Renders the Spining Icon icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const SpiningIcon = (props: IProps) =>
         <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-check">
             <radialGradient id="RGLoading" cx=".66" fx=".66" cy=".3125" fy=".3125" gradientTransform="scale(1.5)">
@@ -222,12 +368,22 @@ export namespace ReactIcons {
             <circle transform-origin="center" fill="none" opacity=".2" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" cx="12" cy="12" r="11" />
         </svg>
 
+    /**
+     * Renders the Copy icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const Copy = (props: IProps) =>
         <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-copy">
             <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
             <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
         </svg>
 
+    /**
+     * Renders the Share Arrow icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const ShareArrow = (props: IProps) =>
         <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-share">
             <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
@@ -235,6 +391,11 @@ export namespace ReactIcons {
             <line x1="12" y1="2" x2="12" y2="15"></line>
         </svg>
 
+    /**
+     * Renders the Share Arrow Diagonal icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const ShareArrowDiagonal = (props: IProps) =>
         <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-share">
             <path d="M6.5,4 h-5 v18.5 h18.5 v-4" />
@@ -242,6 +403,11 @@ export namespace ReactIcons {
             <line x1="22" y1="2" x2="8" y2="16" />
         </svg>
 
+    /**
+     * Renders the Share Network icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const ShareNetwork = (props: IProps) =>
         <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-share-2">
             <circle cx="18" cy="5" r="3"></circle>
@@ -251,6 +417,11 @@ export namespace ReactIcons {
             <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
         </svg>
 
+    /**
+     * Renders the Upload Cloud icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const UploadCloud = (props: IProps) =>
         <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-upload-cloud">
             <polyline points="16 16 12 12 8 16" />
@@ -259,6 +430,11 @@ export namespace ReactIcons {
             <polyline points="16 16 12 12 8 16" />
         </svg>
 
+    /**
+     * Renders the RSS icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const RSS = (props: IProps) =>
         <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-rss">
             <path d="M4 11a9 9 0 0 1 9 9"></path>
@@ -266,6 +442,11 @@ export namespace ReactIcons {
             <circle cx="5" cy="19" r="1"></circle>
         </svg>
 
+    /**
+     * Renders the Circle Plus icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const CirclePlus = (props: IProps) =>
         <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-plus-circle">
             <circle cx="12" cy="12" r="10"></circle>
@@ -273,6 +454,11 @@ export namespace ReactIcons {
             <line x1="8" y1="12" x2="16" y2="12"></line>
         </svg>
 
+    /**
+     * Renders the Hard Drive icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const HardDrive = (props: IProps) =>
         <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-hard-drive">
             <line x1="22" y1="12" x2="2" y2="12" />
@@ -281,6 +467,11 @@ export namespace ReactIcons {
             <line x1="10" y1="16" x2="10.01" y2="16" />
         </svg>
 
+    /**
+     * Renders the Globe icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const Globe = (props: IProps) =>
         <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-globe">
             <circle cx="12" cy="12" r="10"></circle>
@@ -288,6 +479,11 @@ export namespace ReactIcons {
             <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
         </svg>
 
+    /**
+     * Renders the Bar Chart icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const BarChart = (props: IProps) =>
         <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-bar-chart-2">
             <line x1="18" y1="20" x2="18" y2="10"></line>
@@ -295,6 +491,11 @@ export namespace ReactIcons {
             <line x1="6" y1="20" x2="6" y2="14"></line>
         </svg>
 
+    /**
+     * Renders the Linear Bar Chart icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const LinearBarChart = (props: IProps) =>
         <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-bar-chart">
             <line x1="12" y1="20" x2="12" y2="10"></line>
@@ -302,17 +503,32 @@ export namespace ReactIcons {
             <line x1="6" y1="20" x2="6" y2="16"></line>
         </svg>
 
+    /**
+     * Renders the Open Book icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const OpenBook = (props: IProps) =>
         <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-book-open">
             <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
             <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
         </svg>
 
+    /**
+     * Renders the Line Chart icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const LineChart = (props: IProps) =>
         <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-activity">
             <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
         </svg>
 
+    /**
+     * Renders the Scatter Plot icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const ScatterPlot = (props: IProps) =>
         <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-scatter-plot">
             <circle cx="2" cy="12" r="1"></circle>
@@ -327,6 +543,11 @@ export namespace ReactIcons {
             <circle cx="22" cy="12" r="1"></circle>
         </svg>
 
+    /**
+     * Renders the Right Arrow Circled icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const RightArrowCircled = (props: IProps) =>
         <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-arrow-right-circle">
             <circle cx="12" cy="12" r="10"></circle>
@@ -334,6 +555,11 @@ export namespace ReactIcons {
             <line x1="8" y1="12" x2="16" y2="12"></line>
         </svg>
 
+    /**
+     * Renders the Left Arrow Circled icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const LeftArrowCircled = (props: IProps) =>
         <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-arrow-left-circle">
             <circle cx="12" cy="12" r="10"></circle>
@@ -341,17 +567,32 @@ export namespace ReactIcons {
             <line x1="16" y1="12" x2="8" y2="12"></line>
         </svg>
 
+    /**
+     * Renders the Brief Case icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const BriefCase = (props: IProps) =>
         <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-briefcase">
             <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
             <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
         </svg>
 
+    /**
+     * Renders the Dollar Sign icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const DollarSign = (props: IProps) =>
         <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-dollar-sign">
             <line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
         </svg>
 
+    /**
+     * Renders the Grid icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const Grid = (props: IProps) =>
         <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-grid">
             <rect x="3" y="3" width="7" height="7"></rect>
@@ -360,18 +601,33 @@ export namespace ReactIcons {
             <rect x="3" y="14" width="7" height="7"></rect>
         </svg>
 
+    /**
+     * Renders the Smart Phone icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const SmartPhone = (props: IProps) =>
         <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-smartphone">
             <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
             <line x1="12" y1="18" x2="12.01" y2="18"></line>
         </svg>
 
+    /**
+     * Renders the Radio Signal icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const RadioSignal = (props: IProps) =>
         <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-radio">
             <circle cx="12" cy="12" r="2"></circle>
             <path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"></path>
         </svg>
 
+    /**
+     * Renders the Smart Phone Dollar Sign icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const SmartPhoneDollarSign = (props: IProps) => (
         <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24, }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-smartphone-dollar-sign"
         >
@@ -385,6 +641,11 @@ export namespace ReactIcons {
         </svg>
     );
 
+    /**
+     * Renders the Move Arrows icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const MoveArrows = (props: IProps) =>
         <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24, }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-move">
             <polyline points="5 9 2 12 5 15"></polyline>
@@ -395,6 +656,11 @@ export namespace ReactIcons {
             <line x1="12" y1="2" x2="12" y2="22"></line>
         </svg>
 
+    /**
+     * Renders the Phasor Arrows icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const PhasorArrows = (props: IProps) =>
         <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24, }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-phasor-arrows">
             <polyline points="9 5 12 2 15 5"></polyline>
@@ -405,44 +671,84 @@ export namespace ReactIcons {
             <line x1="12" y1="12" x2="22" y2="20"></line>
         </svg>
 
+    /**
+     * Renders the Chevron Left icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const ChevronLeft = (props: IProps) =>
         <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24, }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-chevron-left">
             <polyline points="15 18 9 12 15 6"></polyline>
         </svg>
 
+    /**
+     * Renders the Chevron Right icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const ChevronRight = (props: IProps) =>
         <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24, }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-chevron-right">
             <polyline points="9 18 15 12 9 6"></polyline>
         </svg>
 
+    /**
+     * Renders the Double Chevron Left icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const DoubleChevronLeft = (props: IProps) =>
         <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24, }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-chevrons-left">
             <polyline points="11 17 6 12 11 7"></polyline>
             <polyline points="18 17 13 12 18 7"></polyline>
         </svg>
 
+    /**
+     * Renders the Double Chevron Right icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const DoubleChevronRight = (props: IProps) =>
         <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24, }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-chevrons-right">
             <polyline points="13 17 18 12 13 7"></polyline>
             <polyline points="6 17 11 12 6 7"></polyline>
         </svg>
 
+    /**
+     * Renders the Chevron Down icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const ChevronDown = (props: IProps) =>
         <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24, }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-chevron-down">
             <polyline points="6 9 12 15 18 9"></polyline>
         </svg>
 
+    /**
+     * Renders the Chevron Up icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const ChevronUp = (props: IProps) =>
         <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24, }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-chevron-up">
             <polyline points="18 15 12 9 6 15"></polyline>
         </svg>
 
+    /**
+     * Renders the Double Chevron Up icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const DoubleChevronUp = (props: IProps) =>
         <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24, }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-chevrons-up">
             <polyline points="17 11 12 6 7 11"></polyline>
             <polyline points="17 18 12 13 7 18"></polyline>
         </svg>
 
+    /**
+     * Renders the Question Mark icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const QuestionMark = (props: IProps) =>
         <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24, }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-help-circle">
             <circle cx="12" cy="12" r="10"></circle>
@@ -450,6 +756,11 @@ export namespace ReactIcons {
             <line x1="12" y1="17" x2="12.01" y2="17"></line>
         </svg>
 
+    /**
+     * Renders the Image icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const Image = (props: IProps) =>
         <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24, }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-image">
             <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
@@ -457,6 +768,11 @@ export namespace ReactIcons {
             <polyline points="21 15 16 10 5 21"></polyline>
         </svg>
 
+    /**
+     * Renders the Info icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const Info = (props: IProps) =>
         <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24, }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-info">
             <circle cx="12" cy="12" r="10" />
@@ -464,12 +780,22 @@ export namespace ReactIcons {
             <line x1="12" y1="8" x2="12.01" y2="8" />
         </svg>
 
+    /**
+     * Renders the Alarm Bell icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const AlarmBell = (props: IProps) =>
         <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24, }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-bell">
             <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
             <path d="M13.73 21a2 2 0 0 1-3.46 0" />
         </svg>
 
+    /**
+     * Renders the Layers icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const Layers = (props: IProps) =>
         <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-layers">
             <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
@@ -477,23 +803,43 @@ export namespace ReactIcons {
             <polyline points="2 12 12 17 22 12"></polyline>
         </svg>
 
+    /**
+     * Renders the Flag icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const Flag = (props: IProps) =>
         <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-flag">
             <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
             <line x1="4" y1="22" x2="4" y2="15" />
         </svg>
 
+    /**
+     * Renders the Grafana icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const Grafana = (props: IProps) =>
         <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round">
             <path d="M22.999 10.626c-.043-.405-.106-.873-.234-1.384s-.341-1.065-.618-1.661c-.298-.575-.66-1.193-1.15-1.768-.192-.234-.405-.447-.618-.681.341-1.342-.405-2.513-.405-2.513-1.299-.085-2.108.405-2.406.618-.043-.021-.106-.043-.149-.064-.213-.085-.447-.17-.681-.256-.234-.064-.469-.149-.703-.192-.234-.064-.49-.106-.745-.149-.043 0-.085-.021-.128-.021C14.608.766 12.99 0 12.99 0c-1.853 1.193-2.215 2.79-2.215 2.79s0 .043-.021.085c-.106.021-.192.064-.298.085-.128.043-.277.085-.405.149s-.277.106-.405.17c-.277.128-.532.256-.809.405a8.52 8.52 0 0 0-.745.469c-.043-.021-.064-.043-.064-.043-2.492-.958-4.706.192-4.706.192-.192 2.662 1.001 4.323 1.235 4.621-.064.17-.106.319-.17.49a10.658 10.658 0 0 0-.405 1.853c-.021.085-.021.192-.043.277-2.3 1.129-2.981 3.471-2.981 3.471 1.917 2.215 4.174 2.343 4.174 2.343a9.61 9.61 0 0 0 .98 1.448c.149.192.319.362.49.554-.703 2.002.106 3.684.106 3.684 2.151.085 3.556-.937 3.854-1.171l.639.192c.66.17 1.342.277 2.002.298h.873c1.001 1.448 2.79 1.64 2.79 1.64 1.256-1.342 1.342-2.641 1.342-2.939v-.021-.043-.064c.256-.192.511-.383.767-.596.511-.447.937-.98 1.32-1.533.043-.043.064-.106.106-.149 1.427.085 2.428-.894 2.428-.894-.234-1.491-1.086-2.215-1.256-2.343l-.021-.021-.021-.021-.021-.021c0-.085.021-.17.021-.277.021-.17.021-.319.021-.49v-.213-.277-.128c0-.043 0-.085-.021-.128l-.043-.256c-.021-.17-.064-.319-.085-.49a6.327 6.327 0 0 0-.724-1.789 6.634 6.634 0 0 0-1.214-1.448 5.89 5.89 0 0 0-1.533-.98 5.368 5.368 0 0 0-1.682-.469c-.277-.043-.575-.043-.852-.043h-.128-.298c-.149.021-.298.043-.426.064-.575.106-1.107.319-1.576.596s-.873.639-1.214 1.043a4.284 4.284 0 0 0-.767 1.299c-.17.447-.277.937-.298 1.384v.511c0 .064 0 .106.021.17a3.642 3.642 0 0 0 .703 1.81c.256.341.532.596.852.809.319.213.639.362.98.469s.66.149.958.128h.446c.043 0 .085-.021.106-.021.043 0 .064-.021.106-.021.064-.021.149-.043.213-.064.128-.043.256-.106.383-.149.128-.064.234-.128.319-.192.021-.021.064-.043.085-.064a.24.24 0 0 0 .043-.341.298.298 0 0 0-.319-.064c-.021.021-.043.021-.085.043a1.43 1.43 0 0 1-.277.106c-.106.021-.213.064-.319.085-.064 0-.106.021-.17.021h-.361s-.021 0 0 0h-.086c-.022 0-.064 0-.085-.021-.234-.043-.49-.106-.724-.213s-.469-.256-.66-.447c-.213-.192-.383-.405-.532-.66s-.234-.532-.277-.809c-.021-.149-.043-.298-.021-.447v-.128c0 .021 0 0 0 0v-.043-.064c0-.085.021-.149.043-.234a3.114 3.114 0 0 1 .916-1.725c.128-.128.256-.234.405-.319.149-.106.298-.192.447-.256s.319-.128.49-.17c.17-.043.341-.085.511-.085.085 0 .17-.021.256-.021H15.228c.021 0 0 0 0 0h.085a4.046 4.046 0 0 1 1.619.49c.681.383 1.256.958 1.597 1.661.17.341.298.724.362 1.129.021.106.021.192.043.298v.554c0 .106-.021.213-.021.319-.021.106-.021.213-.043.319l-.064.319c-.021.106-.128.405-.192.618s-.362.788-.618 1.129a5.164 5.164 0 0 1-2.002 1.64c-.405.17-.809.319-1.235.383a3.221 3.221 0 0 1-.639.064h-.319c.021 0 0 0 0 0h-.021c-.106 0-.234 0-.341-.021-.469-.043-.916-.128-1.363-.256s-.873-.298-1.278-.511a6.956 6.956 0 0 1-2.108-1.746c-.277-.362-.532-.745-.745-1.15s-.362-.831-.49-1.256a5.489 5.489 0 0 1-.213-1.32v-.49-.17c0-.213.021-.447.064-.681.021-.234.064-.447.106-.681s.106-.447.17-.681.277-.873.469-1.278c.383-.809.873-1.533 1.448-2.108.149-.149.298-.277.469-.405.064-.064.213-.192.383-.298s.341-.213.532-.298c.085-.043.17-.085.277-.128.043-.021.085-.043.149-.064.043-.021.085-.043.149-.064.192-.085.383-.149.575-.213.043-.021.106-.021.149-.043s.106-.021.149-.043.192-.043.298-.085c.043-.021.106-.021.149-.043.043 0 .106-.021.149-.021s.106-.021.149-.021l.17-.043c.043 0 .106-.021.149-.021.064 0 .106-.021.17-.021.043 0 .128-.021.17-.021s.064 0 .106-.021h.149c.064 0 .106 0 .17-.021h.085s.021 0 0 0H15.033c.383.021.767.064 1.129.128a7.234 7.234 0 0 1 2.044.681 7.676 7.676 0 0 1 1.661 1.086c.021.021.064.043.085.085.021.021.064.043.085.085.064.043.106.106.17.149s.106.106.17.149c.043.064.106.106.149.17a7.88 7.88 0 0 1 1.406 1.98c.021.021.021.043.043.085.021.021.021.043.043.085s.043.106.085.149c.021.043.043.106.064.149s.043.106.064.149c.085.192.149.383.213.575.106.298.17.554.234.767a.204.204 0 0 0 .192.149c.106 0 .17-.085.17-.192-.021-.256-.021-.532-.043-.852z" />
         </svg>
 
+    /**
+     * Renders the Clone icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const Clone = (props: IProps) =>
         <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-copy">
             <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
             <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
         </svg>
 
+    /**
+     * Renders the Refresh icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const Refresh = (props: IProps) =>
         <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-refresh-ccw">
             <polyline points="1 4 1 10 7 10"></polyline>
@@ -501,6 +847,11 @@ export namespace ReactIcons {
             <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path>
         </svg>
 
+    /**
+     * Renders the Users icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const Users = (props: IProps) =>
         <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-users">
             <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
@@ -509,12 +860,22 @@ export namespace ReactIcons {
             <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
         </svg>
 
+    /**
+     * Renders the Lock icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const Lock = (props: IProps) =>
         <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-lock">
             <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
             <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
         </svg>
 
+    /**
+     * Renders the Archive Box icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const ArchiveBox = (props: IProps) =>
         <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-archive">
             <polyline points="21 8 21 21 3 21 3 8" />
@@ -522,11 +883,21 @@ export namespace ReactIcons {
             <line x1="10" y1="12" x2="14" y2="12" />
         </svg>
 
+    /**
+     * Renders the Pan Hand icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const PanHand = (props: IProps) =>
         <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-archive">
             <path d="M19.75 12.3347H20.5H20.5H19.75ZM5.81729 15.4792L6.43779 15.0579L6.43779 15.0579L5.81729 15.4792ZM6.3809 16.3093L5.7604 16.7306L5.7604 16.7306L6.3809 16.3093ZM6.2843 8.87473L5.76704 8.33164C5.75364 8.3444 5.74071 8.35766 5.72829 8.37138L6.2843 8.87473ZM8.24493 8.04309C8.54487 7.75741 8.55643 7.28268 8.27076 6.98274C7.98508 6.6828 7.51035 6.67124 7.21041 6.95691L8.24493 8.04309ZM4.25519 12.4372L5.00387 12.3927L4.25519 12.4372ZM4.30904 11.6756L3.57406 11.5262L4.30904 11.6756ZM19.4583 16.168L20.1639 16.4223L19.4583 16.168ZM16.3566 19.2136L16.1104 18.5051L16.3566 19.2136ZM10.197 19.3872L10.3527 18.6535H10.3527L10.197 19.3872ZM7.72767 18.0896L8.24483 17.5464L7.72767 18.0896ZM7 12C7 12.4142 7.33579 12.75 7.75 12.75C8.16421 12.75 8.5 12.4142 8.5 12H7ZM13 8.87473C13 9.28894 13.3358 9.62473 13.75 9.62473C14.1642 9.62473 14.5 9.28894 14.5 8.87473H13ZM16 9.5C16 9.91421 16.3358 10.25 16.75 10.25C17.1642 10.25 17.5 9.91421 17.5 9.5H16ZM19.75 8H19V8L19.75 8ZM10 8.5C10 8.91421 10.3358 9.25 10.75 9.25C11.1642 9.25 11.5 8.91421 11.5 8.5H10ZM5.19679 15.9005L5.7604 16.7306L7.0014 15.888L6.43779 15.0579L5.19679 15.9005ZM6.80156 9.41781L8.24493 8.04309L7.21041 6.95691L5.76704 8.33164L6.80156 9.41781ZM6.43779 15.0579C5.92498 14.3026 5.57104 13.7799 5.33415 13.346C5.10404 12.9245 5.01895 12.6465 5.00387 12.3927L3.50651 12.4817C3.53969 13.0402 3.73104 13.54 4.01761 14.0648C4.2974 14.5773 4.70038 15.1693 5.19679 15.9005L6.43779 15.0579ZM5.72829 8.37138C5.13366 9.02823 4.65143 9.55972 4.30239 10.029C3.94502 10.5095 3.68545 10.978 3.57406 11.5262L5.04403 11.8249C5.09477 11.5751 5.21846 11.3108 5.50599 10.9242C5.80186 10.5264 6.22619 10.0564 6.84031 9.37807L5.72829 8.37138ZM5.00387 12.3927C4.99257 12.2026 5.00605 12.0118 5.04403 11.8249L3.57406 11.5262C3.5102 11.8405 3.48749 12.1616 3.50651 12.4817L5.00387 12.3927ZM19 12.3347C19 14.4151 18.9888 15.2586 18.7527 15.9137L20.1639 16.4223C20.5112 15.4586 20.5 14.2862 20.5 12.3347H19ZM12.4527 20.25C14.4432 20.25 15.6287 20.2605 16.6027 19.922L16.1104 18.5051C15.4358 18.7395 14.5682 18.75 12.4527 18.75V20.25ZM18.7527 15.9137C18.318 17.1201 17.3492 18.0747 16.1104 18.5051L16.6027 19.922C18.2621 19.3455 19.5731 18.0616 20.1639 16.4223L18.7527 15.9137ZM12.4527 18.75C11.2705 18.75 10.7891 18.7461 10.3527 18.6535L10.0414 20.1209C10.6681 20.2539 11.3361 20.25 12.4527 20.25V18.75ZM5.7604 16.7306C6.37929 17.6421 6.74816 18.1926 7.21051 18.6328L8.24483 17.5464C7.92629 17.2431 7.6576 16.8545 7.0014 15.888L5.7604 16.7306ZM10.3527 18.6535C9.55688 18.4847 8.82685 18.1005 8.24483 17.5464L7.21051 18.6328C7.99531 19.38 8.97624 19.8949 10.0414 20.1209L10.3527 18.6535ZM8.5 12V6.5H7V12H8.5ZM9.25 5.75C9.66421 5.75 10 6.08579 10 6.5H11.5C11.5 5.25736 10.4926 4.25 9.25 4.25V5.75ZM8.5 6.5C8.5 6.08579 8.83579 5.75 9.25 5.75V4.25C8.00736 4.25 7 5.25736 7 6.5H8.5ZM13 7V8.87473H14.5V7H13ZM16 7V8H17.5V7H16ZM16 8V9.5H17.5V8H16ZM15.25 6.25C15.6642 6.25 16 6.58579 16 7H17.5C17.5 5.75736 16.4926 4.75 15.25 4.75V6.25ZM14.5 7C14.5 6.58579 14.8358 6.25 15.25 6.25V4.75C14.0074 4.75 13 5.75736 13 7H14.5ZM18.25 7.25C18.6642 7.25 19 7.58579 19 8H20.5C20.5 6.75736 19.4926 5.75 18.25 5.75V7.25ZM17.5 8C17.5 7.58579 17.8358 7.25 18.25 7.25V5.75C17.0074 5.75 16 6.75736 16 8H17.5ZM10 6.5V8.5H11.5V6.5H10ZM13 6V7H14.5V6H13ZM10 6V6.5H11.5V6H10ZM12.25 5.25C12.6642 5.25 13 5.58579 13 6H14.5C14.5 4.75736 13.4926 3.75 12.25 3.75V5.25ZM12.25 3.75C11.0074 3.75 10 4.75736 10 6H11.5C11.5 5.58579 11.8358 5.25 12.25 5.25V3.75ZM19 8L19 12.3347H20.5V8L19 8Z" fill="currentColor" />
         </svg>
 
+    /**
+     * Renders the Veritical Resize icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const VeriticalResize = (props: IProps) =>
         <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-archive">
             <path d="M4 10H20" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round"></path>
@@ -537,6 +908,11 @@ export namespace ReactIcons {
             <path d="M12 18V14" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round"></path>
         </svg>
 
+    /**
+     * Renders the Horizontal Resize icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const HorizontalResize = (props: IProps) =>
         <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-archive">
             <path d="M10 20L10 4" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round"></path>
@@ -547,52 +923,97 @@ export namespace ReactIcons {
             <path d="M18 12L14 12" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round"></path>
         </svg>
 
+    /**
+     * Renders the Maximize icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const Maximize = (props: IProps) =>
         <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-archive">
             <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
         </svg>
 
+    /**
+     * Renders the Camera icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const Camera = (props: IProps) =>
         <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-camera">
             <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
             <circle cx="12" cy="13" r="4"></circle>
         </svg>
 
+    /**
+     * Renders the Finger Select icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const FingerSelect = (props: IProps) =>
         <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round">
             <path d="M7.78057 13.9568V9.49317M7.78057 9.49317V3.97805C7.78057 3.15846 8.46365 2.49792 9.28334 2.49792C10.103 2.49792 10.7489 3.15846 10.7489 3.97805V7.974M7.78057 9.49317C6.46629 10.684 5.05198 12.1884 4.86153 12.5737C3.97535 13.9225 4.06824 14.5755 5.05582 16.2259C5.89463 17.6277 7.02271 19.1833 7.08856 19.2579C7.7588 20.0174 7.62553 20.0175 8.59699 20.7307C9.46447 21.3327 11.2638 21.7522 15.4822 21.3327C18.9186 20.8019 19.7419 17.8026 19.7241 16.3692V12.8295C19.9381 9.88749 18.7083 9.75469 16.4751 9.46512M10.7489 7.974V10.4976M10.7489 7.974C11.3062 7.06532 13.3302 7.43254 13.7247 9.14847M13.7603 10.4936V9.49317C13.7603 9.4143 13.7564 9.33519 13.7453 9.25717M13.7247 9.14847C13.7263 9.15569 13.728 9.16293 13.7296 9.1702C13.7359 9.19899 13.7411 9.228 13.7453 9.25717M13.7247 9.14847C13.7288 9.18343 13.7356 9.21967 13.7453 9.25717M13.7247 9.14847C13.5846 7.95246 16.6156 8.24402 16.7389 10.3474V11.4905" stroke="currentColor" strokeWidth="2" strokeLinecap="round"></path>
         </svg>
 
+    /**
+     * Renders the Pause icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const Pause = (props: IProps) =>
         <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-pause">
             <rect x="6" y="4" width="4" height="16" />
             <rect x="14" y="4" width="4" height="16" />
         </svg>
 
+    /**
+     * Renders the Lightning Cloud icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const LightningCloud = (props: IProps) =>
         <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-cloud-lightning">
             <path d="M19 16.9A5 5 0 0 0 18 7h-1.26a8 8 0 1 0-11.62 9" />
             <polyline points="13 11 9 17 15 17 11 23" />
         </svg>
 
+    /**
+     * Renders the Magnifying Glass icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const MagnifyingGlass = (props: IProps) =>
         <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-search">
             <circle cx="11" cy="11" r="8" />
             <line x1="21" y1="21" x2="16.65" y2="16.65" />
         </svg>
 
+    /**
+     * Renders the Eye icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const Eye = (props: IProps) =>
         <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-eye">
             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
             <circle cx="12" cy="12" r="3" />
         </svg>
 
+    /**
+     * Renders the Pie Chart icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const PieChart = (props: IProps) =>
         <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-pie-chart">
             <path d="M21.21 15.89A10 10 0 1 1 8 2.83" />
             <path d="M22 12A10 10 0 0 0 12 2v10z" />
         </svg>
 
+    /**
+     * Renders the List icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const List = (props: IProps) =>
         <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-list">
             <line x1="8" y1="6" x2="21" y2="6" />
@@ -603,6 +1024,11 @@ export namespace ReactIcons {
             <line x1="3" y1="18" x2="3.01" y2="18" />
         </svg>
 
+    /**
+     * Renders the Bar Chart Pan Hand icon.
+     * @param props - Icon appearance options.
+     * @returns SVG icon element.
+     */
     export const BarChartPanHand = (props: IProps) =>
         <svg xmlns="http://www.w3.org/2000/svg" style={{ ...(props.Style ?? {}), width: props.Size ?? props.Style?.width ?? 24, height: props.Size ?? props.Style?.height ?? 24 }} viewBox="0 0 24 24" fill="none" stroke={props.Color ?? "currentColor"} strokeWidth={props.StrokeWidth ?? '2'} strokeLinecap="round" strokeLinejoin="round" className="feather feather-bar-chart-pan-hand">
             <line x1="19" y1="20" x2="19" y2="10" />

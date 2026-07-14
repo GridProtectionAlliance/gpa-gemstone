@@ -26,12 +26,29 @@ import { OpenXDA, SystemCenter } from '@gpa-gemstone/application-typings';
 
 type S = SystemCenter.Types.DetailedMeter|SystemCenter.Types.DetailedAsset|SystemCenter.Types.DetailedLocation|OpenXDA.Types.AssetGroup;
 interface IProps<S> {
+    /**
+     * Selected records summarized by the button and its hover table.
+     */
     Data: S[],
+    /**
+     * Record category that determines the button label and table columns.
+     */
     Type: ('Meter' | 'Asset' | 'AssetGroup' | 'Station'),
+    /**
+     * Handles activation of the filter button.
+     */
     OnClick: () => void,
+    /**
+     * Optional background colors used for empty and populated selections.
+     */
     AlternateColors?: { normal: string, selected: string }
 }
 
+/**
+ * Summarizes active navigation filters and previews their selected records on hover.
+ * @param props - Selected records, record category, colors, and activation handler.
+ * @returns Filter button and hover summary table.
+ */
 function NavbarFilterButton(props: IProps<S>) {
     const [hover, setHover] = React.useState<boolean>(false);
     const [rows, setRows] = React.useState<JSX.Element[]>([]);

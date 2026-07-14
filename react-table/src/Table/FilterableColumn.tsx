@@ -38,18 +38,51 @@ export default function FilterableColumn<T>(props: React.PropsWithChildren<React
 }
 
 export interface IHeaderProps<T> {
+    /**
+     * Content shown as the column heading.
+     */
     Label: string | React.ReactNode,
+    /**
+     * Optional field type that determines which filter editor is displayed.
+     */
     Type?: Search.FieldType,
+    /**
+     * Optional units used to display and convert numeric filter values.
+     */
     Unit?: IUnit[],
+    /**
+     * Filter definitions currently applied to the column.
+     */
     Filter: Search.IFilter<T>[],
+    /**
+     * Updates the filter definitions applied to the column.
+     * @param flt - Filter definitions to apply.
+     */
     SetFilter: (flt: Search.IFilter<T>[]) => void,
+    /**
+     * Record field associated with the column.
+     */
     Field: string | number | symbol | undefined,
+    /**
+     * Optional values offered by an enumeration filter.
+     */
     Options?: ReactTableProps.IOptions[],
+    /**
+     * Optional detailed label shown inside the expanded filter menu.
+     */
     ExpandedLabel?: string,
+    /**
+     * Unique table identifier associated with the filter menu.
+     */
     Guid: string,
 }
 
 // Table column header details
+/**
+ * Displays a column label and the filter editor appropriate for its field type.
+ * @param props - Column metadata, active filters, and filter update handler.
+ * @returns Filterable column header content.
+ */
 export function FilterableColumnHeader<T>(props: IHeaderProps<T>) {
     const [show, setShow] = React.useState<boolean>(false);
 

@@ -29,23 +29,45 @@ import { GraphContext } from './GraphContext';
 import { GetTextHeight } from '@gpa-gemstone/helper-functions';
 
 export interface IProps {
+    /** Left plot offset in pixels. */
     offsetLeft: number,
+    /** Right plot offset in pixels. */
     offsetRight: number,
+    /** Bottom plot offset in pixels. */
     offsetBottom: number,
+    /** Top plot offset in pixels. */
     offsetTop: number,
+    /** Reserved height for the axis in pixels. */
     heightAxis: number,
+    /** Available plot height in pixels. */
     height: number,
+    /** Available plot width in pixels. */
     width: number,
+    /**
+     * Callback that reports the height required by the axis.
+     * @param h - Required axis height in pixels.
+     */
     setHeight: (h: number) => void,
+    /** Optional flag that displays grid lines at tick positions, defaulting to false. */
     showGrid?: boolean,
+    /** Optional flag that displays values using an SI magnitude factor. */
     useFactor?: boolean,
+    /** Optional flag that displays tick labels, defaulting to true. */
     showTicks?: boolean,
+    /** Optional title displayed below the axis. */
     label?: string,
+    /** Optional flag that displays the rightmost tick label, defaulting to true. */
     showRightMostTick?: boolean,
+    /** Optional flag that displays the leftmost tick label, defaulting to true. */
     showLeftMostTick?: boolean
 }
 
 
+/**
+ * Renders a logarithmic X-axis and reports its required layout height.
+ * @param props - Axis dimensions, offsets, labels, and visibility options.
+ * @returns SVG group containing logarithmic ticks, labels, and grid lines.
+ */
 function LogAxis(props: IProps) {
     /*
        Used on the bottom of the plot

@@ -27,10 +27,21 @@ import { PointNode } from './PointNode';
 import { IProps as ILineProps } from './Line';
 
 interface IProps extends ILineProps {
-    Interval: number // interval to rerender line
-    RerenderCallback?: () => boolean //determines if we should rerender internal line after interval timer completes
+    /** Interval in seconds between attempts to refresh the line. */
+    Interval: number
+    /**
+     * Optional callback that decides whether the line refreshes after each interval.
+     * @returns True when the internal line should refresh.
+     */
+    RerenderCallback?: () => boolean
 }
 
+/**
+ * Periodically refreshes a line while exposing its point index through a ref.
+ * @param props - Line configuration, refresh interval, and refresh predicate.
+ * @param ref - Ref receiving the indexed line data.
+ * @returns Line graphic refreshed at the configured interval.
+ */
 const StreamingLine = React.forwardRef<PointNode | null, IProps>((props, ref) => {
     const [rerender, setRerender] = React.useState<number>(0);
 

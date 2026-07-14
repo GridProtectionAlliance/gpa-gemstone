@@ -28,6 +28,9 @@ import { Portal } from 'react-portal'
 import * as _ from 'lodash'
 
 interface IProps<T> extends Omit<IInputProps<T>, 'Type'> {
+  /**
+   * Values offered as suggestions for the current input text.
+   */
   Options: string[]
 }
 
@@ -37,6 +40,11 @@ export interface IVariable {
   Variable: string | null
 }
 
+/**
+ * Renders a record-bound input with filtered autocomplete suggestions.
+ * @param props - Input configuration and values offered as suggestions.
+ * @returns An input with a positioned suggestion dropdown.
+ */
 export default function AutoCompleteInput<T>(props: IProps<T>) {
   const autoCompleteInput = React.useRef<HTMLDivElement>(null);
   const inputElement = React.useRef<HTMLInputElement>(null);

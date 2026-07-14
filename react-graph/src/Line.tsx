@@ -28,24 +28,42 @@ import { PointNode } from './PointNode';
 import useLegend from './Hooks/useLegend';
 
 export interface IInteralProps extends IProps {
+    /** Optional render revision used to refresh a streaming line. */
     reRender?: number
 }
 
 export interface IProps {
+    /** Optional flag that always renders point markers, defaulting to false. */
     showPoints?: boolean,
+    /** Optional flag that renders point markers when sufficiently separated, defaulting to true. */
     autoShowPoints?: boolean,
+    /** Optional label displayed for the line in the legend. */
     legend?: string,
+    /** Optional flag that highlights the nearest point while hovering, defaulting to false. */
     highlightHover?: boolean,
+    /** Data-space coordinates connected by the line. */
     data: [number, number][],
+    /** Stroke color applied to the line. */
     color: string,
+    /** Dash pattern used to render the line. */
     lineStyle: LineStyle,
+    /** Optional line width in pixels, defaulting to 1. */
     width?: number,
+    /** Optional Y-axis associated with the line. */
     axis?: AxisIdentifier,
+    /**
+     * Optional callback invoked with the nearest data point while hovering.
+     * @param x - X coordinate of the nearest point.
+     * @param y - Y coordinate of the nearest point.
+     */
     onHover?: (x: number, y: number) => void
 }
 
 /**
- * Single Line with ability to turn off and on.
+ * Renders a registered, legend-enabled line and exposes its point index through a ref.
+ * @param props - Line data, appearance, interaction options, and render revision.
+ * @param ref - Ref receiving the indexed line data.
+ * @returns SVG group containing the visible line and optional point markers.
  */
 export const InternalLine = React.forwardRef<PointNode | null, IInteralProps>((props, ref) => {
 
@@ -178,5 +196,10 @@ export const InternalLine = React.forwardRef<PointNode | null, IInteralProps>((p
     );
 });
 
+/**
+ * Renders a graph line using the standard non-streaming configuration.
+ * @param props - Line data, appearance, legend, and interaction options.
+ * @returns Context-aware line graphic.
+ */
 const Line = (props: IProps) => <InternalLine {...props} />;
 export default Line;

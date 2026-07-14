@@ -29,20 +29,53 @@ import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import * as React from 'react';
 import * as ReactTableProps from './Types';
 
+/**
+ * Declares a typed table column consumed by the parent table component.
+ * @param props - Column configuration and header content.
+ * @returns Column header content for discovery by the table.
+ */
 export function Column<T>(props: React.PropsWithChildren<ReactTableProps.IColumn<T>>) {
     return <>{props.children}</>
 }
 
 export interface IHeaderWrapperProps {
+    /**
+     * Handles activation of the column header for sorting.
+     * @param event - Mouse event raised by the header cell.
+     */
     onSort: React.MouseEventHandler<HTMLTableCellElement>,
+    /**
+     * Optional handler that begins resizing the column.
+     * @param event - Mouse event raised by the resize handle.
+     */
     startAdjustment?: React.MouseEventHandler<HTMLDivElement>,
+    /**
+     * Indicates whether this column is the active sort column.
+     */
     sorted: boolean,
+    /**
+     * Indicates whether the active sort direction is ascending.
+     */
     asc: boolean,
+    /**
+     * CSS styles applied to the header cell.
+     */
     style: React.CSSProperties,
+    /**
+     * Optional flag that permits sorting from this header, defaulting to true.
+     */
     allowSort?: boolean,
+    /**
+     * Unique key used to identify the column header.
+     */
     colKey: string
 }
 
+/**
+ * Renders a sortable and optionally resizable table header cell.
+ * @param props - Header state, styles, handlers, and content.
+ * @returns Configured table header cell.
+ */
 export function ColumnHeaderWrapper(props: React.PropsWithChildren<IHeaderWrapperProps>) {
     const [showBorder, setShowBorder] = React.useState(false);
 
@@ -95,11 +128,27 @@ export function ColumnHeaderWrapper(props: React.PropsWithChildren<IHeaderWrappe
 }
 
 export interface IDataWrapperProps {
+    /**
+     * Optional handler fired when dragging begins from the data cell.
+     * @param e - Drag event raised by the cell.
+     */
     dragStart?: (e: React.DragEvent) => void,
+    /**
+     * Optional handler fired when the data cell is clicked.
+     * @param e - Mouse event raised by the cell.
+     */
     onClick?: (e: React.MouseEvent<HTMLElement, MouseEvent>) => void,
+    /**
+     * CSS styles applied to the data cell.
+     */
     style: React.CSSProperties
 }
 
+/**
+ * Renders an interactive table data cell.
+ * @param props - Cell styles, interaction handlers, and content.
+ * @returns Configured table data cell.
+ */
 export function ColumnDataWrapper (props: React.PropsWithChildren<IDataWrapperProps>) {
     return (
         <td

@@ -24,6 +24,10 @@ import * as React from 'react';
 import Alert from "../Alert";
 import { ConfigurableTableKey } from './AlertKeys';
 
+/**
+ * Renders a dismissible helper alert explaining how to configure table columns.
+ * @returns The helper alert until the user has dismissed it, otherwise an empty fragment.
+ */
 export const ConfigurableTableAlert = () => {
     const [show, setShow] = React.useState<boolean>(true);
 

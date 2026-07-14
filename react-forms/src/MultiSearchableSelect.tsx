@@ -30,52 +30,63 @@ import HelpIcon from './HelpIcon';
 
 interface IProps<T> extends Omit<ISearchableSelectProps<T>, 'Valid' | 'Feedback' | 'GetLabel' | 'Setter' | 'Search'> {
     /**
-      * Default value to use when adding an item and when value is null
-      * @type {number}
-    */
+     * Value assigned when a selectable item is added to the array.
+     */
     DefaultValue: number | string,
     /**
-     * Function to determine the validity of a field
-     * @param field - Field of the record to check
-     * @returns {boolean}
-    */
+     * Optional callback that determines whether an item is valid.
+     * @param value - Item value to validate.
+     * @param index - Position of the item in the array.
+     * @param arr - Complete array of item values.
+     * @returns Whether the item is valid.
+     */
     ItemValid?: (value: string | number, index: number, arr: Array<string | number>) => boolean;
     /**
-      * Feedback message to show when input is invalid
-      * @type {string}
-      * @optional
-    */
+     * Optional callback that provides validation feedback for an item.
+     * @param value - Item value to evaluate.
+     * @param index - Position of the item in the array.
+     * @param arr - Complete array of item values.
+     * @returns Feedback to display, or undefined when none is needed.
+     */
     ItemFeedback?: (value: string | number, index: number, arr: Array<string | number>) => string | undefined;
     /**
-     * 
-    */
+     * Optional callback that resolves the display label for an item.
+     * @param value - Current item value.
+     * @param index - Position of the item in the array.
+     * @returns Abortable request for the item's display label.
+     */
     GetLabel?: (value: string | number | null, index: number) => Gemstone.TSX.Interfaces.AbortablePromise<string>,
     /**
-     * Flag to disable add button
+     * Optional flag that hides controls for adding items, defaulting to false.
      */
     DisableAdd?: boolean;
     /**
-     * Flag to disable all input fields
+     * Optional flag that disables item selectors and controls, defaulting to false.
      */
     Disabled?: boolean; //redeclared for better jsdoc
     /**
-    * Setter function to update the Record
-    * @param record - Updated Record
-    * @param index - Index in array field updated
-    * @param selectedOption - Option selected for the update
-    */
+     * Updates the record after an item selection changes.
+     * @param record - Record containing the updated array.
+     * @param index - Position of the updated item.
+     * @param selectedOption - Option selected for the item, when available.
+     */
     Setter: (record: T, index: number, selectedOption?: Gemstone.TSX.Interfaces.ILabelValue<string | number>) => void;
     /**
-    * Function to perform a search and return a promiselike object with a list of IOption and an optional callback
-    * @param search - Search string
-    * @param value - Current value of the field being updated
-    * @param index - Index in array field being updated
-    * @returns {AbortablePromise<T>}
-    */
+     * Searches for selectable options for one array item.
+     * @param search - Text entered in the item's search control.
+     * @param value - Current value of the item being updated.
+     * @param index - Position of the item being updated.
+     * @returns Abortable request for matching options.
+     */
     Search: (search: string, value: string | number, index: number) => Gemstone.TSX.Interfaces.AbortablePromise<Gemstone.TSX.Interfaces.ILabelValue<string | number>[]>;
 }
 
 //Only supporting string/number arrays for now
+/**
+ * Renders an editable array of searchable selectors with add and remove controls.
+ * @param props - Array field binding and callbacks for searching, labeling, validation, and updates.
+ * @returns A searchable selector for each value in the array field.
+ */
 function MultiSearchableSelect<T>(props: IProps<T>) {
     const fieldArray = props.Record[props.Field as keyof T] as Array<string | number>
 

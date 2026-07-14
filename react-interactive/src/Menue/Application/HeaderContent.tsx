@@ -25,17 +25,51 @@ import * as React from 'react';
 import { ReactIcons } from "@gpa-gemstone/gpa-symbols";
 
 interface IProps {
+    /**
+     * Updates whether the application sidebar is collapsed.
+     * @param c - Whether the sidebar should be collapsed.
+     */
     SetCollapsed: (c: boolean) => void,
+    /**
+     * URL used by the logo link to return to the application home page.
+     */
     HomePath: string,
+    /**
+     * Optional image URL displayed as the application logo.
+     */
     Logo?: string,
+    /**
+     * Optional callback fired when the user clicks the sign-out link.
+     */
     OnSignOut?: () => void,
+    /**
+     * Controls whether the sidebar-open action is displayed.
+     */
     ShowOpen: boolean,
+    /**
+     * Controls whether the sidebar-close action is displayed.
+     */
     ShowClose: boolean,
+    /**
+     * Optional content rendered at the end of the navigation bar.
+     */
     NavBarContent?: React.ReactNode,
+    /**
+     * Optional inline styles applied to the navigation bar.
+     */
     NavBarStyle?: React.CSSProperties,
+    /**
+     * Optional inline styles applied to the logo image, defaulting to a 35-pixel maximum height and negative margin.
+     */
     ImgStyle?: React.CSSProperties
 }
 
+/**
+ * Renders the fixed application header with sidebar controls, branding, and sign-out action.
+ * @param props - Configures navigation controls, branding, styling, and custom content.
+ * @param ref - Receives the rendered navigation element for layout measurement.
+ * @returns The fixed navigation header.
+ */
 const HeaderContent = React.forwardRef<HTMLDivElement, IProps>((props, ref) => {
     return <>
         <nav className="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow" ref={ref} style={props.NavBarStyle}>
