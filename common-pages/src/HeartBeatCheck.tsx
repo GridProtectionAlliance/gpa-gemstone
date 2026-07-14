@@ -24,6 +24,7 @@ import * as React from 'react';
 import { LoadingIcon, Modal } from '@gpa-gemstone/react-interactive';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 
+/** Configures periodic server connectivity checks. */
 interface IProps {
     /**
      * Checks whether the application can reach the server.

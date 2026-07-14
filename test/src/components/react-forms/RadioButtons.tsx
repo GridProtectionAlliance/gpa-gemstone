@@ -24,7 +24,9 @@
 import { RadioButtons } from "@gpa-gemstone/react-forms";
 import React from "react";
 
+/** Defines the record edited by the radio-button test fixture. */
 type ITestRecord = {
+    /** Value selected by the radio-button fixture. */
     textValue: string | number,
 }
 

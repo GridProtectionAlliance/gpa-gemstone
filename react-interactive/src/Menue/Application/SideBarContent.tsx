@@ -26,6 +26,7 @@ import Page from "../Page";
 import Section from '../Section';
 import { useGetContainerPosition } from '@gpa-gemstone/helper-functions';
 
+/** Configures the navigation content displayed in the application sidebar. */
 interface IProps {
     /**
      * Controls whether the sidebar uses its compact width and hides footer content.

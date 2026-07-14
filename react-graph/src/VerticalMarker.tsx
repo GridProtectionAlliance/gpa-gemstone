@@ -25,6 +25,7 @@
 import * as React from 'react';
 import {AxisIdentifier, AxisMap, GraphContext, IHandlers, LineMap, LineStyle} from './GraphContext';
 
+/** Defines the position and presentation of a vertical graph marker. */
 export interface IProps {
     /** Optional Y coordinate where the vertical marker begins, defaulting to the visible domain start. */
     start?: number,

@@ -27,11 +27,13 @@ import * as moment from 'moment';
 import { PointNode } from './PointNode';
 import useLegend from './Hooks/useLegend';
 
+/** Extends line properties with graph transformations supplied by context. */
 export interface IInteralProps extends IProps {
     /** Optional render revision used to refresh a streaming line. */
     reRender?: number
 }
 
+/** Defines data, axes, and styling for a graph line. */
 export interface IProps {
     /** Optional flag that always renders point markers, defaulting to false. */
     showPoints?: boolean,

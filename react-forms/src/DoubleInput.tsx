@@ -24,6 +24,7 @@
 import * as React from 'react';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 
+/** Defines the paired fields and validation behavior for the double input. */
 interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> { 
     /**
      * Record field edited by the first input.

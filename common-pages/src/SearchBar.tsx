@@ -29,8 +29,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Dispatch } from '@reduxjs/toolkit';
 import { useStringMemonization } from '@gpa-gemstone/helper-functions';
 
-interface U { ID: number|string }
+/** Identifies records supported by the standard search bars. */
+interface U {
+    /** Unique identifier of the searchable record. */
+    ID: number|string
+}
 
+/** Configures data loading and supplemental filters for a standard search bar. */
 interface IProps<T extends U> {
     /**
      * Redux slice used to execute searches and read their results.
@@ -59,7 +64,13 @@ interface IProps<T extends U> {
     StorageID?: string
 }
 
-interface IOptions {Value: string, Label: string}
+/** Represents a selectable search-field option. */
+interface IOptions {
+    /** Value submitted for the option. */
+    Value: string,
+    /** Label displayed for the option. */
+    Label: string
+}
 
 /** This Implements a few standardized SearchBars */
 export namespace DefaultSearch {

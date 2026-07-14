@@ -24,6 +24,7 @@
 import * as React from 'react';
 import Bar, { IBarProps } from './Bar';
 
+/** Defines the bars and aggregate styling rendered by the bar aggregate. */
 interface IProps extends Omit<IBarProps, "GetBarStyle"> {
     /**
      * Optional method used to reduce the supplied values, defaulting to minimum, maximum, and average values.

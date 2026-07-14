@@ -30,4 +30,3 @@ export namespace Gemstone {
         export const ResetAllHelperAlertValues = () => AllHelperAlertKeys.forEach((key) => localStorage.setItem(key, "false"))
     }
 }
-

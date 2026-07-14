@@ -31,8 +31,11 @@ export const CHECKBOX_TEST_ID = 'checkbox-test-text';
  * @returns Component state and controls exercised by integration tests.
  */
 const CheckBoxTestComponent = () => {
+    /** Defines the values edited by the checkbox test fixture. */
     type FormType = {
+        /** Text value displayed alongside the checkbox fixture. */
         FormData: string,
+        /** Boolean value controlled by the checkbox fixture. */
         FormBoolean: boolean
     }
 

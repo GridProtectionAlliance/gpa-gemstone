@@ -36,16 +36,24 @@ import { useGetContainerPosition } from '@gpa-gemstone/helper-functions';
 import WindowFilter from './WindowFilter/WindowFilter';
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 
+/** Stores a normalized time window with both endpoints and its duration. */
 export interface ITimeWindow {
+    /** Start of the time window. */
     start: string,
+    /** End of the time window. */
     end: string,
+    /** Unit used by the window duration. */
     unit: TimeUnit,
+    /** Length of the time window. */
     duration: number,
 }
 
+/** Supported combinations of endpoints and duration used to define a time filter. */
 export type ITimeFilter = IStartEnd | IStartDuration | IEndDuration
+/** Layout used to edit a time filter. */
 export type DateTimeSetting = 'startWindow' | 'endWindow' | 'startEnd';
 
+/** Configures time-filter values, layout, and update behavior. */
 interface IProps {
     /**
      * Time filter values edited by the component.

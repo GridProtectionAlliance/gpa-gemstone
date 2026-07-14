@@ -33,6 +33,7 @@ const circleStyle: React.CSSProperties = {
     backgroundColor: '#fff',
 }
 
+/** Describes one labeled step in a progress indicator. */
 interface IStep {
     /**
      * Short label displayed for inactive steps.
@@ -48,6 +49,7 @@ interface IStep {
     id: string | number
 }
 
+/** Configures the steps and active state of a progress bar. */
 interface IProps {
     /**
      * Ordered steps rendered along the progress bar.

@@ -25,6 +25,7 @@ import * as React from 'react';
 import { Search } from './SearchBar';
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 
+/** Configures one editable search-filter row. */
 interface IFilterRowProps<T> {
     /**
      * Filter whose field, operator, and search text are displayed in the row.

@@ -27,6 +27,7 @@ import * as moment from 'moment';
 import { GetTextHeight, GetTextWidth } from '@gpa-gemstone/helper-functions';
 import { cloneDeep } from 'lodash';
 
+/** Defines scale, placement, and formatting for a time axis. */
 export interface IProps {
   /** Left plot offset in pixels. */
   offsetLeft: number,
@@ -65,7 +66,9 @@ const msPerHour = msPerMinute * 60.0;
 const msPerDay = msPerHour * 24.0;
 const msPerYear = msPerDay * 365;
 
+/** Identifies the time unit used to space axis ticks. */
 type TimeStep = ('y' | 'M' | 'w' | 'd' | 'h' | 'm' | 's' | 'ms');
+/** Identifies a supported label format for time-axis ticks. */
 type TimeFormat = 'SSS' | 'ss.SS' | 'ss' | 'mm:ss' | 'mm' | 'HH:mm' | 'HH' | 'DD HH' | 'MM/DD' | 'MM YY' | 'YYYY';
 
 /**

@@ -25,8 +25,10 @@ import * as React from 'react';
 import { getTimeWindowFromFilter, ITimeWindow } from '../TimeFilter';
 import { readableUnit, units } from '../TimeWindowUtils';
 
+/** End of a time window used as its fixed anchor. */
 export type Window = "start" | "end"
 
+/** Configures duration editing for an anchored time window. */
 export interface IProps {
     /**
      * Time window whose duration and unit are edited by the form.

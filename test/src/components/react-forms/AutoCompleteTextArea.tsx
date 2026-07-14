@@ -24,7 +24,9 @@
 import { AutoCompleteTextArea } from '@gpa-gemstone/react-forms'
 import React from 'react'
 
+/** Defines the record edited by the Auto Complete Text Area test fixture. */
 interface IExampleRecord {
+    /** Name value edited by the fixture. */
     Name: string
 }
 

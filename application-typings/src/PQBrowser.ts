@@ -25,28 +25,66 @@
 namespace PQBrowser {
     export namespace Types {
 		// Types
-		export interface TrendChannel { 
-			ID: number, Name: string, Description: string, 
-			AssetID: number, AssetKey: string, AssetName: string, 
-			MeterID: number, MeterKey: string, MeterName: string, MeterShortName: string, 
-			Phase: string, ChannelGroup: string, ChannelGroupType: string, Unit: string,
+		/** Represents the trend Channel data contract. */
+		export interface TrendChannel {
+			/** Unique identifier for the record. */
+			ID: number,
+			/** Name displayed for the record. */
+			Name: string,
+			/** Description of the record. */
+			Description: string,
+			/** Identifier of the associated asset. */
+			AssetID: number,
+			/** Asset Key associated with the record. */
+			AssetKey: string,
+			/** Asset Name associated with the record. */
+			AssetName: string,
+			/** Identifier of the associated meter. */
+			MeterID: number,
+			/** Meter Key associated with the record. */
+			MeterKey: string,
+			/** Meter Name associated with the record. */
+			MeterName: string,
+			/** Meter Short Name associated with the record. */
+			MeterShortName: string,
+			/** Phase associated with the record. */
+			Phase: string,
+			/** Channel Group associated with the record. */
+			ChannelGroup: string,
+			/** Channel Group Type associated with the record. */
+			ChannelGroupType: string,
+			/** Unit associated with the record. */
+			Unit: string,
+			/** Series associated with the record. */
 			Series: Series[]
 		}
+		/** Represents the series data contract. */
 		export interface Series {
-			ID: number, ChannelID: number, 
-			TypeName: string, TypeDescription: string
-		}
-		export interface IWidgetView {
+			/** Unique identifier for the record. */
 			ID: number,
+			/** Identifier of the associated channel. */
+			ChannelID: number,
+			/** Type Name associated with the record. */
+			TypeName: string,
+			/** Description of the type. */
+			TypeDescription: string
+		}
+		/** Represents the widget View data contract. */
+		export interface IWidgetView {
+			/** Unique identifier for the record. */
+			ID: number,
+			/** Name displayed for the record. */
 			Name: string,
+			/** Type associated with the record. */
 			Type: string,
+			/** Setting associated with the record. */
 			Setting: string,
+			/** Identifier of the associated category. */
 			CategoryID: number
 		}
 	}
 }
 
 export default PQBrowser;
-
 
 

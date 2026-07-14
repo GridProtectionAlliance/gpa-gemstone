@@ -27,6 +27,7 @@ import * as React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { Context, SectionContext } from './Context';
 
+/** Configures a navigable page in an application menu section. */
 export interface IProps {
     /**
      * Optional roles allowed to see and navigate to the page.

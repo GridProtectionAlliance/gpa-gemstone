@@ -26,6 +26,7 @@ import { EnumSetter, IOptions, Search } from './SearchBar';
 import { DatePicker } from '@gpa-gemstone/react-forms';
 
 
+/** Configures creation of search filters for a record type. */
 interface IProps<T> {
     /**
      * Draft filter edited by the generated controls.

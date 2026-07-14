@@ -24,10 +24,15 @@ import * as _ from 'lodash';
 import * as $ from 'jquery';
 import { Search } from './SearchBar/SearchBar';
 
+/** Contains a page of records and the associated paging totals. */
 interface IPagedResult<T> {
+    /** Records returned for the requested page. */
     Data: T[],
+    /** Total number of pages available. */
     NumberOfPages: number,
+    /** Total number of matching records. */
     TotalRecords: number,
+    /** Number of records requested per page. */
     RecordsPerPage: number
 }
 

@@ -23,6 +23,7 @@
 
 import React from 'react'
 
+/** Configures the rows and responsive layout of a grid. */
 interface IProps {
      /**
      * Maximum number of rows shown before the grid scrolls vertically.
@@ -34,6 +35,7 @@ interface IProps {
     ColMax?: number
 }
 
+/** Describes one row rendered by the layout grid. */
 interface IRow {
    /**
     * Number used to track the index of data to start at when displaying this row

@@ -28,6 +28,7 @@ import _ from 'lodash';
 import { OpenXDA } from '@gpa-gemstone/application-typings';
 
 
+/** Configures categorized event type selection. */
 interface IProps {
     /**
      * Updates the selected event type identifiers.
@@ -47,7 +48,13 @@ interface IProps {
      */
     SelectedTypeID: number[];
 }
-interface ICategory { label: string, height: number }
+/** Stores an event category and its measured display height. */
+interface ICategory {
+    /** Category label. */
+    label: string,
+    /** Rendered height in pixels. */
+    height: number
+}
 
 
 /**
@@ -154,6 +161,7 @@ const EventTypeFilter = (props: IProps) => {
         </ul>);
 }
 
+/** Configures the selectable event types shown for one category. */
 interface ICategoryProps {
     /**
      * Category name shown above the event type choices.

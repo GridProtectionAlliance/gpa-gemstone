@@ -26,6 +26,7 @@ import { IsInteger, IsNumber } from '@gpa-gemstone/helper-functions'
 import { Gemstone } from '@gpa-gemstone/application-typings';
 import HelpIcon from './HelpIcon';
 
+/** Defines record binding and adjacent action behavior for the input. */
 interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
     /**
      * Determines whether the edited field is valid.

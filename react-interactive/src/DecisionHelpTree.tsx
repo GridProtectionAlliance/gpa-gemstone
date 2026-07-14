@@ -24,6 +24,7 @@
 import { Gemstone } from '@gpa-gemstone/application-typings';
 import * as React from 'react';
 
+/** Configures a decision help tree and its selected recommendation. */
 interface IProps {
     /**
      * Decision-tree definition used to render prompts and resolve the root node.

@@ -26,6 +26,7 @@ import { GetTextHeight, GetTextWidth } from '@gpa-gemstone/helper-functions';
 import * as React from 'react';
 import {IDataSeries, GraphContext, IGraphContext, IHandlers, IActionFunctions, AxisIdentifier, AxisMap} from './GraphContext';
 
+/** Defines the position and presentation of a graph circle. */
 export interface IProps {
   /** Data-space coordinates used to position the circle. */
   data: [number, number],
@@ -50,6 +51,7 @@ export interface IProps {
   onClick?: (actions: IActionFunctions) => void
 }
 
+/** Defines circle properties after graph transformations are supplied directly. */
 interface IContextlessProps{
   /** Graph context used to transform and interact with the circle. */
   context: IGraphContext

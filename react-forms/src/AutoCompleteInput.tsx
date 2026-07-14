@@ -27,6 +27,7 @@ import Input, {IProps as IInputProps} from './Input'
 import { Portal } from 'react-portal'
 import * as _ from 'lodash'
 
+/** Defines the record binding and suggestion data for the autocomplete input. */
 interface IProps<T> extends Omit<IInputProps<T>, 'Type'> {
   /**
    * Values offered as suggestions for the current input text.
@@ -34,9 +35,13 @@ interface IProps<T> extends Omit<IInputProps<T>, 'Type'> {
   Options: string[]
 }
 
+/** Describes a variable reference parsed from the input text. */
 export interface IVariable {
+  /** Zero-based position where the variable reference begins. */
   Start: number
+  /** Zero-based position immediately after the variable reference. */
   End: number
+  /** Variable name, or `null` when the reference is incomplete. */
   Variable: string | null
 }
 

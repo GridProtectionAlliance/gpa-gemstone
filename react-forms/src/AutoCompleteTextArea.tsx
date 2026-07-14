@@ -6,6 +6,7 @@ import * as _ from 'lodash'
 import { IProps as ITextAreaProps } from './TextArea'
 import { IVariable, getSuggestions, getCurrentVariable } from './AutoCompleteInput'
 
+/** Defines suggestion values for the autocomplete text area. */
 interface IAutoCompleteProps<T> extends ITextAreaProps<T> {
   /**
    * Values offered as suggestions for the variable at the text caret.

@@ -27,6 +27,7 @@ import { Application } from '@gpa-gemstone/application-typings';
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import { CreateGuid } from '@gpa-gemstone/helper-functions';
 
+/** Configures a navigable section in the application menu. */
 export interface IProps {
     /**
      * Optional heading displayed above the section when the sidebar is expanded.

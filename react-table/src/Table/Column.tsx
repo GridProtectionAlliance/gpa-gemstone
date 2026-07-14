@@ -38,6 +38,7 @@ export function Column<T>(props: React.PropsWithChildren<ReactTableProps.IColumn
     return <>{props.children}</>
 }
 
+/** Defines behavior and presentation for a sortable column header wrapper. */
 export interface IHeaderWrapperProps {
     /**
      * Handles activation of the column header for sorting.
@@ -127,6 +128,7 @@ export function ColumnHeaderWrapper(props: React.PropsWithChildren<IHeaderWrappe
     </th>
 }
 
+/** Defines behavior and presentation for a table data-cell wrapper. */
 export interface IDataWrapperProps {
     /**
      * Optional handler fired when dragging begins from the data cell.

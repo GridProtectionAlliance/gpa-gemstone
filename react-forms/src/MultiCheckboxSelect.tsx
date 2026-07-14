@@ -29,12 +29,17 @@ import { Portal } from 'react-portal';
 import * as _ from 'lodash';
 import HelpIcon from './HelpIcon';
 
+/** Describes a selectable checkbox option and its current state. */
 interface IOption {
+  /** Value represented by the option. */
   Value: number | string;
+  /** Text or element displayed for the option. */
   Label: string | JSX.Element;
+  /** Whether the option is currently selected. */
   Selected: boolean
 }
 
+/** Defines choices and change behavior for the multi-checkbox select. */
 interface IProps {
   /**
    * Optional text shown above the checkbox choices.

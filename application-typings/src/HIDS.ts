@@ -22,12 +22,19 @@
 // ******************************************************************************************************
 namespace HIDS {
     export namespace Types {
+        /** Represents the pQ Data data contract. */
         export interface IPQData {
+            /** Tag associated with the record. */
             Tag: string,
+            /** Minimum associated with the record. */
             Minimum: number,
+            /** Maximum associated with the record. */
             Maximum: number,
+            /** Average associated with the record. */
             Average: number,
+            /** Quality Flags associated with the record. */
             QualityFlags: number,
+            /** Timestamp associated with the record. */
             Timestamp: string
         }
     }

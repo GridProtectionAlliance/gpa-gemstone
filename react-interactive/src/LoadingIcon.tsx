@@ -26,6 +26,7 @@ import styled, { keyframes} from "styled-components";
 /**
 * Props interface for the LoadingIcon component
 */
+/** Configures a loading icon and its optional label. */
 interface IProps {
     /**
      * Controls whether the loading indicator is visible.
@@ -52,6 +53,7 @@ const spin = keyframes`
 /**
 * Props interface for the Icon component
 */
+/** Configures the visual styling of the loading glyph. */
 interface IconProps {
     /**
      * Spinner diameter in pixels used to calculate its border and dimensions.

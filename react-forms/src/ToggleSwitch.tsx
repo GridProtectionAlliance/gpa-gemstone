@@ -26,6 +26,7 @@ import { CreateGuid } from '@gpa-gemstone/helper-functions'
 import { Gemstone } from '@gpa-gemstone/application-typings';
 import HelpIcon from './HelpIcon';
 
+/** Defines record binding and labels for the toggle switch. */
 interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
   /**
    * Optional CSS styles applied to the surrounding switch control.

@@ -29,6 +29,7 @@ import {PointNode} from './PointNode';
 import HeatLegend from './HeatLegend';
 
 
+/** Defines axes, cells, and color scaling for a heat-map chart. */
 export interface IProps {
     /** Triplets containing the X coordinate, Y coordinate, and heat value for each cell. */
     data: [number, number, number][],

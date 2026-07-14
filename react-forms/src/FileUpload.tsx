@@ -25,6 +25,7 @@ import * as React from 'react';
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import { Application } from '@gpa-gemstone/application-typings';
 
+/** Defines accepted files and upload behavior for the file input. */
 interface IProps {
     /**
      * Handles a file selected by the user.

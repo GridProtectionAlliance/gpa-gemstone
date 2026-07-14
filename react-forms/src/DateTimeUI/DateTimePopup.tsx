@@ -30,6 +30,7 @@ import Clock from './Clock';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 import { useGetContainerPosition } from '@gpa-gemstone/helper-functions';
 
+/** Defines visibility and coordinates for the date-time popup wrapper. */
 interface IWrapperProps {
     /**
      * Vertical viewport position of the popup in pixels.
@@ -79,6 +80,7 @@ const WrapperDiv = styled.div<IWrapperProps>`
     position: absolute
   }`
 
+/** Defines the selected date-time and popup update behavior. */
 interface IProps {
     /**
      * Date and time displayed in the popup controls.

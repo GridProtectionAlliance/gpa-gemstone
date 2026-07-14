@@ -25,6 +25,7 @@ import * as React from 'react';
 import { AxisIdentifier, AxisMap, GraphContext } from './GraphContext'
 import { GetTextHeight, GetTextWidth } from '@gpa-gemstone/helper-functions';
 
+/** Defines scale, placement, and labels for a numeric Y-axis. */
 interface IProps {
   /** Height reserved for tick labels in pixels. */
   hAxis: number,

@@ -26,6 +26,7 @@ import StylableSelect, { IOption as IStylableOption } from './StylableSelect';
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 
+/** Defines record binding and asynchronous search behavior for the searchable select. */
 export interface IProps<T> extends Omit<Gemstone.TSX.Interfaces.IBaseFormProps<T>, 'Setter'> {
     /**
      * Optional callback that determines whether the selected field value is valid.
@@ -77,7 +78,9 @@ const getInitialSearchText = (useBlankString: boolean, recordValue: any) => {
     return useBlankString ? '' : recordValue
 }
 
+/** Extends a stylable option with the label used by search results. */
 interface IStylableOptionOverride extends IStylableOption {
+    /** Text displayed for the search result. */
     Label: string
 }
 

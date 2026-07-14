@@ -22,10 +22,15 @@
 // ******************************************************************************************************
 import * as React from 'react';
 
+/** Describes shared legend sizing state for a group of plots. */
 export interface IPlotGroupContext {
+    /** Largest legend width registered by plots in the group. */
     LegendWidth: number 
+    /** Registers the legend width requested by a plot. */
     RegisterLegendWidth: (requesterID: string, width: number) => void,
+    /** Removes a plot's registered legend width. */
     UnRegisterLegendWidth: (requesterID: string) => void,
+    /** Whether the context has a plot-group consumer. */
     HasConsumer: boolean
 }
 

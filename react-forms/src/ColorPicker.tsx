@@ -30,6 +30,7 @@ import { isEqual } from 'lodash';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 import HelpIcon from './HelpIcon';
 
+/** Defines record binding and palette behavior for the color picker. */
 interface IProps<T> extends Omit<Gemstone.TSX.Interfaces.IBaseFormProps<T>, "Setter"> {
   /**
    * Updates the record after a color is selected.
@@ -61,6 +62,7 @@ interface IProps<T> extends Omit<Gemstone.TSX.Interfaces.IBaseFormProps<T>, "Set
   Triangle?: 'hide' | 'top';
 }
 
+/** Defines visibility and viewport coordinates for the floating palette wrapper. */
 interface IWrapperProps {
   /**
    * Controls whether the color picker wrapper is visible and interactive.
@@ -99,10 +101,15 @@ const WrapperDiv = styled.div<IWrapperProps>`
   }
 `;
 
+/** Describes an element's viewport bounds. */
 interface ISize {
+  /** Vertical viewport coordinate in pixels. */
   Top: number,
+  /** Horizontal viewport coordinate in pixels. */
   Left: number,
+  /** Element width in pixels. */
   Width: number,
+  /** Element height in pixels. */
   Height: number
 }
 /**

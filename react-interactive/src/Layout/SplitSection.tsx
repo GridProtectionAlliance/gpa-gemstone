@@ -22,6 +22,7 @@
 
 import * as React from 'react';
 
+/** Configures one resizable section of a split layout. */
 interface IProps {
     /**
      * Minimum width as a percentage of the split container.

@@ -24,7 +24,9 @@
 import { MultiInput } from '@gpa-gemstone/react-forms'
 import React from 'react'
 
+/** Defines the record edited by the Multi Input test fixture. */
 interface IExampleRecord {
+    /** Values edited by the fixture. */
     Values: string[]
 }
 

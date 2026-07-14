@@ -23,6 +23,7 @@
 
 import * as React from 'react';
 
+/** Defines record binding and enum choices for the checkbox group. */
 interface IProps<T>{
   /**
    * Record containing the array of selected enumeration values.

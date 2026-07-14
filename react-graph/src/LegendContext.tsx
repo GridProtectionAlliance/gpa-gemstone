@@ -22,16 +22,25 @@
 // ******************************************************************************************************
 import * as React from 'react';
 
+/** Describes shared legend dimensions, layout, and mass-enable behavior. */
 export interface ILegendContext {
+    /** Width of the compact legend layout. */
     SmWidth: number,
+    /** Width of the expanded legend layout. */
     LgWidth: number,
+    /** Height of the compact legend layout. */
     SmHeight: number,
+    /** Height of the expanded legend layout. */
     LgHeight: number,
+    /** Smallest font size used while fitting legend content. */
     SmallestFontSize: number,
+    /** Whether legend entries may wrap onto multiple lines. */
     UseMultiLine: boolean,
+    /** Optional callback reference used to coordinate enabled legend entries. */
     SendMassEnable?: React.MutableRefObject<(id: string)=> void>
 }
 
+/** Defines the required state and identifier for a legend entry. */
 export interface ILegendRequiredProps {
     /** Controls whether the legend entry is shown as enabled. */
     enabled: boolean,

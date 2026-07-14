@@ -24,6 +24,7 @@ import * as React from 'react';
 import { GetNodeSize, useGetContainerPosition } from '@gpa-gemstone/helper-functions';
 import styled from 'styled-components';
 
+/** Configures an overlay drawer and its open state. */
 interface IProps {
     /**
      * Text displayed on the closed drawer handle.
@@ -57,6 +58,7 @@ interface IProps {
     HideHandle?: boolean
 }
 
+/** Configures the collapsed presentation of an overlay drawer. */
 interface IClosedOverlayProps {
     /**
      * Edge that controls the handle's orientation and corner rounding.
@@ -108,6 +110,7 @@ const ClosedOverlayDiv = styled.div<IClosedOverlayProps>`
     text-align: center;
   }`
 
+/** Configures the expanded presentation of an overlay drawer. */
 interface IOpenOverlayProps {
     /**
      * Edge associated with the open overlay.

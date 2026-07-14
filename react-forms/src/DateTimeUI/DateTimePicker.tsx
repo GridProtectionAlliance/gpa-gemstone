@@ -30,6 +30,7 @@ import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 import HelpIcon from '../HelpIcon';
 
+/** Defines record binding and display options for the date-time picker. */
 export interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
     /**
      * Determines whether the current date or time field is valid.

@@ -28,6 +28,7 @@ import { useGetContainerPosition } from '@gpa-gemstone/helper-functions';
 // Import Leaflet's CSS so consumers don't have to.
 import 'leaflet/dist/leaflet.css';
 
+/** Configures the map viewport, layers, and interaction callbacks. */
 interface IProps {
     /**
      * Mutable reference populated with the Leaflet map instance and cleared on unmount.

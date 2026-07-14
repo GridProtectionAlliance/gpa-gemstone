@@ -26,6 +26,7 @@ import * as _ from 'lodash';
 import { GraphContext } from './GraphContext';
 import { Legend } from './Legend';
 
+/** Defines legend content rendered with shared legend context. */
 interface IProps {
   /** Side of the graph where the legend is displayed. */
   location: 'bottom' | 'right',

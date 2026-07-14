@@ -23,6 +23,7 @@
 
 import * as React from 'react';
 
+/** Defines content and interaction behavior for a graph toolbar button. */
 export interface IProps {
     /**
      * Callback invoked when the button is activated.

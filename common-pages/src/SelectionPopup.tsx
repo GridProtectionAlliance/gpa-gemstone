@@ -26,10 +26,15 @@ import { Application, OpenXDA, SystemCenter } from "@gpa-gemstone/application-ty
 import SelectPopup from "./StandardSelectPopup";
 import {DefaultSearch} from './SearchBar';
 
-interface U { ID: number|string }
+/** Identifies records supported by the standard selection popups. */
+interface U {
+    /** Unique identifier of the selectable record. */
+    ID: number|string
+}
 
 // Pass columns in via children
 
+/** Configures a standard searchable record-selection popup. */
 interface IProps<T extends U> {
     /**
      * Redux slice used to search and sort selectable records.
@@ -89,7 +94,13 @@ interface IProps<T extends U> {
 }
 
 
-interface IOptions {Value: string, Label: string}
+/** Represents a selectable search-field option. */
+interface IOptions {
+    /** Value submitted for the option. */
+    Value: string,
+    /** Label displayed for the option. */
+    Label: string
+}
 
 /** This Implements a few standardized Selection Popups */
 export namespace DefaultSelects {

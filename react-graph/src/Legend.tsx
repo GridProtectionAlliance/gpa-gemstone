@@ -28,6 +28,7 @@ import { GetScrollbarWidth, GetTextHeight, GetTextWidth } from '@gpa-gemstone/he
 import DataLegend from './DataLegend';
 import HeatLegend from './HeatLegend';
 
+/** Defines entries and responsive layout behavior for a graph legend. */
 interface IProps {
   /** Direction in which legend entries are arranged. */
   orientation: 'horizontal' | 'vertical',

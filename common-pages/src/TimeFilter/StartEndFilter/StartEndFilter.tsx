@@ -31,6 +31,7 @@ import DateTimeLocalFilter from './DateTimeLocalFilter';
 import TimeFilter from './TimeFilter';
 import DateFilter from './DateFilter';
 
+/** Configures the shared state and behavior of start/end time filters. */
 export interface IFilterProps {
     /**
      * Current normalized start, end, and duration values.

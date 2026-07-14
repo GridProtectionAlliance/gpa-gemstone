@@ -23,6 +23,7 @@
 
 import * as React from 'react';
 
+/** Describes one navigable step in a breadcrumb trail. */
 interface IStep {
     /**
      * Text displayed for the breadcrumb step.
@@ -38,6 +39,7 @@ interface IStep {
     IsNavigable?: boolean
 }
 
+/** Configures the steps and active location of a breadcrumb trail. */
 interface IProps {
     /**
      * Ordered steps rendered in the breadcrumb trail.

@@ -24,6 +24,7 @@ import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import { useGetContainerPosition } from '@gpa-gemstone/helper-functions';
 import * as React from 'react';
 
+/** Defines pagination state and actions rendered by the paging control. */
 export interface IProps {
     /**
      * One-based index of the active page.

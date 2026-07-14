@@ -27,6 +27,7 @@ import * as React from 'react';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 import HelpIcon from './HelpIcon';
 
+/** Defines record binding and choices for the select control. */
 interface IProps<T> extends Omit<Gemstone.TSX.Interfaces.IBaseFormProps<T>, 'Setter'> {
   /**
    * Choices rendered in the select dropdown.

@@ -23,6 +23,7 @@
 import * as React from 'react';
 import Modal from './Modal';
 
+/** Configures a warning message and its presentation. */
 interface IProps {
     /**
      * Title shown in the warning header.

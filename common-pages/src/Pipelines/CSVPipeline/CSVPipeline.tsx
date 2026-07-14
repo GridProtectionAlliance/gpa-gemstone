@@ -32,6 +32,7 @@ import { isEqual } from 'lodash';
 import ErrorBoundary from '../../ErrorBoundary';
 import { CSVFieldEditContext } from './CSVFieldContext';
 
+/** Stores CSV parsing state shared by the pipeline steps. */
 interface IAdditionalProps<T> {
     /**
      * Field definitions used to map and validate CSV columns.
@@ -70,6 +71,7 @@ interface IAdditionalProps<T> {
     SetHeaderMap: (map: Map<string, keyof T | undefined>) => void
 }
 
+/** Configures the CSV header-row selection control. */
 interface IAdditionalUIProps {
     /**
      * Indicates whether the uploaded CSV includes a header row.

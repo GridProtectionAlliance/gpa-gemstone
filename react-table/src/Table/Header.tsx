@@ -32,9 +32,13 @@ import { CreateGuid, useGetContainerPosition } from '@gpa-gemstone/helper-functi
 import { Search } from '@gpa-gemstone/react-interactive';
 import FilterableColumn, { FilterableColumnHeader } from './FilterableColumn';
 
+/** Defines the current and minimum width allocated to a table column. */
 export type width = {
+    /** Current rendered width of the column, in pixels. */
     width: number,
+    /** Minimum width permitted for the column, in pixels. */
     minWidth: number,
+    /** Optional maximum width permitted for the column, in pixels. */
     maxWidth?: number
 }
 
@@ -59,6 +63,7 @@ const IsColumnAdjustable = (props: unknown) => {
     return false;
 }
 
+/** Defines the columns, sizing, and behavior rendered by the table header. */
 interface IProps<T> {
     /**
      * Optional class name applied to the table header.

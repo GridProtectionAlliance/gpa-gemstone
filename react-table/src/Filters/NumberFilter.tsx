@@ -22,6 +22,7 @@
 import * as React from 'react';
 import { Search } from '@gpa-gemstone/react-interactive';
 
+/** Defines the numeric filter state and update behavior. */
 interface IProps<T> { 
     /**
      * Applies the selected numeric filter.
@@ -42,13 +43,18 @@ interface IProps<T> {
     Unit?: IUnit[]
 }
 
+/** Defines conversions between displayed and stored numeric filter units. */
 export interface IUnit { 
+    /** Label displayed for the unit. */
     label: string,
+    /** Converts a stored value for display in this unit. */
     GetValue: (value: number) => number, 
+    /** Converts an entered unit value into the stored filter value. */
     GetFilter: (filter: number) => number
 }
 
 // Defines filter types
+/** Identifies the supported numeric comparison modes. */
 type FilterType = 'less than' | 'greater than' | 'between' | 'equal to'
 
 /**

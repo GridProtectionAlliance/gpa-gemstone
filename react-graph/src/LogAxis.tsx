@@ -28,6 +28,7 @@ import * as React from 'react';
 import { GraphContext } from './GraphContext';
 import { GetTextHeight } from '@gpa-gemstone/helper-functions';
 
+/** Defines scale, placement, and labels for a logarithmic graph axis. */
 export interface IProps {
     /** Left plot offset in pixels. */
     offsetLeft: number,
@@ -195,4 +196,3 @@ function LogAxis(props: IProps) {
 
 
 export default React.memo(LogAxis);
-

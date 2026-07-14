@@ -24,6 +24,7 @@
 import * as React from 'react';
 import { AxisIdentifier, AxisMap, GraphContext, IHandlers } from './GraphContext';
 
+/** Defines graph data and placement for the hover information box. */
 interface IProps {
   /** X coordinate of the box anchor. */
   x: number,
@@ -234,6 +235,7 @@ const Infobox = (props: React.PropsWithChildren<IProps>) => {
   );
 }
 
+/** Defines transformed coordinates and content for the information-box graphic. */
 interface IGraphicProps {
   /** Pixel X coordinate of the graphic. */
   x: number,

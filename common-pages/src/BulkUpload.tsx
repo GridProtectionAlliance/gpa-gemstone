@@ -26,6 +26,7 @@ import { ProgressBar } from '@gpa-gemstone/react-interactive';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 import { FileUpload } from '@gpa-gemstone/react-forms';
 
+/** Configures the bulk upload workflow and its processing pipelines. */
 interface IProps<T> {
     /**
      * File type accepted by the system file picker.

@@ -17,8 +17,11 @@ function createAbortablePromise<T>(resolveValue: T): Gemstone.TSX.Interfaces.Abo
     return promise;
 }
 
+/** Describes the record shape used by searchable-select tests. */
 interface ITestRecord {
+    /** Numeric record identifier. */
     ID: number;
+    /** Display name searched by the test component. */
     Name: string;
 }
 

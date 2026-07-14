@@ -32,6 +32,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Dispatch } from '@reduxjs/toolkit';
 
 // Add additional columns as children
+/** Configures note display, editing permissions, and available classifications. */
 interface IProps {
     /**
      * Note types offered when creating or editing a note.
@@ -359,6 +360,7 @@ function Note(props: React.PropsWithChildren<IProps>)  {
     );
 }
 
+/** Configures the editable classification fields for a note. */
 interface OptionProps {
     /**
      * Note being created or edited by the option fields.

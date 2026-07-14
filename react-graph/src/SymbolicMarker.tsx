@@ -25,6 +25,7 @@
 import * as React from 'react';
 import {AxisIdentifier, AxisMap, GraphContext, IHandlers} from './GraphContext';
 
+/** Defines the position, symbol, and presentation of a graph marker. */
 export interface IProps {
   /** X coordinate of the marker anchor. */
   xPos: number,
@@ -135,6 +136,7 @@ const SymbolicMarker = (props: React.PropsWithChildren<IProps>) => {
     </>);
 }
 
+/** Defines transformed coordinates and symbol data for the marker graphic. */
 interface IGraphicProps {
   /** X coordinate of the graphic anchor. */
   x: number,

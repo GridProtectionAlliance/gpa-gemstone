@@ -21,7 +21,17 @@
 //
 // ******************************************************************************************************
 
-interface INodeSize {height: number, width: number, left: number, top: number}
+/** Describes an element's dimensions and viewport position. */
+interface INodeSize {
+  /** Element height in pixels. */
+  height: number,
+  /** Element width in pixels. */
+  width: number,
+  /** Left viewport offset in pixels. */
+  left: number,
+  /** Top viewport offset in pixels. */
+  top: number
+}
 
 /**
  * GetNodeSize returns the dimensions of an html element 
