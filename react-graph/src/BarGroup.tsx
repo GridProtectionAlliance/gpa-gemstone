@@ -38,16 +38,14 @@ const BarGroup = (props: IBarGroupProps) => {
     const [localEnabled, setLocalEnabled] = React.useState<boolean>(true);
     const enabled = props.Enabled ?? localEnabled;
     const setEnabled = props.SetEnabled ?? setLocalEnabled;
-    let isFirstBar = true;
-
     return <>
-        {React.Children.map(props.children, child => {
+        {React.Children.map(props.children, (child, index) => {
             const groupedProps: Partial<IBarProps> = {
                 Enabled: enabled,
-                Legend: isFirstBar ? props.Legend : undefined,
-                SetEnabled: isFirstBar ? setEnabled : undefined
+                Legend: index === 0 ? props.Legend : undefined,
+                SetEnabled: index === 0 ? setEnabled : undefined
             };
-            isFirstBar = false;
+
             return React.cloneElement(child, groupedProps);
         })}
     </>;
