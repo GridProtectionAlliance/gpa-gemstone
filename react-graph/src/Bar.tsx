@@ -205,7 +205,7 @@ export const StackedBar = (props: IBarProps) => {
             );
         }
         return newBars;
-    }, [props, context, enabled]);
+    }, [enabled, guid, props.Axis, props.BarOrigin, props.BarWidth, props.Color, props.Data, props.GetBarStyle, props.XBarOrigin, context]);
 
     return <g>{bars}</g>
 }
