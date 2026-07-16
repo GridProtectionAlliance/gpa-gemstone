@@ -32,6 +32,8 @@ import DataLegend, { LegendStyle } from '../DataLegend';
  * @param guid The unique identifier for the data series component.
  * @param hasNoData Indicates if the data series has no data.
  * @param legendLabel Text label for the legend entry.
+ * @param enabledOverride Optional enabled state controlled by the data series component.
+ * @param setEnabledOverride Optional state setter controlled by the data series component.
  * @returns An object containing the createLegend function and the enabled state.
  */
 const useLegend = (color: string, legendSymbol: LegendStyle, guid: string, hasNoData?: boolean, legendLabel?: string,
