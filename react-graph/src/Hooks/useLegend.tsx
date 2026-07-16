@@ -34,9 +34,12 @@ import DataLegend, { LegendStyle } from '../DataLegend';
  * @param legendLabel Text label for the legend entry.
  * @returns An object containing the createLegend function and the enabled state.
  */
-const useLegend = (color: string, legendSymbol: LegendStyle, guid: string, hasNoData?: boolean, legendLabel?: string) => {
+const useLegend = (color: string, legendSymbol: LegendStyle, guid: string, hasNoData?: boolean, legendLabel?: string,
+    enabledOverride?: boolean, setEnabledOverride?: React.Dispatch<React.SetStateAction<boolean>>) => {
     const context = React.useContext(GraphContext);
-    const [enabled, setEnabled] = React.useState<boolean>(true);
+    const [localEnabled, setLocalEnabled] = React.useState<boolean>(true);
+    const enabled = enabledOverride ?? localEnabled;
+    const setEnabled = setEnabledOverride ?? setLocalEnabled;
 
     const createLegend = React.useCallback(() => {
         if (legendLabel === undefined || guid === "")
@@ -51,7 +54,7 @@ const useLegend = (color: string, legendSymbol: LegendStyle, guid: string, hasNo
             enabled={enabled}
             hasNoData={hasNoData ?? false}
         />;
-    }, [color, enabled, legendLabel, guid, legendSymbol, hasNoData]);
+    }, [color, enabled, legendLabel, guid, legendSymbol, hasNoData, setEnabled]);
 
     React.useEffect(() => {
         if (guid === "") return;
@@ -63,7 +66,7 @@ const useLegend = (color: string, legendSymbol: LegendStyle, guid: string, hasNo
             setEnabled(true);
         else if (context.MassEnableCommand.command === "disable-others")
             setEnabled(guid === context.MassEnableCommand.requester);
-    }, [context.MassEnableCommand, guid]);
+    }, [context.MassEnableCommand, guid, setEnabled]);
 
     return { createLegend, enabled };
 };

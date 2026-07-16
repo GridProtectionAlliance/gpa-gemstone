@@ -23,7 +23,7 @@
 
 import * as React from 'react';
 import { GraphContext, AxisIdentifier, AxisMap, IDataSeries } from './GraphContext';
-import DataLegend from './DataLegend';
+import useLegend from './Hooks/useLegend';
 
 export interface IBarProps {
     /**
@@ -55,6 +55,14 @@ export interface IBarProps {
      * Color of the bar.
     */
     Color: string,
+    /**
+     * Optional controlled enabled state. Defaults to the internal legend state.
+    */
+    Enabled?: boolean,
+    /**
+     * Optional controlled enabled-state setter.
+    */
+    SetEnabled?: React.Dispatch<React.SetStateAction<boolean>>,
     /**
      * Function retrieves an override of the portion of the bar. 
      * @param {[number, number]} yValues - The bottom and top of this portion of the bar.
@@ -94,48 +102,30 @@ const defaultStyle: IBarStyle = {
 }
 
 export const StackedBar = (props: IBarProps) => {
-    const [guid, setGuid] = React.useState<string|undefined>(undefined);
+    const [guid, setGuid] = React.useState<string>("");
     const context = React.useContext(GraphContext);
-
-    const createLegend = React.useCallback(() => {
-        if (props.Legend == undefined || guid == null)
-            return undefined;
-
-        return <DataLegend
-            id={guid}
-            label={props.Legend}
-            color={props.Color}
-            legendSymbol='square'
-            setEnabled={() => {/*do nothing*/}}
-            enabled={true}
-            hasNoData={props.Data.length === 0} />;
-    }, [props.Color,props.Data, guid]);
+    const { enabled, createLegend } = useLegend(props.Color, 'square', guid, props.Data.length === 0, props.Legend, props.Enabled, props.SetEnabled);
 
     const createContextData: () => IDataSeries = React.useCallback(() => 
         ({
             legend: createLegend(),
             axis: props.Axis,
-            enabled: true,
+            enabled: enabled,
             getMax: (t: [number, number]) =>
-                props.Data.length <= 1 || props.BarOrigin < t[0] || props.BarOrigin > t[1] ?
+                !enabled || props.Data.length <= 1 || props.BarOrigin < t[0] || props.BarOrigin > t[1] ?
                     undefined : 
                     Math.max(...props.Data),
             getMin: (t: [number, number]) => 
-                props.Data.length <= 1 || props.BarOrigin < t[0] || props.BarOrigin > t[1] ?
+                !enabled || props.Data.length <= 1 || props.BarOrigin < t[0] || props.BarOrigin > t[1] ?
                     undefined : 
                     Math.min(...props.Data),
         } as IDataSeries)
-    , [props.Axis, props.Data, createLegend]);
+    , [props.Axis, props.BarOrigin, props.Data, createLegend, enabled]);
 
     React.useEffect(() => {
-        if (guid == null) return;
+        if (guid === "") return;
         context.UpdateData(guid, createContextData());
     }, [createContextData, guid]);
-
-    React.useEffect(() => {
-        if (guid == null) return;
-        context.SetLegend(guid, createLegend());
-    }, [createLegend]);
 
     React.useEffect(() => {
         const id = context.AddData(createContextData());
@@ -145,7 +135,7 @@ export const StackedBar = (props: IBarProps) => {
 
     const bars = React.useMemo(() => {
         // not enough data to display
-        if (props.Data.length === 0) return <></>;
+        if (!enabled || props.Data.length === 0) return <></>;
 
         let xValue: number;
         switch (props.XBarOrigin) {
@@ -215,7 +205,7 @@ export const StackedBar = (props: IBarProps) => {
             );
         }
         return newBars;
-    }, [props, context]);
+    }, [props, context, enabled]);
 
     return <g>{bars}</g>
 }

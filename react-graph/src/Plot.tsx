@@ -49,6 +49,7 @@ import XValueAxis from './XValueAxis';
 import StreamingLine from './StreamingLine';
 import PlotGroupContext from './PlotGroupContext';
 import Bar from './Bar';
+import BarGroup from './BarGroup';
 import BarAggregate from './BarAggregate';
 import CircleGroup from './CircleGroups';
 const html2canvas: any = _html2canvas;
@@ -976,7 +977,8 @@ const Plot = (props: React.PropsWithChildren<IProps>) => {
                   (element as React.ReactElement<any>).type === HorizontalMarker || (element as React.ReactElement<any>).type === VerticalMarker || (element as React.ReactElement<any>).type === SymbolicMarker
                   || (element as React.ReactElement<any>).type === Circle || (element as React.ReactElement<any>).type === AggregatingCircles || (element as React.ReactElement<any>).type === HeatMapChart ||
                   (element as React.ReactElement<any>).type === Pill || (element as React.ReactElement<any>).type === HighlightBox || (element as React.ReactElement<any>).type === StreamingLine ||
-                  (element as React.ReactElement<any>).type === LegendEntry || (element as React.ReactElement<any>).type === Bar || (element as React.ReactElement<any>).type === BarAggregate ||
+                  (element as React.ReactElement<any>).type === LegendEntry || (element as React.ReactElement<any>).type === Bar || (element as React.ReactElement<any>).type === BarGroup ||
+                  (element as React.ReactElement<any>).type === BarAggregate ||
                   (element as React.ReactElement<any>).type === CircleGroup)
                   return element;
                 return null;

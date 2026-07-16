@@ -19,6 +19,7 @@ import LegendEntry from './LegendEntry';
 import Legend from './Legend';
 import DataLegend from './DataLegend';
 import Bar from './Bar';
+import BarGroup from './BarGroup';
 import BarAggregate from './BarAggregate';
 import CircleGroup from './CircleGroups';
 
@@ -44,6 +45,7 @@ export {
     Legend,
     DataLegend,
     Bar,
+    BarGroup,
     BarAggregate,
     CircleGroup
  };
