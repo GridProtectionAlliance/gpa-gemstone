@@ -46,6 +46,11 @@ interface IProps {
      */
     DefaultPath: string;
 
+    /**
+     * Optional formatter for the browser document title when a page is active.
+     */
+    DocumentTitleFormatter?: (pageName: string, appName: string) => string;
+
     /** 
      * Optional logo URL to display in the top navigation bar 
      */
@@ -127,7 +132,12 @@ const Applications: React.ForwardRefRenderFunction<IApplicationRefs, React.Props
 
     const [activePageLabel, setActivePageLabel] = React.useState<string | null>(null);
     const originalTitle = React.useMemo(() => document.title, []);
-    const pageTitle = React.useMemo(() => activePageLabel ?? originalTitle, [activePageLabel, originalTitle]);
+    const pageTitle = React.useMemo(() => {
+        if (activePageLabel == null)
+            return originalTitle;
+
+        return props.DocumentTitleFormatter?.(activePageLabel, originalTitle) ?? activePageLabel;
+    }, [activePageLabel, originalTitle, props.DocumentTitleFormatter]);
 
     React.useEffect(() => {
         document.title = pageTitle;
