@@ -37,7 +37,6 @@ export interface IProps extends IFilterProps {
 const WindowFilter = (props: IProps) => {
     const DatePickerField = props.Window;
     const DatePickerLabel = props.Window.charAt(0).toUpperCase() + props.Window.slice(1);
-    const filterType = props.Window === 'start' ? 'startWindow' : 'endWindow'
 
     const setter = React.useCallback((record: ITimeWindow) => {
         if (props.Window === 'start') {
@@ -105,7 +104,7 @@ const WindowFilter = (props: IProps) => {
                 </div>
                 <div className='col-8 pt-3'>
                     <QuickSelects
-                        DateTimeSetting={filterType}
+                        SplitSelects={true}
                         Timezone={props.Timezone}
                         ActiveQP={props.ActiveQP}
                         SetActiveQP={props.SetActiveQP}
@@ -148,7 +147,7 @@ const WindowFilter = (props: IProps) => {
                 <div className='row m-0'>
                     <div className='col-12'>
                         <QuickSelects
-                            DateTimeSetting={filterType}
+                            SplitSelects={true}
                             Timezone={props.Timezone}
                             ActiveQP={props.ActiveQP}
                             SetActiveQP={props.SetActiveQP}
@@ -195,7 +194,7 @@ const WindowFilter = (props: IProps) => {
                 <div className='row m-0'>
                     <div className='col-12'>
                         <QuickSelects
-                            DateTimeSetting={filterType}
+                            SplitSelects={true}
                             Timezone={props.Timezone}
                             ActiveQP={props.ActiveQP}
                             SetActiveQP={props.SetActiveQP}

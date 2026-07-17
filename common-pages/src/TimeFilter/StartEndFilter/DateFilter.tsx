@@ -28,7 +28,6 @@ import { IFilterProps } from './StartEndFilter';
 
 const DateFilter = (props: IFilterProps) => {
     const FirstFallbackBreakpoint = 1050;
-    const SecondFallbackBreakpoint = 541;
 
     const FirstFallbackBreakpointNoQS = 375;
 
@@ -87,7 +86,6 @@ const DateFilter = (props: IFilterProps) => {
                 {props.ShowQuickSelects ?
                     <div className={quickSelectClass}>
                         <QuickSelects
-                            DateTimeSetting={'startEnd'}
                             Timezone={props.Timezone}
                             ActiveQP={props.ActiveQP}
                             SetActiveQP={props.SetActiveQP}
@@ -133,14 +131,13 @@ const DateFilter = (props: IFilterProps) => {
                 {props.ShowQuickSelects ?
                     <div className={quickSelectClass}>
                         <QuickSelects
-                            DateTimeSetting={'startEnd'}
                             Timezone={props.Timezone}
                             ActiveQP={props.ActiveQP}
                             SetActiveQP={props.SetActiveQP}
                             SetFilter={props.SetFilter}
                             Format={props.Format}
                             DateUnit={props.DateUnit}
-                            SplitSelects={props.ContainerWidth < SecondFallbackBreakpoint}
+                            SplitSelects={true}
                             QuickSelectRange={props.QuickSelectRange ?? getQuickSelectRange(props.DateUnit)}
                         />
                     </div> : null}

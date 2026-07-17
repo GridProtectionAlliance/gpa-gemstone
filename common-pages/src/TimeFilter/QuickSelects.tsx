@@ -23,7 +23,7 @@
 //******************************************************************************************************
 
 import * as React from 'react';
-import { getTimeWindowFromFilter, DateTimeSetting, ITimeFilter } from './TimeFilter';
+import { getTimeWindowFromFilter, ITimeFilter } from './TimeFilter';
 import moment from 'moment';
 import momentTZ from 'moment-timezone';
 import { Gemstone } from '@gpa-gemstone/application-typings'
@@ -36,7 +36,6 @@ interface IQuickSelect {
 }
 
 interface IProps {
-    DateTimeSetting: DateTimeSetting,
     Format?: "YYYY-MM-DD" | "HH:mm:ss.SSS" | "MM/DD/YYYY HH:mm:ss.SSS",
     DateUnit?: Gemstone.TSX.Types.DateUnit,
     QuickSelectRange?: Gemstone.TSX.Types.QuickSelectRange
@@ -61,10 +60,10 @@ const QuickSelects = (props: IProps) => {
                 return (
                     <div
                         key={i}
-                        className={getColSize(props.DateTimeSetting, props.SplitSelects ?? false)}
+                        className={(props.SplitSelects ?? false) ? 'col-4' : 'col-2'}
                         style={{
-                            paddingLeft: (props.DateTimeSetting === 'startEnd' ? 0 : (i % 9 == 0 ? 15 : 0)),
-                            paddingRight: (props.DateTimeSetting === 'startEnd' ? 2 : ((i % 18 == 6 || i % 18 == 15) ? 15 : 2)),
+                            paddingLeft: 0,
+                            paddingRight: 2,
                             marginTop: 10
                         }}
                     >
@@ -135,20 +134,6 @@ export function getQuickSelectRange(dateUnit?: Gemstone.TSX.Types.DateUnit) {
         return 'medium'
     if (dateUnit === 'date')
         return 'long'
-}
-
-const getColSize = (dateTimeSetting: DateTimeSetting, splitSelects: boolean) => {
-    if (dateTimeSetting === 'startEnd') {
-        if (splitSelects)
-            return 'col-4'
-        else
-            return 'col-2'
-    }
-
-    if (splitSelects)
-        return 'col-8'
-    else
-        return 'col-4'
 }
 
 //update all quick selects to use new timefilters

@@ -80,7 +80,6 @@ const TimeFilter = (props: IFilterProps) => {
                 </div>
                 {props.ShowQuickSelects ?
                     <QuickSelects
-                        DateTimeSetting={'startEnd'}
                         Timezone={props.Timezone}
                         ActiveQP={props.ActiveQP}
                         SetActiveQP={props.SetActiveQP}
@@ -126,13 +125,13 @@ const TimeFilter = (props: IFilterProps) => {
                 </div>
                 {props.ShowQuickSelects ?
                     <QuickSelects
-                        DateTimeSetting={'startEnd'}
                         Timezone={props.Timezone}
                         ActiveQP={props.ActiveQP}
                         SetActiveQP={props.SetActiveQP}
                         SetFilter={props.SetFilter}
                         Format={props.Format}
                         DateUnit={props.DateUnit}
+                        SplitSelects={true}
                         QuickSelectRange={props.QuickSelectRange ?? getQuickSelectRange(props.DateUnit)}
                     />
                     : null}
