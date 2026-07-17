@@ -56,11 +56,12 @@ export interface IBarProps {
     */
     Color: string,
     /**
-     * Optional controlled enabled state. Defaults to the internal legend state.
+     * Optional controlled enabled state. Provide with SetEnabled to allow legend clicks to update it.
+     * Without SetEnabled, this value is read-only and legend clicks do not change bar visibility.
     */
     Enabled?: boolean,
     /**
-     * Optional controlled enabled-state setter.
+     * Optional controlled enabled-state setter. Provide with Enabled to control bar visibility.
     */
     SetEnabled?: React.Dispatch<React.SetStateAction<boolean>>,
     /**
