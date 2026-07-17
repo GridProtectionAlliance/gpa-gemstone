@@ -135,7 +135,7 @@ export const StackedBar = (props: IBarProps) => {
 
     const bars = React.useMemo(() => {
         // not enough data to display
-        if (!enabled || props.Data.length === 0) return <></>;
+        if (guid === "" || !enabled || props.Data.length === 0) return <></>;
 
         let xValue: number;
         switch (props.XBarOrigin) {
