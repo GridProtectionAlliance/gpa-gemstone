@@ -17,8 +17,9 @@ function renderMultiSelect() {
   );
 
   const button = screen.getByRole('button');
-  const menu = document.querySelector('.popover') as HTMLDivElement;
-  return { button, menu };
+  const menu = document.querySelector<HTMLDivElement>('.popover');
+  expect(menu).toBeInTheDocument();
+  return { button, menu: menu! };
 }
 
 describe('MultiCheckBoxSelect dropdown', () => {
