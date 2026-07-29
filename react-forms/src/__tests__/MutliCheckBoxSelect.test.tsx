@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import MultiCheckBoxSelect from '../MutliCheckBoxSelect';
+import MultiCheckBoxSelect from '../MultiCheckboxSelect';
 
 const options = [
   { Value: 1, Label: 'Option One', Selected: false },

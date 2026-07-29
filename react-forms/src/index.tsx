@@ -30,7 +30,7 @@ import DateRangePicker from './DateRangePicker';
 import EnumCheckBoxes from './EnumCheckBoxes';
 import ArrayMultiSelect from './ArrayMultiSelect';
 import ArrayCheckBoxes from './ArrayCheckBoxes';
-import MultiCheckBoxSelect from './MutliCheckBoxSelect';
+import MultiCheckBoxSelect from './MultiCheckboxSelect';
 import DoubleInput from './DoubleInput';
 import TimePicker from './TimePicker';
 import StylableSelect from './StylableSelect';

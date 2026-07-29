@@ -67,7 +67,7 @@ interface IProps {
   ShowToolTip?: boolean;
 }
 
-const MultiSelect = (props: IProps) => {
+const MultiCheckboxSelect = (props: IProps) => {
   // State hooks for managing the visibility of the dropdown and help message.
   const multiSelect = React.useRef<HTMLDivElement>(null);
   const selectTable = React.useRef<HTMLTableElement>(null);
@@ -213,4 +213,4 @@ const MultiSelect = (props: IProps) => {
     </div>
   );
 };
-export default MultiSelect;
+export default MultiCheckboxSelect;
