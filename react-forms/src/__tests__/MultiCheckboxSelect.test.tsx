@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import MultiCheckBoxSelect from '../MultiCheckboxSelect';
+import MultiCheckboxSelect from '../MultiCheckboxSelect';
 
 const options = [
   { Value: 1, Label: 'Option One', Selected: false },
@@ -10,7 +10,7 @@ const options = [
 
 function renderMultiSelect() {
   render(
-    <MultiCheckBoxSelect
+    <MultiCheckboxSelect
       Options={options}
       OnChange={jest.fn()}
     />
@@ -22,7 +22,7 @@ function renderMultiSelect() {
   return { button, menu: menu! };
 }
 
-describe('MultiCheckBoxSelect dropdown', () => {
+describe('MultiCheckboxSelect dropdown', () => {
   it('closes when the trigger is clicked a second time', () => {
     const { button, menu } = renderMultiSelect();
 
