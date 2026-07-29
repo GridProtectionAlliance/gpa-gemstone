@@ -111,24 +111,19 @@ const MultiSelect = (props: IProps) => {
 
   }, [show]);
 
-  // Handle showing and hiding of the dropdown.
-  function HandleShow(evt: React.MouseEvent<HTMLButtonElement, MouseEvent> | MouseEvent) {
-    if (selectTable.current != null && selectTable.current.contains(evt.target as Node)) return;
+  // Close the dropdown when clicking outside of the control and its portaled menu.
+  function HandleOutsideClick(evt: MouseEvent) {
+    if (multiSelect.current?.contains(evt.target as Node) === true || tableContainer.current?.contains(evt.target as Node) === true)
+      return;
 
-    //ignore the click if it was inside the table or table container
-    if ((selectTable.current != null && selectTable.current.contains(evt.target as Node)) || (tableContainer.current != null && tableContainer.current.contains(evt.target as Node)))
-      return
-
-    if (multiSelect.current === null) setShow(!show);
-    else if (!(multiSelect.current as HTMLDivElement).contains(evt.target as Node)) setShow(false);
-    else setShow(true);
+    setShow(false);
   }
 
   // Effect to add and remove event listener for clicking outside the component.
   React.useEffect(() => {
-    document.addEventListener('mousedown', HandleShow, false);
+    document.addEventListener('mousedown', HandleOutsideClick, false);
     return () => {
-      document.removeEventListener('mousedown', HandleShow, false);
+      document.removeEventListener('mousedown', HandleOutsideClick, false);
     };
   }, []);
 
@@ -160,7 +155,7 @@ const MultiSelect = (props: IProps) => {
           type="button"
           style={{ padding: '.375rem .75rem', fontSize: '1rem', color: 'currentColor', backgroundColor: 'inherit' }}
           className="btn border form-control dropdown-toggle"
-          onClick={HandleShow}
+          onClick={() => setShow(current => !current)}
           onMouseEnter={() => setShowItems(true)}
           onMouseLeave={() => setShowItems(false)}
         >
