@@ -228,7 +228,7 @@ const Header = <T,>(props: React.PropsWithChildren<IProps<T>>) => {
                     }
                     let cursor = undefined;
                     if (element.props?.HeaderStyle?.cursor != null) cursor = element.props.HeaderStyle.cursor
-                    else if ((element.props?.AllowSort ?? true) as boolean) cursor = 'pointer';
+                    else cursor = ((element.props?.AllowSort ?? true) as boolean) ? 'pointer' : 'default';
                     const style = {
                         ...defaultDataHeadStyle,
                         ...element.props?.HeaderStyle,
