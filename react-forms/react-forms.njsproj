@@ -56,7 +56,7 @@
     <TypeScriptCompile Include="src\HelperMessage.tsx" />
     <TypeScriptCompile Include="src\index.tsx" />
     <TypeScriptCompile Include="src\Input.tsx" />
-    <TypeScriptCompile Include="src\MutliCheckBoxSelect.tsx" />
+    <TypeScriptCompile Include="src\MultiCheckboxSelect.tsx" />
     <TypeScriptCompile Include="src\Select.tsx" />
     <TypeScriptCompile Include="src\TextArea.tsx" />
     <TypeScriptCompile Include="src\__tests__\index.test.ts" />
