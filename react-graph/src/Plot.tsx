@@ -110,7 +110,8 @@ export interface IProps {
   Ymin?: number | number[],
   Ymax?: number | number[],
   snapMouse?: boolean,
-  useUTC?: boolean
+  /** IANA time zone for the time axis. Defaults to UTC. */
+  timeZone?: string
 }
 
 const SvgStyle: React.CSSProperties = {
@@ -913,14 +914,52 @@ const Plot = (props: React.PropsWithChildren<IProps>) => {
           <svg ref={SVGref} width={svgWidth < 0 ? 0 : svgWidth} height={svgHeight < 0 ? 0 : svgHeight}
             style={SvgStyle} viewBox={`0 0 ${svgWidth < 0 ? 0 : svgWidth} ${svgHeight < 0 ? 0 : svgHeight}`}>
             {props.showBorder !== undefined && props.showBorder ? < path stroke='currentColor' d={`M ${offsetLeft} ${offsetTop} H ${svgWidth - offsetRight} V ${svgHeight - offsetBottom} H ${offsetLeft} Z`} /> : null}
-            {(props.hideXAxis ?? false) ? null : 
+            {(props.hideXAxis ?? false) ? null :
               (props.XAxisType === 'time' || props.XAxisType === undefined ?
-                <TimeAxis label={props.Tlabel} offsetBottom={offsetBottom} offsetLeft={offsetLeft} offsetRight={offsetRight} width={svgWidth} height={svgHeight} setHeight={setHeightXLabel}
-                  heightAxis={heightXLabel} showLeftMostTick={!yHasData[0]} showRightMostTick={!yHasData[1]} showDate={props.showDateOnTimeAxis} useUTC={props.useUTC} /> :
-                props.XAxisType === 'value' ? <XValueAxis offsetBottom={offsetBottom} offsetLeft={offsetLeft} offsetRight={offsetRight} offsetTop={offsetTop} width={svgWidth} height={svgHeight} setHeight={setHeightXLabel} heightAxis={heightXLabel}
-                  label={props.Tlabel} showLeftMostTick={!yHasData[0]} showRightMostTick={!yHasData[1]} showGrid={props.showGrid}/> :
-                  <LogAxis offsetTop={offsetTop} showGrid={props.showGrid} label={props.Tlabel} offsetBottom={offsetBottom} offsetLeft={offsetLeft} offsetRight={offsetRight} width={svgWidth}
-                    height={svgHeight} setHeight={setHeightXLabel} heightAxis={heightXLabel} showLeftMostTick={!yHasData[0]} showRightMostTick={!yHasData[1]} />)
+                <TimeAxis
+                  label={props.Tlabel}
+                  offsetBottom={offsetBottom}
+                  offsetLeft={offsetLeft}
+                  offsetRight={offsetRight}
+                  width={svgWidth}
+                  height={svgHeight}
+                  setHeight={setHeightXLabel}
+                  heightAxis={heightXLabel}
+                  showLeftMostTick={!yHasData[0]}
+                  showRightMostTick={!yHasData[1]}
+                  showDate={props.showDateOnTimeAxis}
+                  timeZone={props.timeZone}
+                /> :
+                props.XAxisType === 'value' ?
+                  <XValueAxis
+                    offsetBottom={offsetBottom}
+                    offsetLeft={offsetLeft}
+                    offsetRight={offsetRight}
+                    offsetTop={offsetTop}
+                    width={svgWidth}
+                    height={svgHeight}
+                    setHeight={setHeightXLabel}
+                    heightAxis={heightXLabel}
+                    label={props.Tlabel}
+                    showLeftMostTick={!yHasData[0]}
+                    showRightMostTick={!yHasData[1]}
+                    showGrid={props.showGrid}
+                  /> :
+                  <LogAxis
+                    offsetTop={offsetTop}
+                    showGrid={props.showGrid}
+                    label={props.Tlabel}
+                    offsetBottom={offsetBottom}
+                    offsetLeft={offsetLeft}
+                    offsetRight={offsetRight}
+                    width={svgWidth}
+                    height={svgHeight}
+                    setHeight={setHeightXLabel}
+                    heightAxis={heightXLabel}
+                    showLeftMostTick={!yHasData[0]}
+                    showRightMostTick={!yHasData[1]}
+                  />
+              )
             }
             {(props.hideYAxis ?? false) ? null : (
               <>

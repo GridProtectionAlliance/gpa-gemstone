@@ -50,7 +50,8 @@
     "@gpa-gemstone/react-forms": "1.1.126",
     "html2canvas": "^1.4.1",
     "lodash": "^4.17.21",
-    "moment": "2.29.4"
+    "moment": "2.29.4",
+    "moment-timezone": "0.5.43"
   },
   "peerDependencies":   {
     "react": "18.2.0",
