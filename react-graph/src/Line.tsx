@@ -41,6 +41,10 @@ export interface IProps {
     lineStyle: LineStyle,
     width?: number,
     axis?: AxisIdentifier,
+    /** Optional controlled enabled state. Provide with setEnabled to control legend interactions. */
+    enabled?: boolean,
+    /** Optional controlled enabled-state setter. Provide with enabled to control legend interactions. */
+    setEnabled?: React.Dispatch<React.SetStateAction<boolean>>,
     onHover?: (x: number, y: number) => void
 }
 
@@ -71,7 +75,9 @@ export const InternalLine = React.forwardRef<PointNode | null, IInteralProps>((p
         return txt
     }, [props.legend, props.highlightHover, highlight]);
 
-    const { enabled, createLegend } = useLegend(props.color, props.lineStyle, guid, data == null, legendTxt);
+    const isControlled = props.enabled !== undefined && props.setEnabled !== undefined;
+    const { enabled, createLegend } = useLegend(props.color, props.lineStyle, guid, data == null, legendTxt,
+        isControlled ? props.enabled : undefined, isControlled ? props.setEnabled : undefined);
 
     const createContextData = React.useCallback((): IDataSeries => {
         return {
