@@ -35,6 +35,10 @@ interface IProps {
     * Interval, in milliseconds, between successive HeartBeat checks
     * */
     IntervalMS: number,
+    /**
+    * Interval, in milliseconds, before checking an in-flight HeartBeat again
+    * */
+    RetryIntervalMS?: number,
 }
 
 /**
@@ -44,32 +48,43 @@ interface IProps {
 */
 const HeartBeatCheck = (props: IProps) => {
     const [showError, setShowError] = React.useState<boolean>(false);
+    const retryIntervalMS = props.RetryIntervalMS ?? 10000;
 
     //Effect to call heartbeat on consumer defined interval
     React.useEffect(() => {
         let updateServiceStatus: Gemstone.TSX.Interfaces.AbortablePromise<unknown> | null = null;
+        let nextCheck: ReturnType<typeof setTimeout>;
+        let isActive = true;
 
         const checkServiceStatus = () => {
+            if (updateServiceStatus != null) {
+                nextCheck = setTimeout(checkServiceStatus, retryIntervalMS);
+                return;
+            }
+
             updateServiceStatus = props.HeartBeat();
+            nextCheck = setTimeout(checkServiceStatus, props.IntervalMS);
 
             updateServiceStatus.then(() => {
-                setShowError(false);
+                updateServiceStatus = null;
+                if (isActive)
+                    setShowError(false);
             }, () => {
-                setShowError(true);
+                updateServiceStatus = null;
+                if (isActive)
+                    setShowError(true);
             });
         };
 
         checkServiceStatus();
 
-        const interval = setInterval(checkServiceStatus, props.IntervalMS);
-
         return () => {
-            clearInterval(interval);
+            isActive = false;
+            clearTimeout(nextCheck);
             if (updateServiceStatus?.abort != null)
                 updateServiceStatus.abort();
         };
-    }, [props.HeartBeat, props.IntervalMS]);
-
+    }, [props.HeartBeat, props.IntervalMS, retryIntervalMS]);
 
     if (!showError)
         return null;
