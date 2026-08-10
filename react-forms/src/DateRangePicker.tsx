@@ -25,7 +25,7 @@ import * as React from 'react';
 import * as moment from 'moment';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 
-interface IExtendedProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
+interface IExtendedProps<T> extends Omit<Gemstone.TSX.Interfaces.IBaseFormProps<T>, "Field"> {
   /**
     * Field representing the start date in the record
     * @type {keyof T}
