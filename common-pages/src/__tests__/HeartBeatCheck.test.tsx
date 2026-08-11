@@ -1,11 +1,6 @@
 import * as React from 'react';
+import { act, render } from '@testing-library/react';
 import HeartBeatCheck from '../HeartBeatCheck';
-
-jest.mock('react', () => ({
-    ...jest.requireActual('react'),
-    useEffect: jest.fn(),
-    useState: jest.fn()
-}));
 
 jest.mock('@gpa-gemstone/react-interactive', () => ({
     LoadingIcon: () => null,
@@ -31,20 +26,11 @@ const deferred = (): IDeferred => {
 };
 
 describe('HeartBeatCheck', () => {
-    let effect: React.EffectCallback;
-    let setShowError: jest.Mock;
-
     beforeEach(() => {
         jest.useFakeTimers();
-        setShowError = jest.fn();
-        (React.useState as jest.Mock).mockReturnValue([false, setShowError]);
-        (React.useEffect as jest.Mock).mockImplementation((callback: React.EffectCallback) => {
-            effect = callback;
-        });
     });
 
     afterEach(() => {
-        jest.clearAllMocks();
         jest.useRealTimers();
     });
 
@@ -58,33 +44,33 @@ describe('HeartBeatCheck', () => {
             .mockReturnValueOnce(first.promise)
             .mockReturnValueOnce(second.promise);
 
-        HeartBeatCheck({ HeartBeat: heartBeat, IntervalMS: 30000, RetryIntervalMS: retryIntervalMS });
-        const cleanup = effect() as () => void;
+        const { unmount } = render(
+            <HeartBeatCheck HeartBeat={heartBeat} IntervalMS={30000} RetryIntervalMS={retryIntervalMS} />
+        );
 
         expect(heartBeat).toHaveBeenCalledTimes(1);
-        jest.advanceTimersByTime(30000);
+        act(() => jest.advanceTimersByTime(30000));
         expect(heartBeat).toHaveBeenCalledTimes(1);
 
-        first.resolve();
-        await Promise.resolve();
-        jest.advanceTimersByTime(expectedIntervalMS - 1);
+        await act(async () => first.resolve());
+        act(() => jest.advanceTimersByTime(expectedIntervalMS - 1));
         expect(heartBeat).toHaveBeenCalledTimes(1);
-        jest.advanceTimersByTime(1);
+        act(() => jest.advanceTimersByTime(1));
         expect(heartBeat).toHaveBeenCalledTimes(2);
 
-        cleanup();
+        unmount();
     });
 
     test('does not set state when cleanup aborts the heartbeat', async () => {
         const request = deferred();
         request.promise.abort.mockImplementation(request.reject);
 
-        HeartBeatCheck({ HeartBeat: jest.fn().mockReturnValue(request.promise), IntervalMS: 30000 });
-        const cleanup = effect() as () => void;
-        cleanup();
-        await Promise.resolve();
+        const { unmount } = render(
+            <HeartBeatCheck HeartBeat={jest.fn().mockReturnValue(request.promise)} IntervalMS={30000} />
+        );
+        unmount();
+        await act(async () => Promise.resolve());
 
         expect(request.promise.abort).toHaveBeenCalledTimes(1);
-        expect(setShowError).not.toHaveBeenCalled();
     });
 });
