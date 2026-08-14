@@ -27,11 +27,12 @@ import QuickSelects, { getQuickSelectRange } from '../QuickSelects';
 import { Modal } from '@gpa-gemstone/react-interactive';
 import { IFilterProps } from './StartEndFilter';
 
-const DateTimeLocalFilter = (props: IFilterProps) => {
-    const FirstFallbackBreakpointQS = 1768;
-    const SecondFallbackBreakpointQS = 612, FirstFallbacKBreakpointNoQS = 612;
-    const ModalBreakpointQS = 450;
+const FirstFallbackBreakpointQS = 1768;
+const SecondFallbackBreakpointQS = 550;
+const FirstFallbacKBreakpointNoQS = 612;
+const ModalBreakpointQS = 350;
 
+const DateTimeLocalFilter = (props: IFilterProps) => {
     const [showQuickPickModal, setShowQuickPickModal] = React.useState<boolean>(false);
 
     const handleSetTimeWindowFilter = React.useCallback((record: ITimeWindow) => {
@@ -187,7 +188,7 @@ const DateTimeLocalFilter = (props: IFilterProps) => {
                 {props.ShowQuickSelects ?
                     <div className='row m-0 w-100'>
                         <div className='col-12 d-flex align-items-center justify-content-center'>
-                            <button className='btn btn-primary  w-100' onClick={() => setShowQuickPickModal(true)}>
+                            <button className='btn btn-primary w-100' onClick={() => setShowQuickPickModal(true)}>
                                 Quick Selects
                             </button>
                         </div>
@@ -206,7 +207,10 @@ const DateTimeLocalFilter = (props: IFilterProps) => {
                                     Timezone={props.Timezone}
                                     ActiveQP={props.ActiveQP}
                                     SetActiveQP={props.SetActiveQP}
-                                    SetFilter={props.SetFilter}
+                                    SetFilter={(start, end, unit, duration) => {
+                                        props.SetFilter(start, end, unit, duration);
+                                        setShowQuickPickModal(false);
+                                    }}
                                     Format={props.Format}
                                     DateUnit={props.DateUnit}
                                     QuickSelectRange={props.QuickSelectRange ?? getQuickSelectRange(props.DateUnit)}
