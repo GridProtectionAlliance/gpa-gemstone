@@ -38,13 +38,17 @@ const DateFilter = (props: IFilterProps) => {
     }, [props.Format]);
 
     const startEndCol = React.useMemo(() => {
-        if (props.ShowQuickSelects && props.ContainerWidth > FirstFallbackBreakpoint)
-            return 'col-2';
+        if (props.ShowQuickSelects) {
+            if (props.ContainerWidth > FirstFallbackBreakpoint)
+                return 'col-2';
+            if (props.ContainerWidth > FirstFallbackBreakpointNoQS)
+                return 'col-6'
+        }
 
         if (!props.ShowQuickSelects && props.ContainerWidth > FirstFallbackBreakpointNoQS)
             return 'col-6'
-        else
-            return 'col-12'
+
+        return 'col-12'
     }, [props.ShowQuickSelects, props.ContainerWidth])
 
     const quickSelectClass = React.useMemo(() => {
