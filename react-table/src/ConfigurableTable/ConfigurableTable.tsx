@@ -283,7 +283,7 @@ function ColumnSelection(props: IColSelectionProps) {
             return 'The Table is currently sorted by this column, so it cannot be hidden.';
         if (isOnlyOneEnabled && col.Enabled)
             return 'The Table must have one column visible at all times, so it cannot be hidden.';
-        if (col.IsFiltered)
+        if (col.IsFiltered ?? false)
             return 'The Table is currently filtered by this column, so it cannot be hidden.'
         return undefined;
     }
