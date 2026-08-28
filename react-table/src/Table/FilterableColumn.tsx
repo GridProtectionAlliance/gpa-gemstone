@@ -24,11 +24,15 @@ import * as ReactTableProps from './Types';
 import * as React from 'react';
 import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import { Search } from '@gpa-gemstone/react-interactive';
+import { Gemstone } from '@gpa-gemstone/application-typings'
 import { BooleanFilter } from '../Filters/BooleanFilter';
 import { TextFilter } from '../Filters/TextFilter';
 import { EnumFilter } from '../Filters/EnumFilter';
 import { NumberFilter, IUnit } from '../Filters/NumberFilter';
 import { DateFilter, DateTimeFilter, TimeFilter } from '../Filters/DateTimeFilters';
+import { Portal } from 'react-portal';
+import * as _ from 'lodash'
+import { useGetContainerPosition } from '@gpa-gemstone/helper-functions';
 
 /**
  * Wrapper to make any column configurable
@@ -46,15 +50,21 @@ export interface IHeaderProps<T> {
     Field: string | number | symbol | undefined,
     Options?: ReactTableProps.IOptions[],
     ExpandedLabel?: string,
-    Guid: string,
+    Guid: string
 }
 
 // Table column header details
 export function FilterableColumnHeader<T>(props: IHeaderProps<T>) {
     const [show, setShow] = React.useState<boolean>(false);
+    const headerRef = React.useRef<HTMLDivElement | null>(null);
+
+    const { top, left, height } = useGetContainerPosition(headerRef);
 
     return <>
-        <div onMouseEnter={() => setShow(true)} onMouseLeave={() => setShow(false)}>
+        <div 
+            onMouseEnter={() => setShow(true)} onMouseLeave={() => setShow(false)}
+            ref={headerRef}
+            >
         <div style={{ marginRight: 25 }} >
             {props.Label}
             </div>
@@ -62,22 +72,24 @@ export function FilterableColumnHeader<T>(props: IHeaderProps<T>) {
                 <div style={{ width: 25, position: 'absolute', right: 12, top: 12 }}>
                     {props.Filter.length > 0? <ReactIcons.Filter/> : null}
                 </div>
+                <Portal>
                 <div
+                    className={"popover"}
                     style={{
                         maxHeight: window.innerHeight * 0.50,
                         overflowY: 'auto',
-                        padding: '10 5',
+                        padding: '10px',
                         display: show ? 'block' : 'none', 
                         position: 'absolute',
                         backgroundColor: '#fff',
                         boxShadow: '0px 8px 16px 0px rgba(0,0,0,0.2)',
-                        zIndex: 401,
-                        minWidth: 'calc(100% - 50px)',
-                        marginLeft: -25
+                        zIndex: 9998,
+                        top: `${top + height}px`,
+                        left: `${left}px`
                     }} data-tableid={props.Guid}
                     onClick={(evt) => { evt.preventDefault(); evt.stopPropagation(); }}
                 >
-                    <table style={{ margin: 0 }}>
+                    <table style={{ margin: 0, width: '100%', padding: 10 }}>
                         <tbody>
                             {((props.ExpandedLabel !== null) && (props.ExpandedLabel !== "") && (props.ExpandedLabel !== undefined)) ? 
                                 <tr>
@@ -125,7 +137,8 @@ export function FilterableColumnHeader<T>(props: IHeaderProps<T>) {
                             /> : null}
                         </tbody>
                     </table>
-                </div>                
+                </div>
+                </Portal>
                 </> : null}
         </div>
     </>;
