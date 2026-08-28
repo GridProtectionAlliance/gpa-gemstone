@@ -55,6 +55,7 @@ interface IColDesc {
     Label: string;
     Enabled: boolean;
     Key: string;
+    IsFiltered?: boolean
 }
 /**
 * Table with modal to show and hide columns
@@ -75,6 +76,7 @@ export default function ConfigurableTable<T>(props: React.PropsWithChildren<ITab
                     Label: element.props.Label ?? key,
                     Default: element.props.Default ?? false,
                     Enabled: false,
+                    IsFiltered: element.props.IsFiltered ?? false
                 };          // use local if it has anything
                 baseCol.Enabled = localKeys.length > 0 ? localKeys.includes(key) : isEnabled(baseCol);
                 updated.set(key, baseCol);
@@ -155,8 +157,9 @@ export default function ConfigurableTable<T>(props: React.PropsWithChildren<ITab
         const isDefault = c.Default === true;
         const isSortKey = props.SortKey === c.Key;
         const isInLocal = useLocal && checkLocal(c.Key);
+        const isFiltered = c.IsFiltered ?? false;
 
-        return isSortKey || isInLocal || isDefault;
+        return isSortKey || isInLocal || isDefault || isFiltered;
     }
 
     return (
@@ -280,6 +283,8 @@ function ColumnSelection(props: IColSelectionProps) {
             return 'The Table is currently sorted by this column, so it cannot be hidden.';
         if (isOnlyOneEnabled && col.Enabled)
             return 'The Table must have one column visible at all times, so it cannot be hidden.';
+        if (col.IsFiltered)
+            return 'The Table is currently filtered by this column, so it cannot be hidden.'
         return undefined;
     }
 
@@ -296,7 +301,8 @@ function ColumnSelection(props: IColSelectionProps) {
                             Disabled={
                                 c.Key === props.sortKey ||
                                 (props.disableAdd && !c.Enabled) ||
-                                (isOnlyOneEnabled && c.Enabled)
+                                (isOnlyOneEnabled && c.Enabled) ||
+                                (c.IsFiltered)
                             }
                             Help={helpMessage(c)}
                         />

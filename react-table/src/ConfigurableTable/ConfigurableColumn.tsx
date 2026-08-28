@@ -25,7 +25,8 @@ import * as React from 'react';
 interface IProps {
     Default?: boolean,
     Label?: string,
-    Key: string
+    Key: string,
+    IsFiltered?: boolean
 }
 
 /**
