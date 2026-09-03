@@ -52,6 +52,7 @@ import { ComputeMax } from './ComputeMax';
 import { ComputeMin } from './ComputeMin';
 import { FormatDuration } from './FormatDuration';
 import { GetColor } from './GetColor';
+import { ConvertTicksToMoment } from './ConvertTicksToMoment';
 
 export {
     CreateGuid,
@@ -82,5 +83,6 @@ export {
     ComputeMax,
     ComputeMin,
     FormatDuration,
-    useStringMemonization
+    useStringMemonization,
+    ConvertTicksToMoment
 }
