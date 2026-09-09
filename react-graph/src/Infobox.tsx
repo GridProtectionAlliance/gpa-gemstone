@@ -55,7 +55,7 @@ const Infobox = (props: React.PropsWithChildren<IProps>) => {
   const calculateX = React.useCallback((xArg: number) => {
     let x: number = (props.usePixelPositioning ?? false) ? context.XApplyPixelOffset(xArg) : context.XTransformation(xArg);
     // Convert x/y to upper-left corner
-    switch (props.origin) {
+    switch (props.origin ?? "auto") {
       case "auto": {
         const left = context.XTransformation(context.XDomain[0]) + (props.offset ?? offsetDefault);
         const right = context.XTransformation(context.XDomain[1]) - (props.offset ?? offsetDefault);
@@ -74,7 +74,6 @@ const Infobox = (props: React.PropsWithChildren<IProps>) => {
         break;
       }
       // Do-nothing case
-      case undefined:
       case "middle-left":
       case "lower-left":
       case "upper-left":
@@ -87,7 +86,7 @@ const Infobox = (props: React.PropsWithChildren<IProps>) => {
   const calculateY = React.useCallback((yArg: number) => {
     let y: number = (props.usePixelPositioning ?? false) ? context.YApplyPixelOffset(yArg) : context.YTransformation(yArg, AxisMap.get(props.axis));
     // Convert x/y to upper-left corner
-    switch (props.origin) {
+    switch (props.origin ?? "auto") {
       case "auto": {
         const axis = AxisMap.get(props.axis);
         const top = context.YTransformation(context.YDomain[axis][1], axis);
@@ -97,7 +96,6 @@ const Infobox = (props: React.PropsWithChildren<IProps>) => {
         y = Math.max(top, Math.min(y, bottom - dimension.height));
         break;
       }
-      case undefined:
       case "upper-left":
       case "upper-right":
       case "upper-center":

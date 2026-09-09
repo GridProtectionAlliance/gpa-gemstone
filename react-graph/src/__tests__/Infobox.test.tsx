@@ -60,9 +60,13 @@ test.each([
 
 test.each([
     ['upper-center' as const, 90, 125],
-    ['lower-center' as const, 90, 55],
-    [undefined, 135, 125]
+    ['lower-center' as const, 90, 55]
 ])('preserves origin %s', (origin, x, y) => {
     const box = renderBox(100, 0, origin);
     expect([box.x, box.y]).toEqual([x, y]);
+});
+
+test('defaults an undefined origin to auto', () => {
+    const box = renderBox(100, 0);
+    expect([box.x, box.y]).toEqual([90, 55]);
 });
