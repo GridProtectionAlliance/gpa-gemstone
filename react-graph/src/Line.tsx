@@ -53,18 +53,15 @@ export interface IProps {
     width?: number,
     /** Optional Y-axis associated with the line. */
     axis?: AxisIdentifier,
-<<<<<<< HEAD
     /** Optional controlled enabled state. Provide with setEnabled to control legend interactions. */
     enabled?: boolean,
     /** Optional controlled enabled-state setter. Provide with enabled to control legend interactions. */
     setEnabled?: React.Dispatch<React.SetStateAction<boolean>>,
-=======
     /**
      * Optional callback invoked with the nearest data point while hovering.
      * @param x - X coordinate of the nearest point.
      * @param y - Y coordinate of the nearest point.
      */
->>>>>>> 5d8b83a (First documentation pass)
     onHover?: (x: number, y: number) => void
 }
 

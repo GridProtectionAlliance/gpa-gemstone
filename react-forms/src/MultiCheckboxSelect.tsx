@@ -65,16 +65,12 @@ interface IProps {
   ShowToolTip?: boolean;
 }
 
-<<<<<<< HEAD:react-forms/src/MultiCheckboxSelect.tsx
-const MultiCheckboxSelect = (props: IProps) => {
-=======
 /**
  * Renders multiple selectable options as checkboxes with optional selection help.
  * @param props - Checkbox options, change handler, and optional label or tooltip settings.
  * @returns A labeled group of checkbox choices.
  */
-const MultiSelect = (props: IProps) => {
->>>>>>> 5d8b83a (First documentation pass):react-forms/src/MutliCheckBoxSelect.tsx
+const MultiCheckboxSelect = (props: IProps) => {
   // State hooks for managing the visibility of the dropdown and help message.
   const multiSelect = React.useRef<HTMLDivElement>(null);
   const selectTable = React.useRef<HTMLTableElement>(null);

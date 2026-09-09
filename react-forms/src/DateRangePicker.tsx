@@ -25,12 +25,8 @@ import * as React from 'react';
 import * as moment from 'moment';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 
-<<<<<<< HEAD
-interface IExtendedProps<T> extends Omit<Gemstone.TSX.Interfaces.IBaseFormProps<T>, "Field"> {
-=======
 /** Defines the start and end record fields managed by the date-range picker. */
-interface IExtendedProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
->>>>>>> 00f59ee (Second pass of documentation cleanup)
+interface IExtendedProps<T> extends Omit<Gemstone.TSX.Interfaces.IBaseFormProps<T>, "Field"> {
   /**
    * Record field that stores the beginning of the selected range.
    */

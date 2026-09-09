@@ -56,7 +56,6 @@ export interface IBarProps {
     */
     Color: string,
     /**
-<<<<<<< HEAD
      * Optional controlled enabled state. Provide with SetEnabled to allow legend clicks to update it.
      * Without SetEnabled, this value is read-only and legend clicks do not change bar visibility.
     */
@@ -66,15 +65,10 @@ export interface IBarProps {
     */
     SetEnabled?: React.Dispatch<React.SetStateAction<boolean>>,
     /**
-     * Function retrieves an override of the portion of the bar. 
-     * @param {[number, number]} yValues - The bottom and top of this portion of the bar.
-     * @param {number} index - Index of this portion with regard to all bar segments. Counting begins from the lowest portion in ascending order.
-=======
      * Optional callback that customizes an individual bar segment.
      * @param yValues - Bottom and top values of the segment.
      * @param index - Position of the segment from lowest to highest.
      * @returns Style overrides for the segment.
->>>>>>> 5d8b83a (First documentation pass)
     */
     GetBarStyle?: (yValues: [number, number], index: number) => IBarStyle
 }

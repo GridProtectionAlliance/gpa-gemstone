@@ -76,14 +76,10 @@ export interface IHeaderProps<T> {
      * Optional detailed label shown inside the expanded filter menu.
      */
     ExpandedLabel?: string,
-<<<<<<< HEAD
-    Guid: string
-=======
     /**
      * Unique table identifier associated with the filter menu.
      */
-    Guid: string,
->>>>>>> 5d8b83a (First documentation pass)
+    Guid: string
 }
 
 // Table column header details

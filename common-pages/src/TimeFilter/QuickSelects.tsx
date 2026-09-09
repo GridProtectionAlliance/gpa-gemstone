@@ -41,16 +41,9 @@ interface IQuickSelect {
 
 /** Configures the available time-range quick selections. */
 interface IProps {
-<<<<<<< HEAD
-=======
-    /**
-     * Time filter mode that determines the quick-select layout.
-     */
-    DateTimeSetting: DateTimeSetting,
     /**
      * Optional output format used for generated start and end values.
      */
->>>>>>> 5d8b83a (First documentation pass)
     Format?: "YYYY-MM-DD" | "HH:mm:ss.SSS" | "MM/DD/YYYY HH:mm:ss.SSS",
     /**
      * Optional date unit used to generate and filter compatible quick selections.

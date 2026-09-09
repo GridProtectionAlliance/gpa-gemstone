@@ -32,15 +32,11 @@ interface IProps {
      * Optional label shown for the column in the settings dialog, defaulting to its key.
      */
     Label?: string,
-<<<<<<< HEAD
-    Key: string,
-    IsFiltered?: boolean
-=======
     /**
      * Unique key used to identify and persist the configurable column.
      */
-    Key: string
->>>>>>> 5d8b83a (First documentation pass)
+    Key: string,
+    IsFiltered?: boolean
 }
 
 /**

@@ -36,15 +36,9 @@ interface IProps {
   disallowSnapping?: boolean,
   /** Optional Y-axis associated with the box anchor. */
   axis?: AxisIdentifier,
-<<<<<<< HEAD
   /** Auto centers below the anchor and flips above when needed, using offset for vertical anchor spacing and horizontal edge clearance. */
   origin?: "auto" | "upper-right" | "upper-left" | "upper-center" | "lower-right" | "lower-left" | "lower-center" | 'middle-left' | 'middle-right',
-  // Specifies the offset of the pox from the origin point, In pixels
-=======
-  /** Optional corner or edge positioned at the anchor, defaulting to upper-left. */
-  origin?: "upper-right" | "upper-left" | "upper-center" | "lower-right" | "lower-left" | "lower-center" | 'middle-left' | 'middle-right',
   /** Optional distance in pixels between the box and its anchor. */
->>>>>>> 5d8b83a (First documentation pass)
   offset?: number,
   /** DOM identifier of the child element measured to size the box. */
   childId: string,
