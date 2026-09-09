@@ -29,20 +29,48 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Dispatch } from '@reduxjs/toolkit';
 import { useStringMemonization } from '@gpa-gemstone/helper-functions';
 
-interface U { ID: number|string }
+/** Identifies records supported by the standard search bars. */
+interface U {
+    /** Unique identifier of the searchable record. */
+    ID: number|string
+}
 
+/** Configures data loading and supplemental filters for a standard search bar. */
 interface IProps<T extends U> {
-    /** A Generic Slyce for the Search */
+    /**
+     * Redux slice used to execute searches and read their results.
+     */
     Slice: GenericSlice<T>,
-    /** Functions that gets available values for any ENUM Types */
+    /**
+     * Loads the available values for an enumerated search field.
+     * @param setOptions - Callback that stores the loaded options.
+     * @param field - Search field whose options should be loaded.
+     * @returns Cleanup callback for the option request.
+     */
     GetEnum: (setOptions: (options: IOptions[]) => void, field: Search.IField<T>) => () => void,
-    /** Function that Grabs any additional Filters that shoudl be available (such as Addl Fields) */
+    /**
+     * Loads additional searchable fields for the selected record type.
+     * @param setAddlFields - Callback that stores the loaded field definitions.
+     * @returns Cleanup callback for the field request.
+     */
     GetAddlFields: (setAddlFields: (cols: Search.IField<T>[]) => void) => () => void,
+    /**
+     * Optional filters appended to filters entered through the search bar.
+     */
     AddlFilters?: Search.IFilter<T>[],
+    /**
+     * Optional identifier used to persist the search configuration.
+     */
     StorageID?: string
 }
 
-interface IOptions {Value: string, Label: string}
+/** Represents a selectable search-field option. */
+interface IOptions {
+    /** Value submitted for the option. */
+    Value: string,
+    /** Label displayed for the option. */
+    Label: string
+}
 
 /** This Implements a few standardized SearchBars */
 export namespace DefaultSearch {

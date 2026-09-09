@@ -25,8 +25,20 @@ import * as React from 'react';
 
 export const BREADCRUMB_TEST_ID = 'breadcrumb-test-id';
 
+/**
+ * Renders the Breadcrumb integration test fixture.
+ * @returns Component state and controls exercised by integration tests.
+ */
 const BreadcrumbTestComponent = () => {
-    type IStep = { Label: string; ID: string | number; IsNavigable?: boolean }
+    /** Defines a breadcrumb step rendered by the test fixture. */
+    type IStep = {
+        /** Text displayed for the breadcrumb step. */
+        Label: string;
+        /** Unique identifier for the breadcrumb step. */
+        ID: string | number;
+        /** Indicates whether the fixture permits navigation to the step. */
+        IsNavigable?: boolean
+    }
     const steps = [{
         Label: 'Step One',
         ID: '1',

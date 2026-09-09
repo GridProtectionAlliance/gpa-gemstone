@@ -24,13 +24,19 @@
 import { AutoCompleteTextArea } from '@gpa-gemstone/react-forms'
 import React from 'react'
 
+/** Defines the record edited by the Auto Complete Text Area test fixture. */
 interface IExampleRecord {
+    /** Name value edited by the fixture. */
     Name: string
 }
 
 const ExampleOptions = ["Emerson", "Thoreau", "Descartes", "Kierkegaard", "deNavarre", "Porete"]
 export const AutoCompleteTextAreaID = "autoCompleteTextAreaTest"
 
+/**
+ * Renders the Auto Complete Text Area integration test fixture.
+ * @returns Component state and controls exercised by integration tests.
+ */
 const AutoCompleteTextAreaTestComponent = () => {
 
     const [exampleRecord, setExampleRecord] = React.useState<IExampleRecord>({Name: ""})

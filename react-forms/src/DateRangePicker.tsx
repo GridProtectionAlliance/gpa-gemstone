@@ -25,56 +25,51 @@ import * as React from 'react';
 import * as moment from 'moment';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 
+/** Defines the start and end record fields managed by the date-range picker. */
 interface IExtendedProps<T> extends Omit<Gemstone.TSX.Interfaces.IBaseFormProps<T>, "Field"> {
   /**
-    * Field representing the start date in the record
-    * @type {keyof T}
-  */
+   * Record field that stores the beginning of the selected range.
+   */
   FromField: keyof T;
   /**
-    * Field representing the end date in the record
-    * @type {keyof T}
-  */
+   * Record field that stores the end of the selected range.
+   */
   ToField: keyof T;
   /**
-    * Label to display for the form
-    * @type {string}
-  */
+   * Text shown above the range controls; an empty string hides the label.
+   */
   Label: string;
   /**
-    * Function to determine the validity of a field
-    * @param field - Field of the record to check
-    * @returns {boolean}
-  */
+   * Determines whether the complete date range is valid.
+   * @param fieldFrom - Record field containing the range start.
+   * @param fieldTo - Record field containing the range end.
+   * @returns Whether the range is valid.
+   */
   Valid: (fieldFrom: keyof T, fieldTo: keyof T) => boolean;
   /**
-    * Feedback message to show when input is invalid
-    * @type {string}
-    * @optional
-  */
+   * Optional message shown when the date range is invalid.
+   */
   Feedback?: string;
   /**
-    * Date format to use for the input fields
-    * @type {string}
-    * @optional
-  */
+   * Optional Moment format used to read and write record values, defaulting to the selected input type's ISO-like format.
+   */
   Format?: string;
   /**
-    * Value for the type attribute in input element, either 'datetime-local' or the default 'date'
-    * @type {'datetime-local' | 'date'}
-    * @optional
-  */
+   * Optional HTML input type used by both range fields, defaulting to `date`.
+   */
   Type?: ('datetime-local' | 'date');
 }
 
+/** Defines the public date-range picker properties without a single bound field. */
 type IProps<T> = Omit<IExtendedProps<T>, "Field">;
 
-// Duration options 
+/** Identifies a predefined or custom date-range duration. */
 type Duration = ('Custom' | '1 Day' | '7 Days' | '30 Days' | '90 Days' | '180 Days' | '365 Days')
 
 /**
- * DateRangePicker Component.
- * Allows users to select a date range either by choosing predefined durations or by specifying custom dates.
+ * Renders start and end inputs with predefined duration choices for a date range.
+ * @param props - Record fields, date formatting, and validation behavior for the range.
+ * @returns Date range controls bound to the configured record fields.
  * @deprecated Use TimeFilter in common-pages instead
  */
 export default function DateRangePicker<T>(props: IProps<T>) {

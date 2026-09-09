@@ -6,10 +6,19 @@ import * as _ from 'lodash'
 import { IProps as ITextAreaProps } from './TextArea'
 import { IVariable, getSuggestions, getCurrentVariable } from './AutoCompleteInput'
 
+/** Defines suggestion values for the autocomplete text area. */
 interface IAutoCompleteProps<T> extends ITextAreaProps<T> {
+  /**
+   * Values offered as suggestions for the variable at the text caret.
+   */
   Options: string[]
 }
 
+/**
+ * Renders a text area with autocomplete suggestions positioned at the caret.
+ * @param props - Text area configuration and values offered as suggestions.
+ * @returns A text area with a positioned suggestion dropdown.
+ */
 export default function AutoCompleteTextArea<T>(props: IAutoCompleteProps<T>) {
   const autoCompleteTextArea = React.useRef<HTMLDivElement>(null);
   const tableContainer = React.useRef<HTMLDivElement>(null);

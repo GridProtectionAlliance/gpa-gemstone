@@ -24,7 +24,9 @@
 import { AutoCompleteMultiInput } from '@gpa-gemstone/react-forms'
 import React from 'react'
 
+/** Defines the record edited by the Auto Complete Multi Input test fixture. */
 interface IExampleRecord {
+    /** Values edited by the fixture. */
     Values: string[]
 }
 
@@ -33,6 +35,10 @@ const ExampleOptions = ["Emerson", "Thoreau", "Descartes", "Kierkegaard", "deNav
 export const AutoCompleteMultiInputEmptyID = "AutoCompleteMultiInputEmptyID"
 export const AutoCompleteMultiInputPopulatedID = "AutoCompleteMultiInputPopulatedID"
 
+/**
+ * Renders the Auto Complete Multi Input integration test fixture.
+ * @returns Component state and controls exercised by integration tests.
+ */
 const AutoCompleteMultiInputTestComponent = () => {
     const [emptyRecord, setEmptyRecord] = React.useState<IExampleRecord>({ Values: [] })
     const [populatedRecord, setPopulatedRecord] = React.useState<IExampleRecord>({ Values: ['Emerson', 'Thoreau'] })

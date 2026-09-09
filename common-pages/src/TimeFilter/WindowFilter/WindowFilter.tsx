@@ -30,10 +30,19 @@ import WindowForm, { Window } from './WindowForm';
 const WINDOW_FirstFallbackBreakpoint = 898;
 const WINDOW_SecondFallbackBreakpoint = 611;
 
+/** Configures a time filter anchored at the start or end of its window. */
 export interface IProps extends IFilterProps {
+    /**
+     * End of the time window anchored by the date input.
+     */
     Window: Window,
 }
 
+/**
+ * Edits a time window anchored at either its start or end value.
+ * @param props - Window anchor, current values, layout settings, and update handlers.
+ * @returns Anchored time-window filter controls.
+ */
 const WindowFilter = (props: IProps) => {
     const DatePickerField = props.Window;
     const DatePickerLabel = props.Window.charAt(0).toUpperCase() + props.Window.slice(1);

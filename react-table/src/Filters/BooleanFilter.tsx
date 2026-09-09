@@ -23,28 +23,28 @@ import * as React from 'react';
 import { Search } from '@gpa-gemstone/react-interactive';
 
 /**
- * Interface defining the properties expected by the BooleanFilter component.
+ * Defines the filter state and update behavior used by the boolean filter.
  */
 interface IFilterProps<T> {
     /**
-    * Function to set the filter based on Search.IFilter<T> array.
-    * @param evt - Event handler that updates the filter.
-    */
+     * Applies the selected boolean filter.
+     * @param evt - Filter definitions to apply.
+     */
     SetFilter: (evt: Search.IFilter<T>[]) => void;
     /**
-    * Array of filters of type Search.IFilter<T>.
-    */
+     * Boolean filter definitions currently applied to the field.
+     */
     Filter: Search.IFilter<T>[],
     /**
-    * Name of the field for filtering.
-    */
+     * Name of the record field filtered by the component.
+     */
     FieldName: string
 }
 
 /**
- * Component to handle boolean filtering based on provided filter props.
- * @param {IFilterProps<T>} props - Props passed to the BooleanFilter component.
- * @returns JSX element representing the BooleanFilter component.
+ * Renders controls for including true and false field values.
+ * @param props - Current boolean filters and the callback used to update them.
+ * @returns Boolean filter controls.
  */
 export function BooleanFilter<T>(props: IFilterProps<T>) {
     const [selected, setSelected] = React.useState<boolean>(false);

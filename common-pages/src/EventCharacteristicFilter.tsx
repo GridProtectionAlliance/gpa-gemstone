@@ -30,25 +30,95 @@ import { Input, Select, MultiCheckBoxSelect, RadioButtons } from '@gpa-gemstone/
 import { OpenXDA } from '@gpa-gemstone/application-typings';
 
 
+/** Configures the event characteristic filter and its available metadata. */
 interface IProps {
+    /**
+     * Updates the active characteristic and event type filters.
+     * @param characteristics - Validated characteristic filters, or undefined when invalid.
+     * @param types - Optional event type identifiers to select.
+     */
     setEventFilters: (characteristics?: IEventCharacteristicFilters, types?: number[]) => void,
+    /**
+     * Event types used to determine which characteristic controls are relevant.
+     */
     eventTypes: OpenXDA.Types.EventType[]
+    /**
+     * Characteristic filter values edited by the form.
+     */
     eventCharacteristicFilter: IEventCharacteristicFilters,
+    /**
+     * Magnitude-duration curves available to the curve controls.
+     */
     magDurCurves: OpenXDA.Types.MagDurCurve[],
+    /**
+     * Identifiers of the currently selected event types.
+     */
     eventTypeFilter: number[]
 }
 
-interface IPhaseFilters { AN: boolean, BN: boolean, CN: boolean, AB: boolean, BC: boolean, CA: boolean, ABG: boolean, BCG: boolean, ABC: boolean, ABCG: boolean }
-
-interface IEventCharacteristicFilters {
-    durationMin?: number, durationMax?: number,
-    phases: IPhaseFilters,
-    transientMin?: number, transientMax?: number, transientType: ('LL' | 'LN' | 'both'),
-    sagMin?: number, sagMax?: number, sagType: ('LL' | 'LN' | 'both'),
-    swellMin?: number, swellMax?: number, swellType: ('LL' | 'LN' | 'both'),
-    curveID: number, curveInside: boolean, curveOutside: boolean
+/** Tracks the enabled state of each supported event phase. */
+interface IPhaseFilters {
+    /** Whether phase AN is enabled. */
+    AN: boolean,
+    /** Whether phase BN is enabled. */
+    BN: boolean,
+    /** Whether phase CN is enabled. */
+    CN: boolean,
+    /** Whether phase AB is enabled. */
+    AB: boolean,
+    /** Whether phase BC is enabled. */
+    BC: boolean,
+    /** Whether phase CA is enabled. */
+    CA: boolean,
+    /** Whether phase ABG is enabled. */
+    ABG: boolean,
+    /** Whether phase BCG is enabled. */
+    BCG: boolean,
+    /** Whether phase ABC is enabled. */
+    ABC: boolean,
+    /** Whether phase ABCG is enabled. */
+    ABCG: boolean
 }
 
+/** Stores the magnitude, duration, phase, and curve criteria applied to events. */
+interface IEventCharacteristicFilters {
+    /** Optional minimum event duration. */
+    durationMin?: number,
+    /** Optional maximum event duration. */
+    durationMax?: number,
+    /** Event phases included by the filter. */
+    phases: IPhaseFilters,
+    /** Optional minimum transient magnitude. */
+    transientMin?: number,
+    /** Optional maximum transient magnitude. */
+    transientMax?: number,
+    /** Voltage relationship included for transients. */
+    transientType: ('LL' | 'LN' | 'both'),
+    /** Optional minimum sag magnitude. */
+    sagMin?: number,
+    /** Optional maximum sag magnitude. */
+    sagMax?: number,
+    /** Voltage relationship included for sags. */
+    sagType: ('LL' | 'LN' | 'both'),
+    /** Optional minimum swell magnitude. */
+    swellMin?: number,
+    /** Optional maximum swell magnitude. */
+    swellMax?: number,
+    /** Voltage relationship included for swells. */
+    swellType: ('LL' | 'LN' | 'both'),
+    /** Identifier of the selected magnitude-duration curve. */
+    curveID: number,
+    /** Whether events inside the curve are included. */
+    curveInside: boolean,
+    /** Whether events outside the curve are included. */
+    curveOutside: boolean
+}
+
+/**
+ * Edits magnitude, duration, phase, and curve filters for selected event types.
+ * @param props - Available event metadata and active characteristic filters.
+ * @returns Event characteristic filter controls.
+ */
 const EventCharacteristicFilter = (props: IProps) => {
     const [newEventCharacteristicFilter, setNewEventCharacteristicFilter] = React.useState<IEventCharacteristicFilters>(props.eventCharacteristicFilter);
     const [newPhases, setNewPhases] = React.useState<{ Value: number, Label: string, Selected: boolean }[]>([]);

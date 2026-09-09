@@ -23,11 +23,24 @@
 
 import * as React from 'react';
 
+/** Defines content and interaction behavior for a graph toolbar button. */
 export interface IProps {
+    /**
+     * Callback invoked when the button is activated.
+     * @returns An optional cleanup callback for the button action.
+     */
     onClick: () => ((() => void)| void),
+    /**
+     * Optional flag indicating whether the button represents a selection action.
+     */
     isSelect?: boolean
 }
 
+/**
+ * Provides a toolbar action contract around its visual children.
+ * @param props - Button behavior and rendered content.
+ * @returns The supplied button content.
+ */
 const Button = (props: React.PropsWithChildren<IProps>) => {
   /*
     Button that can be pressed.

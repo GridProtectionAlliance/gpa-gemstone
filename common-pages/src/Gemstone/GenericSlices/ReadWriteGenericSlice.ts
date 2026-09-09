@@ -26,9 +26,13 @@ import ReadOnlyGenericSlice from './ReadOnlyGenericSlice';
 import { IState as IReadOnlyState } from './ReadOnlyGenericSlice';
 import { Application } from '@gpa-gemstone/application-typings';
 
+/** Extends read-only slice state with mutation request statuses. */
 interface IState<T> extends IReadOnlyState<T> {
+    /** Current status of the add request. */
     AddStatus: Application.Types.Status,
+    /** Current status of the update request. */
     UpdateStatus: Application.Types.Status,
+    /** Current status of the delete request. */
     DeleteStatus: Application.Types.Status
 }
 

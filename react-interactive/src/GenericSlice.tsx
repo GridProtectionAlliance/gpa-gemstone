@@ -28,6 +28,7 @@ import { Search } from './SearchBar/SearchBar';
 import { WritableDraft } from 'immer/dist/types/types-external'
 import GenericController from './GenericController';
 
+/** Configures lifecycle dependencies and additional thunks for a generic slice. */
 interface IOptions<T extends U> {
     /**
     * Optional function triggered on specific action dependencies.
@@ -70,22 +71,35 @@ interface IOptions<T extends U> {
     AddionalThunks?: IAdditionalThunk<T>[]
 }
 
+/** Defines an additional asynchronous operation managed by a generic slice. */
 interface IAdditionalThunk<T extends U> {
+    /** Name used to register the thunk on the slice. */
     Name: string,
+    /** Starts the asynchronous operation. */
     Fetch: (state: IState<T>, args: any|void) => null|JQuery.jqXHR<any>,
+    /** Optional callback invoked when the operation succeeds. */
     OnSuccess?: (state: WritableDraft<IState<T>>, requestId: string, data: any, args: any|void) => void,
+    /** Optional callback invoked when the operation fails. */
     OnFailure?: (state: WritableDraft<IState<T>>, requestId: string, args: any|void, error: any) => void,
+    /** Optional callback invoked when the operation begins. */
     OnPending?: (state: WritableDraft<IState<T>>, requestId: string, args: any|void) => void
 }
 
 /**
 * Common properties of an object type U with an ID of type number or string, including error message, verb, and time in string format.
 */
-interface U { ID: number|string }
+interface U {
+    /** Unique identifier of a record managed by the slice. */
+    ID: number|string
+}
 
+/** Describes an error produced by a generic slice operation. */
 interface IError {
+    /** Human-readable error message. */
     Message: string,
+    /** Slice operation that failed. */
     Verb: 'POST' | 'DELETE' | 'PATCH' | 'FETCH' | 'SEARCH' | 'PAGE'
+	/** Time at which the error occurred. */
 	Time: string
 }
 
@@ -93,16 +107,27 @@ interface IError {
 * Represents the state of the application with generic type T extending U.
 */
 export interface IState<T extends U> {
+    /** Current status of the fetch request. */
     Status: Application.Types.Status,
+    /** Request identifiers for active fetch operations. */
     ActiveFetchID: string[],
+    /** Current status of the search request. */
     SearchStatus: Application.Types.Status,
+    /** Request identifiers for active search operations. */
     ActiveSearchID: string[],
+    /** Most recent slice error, when present. */
     Error: ( IError | null ),
+    /** Records loaded by the slice. */
     Data: T[],
+    /** Field used to sort loaded records. */
     SortField: keyof T,
+    /** Whether loaded records are sorted in ascending order. */
     Ascending: boolean,
+    /** Optional parent identifier used to scope records. */
     ParentID: (number | null | string ),
+    /** Records returned by the current search. */
     SearchResults: T[],
+    /** Filters applied to the current search. */
     Filter: Search.IFilter<T>[]
 }
 
@@ -110,15 +135,25 @@ export interface IState<T extends U> {
  * Interface representing a state with paging capabilities, extending IState<T>.
  */
 interface IPagedState< T extends U> extends IState<T> {
+    /** Current status of the paged request. */
     PagedStatus: Application.Types.Status,
+    /** Request identifiers for active paged operations. */
     ActivePagedID: string[],
+    /** Zero-based page currently loaded. */
     CurrentPage: number,
+    /** Total number of pages available. */
     TotalPages: number,
+    /** Total number of matching records. */
     TotalRecords: number,
+    /** Records returned for the current page. */
     PagedData: T[],
+    /** Field used to sort the current page. */
     PagedSortField: keyof T,
+    /** Whether paged records are sorted in ascending order. */
     PagedAscending: boolean,
+    /** Filters applied to the paged request. */
     PagedFilter:  Search.IFilter<T>[],
+    /** Number of records requested per page. */
     RecordsPerPage: number
 }
 

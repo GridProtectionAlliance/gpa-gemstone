@@ -26,10 +26,15 @@ import tableData from '../../test-data/table_test_data.json';
 import React from "react";
 import { tableTestContainerWidth } from "./ConfigurableTable";
 
+/** Defines a book record displayed by the table test fixture. */
 export interface IBook {
+    /** Book title displayed in the table. */
     Title: string;
+    /** Book author displayed in the table. */
     Author: string;
+    /** Volume number displayed in the table. */
     Volume: number;
+    /** Category used to group the book. */
     Category: string;
 };
 

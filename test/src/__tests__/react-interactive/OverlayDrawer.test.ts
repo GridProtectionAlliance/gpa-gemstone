@@ -40,7 +40,17 @@ let driver: WebDriver;
 // so we allow a small tolerance when comparing expected vs actual positions. 
 const TOLERANCEPX = 1;
 
-interface IRect { top: number, left: number, width: number, height: number }
+/** Defines the viewport bounds used by overlay positioning assertions. */
+interface IRect {
+    /** Top viewport coordinate. */
+    top: number,
+    /** Left viewport coordinate. */
+    left: number,
+    /** Rectangle width. */
+    width: number,
+    /** Rectangle height. */
+    height: number
+}
 
 // Read an element's viewport rect (getBoundingClientRect) by css selector.
 const getRect = (selector: string): Promise<IRect> =>

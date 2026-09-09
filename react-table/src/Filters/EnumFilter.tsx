@@ -23,42 +23,50 @@ import * as React from 'react';
 import { Search } from '@gpa-gemstone/react-interactive';
 
 /**
-* Represents an option with a value and label.
+* Defines a value and label offered by an enumeration filter.
 */
-interface IOptions { Value: string | number, Label: string }
+interface IOptions {
+    /** Value submitted by the option. */
+    Value: string | number,
+    /** Label displayed for the option. */
+    Label: string
+}
 
 /**
-* Represents the properties expected by the EnumFilter component.
+* Defines the filter state, available options, and update behavior used by the enumeration filter.
 */
 interface IProps<T> { 
     /**
-    * Function to set the filter based on Search.IFilter<T> array.
-    * @param evt - Event handler that updates the filter.
-    */
+     * Applies the selected enumeration filter.
+     * @param evt - Filter definitions to apply.
+     */
     SetFilter: (evt: Search.IFilter<T>[]) => void,
     /**
-    * Array of filters of type Search.IFilter<T>.
-    */
+     * Enumeration filter definitions currently applied to the field.
+     */
     Filter: Search.IFilter<T>[],
     /**
-     * Name of filtering field.
+     * Name of the record field filtered by the component.
      */
     FieldName: string,
     /**
-     * The array of IOptions[] for filtering.
+     * Enumeration values available for selection.
      */
     Options: IOptions[]
     }
 
     /**
-     * Extended interface from IOptions to include Selected boolean property.
+     * Adds selection state to an enumeration filter option.
      */
-interface IOptionsExtended extends IOptions { Selected: boolean }
+interface IOptionsExtended extends IOptions {
+    /** Indicates whether the option is selected. */
+    Selected: boolean
+}
 
 /**
- * Component to handle enum filtering based on provided filter props.
- * @param {IProps<T>} props - Props passed to EnumFilter.
- * @returns JSX element representing EnumFilter component.
+ * Renders controls for selecting the values included by an enumeration filter.
+ * @param props - Current enumeration filters, available values, and the callback used to update them.
+ * @returns Enumeration filter controls.
  */
 export function EnumFilter<T>(props: IProps<T>) {
     // State for options with selection.

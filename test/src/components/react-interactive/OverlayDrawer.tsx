@@ -46,6 +46,10 @@ export const RESIZE_WRAPPER_ID = 'overlay-resize-wrapper';
 export const INSERT_BTN_ID = 'overlay-insert-btn';
 export const SCROLL_CONTAINER_ID = 'overlay-scroll-container';
 
+/**
+ * Renders the Overlay Drawer integration test fixture.
+ * @returns Component state and controls exercised by integration tests.
+ */
 const OverlayDrawerTestComponent = () => {
     const [inserted, setInserted] = React.useState<boolean>(false);
 

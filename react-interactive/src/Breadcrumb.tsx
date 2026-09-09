@@ -23,29 +23,44 @@
 
 import * as React from 'react';
 
+/** Describes one navigable step in a breadcrumb trail. */
 interface IStep {
+    /**
+     * Text displayed for the breadcrumb step.
+     */
     Label: string,
+    /**
+     * Identifier used to compare the step with the current step.
+     */
     ID: string | number,
+    /**
+     * Optional flag that allows navigation to the step, defaulting to true.
+     */
     IsNavigable?: boolean
 }
 
+/** Configures the steps and active location of a breadcrumb trail. */
 interface IProps {
     /**
-     * List of steps to render in breadcrumb
+     * Ordered steps rendered in the breadcrumb trail.
      */
     Steps: IStep[],
     /**
-     * Current step in Steps list
+     * Step marked as the current, non-navigable breadcrumb location.
      */
     CurrentStep: IStep;
     /**
-     * Callback function for when a step was clicked on.
-     * @param step Step that was clicked on
-     * @returns 
+     * Callback fired when the user clicks a navigable step.
+     * @param step - Breadcrumb step selected by the user.
      */
     OnClick: (step: IStep) => void
 }
 
+/**
+ * Renders an ordered breadcrumb trail with navigation for eligible steps.
+ * @param props - Supplies the breadcrumb steps, current location, and selection callback.
+ * @returns The breadcrumb navigation element.
+ */
 const Breadcrumb = (props: IProps) => {
     return (
         <nav>

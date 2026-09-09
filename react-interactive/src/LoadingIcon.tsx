@@ -26,9 +26,19 @@ import styled, { keyframes} from "styled-components";
 /**
 * Props interface for the LoadingIcon component
 */
+/** Configures a loading icon and its optional label. */
 interface IProps {
+    /**
+     * Controls whether the loading indicator is visible.
+     */
     Show: boolean,
+    /**
+     * Optional text displayed beneath the spinner.
+     */
     Label?: string,
+    /**
+     * Optional spinner diameter in pixels, defaulting to 25.
+     */
     Size?: number,
 }
 
@@ -43,11 +53,19 @@ const spin = keyframes`
 /**
 * Props interface for the Icon component
 */
-interface IconProps {size: number}
+/** Configures the visual styling of the loading glyph. */
+interface IconProps {
+    /**
+     * Spinner diameter in pixels used to calculate its border and dimensions.
+     */
+    size: number
+}
 
 /**
-* Styled component for rendering the spinning icon
-*/
+ * Renders the animated circular spinner using the requested pixel size.
+ * @param props - Supplies the spinner diameter.
+ * @returns The styled spinner element.
+ */
 const Icon = styled.div<IconProps>`
 	animation: ${spin} 1s linear infinite;
 	border: ${props => props.size/5}px solid #f3f3f3;
@@ -58,8 +76,10 @@ const Icon = styled.div<IconProps>`
 `;
 
 /**
-* Functional component for rendering a loading icon
-*/
+ * Renders an optionally labeled loading spinner when loading is active.
+ * @param props - Controls spinner visibility, label, and size.
+ * @returns The loading indicator container.
+ */
 const LoadingIcon = (props: IProps) => {
 
 const h = (props.Size === undefined? 25 : props.Size);

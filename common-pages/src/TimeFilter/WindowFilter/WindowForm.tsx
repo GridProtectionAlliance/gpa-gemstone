@@ -25,17 +25,44 @@ import * as React from 'react';
 import { getTimeWindowFromFilter, ITimeWindow } from '../TimeFilter';
 import { readableUnit, units } from '../TimeWindowUtils';
 
+/** End of a time window used as its fixed anchor. */
 export type Window = "start" | "end"
 
+/** Configures duration editing for an anchored time window. */
 export interface IProps {
+    /**
+     * Time window whose duration and unit are edited by the form.
+     */
     Filter: ITimeWindow,
+    /**
+     * Updates the time window after its duration or unit changes.
+     * @param filter - Normalized time window to store.
+     */
     SetFilter: (filter: ITimeWindow) => void,
+    /**
+     * Updates the active quick-selection index.
+     * @param qp - Index to activate, or -1 to clear the selection.
+     */
     SetActiveQP: (qp: number) => void,
+    /**
+     * String format used to normalize the time window.
+     */
     Format: string,
+    /**
+     * Indicates whether quick-selection shortcuts are displayed beside the form.
+     */
     ShowQuickSelect: boolean,
+    /**
+     * End of the time window anchored by the date input.
+     */
     Window: Window
 }
 
+/**
+ * Edits the duration and unit of an anchored time window.
+ * @param props - Current time window, anchor, format, and update handlers.
+ * @returns Duration and unit form controls.
+ */
 const WindowForm = (props: IProps) => {
 
     const setter = React.useCallback((record: ITimeWindow) => {

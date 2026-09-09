@@ -25,28 +25,33 @@ import * as React from 'react';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 import HelpIcon from './HelpIcon';
 
+/** Describes a radio option and whether users may select it. */
 interface IOption extends Gemstone.TSX.Interfaces.ILabelValue<string | number> {
-    Disabled?: boolean
+  /** Optional flag that prevents the option from being selected. */
+  Disabled?: boolean
 }
 
+/** Defines record binding and choices for the radio button group. */
 interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
     /**
-        * Position to display radion buttons in
-        * @type {'vertical' | 'horizontal'}
-        * @optional
-    */
+     * Optional layout direction for the radio choices, defaulting to horizontal.
+     */
     Position?: ('vertical' | 'horizontal'),
     /**
-        * Options for the radion buttons
-        * @type {IOption[]}
-    */
+     * Choices rendered as radio buttons.
+     */
     Options: IOption[];
     /**
-     * Optional Style to be applied to the form-group container div
-    */
+     * Optional CSS styles applied to the surrounding form group.
+     */
     Style?: React.CSSProperties;
 }
 
+/**
+ * Renders mutually exclusive options as record-bound radio buttons.
+ * @param props - Record binding, option choices, layout, and optional styling.
+ * @returns A labeled horizontal or vertical group of radio buttons.
+ */
 export default function RadioButtons<T>(props: IProps<T>) {
     const label = props.Label === undefined ? props.Field as string : props.Label;
 

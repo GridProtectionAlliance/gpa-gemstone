@@ -24,13 +24,19 @@
 import { MultiInput } from '@gpa-gemstone/react-forms'
 import React from 'react'
 
+/** Defines the record edited by the Multi Input test fixture. */
 interface IExampleRecord {
+    /** Values edited by the fixture. */
     Values: string[]
 }
 
 export const MultiInputEmptyID = "MultiInputEmptyID"
 export const MultiInputPopulatedID = "MultiInputPopulatedID"
 
+/**
+ * Renders the Multi Input integration test fixture.
+ * @returns Component state and controls exercised by integration tests.
+ */
 const MultiInputTestComponent = () => {
     const [emptyRecord, setEmptyRecord] = React.useState<IExampleRecord>({ Values: [] })
     const [populatedRecord, setPopulatedRecord] = React.useState<IExampleRecord>({ Values: ['Alpha', 'Beta'] })

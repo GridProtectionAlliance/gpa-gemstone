@@ -26,10 +26,15 @@ import * as React from 'react';
 import { AxisIdentifier, GraphContext } from './GraphContext';
 import { ContextlessCircle, IProps as ICircleProps} from './Circle';
 
+/** Defines coordinate transformations used while grouping circles. */
 interface IAggregationFunctions {
+  /** Converts an X data coordinate into a plot coordinate. */
   XTransformation: (x: number) => number,
+  /** Converts a Y data coordinate on an axis into a plot coordinate. */
   YTransformation: (y: number, a: AxisIdentifier) => number,
+  /** Converts an X plot coordinate back into a data coordinate. */
   XInverseTransformation: (p: number) => number,
+  /** Converts a Y plot coordinate on an axis back into a data coordinate. */
   YInverseTransformation: (p: number, a: AxisIdentifier) => number,
 }
 
@@ -39,13 +44,37 @@ interface IAggregationFunctions {
   data is the full circle data
   useSingleAggregation - if true groups will not be aggregated. 
 */
+/** Defines circle data and rules used to build aggregates. */
 export interface IProps {
+    /**
+     * Determines whether two circles can be combined into one aggregate.
+     * @param d1 - First circle considered for aggregation.
+     * @param d2 - Second circle considered for aggregation.
+     * @param fxn - Coordinate transformation helpers for comparing the circles.
+     */
     canAggregate: (d1: ICircleProps, d2: ICircleProps, fxn: IAggregationFunctions) => boolean,
+    /**
+     * Combines a group of circles into the circle rendered for that group.
+     * @param data - Circles included in the aggregate.
+     * @param fxn - Coordinate transformation helpers for positioning the aggregate.
+     * @returns The circle representing the aggregated group.
+     */
     onAggregation: (data: ICircleProps[], fxn: IAggregationFunctions) => ICircleProps,
+    /**
+     * Circle definitions to render and group.
+     */
     data: ICircleProps[],
+    /**
+     * Optional flag that prevents aggregated groups from being combined again, defaulting to false.
+     */
     useSingleAggregation?: boolean
 }
 
+/**
+ * Groups nearby circles and renders each aggregate through the graph context.
+ * @param props - Aggregation rules and circle data to render.
+ * @returns SVG group containing individual and aggregated circles.
+ */
 const AggregatingCircles = (props: IProps) => {
   /*
     Circle that will aggregate into larger circles
@@ -76,8 +105,11 @@ const AggregatingCircles = (props: IProps) => {
       XTransformation: context.XTransformation
      }
 
+    /** Describes source-circle indices and the circle representing their aggregate. */
     interface ICluster { 
+      /** Indices of source circles included in the cluster. */
       Indices: number[],
+      /** Aggregated circle, or `null` until the cluster has been combined. */
       Aggregate: ICircleProps|null
     }
 

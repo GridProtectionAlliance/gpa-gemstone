@@ -24,14 +24,30 @@ import { ReactIcons } from '@gpa-gemstone/gpa-symbols';
 import { useGetContainerPosition } from '@gpa-gemstone/helper-functions';
 import * as React from 'react';
 
+/** Defines pagination state and actions rendered by the paging control. */
 export interface IProps {
+    /**
+     * One-based index of the active page.
+     */
     Current: number,
+    /**
+     * Total number of available pages.
+     */
     Total: number,
+    /**
+     * Changes the active page.
+     * @param p - One-based page index to activate.
+     */
     SetPage: (p: number) => void,
 }
 
 const defaultMaxPagesToShow = 7;
 
+/**
+ * Displays responsive controls for navigating a paged result set.
+ * @param props - Active page, total pages, and page change handler.
+ * @returns Pagination controls sized to their container.
+ */
 const Paging = (props: IProps) => {
     const containerRef = React.useRef<HTMLDivElement | null>(null);
     const { scrollWidth, width } = useGetContainerPosition(containerRef);

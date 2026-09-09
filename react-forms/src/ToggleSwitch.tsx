@@ -26,15 +26,19 @@ import { CreateGuid } from '@gpa-gemstone/helper-functions'
 import { Gemstone } from '@gpa-gemstone/application-typings';
 import HelpIcon from './HelpIcon';
 
+/** Defines record binding and labels for the toggle switch. */
 interface IProps<T> extends Gemstone.TSX.Interfaces.IBaseFormProps<T> {
   /**
-    * CSS styles to apply to the form group
-    * @type {React.CSSProperties}
-    * @optional
-  */
+   * Optional CSS styles applied to the surrounding switch control.
+   */
   Style?: React.CSSProperties;
 }
 
+/**
+ * Renders a record-bound Boolean field as a Bootstrap toggle switch.
+ * @param props - Record binding, label, disabled state, and optional styling.
+ * @returns A labeled toggle switch control.
+ */
 export default function ToggleSwitch<T>(props: IProps<T>) {
   const [switchID] = React.useState<string>(CreateGuid());
 

@@ -24,15 +24,23 @@
 import { Application } from '@gpa-gemstone/application-typings';
 import * as React from 'react';
 
+/** Stores shared navigation state for application menu components. */
 export interface IContext {
+    /** Base route used for home navigation. */
     homePath: string,
+    /** Security roles assigned to the current user. */
     userRoles: Application.Types.SecurityRoleName[],
+    /** Whether the application sidebar is collapsed. */
     collapsed: boolean,
+    /** Whether page activation uses search-parameter matching. */
     useSearchMatch: boolean,
 
+    /** Identifier of the active menu section. */
     activeSection: string,
+    /** Updates the active menu section. */
     setActiveSection: (guid: string) => void,
 
+    /** Updates the label displayed for the active page. */
     setActivePageLabel: (label: string | null) => void
 }
 

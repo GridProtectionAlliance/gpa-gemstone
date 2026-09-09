@@ -28,14 +28,35 @@ import { useGetContainerPosition } from '@gpa-gemstone/helper-functions';
 // Import Leaflet's CSS so consumers don't have to.
 import 'leaflet/dist/leaflet.css';
 
+/** Configures the map viewport, layers, and interaction callbacks. */
 interface IProps {
+    /**
+     * Mutable reference populated with the Leaflet map instance and cleared on unmount.
+     */
     Map: React.MutableRefObject<LeafletMap | null>,
+    /**
+     * Optional Leaflet options used when creating the map instance.
+     */
     MapOptions?: MapOptions,
+    /**
+     * Leaflet options applied when creating the map's tile layer.
+     */
     TileLayerOptions: TileLayerOptions,
+    /**
+     * URL template used to load map tiles.
+     */
     TileLayerURL: string,
+    /**
+     * Optional geographic bounds fitted after the map is initialized.
+     */
     Bounds?: LatLngBoundsExpression
 }
 
+/**
+ * Creates and maintains a Leaflet map that fills its measured container.
+ * @param props - Supplies the map reference, initialization options, tile layer, and bounds.
+ * @returns The container element used by Leaflet.
+ */
 const Map = (props: IProps) => {
     const mapDivRef = React.useRef<HTMLDivElement | null>(null);
     const { width, height } = useGetContainerPosition(mapDivRef);

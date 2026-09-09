@@ -22,9 +22,19 @@
 
 import * as React from 'react';
 
+/** Defines a configurable column's display and selection state. */
 interface IProps {
+    /**
+     * Optional flag that shows the column when no saved configuration exists, defaulting to false.
+     */
     Default?: boolean,
+    /**
+     * Optional label shown for the column in the settings dialog, defaulting to its key.
+     */
     Label?: string,
+    /**
+     * Unique key used to identify and persist the configurable column.
+     */
     Key: string,
     IsFiltered?: boolean
 }

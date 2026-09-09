@@ -24,16 +24,16 @@ import * as React from 'react';
 import { LoadingIcon, Modal } from '@gpa-gemstone/react-interactive';
 import { Gemstone } from '@gpa-gemstone/application-typings';
 
+/** Configures periodic server connectivity checks. */
 interface IProps {
     /**
-    * Function invoked on each interval to check whether the application can still
-    * reach the server. Should return an AbortablePromise that resolves when the
-    * server is reachable and rejects when it is not.
-    * */
+     * Checks whether the application can reach the server.
+     * @returns Abortable promise that resolves when the server is reachable.
+     */
     HeartBeat: () => Gemstone.TSX.Interfaces.AbortablePromise<unknown>,
     /**
-    * Interval, in milliseconds, between successive HeartBeat checks
-    * */
+     * Delay, in milliseconds, between server connectivity checks.
+     */
     IntervalMS: number,
     /**
     * Interval, in milliseconds, before checking an in-flight HeartBeat again
