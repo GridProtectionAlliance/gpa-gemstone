@@ -31,7 +31,8 @@ interface IProps {
   usePixelPositioning?: boolean,
   disallowSnapping?: boolean,
   axis?: AxisIdentifier,
-  origin?: "upper-right" | "upper-left" | "upper-center" | "lower-right" | "lower-left" | "lower-center" | 'middle-left' | 'middle-right',
+  /** Auto centers below the anchor and flips above when needed, using offset for vertical anchor spacing and horizontal edge clearance. */
+  origin?: "auto" | "upper-right" | "upper-left" | "upper-center" | "lower-right" | "lower-left" | "lower-center" | 'middle-left' | 'middle-right',
   // Specifies the offset of the pox from the origin point, In pixels
   offset?: number,
   // Dom ID of child, used for sizing of child
@@ -45,16 +46,22 @@ interface IProps {
 const Infobox = (props: React.PropsWithChildren<IProps>) => {
   const context = React.useContext(GraphContext);
   const [isSelected, setSelected] = React.useState<boolean>(false);
-  const [position, setPosition] = React.useState<{x: number, y: number}>({x: props.x, y: props.y});
-  const [dimension, setDimensions] = React.useState<{width: number, height: number}>({width: 100, height: 100});
+  const [position, setPosition] = React.useState<{ x: number, y: number }>({ x: props.x, y: props.y });
+  const [dimension, setDimensions] = React.useState<{ width: number, height: number }>({ width: 100, height: 100 });
   const [guid, setGuid] = React.useState<string>("");
   const offsetDefault = 0;
-  
+
   // Functions
   const calculateX = React.useCallback((xArg: number) => {
     let x: number = (props.usePixelPositioning ?? false) ? context.XApplyPixelOffset(xArg) : context.XTransformation(xArg);
     // Convert x/y to upper-left corner
-    switch(props.origin) {
+    switch (props.origin ?? "auto") {
+      case "auto": {
+        const left = context.XTransformation(context.XDomain[0]) + (props.offset ?? offsetDefault);
+        const right = context.XTransformation(context.XDomain[1]) - (props.offset ?? offsetDefault);
+        x = Math.max(left, Math.min(x - Math.floor(dimension.width / 2), right - dimension.width));
+        break;
+      }
       case "middle-right":
       case "lower-right":
       case "upper-right": {
@@ -67,7 +74,6 @@ const Infobox = (props: React.PropsWithChildren<IProps>) => {
         break;
       }
       // Do-nothing case
-      case undefined: 
       case "middle-left":
       case "lower-left":
       case "upper-left":
@@ -75,13 +81,21 @@ const Infobox = (props: React.PropsWithChildren<IProps>) => {
         break;
     }
     return x;
-  }, [context.XApplyPixelOffset, context.XTransformation, props.origin, props.offset, props.usePixelPositioning, dimension]);
-  
+  }, [context.XApplyPixelOffset, context.XTransformation, context.XDomain, props.origin, props.offset, props.usePixelPositioning, dimension]);
+
   const calculateY = React.useCallback((yArg: number) => {
     let y: number = (props.usePixelPositioning ?? false) ? context.YApplyPixelOffset(yArg) : context.YTransformation(yArg, AxisMap.get(props.axis));
     // Convert x/y to upper-left corner
-    switch(props.origin) {
-      case undefined: 
+    switch (props.origin ?? "auto") {
+      case "auto": {
+        const axis = AxisMap.get(props.axis);
+        const top = context.YTransformation(context.YDomain[axis][1], axis);
+        const bottom = context.YTransformation(context.YDomain[axis][0], axis);
+        const offset = props.offset ?? offsetDefault;
+        y = y + offset + dimension.height <= bottom ? y + offset : y - dimension.height - offset;
+        y = Math.max(top, Math.min(y, bottom - dimension.height));
+        break;
+      }
       case "upper-left":
       case "upper-right":
       case "upper-center":
@@ -98,8 +112,8 @@ const Infobox = (props: React.PropsWithChildren<IProps>) => {
         break;
     }
     return y;
-  }, [context.YApplyPixelOffset, context.YTransformation, props.origin, props.offset, props.usePixelPositioning, props.axis, dimension]);
-  
+  }, [context.YApplyPixelOffset, context.YTransformation, context.YDomain, props.origin, props.offset, props.usePixelPositioning, props.axis, dimension]);
+
   const onClick = React.useCallback((xArg: number, yArg: number) => {
     const xP = calculateX(props.x);
     const xT = context.XTransformation(xArg);
@@ -109,7 +123,7 @@ const Infobox = (props: React.PropsWithChildren<IProps>) => {
       setSelected(true);
     }
   }, [props.x, props.y, calculateX, calculateY, dimension, setSelected, context.XTransformation, context.YTransformation, props.axis]);
-  
+
   // Note: this is the only function not effected by usePixelPositioning
   const onMove = props.onMouseMove === undefined ? undefined : React.useCallback((xArg: number, yArg: number) => {
     if (props.onMouseMove !== undefined) props.onMouseMove(xArg, yArg);
@@ -129,11 +143,11 @@ const Infobox = (props: React.PropsWithChildren<IProps>) => {
     setGuid(id)
     return () => { context.RemoveSelect(id) }
   }, []);
-  
+
   React.useEffect(() => {
     if (guid === "")
       return;
-  
+
     context.UpdateSelect(guid, {
       axis: props.axis,
       allowSnapping: false,
@@ -143,9 +157,9 @@ const Infobox = (props: React.PropsWithChildren<IProps>) => {
       onMove
     } as IHandlers)
   }, [onClick, onMove, props.axis]);
-  
+
   React.useEffect(() => {
-    setPosition({x: props.x, y: props.y});
+    setPosition({ x: props.x, y: props.y });
   }, [props.x, props.y]);
 
   React.useEffect(() => {
@@ -154,32 +168,32 @@ const Infobox = (props: React.PropsWithChildren<IProps>) => {
     if (!isSelected && (props.x !== position.x || props.y !== position.y))
       props.setPosition(position.x, position.y);
   }, [isSelected, position]);
-  
+
   React.useEffect(() => {
     if (context.CurrentMode !== 'select')
       setSelected(false);
-  },[context.CurrentMode]);
-  
+  }, [context.CurrentMode]);
+
   React.useEffect(() => {
     if (isSelected && !(props.disallowSnapping ?? false))
-        setPosition({x: context.XHoverSnap, y: context.YHoverSnap[AxisMap.get(props.axis)]});
+      setPosition({ x: context.XHoverSnap, y: context.YHoverSnap[AxisMap.get(props.axis)] });
   }, [context.XHoverSnap, context.YHoverSnap, props.axis]);
-  
+
   React.useEffect(() => {
     if (isSelected && (props.disallowSnapping ?? false))
-        setPosition({x: context.XHover, y: context.YHover[AxisMap.get(props.axis)]});
+      setPosition({ x: context.XHover, y: context.YHover[AxisMap.get(props.axis)] });
   }, [context.XHover, context.YHover, props.axis]);
-  
+
   // Get Heights and Widths
   React.useEffect(() => {
     const domEle = document.getElementById(props.childId);
     if (domEle == null) {
       console.error(`Invalid element id passed for child element in infobox ${props.childId}`);
-      setDimensions({width: 100, height: 100});
+      setDimensions({ width: 100, height: 100 });
       return;
     }
     if (dimension.width === Math.ceil(domEle.clientWidth) && dimension.height === Math.ceil(domEle.clientHeight)) return;
-    setDimensions({width: Math.ceil(domEle.clientWidth), height: Math.ceil(domEle.clientHeight)});
+    setDimensions({ width: Math.ceil(domEle.clientWidth), height: Math.ceil(domEle.clientHeight) });
   }, [props.children, props.childId]);
 
   return (
@@ -191,7 +205,8 @@ const Infobox = (props: React.PropsWithChildren<IProps>) => {
       {props.setPosition !== undefined && (props.x !== position.x || props.y !== position.y) ?
         <InfoGraphic x={calculateX(position.x)} y={calculateY(position.y)} width={dimension.width} height={dimension.height} opacity={props.opacity} />
         : null}
-    </g>);
+    </g>
+  );
 }
 
 interface IGraphicProps {
@@ -203,7 +218,7 @@ interface IGraphicProps {
 }
 const InfoGraphic = (props: IGraphicProps) => {
   return (
-    <path d={`M ${props.x} ${props.y} h ${props.width} v ${props.height} h -${props.width} v -${props.height}`} stroke={'black'} style={{opacity: props.opacity ?? 1}} />
+    <path d={`M ${props.x} ${props.y} h ${props.width} v ${props.height} h -${props.width} v -${props.height}`} stroke={'black'} style={{ opacity: props.opacity ?? 1 }} />
   );
 }
 
