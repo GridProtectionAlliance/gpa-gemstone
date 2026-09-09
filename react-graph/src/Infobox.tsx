@@ -31,7 +31,7 @@ interface IProps {
   usePixelPositioning?: boolean,
   disallowSnapping?: boolean,
   axis?: AxisIdentifier,
-  /** Auto centers below the anchor, flips above when needed, and uses offset as horizontal edge clearance. */
+  /** Auto centers below the anchor and flips above when needed, using offset for vertical anchor spacing and horizontal edge clearance. */
   origin?: "auto" | "upper-right" | "upper-left" | "upper-center" | "lower-right" | "lower-left" | "lower-center" | 'middle-left' | 'middle-right',
   // Specifies the offset of the pox from the origin point, In pixels
   offset?: number,
