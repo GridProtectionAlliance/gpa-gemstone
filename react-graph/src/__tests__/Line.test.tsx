@@ -1,6 +1,5 @@
 import * as React from 'react';
-import { act, create, ReactTestInstance, ReactTestRenderer } from 'react-test-renderer';
-import DataLegend from '../DataLegend';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { GraphContext, IGraphContext } from '../GraphContext';
 import Line from '../Line';
 
@@ -23,59 +22,50 @@ const LineHarness = (props: IHarnessProps) => {
     } as IGraphContext), [props.command]);
 
     return <GraphContext.Provider value={context}>
-        <Line
+        <svg><Line
             color="red"
             data={data}
             enabled={props.enabled}
             legend="Test line"
             lineStyle="solid"
             setEnabled={props.setEnabled}
-        />
+        /></svg>
         {legend}
     </GraphContext.Provider>;
 };
 
-const clickLegend = (renderer: ReactTestRenderer) => {
-    const legend = renderer.root.findByType(DataLegend);
-    const clickTarget = legend.findAll((node: ReactTestInstance) => typeof node.props.onClick === 'function')[0];
-    act(() => clickTarget.props.onClick({ ctrlKey: false }));
-};
-
 test('Line legend remains internally controlled when enabled props are omitted', () => {
-    let renderer!: ReactTestRenderer;
-    act(() => { renderer = create(<LineHarness />); });
+    const { container } = render(<LineHarness />);
 
-    expect(renderer.root.findAllByType('path')).toHaveLength(1);
-    clickLegend(renderer);
-    expect(renderer.root.findAllByType('path')).toHaveLength(0);
+    expect(container.querySelectorAll('svg path')).toHaveLength(1);
+    fireEvent.click(screen.getByText('Test line'));
+    expect(container.querySelectorAll('svg path')).toHaveLength(0);
 });
 
 test('Line ignores a controlled enabled value when setEnabled is omitted', () => {
-    let renderer!: ReactTestRenderer;
-    act(() => { renderer = create(<LineHarness enabled={false} />); });
+    const { container } = render(<LineHarness enabled={false} />);
 
-    expect(renderer.root.findAllByType('path')).toHaveLength(1);
-    clickLegend(renderer);
-    expect(renderer.root.findAllByType('path')).toHaveLength(0);
+    expect(container.querySelectorAll('svg path')).toHaveLength(1);
+    fireEvent.click(screen.getByText('Test line'));
+    expect(container.querySelectorAll('svg path')).toHaveLength(0);
 });
 
 test('controlled Line reports regular and bulk legend commands', () => {
     const setEnabled = jest.fn();
-    let renderer!: ReactTestRenderer;
-    act(() => { renderer = create(<LineHarness enabled={true} setEnabled={setEnabled} />); });
+    const { rerender } = render(<LineHarness enabled={true} setEnabled={setEnabled} />);
 
-    clickLegend(renderer);
+    fireEvent.click(screen.getByText('Test line'));
     expect(setEnabled.mock.calls[setEnabled.mock.calls.length - 1][0]).toBe(false);
 
-    act(() => renderer.update(<LineHarness enabled={false} setEnabled={setEnabled}
-        command={{ requester: '', command: 'enable-all' }} />));
+    rerender(<LineHarness enabled={false} setEnabled={setEnabled}
+        command={{ requester: '', command: 'enable-all' }} />);
     expect(setEnabled.mock.calls[setEnabled.mock.calls.length - 1][0]).toBe(true);
 
-    act(() => renderer.update(<LineHarness enabled={true} setEnabled={setEnabled}
-        command={{ requester: 'another-line', command: 'disable-others' }} />));
+    rerender(<LineHarness enabled={true} setEnabled={setEnabled}
+        command={{ requester: 'another-line', command: 'disable-others' }} />);
     expect(setEnabled.mock.calls[setEnabled.mock.calls.length - 1][0]).toBe(false);
 
-    act(() => renderer.update(<LineHarness enabled={true} setEnabled={setEnabled}
-        command={{ requester: 'line-id', command: 'disable-others' }} />));
+    rerender(<LineHarness enabled={true} setEnabled={setEnabled}
+        command={{ requester: 'line-id', command: 'disable-others' }} />);
     expect(setEnabled.mock.calls[setEnabled.mock.calls.length - 1][0]).toBe(true);
 });
