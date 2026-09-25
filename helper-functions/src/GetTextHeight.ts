@@ -21,6 +21,8 @@
 //
 // ******************************************************************************************************
 
+import * as DOMPurify from 'dompurify';
+
 /**
  * This function returns the height of a piece of text given a font, fontsize, and a word
  * @param font: Determines font of given text
@@ -44,7 +46,7 @@ function GetTextHeight(font: string, fontSize: string, word: string, cssStyle?: 
     text.style.width = width ?? 'auto';
     text.style.position = 'absolute';
     text.style.whiteSpace = whiteSpace ?? 'no-wrap';
-    text.innerHTML = word;
+    text.innerHTML = DOMPurify.sanitize(word, { USE_PROFILES: { html: true } });
 
     document.body.appendChild(text);
 

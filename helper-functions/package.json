@@ -46,6 +46,7 @@
   },
   "dependencies":   {
     "@gpa-gemstone/application-typings": "0.0.99",
+    "dompurify": "3.4.16",
     "lodash": "^4.17.21"
   },
   "peerDependencies": {"react": "18.2.0"},
