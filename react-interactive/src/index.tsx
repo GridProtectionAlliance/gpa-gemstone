@@ -51,6 +51,7 @@ import ExternalPage from './Menue/ExternalPage';
 import DecisionHelpTree from './DecisionHelpTree';
 import Map from './Map';
 import { IApplicationRefs } from './Menue/Application/Application';
+import Console from './Console';
 
 export {
   Modal,
@@ -87,5 +88,6 @@ export {
   ExternalPage,
   DecisionHelpTree,
   Map,
-  IApplicationRefs
+  IApplicationRefs,
+  Console
 };
