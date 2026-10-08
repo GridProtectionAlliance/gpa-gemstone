@@ -26,6 +26,12 @@ import { Application } from '@gpa-gemstone/application-typings';
 import * as React from 'react';
 import moment from 'moment';
 
+export const INCREMENT_BUTTON_ID = "increment";
+export const UPDATING_BUTTON_ID = "update";
+export const ERROR_BUTTON_ID = "error";
+export const IDLE_BUTTON_ID = "idle";
+export const LOADING_BUTTON_ID = "loading";
+
 const ConsoleTestComponent = () => {
     const [status, setStatus] = React.useState<Application.Types.Status>('uninitiated');
     const [lastSuccess, setLastSuccess] = React.useState<number>(0);
@@ -33,11 +39,11 @@ const ConsoleTestComponent = () => {
     const [currentTime, setCurrentTime] = React.useState<number>(0);
     return (
     <>
-        <button onClick={() => setCurrentTime(val => val + 500000)}>Increment Time</button>
-        <button onClick={() => setUpdating(val => !val)}>Updating?</button>
-        <button onClick={() => setStatus('loading')}>Loading</button>
-        <button onClick={() => {setStatus('idle'); setLastSuccess(currentTime)}}>Idle</button>
-        <button onClick={() => setStatus('error')}>Error</button>
+        <button onClick={() => setCurrentTime(val => val + 500000)} id={INCREMENT_BUTTON_ID}>Increment Time</button>
+        <button onClick={() => setUpdating(val => !val)} id={UPDATING_BUTTON_ID}>Updating?</button>
+        <button onClick={() => setStatus('loading')} id={LOADING_BUTTON_ID}>Loading</button>
+        <button onClick={() => {setStatus('idle'); setLastSuccess(currentTime)}} id={IDLE_BUTTON_ID}>Idle</button>
+        <button onClick={() => setStatus('error')} id={ERROR_BUTTON_ID}>Error</button>
         <Console 
             ShowX={true} 
             Show={true} 
