@@ -21,6 +21,8 @@
 //
 // ******************************************************************************************************
 
+import * as DOMPurify from 'dompurify';
+
 /**
  * GetTextWidth returns the width of a piece of text given its font, fontSize, and content.
  * @param font: Determines font of given text
@@ -44,7 +46,7 @@ function GetTextWidth(font: string, fontSize: string, word: string, cssStyle?: s
     text.style.height = height ?? 'auto';
     text.style.width = 'auto';
     text.style.whiteSpace = whiteSpace ?? 'nowrap';
-    text.innerHTML = word;
+    text.innerHTML = DOMPurify.sanitize(word, { USE_PROFILES: { html: true } });
 
     // Create a container
     const container = document.createElement('div');
