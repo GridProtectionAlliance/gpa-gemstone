@@ -25,11 +25,18 @@ import * as React from 'react';
 import { Application } from '@gpa-gemstone/application-typings';
 import moment from 'moment';
 
+type MessageColor = 'red' | 'yellow' | 'white'
+
+export interface IMessage {
+    Message: string
+    Color?: MessageColor
+}
+
 interface IProps {
     /**
-     * Message to display in the console.
+     * Messages to display in the console.
      */
-    Message: string | null
+    Messages: IMessage[]
     /**
      * Whether or not to display the console.
      */
@@ -50,6 +57,10 @@ interface IProps {
      * Optional last successful update to display for updating console displays.
      */
     LastSuccess?: number
+    /**
+     * Fill the height of the console's container? Defaults to false.
+     */
+    FillY?: boolean
 }
 
 export const RemoteConsoleStyle: React.CSSProperties = {
@@ -59,7 +70,7 @@ export const RemoteConsoleStyle: React.CSSProperties = {
     height: '100%'
 };
 
-const Console = ({Message, Show, SetShow, ShowX, Status, LastSuccess}: IProps) => {
+const Console = ({Messages, Show, SetShow, ShowX, Status, LastSuccess, FillY}: IProps) => {
     return (
          Show ?
                 <>
@@ -74,16 +85,17 @@ const Console = ({Message, Show, SetShow, ShowX, Status, LastSuccess}: IProps) =
                           
                         </div>
                     </div>
-                    <div className='row'>
-                        <div className='col-12'>
+                    <div className={`row ${FillY ? 'h-100' : ''}`}>
+                        <div className={"col-12"}>
                             <pre className="small bg-dark text-white alert alert-dismissible fade show" style={RemoteConsoleStyle}>
                                 {ShowX ? 
                                     <button type="button" className="close" onClick={() => SetShow(false)}>
                                         <span aria-hidden="true">&times;</span>
                                     </button> : null}
-                                <span style={{ color: 'white' }}>
-                                    {Message}
-                                </span>
+                                {Messages.map((message: IMessage) => {
+                                    return <span style={{ color: message.Color ?? 'white'}}>{message.Message}</span>
+                                })
+                                }
                             </pre>
                         </div>
                     </div>

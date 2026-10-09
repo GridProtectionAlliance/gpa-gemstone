@@ -48,7 +48,7 @@ const ConsoleTestComponent = () => {
             ShowX={true} 
             Show={true} 
             SetShow={() => true} 
-            Message={"Hey Natalie"} 
+            Messages={[{Message: "Hey Natalie", Color: "red"}]} 
             Status={updating ? status : undefined} 
             LastSuccess={updating ? lastSuccess : undefined}/>
     </>
