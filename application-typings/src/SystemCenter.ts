@@ -33,30 +33,174 @@ namespace SystemCenter {
 		// Types
 		export type AdditionalFieldType = 'integer' | 'number' | 'string' | 'boolean' | string;
         // Tables
-        export interface Setting {ID: number, Name: string, Value: string, DefaultValue: string }
-        export interface SEBrowserSetting extends Setting { ApplicationInstance: boolean, Scope: string, Roles: string }
-		export interface AdditionalField { ID: number, ParentTable: string, FieldName: string, Type: AdditionalFieldType, ExternalDBTableID?: number, IsSecure: boolean, IsInfo: boolean, IsKey: boolean, Searchable: boolean}
-		export interface AdditionalFieldView extends AdditionalField { ExternalDB?: string, ExternalTable?: string }
-		export interface AdditionalFieldValue { ID: number, ParentTableID: number, AdditionalFieldID: number, Value: string }
-		export interface ExternalOpenXDAField { ID: number, ParentTable: string, FieldName: string, ExternalDBTableID: number }
-		export interface ValueListGroup { ID: number, Name: string, Description: string, Items?: ValueListItem[]}
-		export interface ValueListItem { ID: number, GroupID: number, AltValue: string, Value: string, SortOrder: number}
-		export interface ChannelGroup { ID: number, Name: string, Description: string, Items?: ChannelGroupDetails[]}
-                export interface ChannelGroupDetails { ID: number, ChannelGroupID: number, ChannelGroup: string, MeasurementTypeID: number, MeasurementType: string, MeasurementCharacteristicID: number, MeasurementCharacteristic: string, DisplayName: string, Unit: string}
-		
-		export interface LocationDrawing { ID: number, LocationID: number, Name: string, Link: string, Description: string, Number: string, Category: string }
+		export interface Setting {
+			ID: number,
+			Name: string,
+			Value: string,
+			DefaultValue: string
+		}
 
-		export interface ExternalDatabases { ID: number, Name: string, Schedule: string, ConnectionString: string, DataProviderString: string, Encrypt: boolean}
-		export interface DetailedExternalDatabases extends ExternalDatabases { LastDataUpdate?: string, MappedTables?: number, MappedFields?: number }
-		export interface extDBTables { ID: number, TableName: string, ExtDBID: number, Query: string }
-		export interface DetailedExtDBTables extends extDBTables { ExternalDB?: string, MappedFields?: number }
-		export interface DetailedAsset { ID: number, AssetKey: string, AssetName: string, VoltageKV: number, AssetType: string, Meters: number, Locations: number }
-        export interface DetailedMeter { ID: number, AssetKey: string, Name: string, Location: string, MappedAssets: number, Make: string, Model: string }
-        export interface DetailedLocation { ID: number, LocationKey: string, Name: string, Description: string, Alias: string, ShortName: string, Longitude: number, Latitude: number, Meters: number, Assets: number }
-		export interface LSCVSAccount { ID: number, AccountID: string, CustomerID: number }
+		export interface SEBrowserSetting extends Setting {
+			ApplicationInstance: boolean,
+			Scope: string,
+			Roles: string
+		}
+
+		export interface AdditionalField {
+			ID: number,
+			ParentTable: string,
+			FieldName: string,
+			Type: AdditionalFieldType,
+			ExternalDBTableID?: number,
+			IsSecure: boolean,
+			IsInfo: boolean,
+			IsKey: boolean,
+			Searchable: boolean
+		}
+
+		export interface AdditionalFieldView extends AdditionalField {
+			ExternalDB?: string,
+			ExternalTable?: string
+		}
+
+		export interface AdditionalFieldValue {
+			ID: number,
+			ParentTableID: number,
+			AdditionalFieldID: number,
+			Value: string
+		}
+
+		export interface ExternalOpenXDAField {
+			ID: number,
+			ParentTable: string,
+			FieldName: string,
+			ExternalDBTableID: number
+		}
+
+		export interface ValueListGroup {
+			ID: number,
+			Name: string,
+			Description: string,
+			Items?: ValueListItem[]
+		}
+
+		export interface ValueListItem {
+			ID: number,
+			GroupID: number,
+			AltValue: string,
+			Value: string,
+			SortOrder: number
+		}
+
+		export interface ChannelGroup {
+			ID: number,
+			Name: string,
+			Description: string,
+			Items?: ChannelGroupDetails[]
+		}
+
+		export interface ChannelGroupDetails {
+			ID: number,
+			ChannelGroupID: number,
+			ChannelGroup: string,
+			MeasurementTypeID: number,
+			MeasurementType: string,
+			MeasurementCharacteristicID: number,
+			MeasurementCharacteristic: string,
+			DisplayName: string,
+			Unit: string
+		}
+		
+		export interface LocationDrawing {
+			ID: number,
+			LocationID: number,
+			Name: string,
+			Link: string,
+			Description: string,
+			Number: string,
+			Category: string
+		}
+
+		export interface ExternalDatabases {
+			ID: number,
+			Name: string,
+			Schedule: string,
+			ConnectionString: string,
+			DataProviderString: string,
+			Encrypt: boolean
+		}
+
+		export interface DetailedExternalDatabases extends ExternalDatabases {
+			LastDataUpdate?: string,
+			MappedTables?: number,
+			MappedFields?: number
+		}
+
+		export interface extDBTables {
+			ID: number,
+			TableName: string,
+			ExtDBID: number,
+			Query: string
+		}
+
+		export interface DetailedExtDBTables extends extDBTables {
+			ExternalDB?: string,
+			MappedFields?: number
+		}
+
+		export interface DetailedAsset {
+			ID: number,
+			AssetKey: string,
+			AssetName: string,
+			VoltageKV: number,
+			AssetType: string,
+			Meters: number,
+			Locations: number
+		}
+
+		export interface DetailedMeter {
+			ID: number,
+			AssetKey: string,
+			Name: string,
+			Location: string,
+			MappedAssets: number,
+			Make: string,
+			Model: string
+		}
+
+		export interface DetailedLocation {
+			ID: number,
+			LocationKey: string,
+			Name: string,
+			Description: string,
+			Alias: string,
+			ShortName: string,
+			Longitude: number,
+			Latitude: number,
+			Meters: number,
+			Assets: number
+		}
+
+		export interface LSCVSAccount {
+			ID: number,
+			AccountID: string,
+			CustomerID: number
+		}
 	
-		export interface PQApplications { ID: number, Name: string, Url: string, Image: string, CategoryID: number, SortOrder: number }
-		export interface ApplicationCategory { ID: number, Name: string, SortOrder: number }
+		export interface PQApplications {
+			ID: number,
+			Name: string,
+			Url: string,
+			Image: string,
+			CategoryID: number,
+			SortOrder: number
+		}
+
+		export interface ApplicationCategory {
+			ID: number,
+			Name: string,
+			SortOrder: number
+		}
 	}
 }
 
