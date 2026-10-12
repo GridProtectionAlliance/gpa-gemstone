@@ -155,7 +155,10 @@ namespace SystemCenter {
 			VoltageKV: number,
 			AssetType: string,
 			Meters: number,
-			Locations: number
+			Locations: number,
+			Description: string | null,
+			Customers: string | null,
+			AssetGroups: string | null
 		}
 
 		export interface DetailedMeter {
@@ -165,7 +168,10 @@ namespace SystemCenter {
 			Location: string,
 			MappedAssets: number,
 			Make: string,
-			Model: string
+			Model: string,
+			Description: string | null,
+			Customers: string | null,
+			AssetGroups: string | null
 		}
 
 		export interface DetailedLocation {
