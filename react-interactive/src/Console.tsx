@@ -112,7 +112,7 @@ const Console = ({ OnClose, Status, LastSuccess, AutoScroll, HeaderRight, childr
                 onMouseLeave={() => { if (AutoScrollEnabled) setAutoScroll(true) }}
                 ref={consoleDiv}
             >
-                {OnClose ?
+                {OnClose != null ?
                     <button type="button" className="close" onClick={OnClose}>
                         <span aria-hidden="true">&times;</span>
                     </button> : null}
