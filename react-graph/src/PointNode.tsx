@@ -295,7 +295,20 @@ export class PointNode {
      * Updates statistics based on the current children.
      */
     private AggregateChildStats(): void {
-        if (this.children === null || this.children.length === 0) return;
+        if (this.children === null) return;
+
+        if (this.children.length === 0) {
+            // Set stats to indicate an empty node so the parent removes it, otherwise
+            // its stale count stops removeLeftMostPoint from trimming any further
+            this.count = 0;
+            this.minT = NaN;
+            this.maxT = NaN;
+            this.dim = NaN;
+            this.minV = [];
+            this.maxV = [];
+            this.sum = [];
+            return;
+        }
 
         this.minT = ComputeMin(this.children.map(node => node.minT));
         this.maxT = ComputeMax(this.children.map(node => node.maxT));

@@ -297,3 +297,157 @@ test('RemoveLeftMostPoint when data length is greater than default', () => {
   const node = new PointNode(data);
   expect(node.maxCount).toBe(2500);
 });
+
+// Deterministic pseudo-random generator (mulberry32) so failures are reproducible
+const createRandom = (seed: number) => () => {
+  seed |= 0;
+  seed = seed + 0x6D2B79F5 | 0;
+  let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+  t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+  return ((t ^ t >>> 14) >>> 0) / 4294967296;
+};
+
+const inRange = (point: number[], start: number, end: number) => point[0] >= start && point[0] <= end;
+
+const valueLimits = (points: number[][], dimension = 0): [number, number] => {
+  const values = points.map(point => point[dimension + 1]).filter(value => !Number.isNaN(value));
+  return values.length === 0 ? [NaN, NaN] : [Math.min(...values), Math.max(...values)];
+};
+
+const createPoints = (count: number, random: () => number, startTime = 0) =>
+  Array.from({ length: count }, (_, i) => [startTime + i, Math.round(random() * 2000 - 1000)]);
+
+// Compares every query against a plain array holding the same points
+const expectMatchesReference = (node: PointNode, reference: number[][], random: () => number) => {
+  expect(node.count).toBe(reference.length);
+  expect(node.minT).toBe(reference[0][0]);
+  expect(node.maxT).toBe(reference[reference.length - 1][0]);
+  expect(node.GetFullData()).toEqual(reference);
+
+  const minT = reference[0][0];
+  const span = reference[reference.length - 1][0] - minT;
+
+  for (let i = 0; i < 25; i++) {
+    // Range ends fall half way between points, so inclusive and exclusive boundaries agree
+    const a = Math.floor(minT - 5 + random() * (span + 10)) + 0.5;
+    const b = Math.floor(minT - 5 + random() * (span + 10)) + 0.5;
+    const start = Math.min(a, b);
+    const end = Math.max(a, b);
+    const expected = reference.filter(point => inRange(point, start, end));
+
+    expect(node.GetData(start, end)).toEqual(expected);
+    expect(node.GetCount(start, end)).toBe(expected.length);
+
+    if (expected.length > 0)
+      expect(node.GetLimits(start, end)).toEqual(valueLimits(expected));
+  }
+};
+
+describe('PointNode streaming', () => {
+  test.each([50, 2000, 10000])('keeps last %i points and matches a reference array', maxTotalPoints => {
+    const random = createRandom(maxTotalPoints);
+    const node = new PointNode([], maxTotalPoints);
+    let reference: number[][] = [];
+    const total = maxTotalPoints * 3 + 37;
+
+    for (let i = 0; i < total; i++) {
+      const point = [i, Math.round(random() * 2000 - 1000)];
+      node.AddPoint(point);
+      reference.push(point);
+
+      if (reference.length > maxTotalPoints)
+        reference = reference.slice(-maxTotalPoints);
+
+      if (i % Math.ceil(total / 12) === 0 || i === total - 1)
+        expectMatchesReference(node, reference, random);
+    }
+  });
+
+  test('limits only reflect points that remain after trimming', () => {
+    const maxTotalPoints = 500;
+    const node = new PointNode([], maxTotalPoints);
+
+    // Large values first, which must be trimmed away, then small values
+    for (let i = 0; i < maxTotalPoints; i++)
+      node.AddPoint([i, 1000 + i]);
+
+    for (let i = maxTotalPoints; i < maxTotalPoints * 3; i++)
+      node.AddPoint([i, i % 10]);
+
+    expect(node.GetLimits(node.minT - 1, node.maxT + 1)).toEqual([0, 9]);
+    expect(node.GetAllLimits(node.minT - 1, node.maxT + 1)).toEqual([[0, 9]]);
+  });
+});
+
+describe('PointNode construction', () => {
+  test.each([1, 20, 21, 400, 401, 1999])('building from %i points matches adding them one at a time', size => {
+    const random = createRandom(size);
+    const points = createPoints(size, random);
+    const built = new PointNode(points, 100000);
+    const added = new PointNode([], 100000);
+
+    points.forEach(point => added.AddPoint(point));
+
+    for (const node of [built, added]) {
+      expect(node.count).toBe(size);
+      expect(node.GetFullData()).toEqual(points);
+      expect(node.GetLimits(-0.5, size)).toEqual(valueLimits(points));
+    }
+  });
+
+  test('rejects jagged data', () => {
+    expect(() => new PointNode([[0, 1], [1]])).toThrow(TypeError);
+
+    const node = new PointNode([[0, 1]]);
+    expect(() => node.AddPoint([1, 2, 3])).toThrow(TypeError);
+    expect(() => node.AddPoint([])).toThrow(Error);
+  });
+});
+
+describe('PointNode point lookup', () => {
+  // Multiple leaves (20 points each) so lookups cross node boundaries
+  const points = createPoints(500, createRandom(7));
+  const node = new PointNode(points, 1000);
+
+  test('GetPoint returns the nearest point', () => {
+    for (let i = 0; i < points.length - 1; i++) {
+      expect(node.GetPoint(i)).toEqual(points[i]);
+      expect(node.GetPoint(i + 0.25)).toEqual(points[i]);
+      expect(node.GetPoint(i + 0.75)).toEqual(points[i + 1]);
+    }
+  });
+
+  test('GetPoint clamps to the first and last points', () => {
+    expect(node.GetPoint(-100)).toEqual(points[0]);
+    expect(node.GetPoint(10000)).toEqual(points[points.length - 1]);
+  });
+
+  test('GetPoints rejects a non-positive count', () => {
+    expect(() => node.GetPoints(10, 0)).toThrow(RangeError);
+  });
+});
+
+describe('PointNode values', () => {
+  test('ignores NaN values in limits and sums', () => {
+    const points = Array.from({ length: 100 }, (_, i) => [i, i % 7 === 0 ? NaN : i]);
+    const built = new PointNode(points, 1000);
+    const added = new PointNode([], 1000);
+    const expectedSum = points.reduce((sum, point) => Number.isNaN(point[1]) ? sum : sum + point[1], 0);
+
+    points.forEach(point => added.AddPoint(point));
+
+    for (const node of [built, added]) {
+      expect(node.GetLimits(-1, 100)).toEqual([1, 99]);
+      expect(node.sum[0]).toBe(expectedSum);
+    }
+  });
+
+  test('tracks limits per dimension for multi-dimensional points', () => {
+    const points = Array.from({ length: 300 }, (_, i) => [i, i, -2 * i]);
+    const node = new PointNode(points, 1000);
+
+    expect(node.GetLimits(9.5, 50.5, 0)).toEqual([10, 50]);
+    expect(node.GetLimits(9.5, 50.5, 1)).toEqual([-100, -20]);
+    expect(node.GetAllLimits(9.5, 50.5)).toEqual([[10, 50], [-100, -20]]);
+  });
+});
