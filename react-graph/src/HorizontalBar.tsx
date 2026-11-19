@@ -24,6 +24,7 @@
 import * as React from 'react';
 import { GraphContext, AxisIdentifier, AxisMap, IDataSeries } from './GraphContext';
 import useLegend from './Hooks/useLegend';
+import { IBarStyle, defaultStyle, HatchPattern } from './Bar';
 
 export interface IHorizontalBarProps {
     /**
@@ -35,9 +36,14 @@ export interface IHorizontalBarProps {
     */
     BarStart?: number,
     /**
-     * Center of the bar on the Y-Axis.
+     * Origin of the bar on the Y-Axis.
+     * With a yDomain of 'HalfAutoValue', a bar that crosses 0 is cut off at 0, so keep each bar on one side of 0.
     */
-    Position: number,
+    BarOrigin: number,
+    /**
+     * Reference point of BarOrigin, if it represents the top, center, or bottom of the bar. Defaults to center.
+    */
+    YBarOrigin?: 'top' | 'bottom' | 'center',
     /**
      * Height of the bar in Y-Axis units.
     */
@@ -56,17 +62,9 @@ export interface IHorizontalBarProps {
     */
     Color: string,
     /**
-     * Opacity of the bar, defaults to 0.5.
+     * Style override of the bar, defaults to the same style as Bar.
     */
-    Opacity?: number,
-    /**
-     * Stroke color of the bar, defaults to black.
-    */
-    StrokeColor?: string,
-    /**
-     * Stroke width of the bar.
-    */
-    StrokeWidth?: number,
+    BarStyle?: IBarStyle,
     /**
      * Optional controlled enabled state. Provide with SetEnabled to allow legend clicks to update it.
      * Without SetEnabled, this value is read-only and legend clicks do not change bar visibility.
@@ -78,7 +76,7 @@ export interface IHorizontalBarProps {
     SetEnabled?: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-/** Draws a bar along the X-Axis from BarStart to Value, centered on Position on the Y-Axis. */
+/** Draws a bar along the X-Axis from BarStart to Value, placed at BarOrigin on the Y-Axis. */
 export const HorizontalBar = (props: IHorizontalBarProps) => {
     const [guid, setGuid] = React.useState<string>("");
     const context = React.useContext(GraphContext);
@@ -88,6 +86,21 @@ export const HorizontalBar = (props: IHorizontalBarProps) => {
     const left = Math.min(barStart, props.Value);
     const right = Math.max(barStart, props.Value);
 
+    let bottom: number;
+    switch (props.YBarOrigin) {
+        default:
+        case 'center':
+            bottom = props.BarOrigin - props.BarHeight / 2;
+            break;
+        case 'bottom':
+            bottom = props.BarOrigin;
+            break;
+        case 'top':
+            bottom = props.BarOrigin - props.BarHeight;
+            break;
+    }
+    const top = bottom + props.BarHeight;
+
     // The bar adds its band to the Y range whenever any part of it is within the X range
     const createContextData: () => IDataSeries = React.useCallback(() =>
         ({
@@ -95,11 +108,12 @@ export const HorizontalBar = (props: IHorizontalBarProps) => {
             axis: props.Axis,
             enabled: enabled,
             getMax: (t: [number, number]) =>
-                !enabled || right < t[0] || left > t[1] ? undefined : props.Position + props.BarHeight / 2,
+                !enabled || right < t[0] || left > t[1] ? undefined : top,
             getMin: (t: [number, number]) =>
-                !enabled || right < t[0] || left > t[1] ? undefined : props.Position - props.BarHeight / 2,
-        } as IDataSeries)
-    , [props.Axis, props.Position, props.BarHeight, left, right, createLegend, enabled]);
+                !enabled || right < t[0] || left > t[1] ? undefined : bottom,
+            getPoints: () => undefined
+        })
+    , [props.Axis, top, bottom, left, right, createLegend, enabled]);
 
     React.useEffect(() => {
         if (guid === "") return;
@@ -118,20 +132,23 @@ export const HorizontalBar = (props: IHorizontalBarProps) => {
     const leftEdge = context.XTransformation(left);
     const rightEdge = context.XTransformation(right);
     // Larger values are higher on the page, so the top edge comes from the upper value
-    const topEdge = context.YTransformation(props.Position + props.BarHeight / 2, axis);
-    const bottomEdge = context.YTransformation(props.Position - props.BarHeight / 2, axis);
+    const topEdge = context.YTransformation(top, axis);
+    const bottomEdge = context.YTransformation(bottom, axis);
+    const style = { ...defaultStyle, Color: props.Color, ...props.BarStyle };
+    const patternId = `${guid}_hatch`;
 
     return (
         <g>
+            {style.Fill === 'Hatched' ? <HatchPattern id={patternId} color={style.Color} /> : null}
             <rect
                 x={leftEdge}
                 y={topEdge}
                 width={rightEdge - leftEdge}
                 height={bottomEdge - topEdge}
-                fill={props.Color}
-                opacity={props.Opacity ?? 0.5}
-                stroke={props.StrokeColor ?? 'black'}
-                strokeWidth={props.StrokeWidth}
+                fill={style.Fill === 'Hatched' ? `url(#${patternId})` : style.Color}
+                opacity={style.Opacity}
+                stroke={style.StrokeColor}
+                strokeWidth={style.StrokeWidth}
             />
         </g>
     );

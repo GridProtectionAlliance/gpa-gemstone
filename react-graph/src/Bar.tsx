@@ -97,10 +97,20 @@ export interface IBarStyle {
     Fill?: FillStyles,
 }
 
-const defaultStyle: IBarStyle = {
+export const defaultStyle: IBarStyle = {
     Opacity: 0.5,
     StrokeColor: "black"
 }
+
+/** Hatched fill for a bar portion, referenced by url(#id). */
+export const HatchPattern = (props: { id: string, color?: string }) =>
+    <pattern id={props.id} width="24" height="24" patternUnits="userSpaceOnUse">
+        <path
+            d="M -3 3 L 6 -6 M 0 24 L 24 0 M 21 27 L 30 18"
+            strokeWidth={6}
+            stroke={props.color}
+        />
+    </pattern>;
 
 export const StackedBar = (props: IBarProps) => {
     const [guid, setGuid] = React.useState<string>("");
@@ -179,15 +189,7 @@ export const StackedBar = (props: IBarProps) => {
                     break;
                 case "Hatched":
                     fillProp = `url(#${guid}_${yIndex})`;
-                    newBars.push(
-                        <pattern id={`${guid}_${yIndex}`} width="24" height="24" patternUnits="userSpaceOnUse" key={`hatch_${yIndex}`}>
-                            <path 
-                                d="M -3 3 L 6 -6 M 0 24 L 24 0 M 21 27 L 30 18" 
-                                strokeWidth={6}
-                                stroke={style.Color}
-                            />
-                        </pattern>
-                    );
+                    newBars.push(<HatchPattern id={`${guid}_${yIndex}`} color={style.Color} key={`hatch_${yIndex}`} />);
                     break;
             }
 

@@ -62,16 +62,17 @@ function ValueAxis(props: IProps) {
   const [nDigits, setNdigits] = React.useState<number>(1);
   const [factor, setFactor] = React.useState<number>(1);
 
-  const tickLabel = (tick: number, index: number) =>
-    props.customTicks?.[index]?.Label ?? (tick * factor).toFixed(nDigits);
+  // Ticks shown with their labels; custom ticks outside the visible domain are left out
+  const axisTicks: IAxisTick[] = React.useMemo(() => {
+    if (props.customTicks === undefined)
+      return ticks.map(tick => ({ Value: tick, Label: (tick * factor).toFixed(nDigits) }));
+
+    const domain = context.YDomain[AxisMap.get(props.axis)];
+    return props.customTicks.filter(tick => tick.Value >= domain[0] && tick.Value <= domain[1]);
+  }, [props.customTicks, context.YDomain, props.axis, ticks, factor, nDigits]);
 
   //Effect to set the ticks
   React.useEffect(() => {
-    if (props.customTicks !== undefined) {
-      setTicks(props.customTicks.map(tick => tick.Value));
-      return;
-    }
-
     const axis = AxisMap.get(props.axis);
     const dY = context.YDomain[axis][1] - context.YDomain[axis][0];
     if (!isFinite(dY) || isNaN(dY)) {
@@ -109,14 +110,14 @@ function ValueAxis(props: IProps) {
     }
 
     setTicks(newTicks)
-  }, [context.YDomain, props.useFactor, props.axis, props.height, props.customTicks]);
+  }, [context.YDomain, props.useFactor, props.axis, props.height]);
 
   React.useEffect(() => {
-    if (ticks.length === 0) return;
+    if (axisTicks.length === 0) return;
 
     // Use first tick as they should all be same height
-    const sampleLabel = tickLabel(ticks[0], 0);
-    const availableHeightPerTick = props.height / ticks.length;
+    const sampleLabel = axisTicks[0].Label;
+    const availableHeightPerTick = props.height / axisTicks.length;
 
     let newFontSize = 1;
     let sampleHeight = GetTextHeight('Segoe UI', newFontSize + 'em', sampleLabel);
@@ -128,7 +129,7 @@ function ValueAxis(props: IProps) {
     }
 
     setTickFontSize(newFontSize);
-  }, [ticks, factor, nDigits, props.height, props.customTicks]);
+  }, [axisTicks, props.height]);
 
   //Effect to set the factor
   React.useEffect(() => {
@@ -202,11 +203,11 @@ function ValueAxis(props: IProps) {
   }, [props.label, props.height, props.offsetTop, props.offsetBottom, labelFontSize]);
 
   React.useEffect(() => {
-    let dY = Math.max(...ticks.map((t, i) => GetTextWidth("Segoe UI", '1em', tickLabel(t, i))));
+    let dY = Math.max(...axisTicks.map(tick => GetTextWidth("Segoe UI", '1em', tick.Label)));
     dY = (isFinite(dY) ? dY : 0) + 8
     if (dY !== hAxis)
       setHAxis(dY);
-  }, [ticks, nDigits, factor, props.customTicks])
+  }, [axisTicks])
 
   React.useEffect(() => {
     if (props.hAxis !== hAxis + labelHeight)
@@ -263,34 +264,34 @@ function ValueAxis(props: IProps) {
         d={`M ${leftPosition} ${props.offsetTop} h ${tickDirection * 8}`}
       />
 
-      {ticks.map((tick, i) =>
+      {axisTicks.map((tick, i) =>
         <path
           key={i}
           stroke={((props.axis === undefined || props.axis === 'left') ? 'lightgrey' : 'darkgrey')}
           strokeOpacity={(props.showGrid ?? false) ? '0.8' : '0.0'}
           style={{ strokeWidth: 1, transition: 'd 0.5s' }}
-          d={`M ${props.offsetLeft} ${context.YTransformation(tick, AxisMap.get(props.axis))} h ${props.width - props.offsetLeft - props.offsetRight}`}
+          d={`M ${props.offsetLeft} ${context.YTransformation(tick.Value, AxisMap.get(props.axis))} h ${props.width - props.offsetLeft - props.offsetRight}`}
         />
       )}
 
-      {ticks.map((tick, i) =>
+      {axisTicks.map((tick, i) =>
         <path
           key={i}
           stroke='currentColor'
           style={{ strokeWidth: 1, transition: 'd 1s' }}
-          d={`M ${leftPosition} ${context.YTransformation(tick, AxisMap.get(props.axis))} h ${tickDirection * 6}`}
+          d={`M ${leftPosition} ${context.YTransformation(tick.Value, AxisMap.get(props.axis))} h ${tickDirection * 6}`}
         />)}
 
-      {ticks.map((tick, i) =>
+      {axisTicks.map((tick, i) =>
         <text
           fill={'currentColor'}
           key={i}
           style={{ fontSize: `${tickFontSize}em`, textAnchor: (props.axis === undefined || props.axis === 'left') ? 'end' : 'start', transition: 'x 0.5s, y 0.5s' }}
           dominantBaseline={'middle'}
           x={leftPosition + tickDirection * 8}
-          y={context.YTransformation(tick, AxisMap.get(props.axis))}
+          y={context.YTransformation(tick.Value, AxisMap.get(props.axis))}
         >
-          {tickLabel(tick, i)}
+          {tick.Label}
         </text>
       )}
 
