@@ -25,6 +25,12 @@ import * as React from 'react';
 import { AxisIdentifier, AxisMap, GraphContext } from './GraphContext'
 import { GetTextHeight, GetTextWidth } from '@gpa-gemstone/helper-functions';
 
+/** A tick at a fixed value with its own label, e.g., one category per horizontal bar. */
+export interface IAxisTick {
+  Value: number,
+  Label: string
+}
+
 interface IProps {
   hAxis: number,
   hFactor: number,
@@ -39,7 +45,8 @@ interface IProps {
   useFactor: boolean,
   showGrid?: boolean,
   label?: string,
-  axis?: AxisIdentifier
+  axis?: AxisIdentifier,
+  customTicks?: IAxisTick[]
 }
 
 function ValueAxis(props: IProps) {
@@ -55,8 +62,16 @@ function ValueAxis(props: IProps) {
   const [nDigits, setNdigits] = React.useState<number>(1);
   const [factor, setFactor] = React.useState<number>(1);
 
+  const tickLabel = (tick: number, index: number) =>
+    props.customTicks?.[index]?.Label ?? (tick * factor).toFixed(nDigits);
+
   //Effect to set the ticks
   React.useEffect(() => {
+    if (props.customTicks !== undefined) {
+      setTicks(props.customTicks.map(tick => tick.Value));
+      return;
+    }
+
     const axis = AxisMap.get(props.axis);
     const dY = context.YDomain[axis][1] - context.YDomain[axis][0];
     if (!isFinite(dY) || isNaN(dY)) {
@@ -94,13 +109,13 @@ function ValueAxis(props: IProps) {
     }
 
     setTicks(newTicks)
-  }, [context.YDomain, props.useFactor, props.axis, props.height]);
+  }, [context.YDomain, props.useFactor, props.axis, props.height, props.customTicks]);
 
   React.useEffect(() => {
     if (ticks.length === 0) return;
 
     // Use first tick as they should all be same height
-    const sampleLabel = (ticks[0] * factor).toFixed(nDigits);
+    const sampleLabel = tickLabel(ticks[0], 0);
     const availableHeightPerTick = props.height / ticks.length;
 
     let newFontSize = 1;
@@ -113,11 +128,12 @@ function ValueAxis(props: IProps) {
     }
 
     setTickFontSize(newFontSize);
-  }, [ticks, factor, nDigits, props.height]);
+  }, [ticks, factor, nDigits, props.height, props.customTicks]);
 
   //Effect to set the factor
   React.useEffect(() => {
-    if (!props.useFactor) {
+    // Custom tick labels are shown as given, so no factor applies
+    if (!props.useFactor || props.customTicks !== undefined) {
       setFactor(1)
       return
     }
@@ -141,7 +157,7 @@ function ValueAxis(props: IProps) {
       expF = expF + 3;
 
     setFactor(Math.pow(10, expF));
-  }, [context.YDomain, props.useFactor, props.axis]);
+  }, [context.YDomain, props.useFactor, props.axis, props.customTicks]);
 
   //Effect to set nDigitss
   React.useEffect(() => {
@@ -186,11 +202,11 @@ function ValueAxis(props: IProps) {
   }, [props.label, props.height, props.offsetTop, props.offsetBottom, labelFontSize]);
 
   React.useEffect(() => {
-    let dY = Math.max(...ticks.map(t => GetTextWidth("Segoe UI", '1em', (t * factor).toFixed(nDigits))));
+    let dY = Math.max(...ticks.map((t, i) => GetTextWidth("Segoe UI", '1em', tickLabel(t, i))));
     dY = (isFinite(dY) ? dY : 0) + 8
     if (dY !== hAxis)
       setHAxis(dY);
-  }, [ticks, nDigits])
+  }, [ticks, nDigits, factor, props.customTicks])
 
   React.useEffect(() => {
     if (props.hAxis !== hAxis + labelHeight)
@@ -274,7 +290,7 @@ function ValueAxis(props: IProps) {
           x={leftPosition + tickDirection * 8}
           y={context.YTransformation(tick, AxisMap.get(props.axis))}
         >
-          {(tick * factor).toFixed(nDigits)}
+          {tickLabel(tick, i)}
         </text>
       )}
 

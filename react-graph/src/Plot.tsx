@@ -29,7 +29,7 @@ import { CreateGuid } from '@gpa-gemstone/helper-functions';
 import { isEqual } from 'lodash';
 import TimeAxis from './TimeAxis';
 import LogAxis from './LogAxis';
-import YValueAxis from './YValueAxis';
+import YValueAxis, { IAxisTick } from './YValueAxis';
 import LegendWithContext from './LegendWithContext';
 import LegendEntry from './LegendEntry';
 import LineWithThreshold from './LineWithThreshold';
@@ -52,6 +52,7 @@ import Bar from './Bar';
 import BarGroup from './BarGroup';
 import BarAggregate from './BarAggregate';
 import CircleGroup from './CircleGroups';
+import HorizontalBar from './HorizontalBar';
 const html2canvas: any = _html2canvas;
 
 // A yDomain of AutoValue means it will zoom on time, and auto Adjust the Value to fit the data.
@@ -92,6 +93,8 @@ export interface IProps {
   showBorder?: boolean,
   Tlabel?: string,
   Ylabel?: string | string[],
+  // Fixed ticks with their own labels for the left Y axis, e.g., one category per horizontal bar
+  Yticks?: IAxisTick[],
   holdMenuOpen?: boolean,
   menuLocation?: 'left' | 'right' | 'hide',
   legend?: 'hidden' | 'bottom' | 'right',
@@ -940,6 +943,7 @@ const Plot = (props: React.PropsWithChildren<IProps>) => {
                     hAxis={heightLeftYLabel}
                     hFactor={heightYFactor}
                     useFactor={props.useMetricFactors === undefined ? true : props.useMetricFactors}
+                    customTicks={props.Yticks}
                   />
                 ) : null}
 
@@ -979,7 +983,8 @@ const Plot = (props: React.PropsWithChildren<IProps>) => {
                   (element as React.ReactElement<any>).type === Pill || (element as React.ReactElement<any>).type === HighlightBox || (element as React.ReactElement<any>).type === StreamingLine ||
                   (element as React.ReactElement<any>).type === LegendEntry || (element as React.ReactElement<any>).type === Bar || (element as React.ReactElement<any>).type === BarGroup ||
                   (element as React.ReactElement<any>).type === BarAggregate ||
-                  (element as React.ReactElement<any>).type === CircleGroup)
+                  (element as React.ReactElement<any>).type === CircleGroup ||
+                  (element as React.ReactElement<any>).type === HorizontalBar)
                   return element;
                 return null;
               })}

@@ -22,6 +22,7 @@ import Bar from './Bar';
 import BarGroup from './BarGroup';
 import BarAggregate from './BarAggregate';
 import CircleGroup from './CircleGroups';
+import HorizontalBar from './HorizontalBar';
 
 export { 
     Plot,
@@ -47,5 +48,6 @@ export {
     Bar,
     BarGroup,
     BarAggregate,
-    CircleGroup
+    CircleGroup,
+    HorizontalBar
  };
