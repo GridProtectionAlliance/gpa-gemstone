@@ -29,7 +29,7 @@ import { CreateGuid } from '@gpa-gemstone/helper-functions';
 import { isEqual } from 'lodash';
 import TimeAxis from './TimeAxis';
 import LogAxis from './LogAxis';
-import YValueAxis from './YValueAxis';
+import YValueAxis, { IAxisTick } from './YValueAxis';
 import LegendWithContext from './LegendWithContext';
 import LegendEntry from './LegendEntry';
 import LineWithThreshold from './LineWithThreshold';
@@ -52,6 +52,7 @@ import Bar from './Bar';
 import BarGroup from './BarGroup';
 import BarAggregate from './BarAggregate';
 import CircleGroup from './CircleGroups';
+import HorizontalBar from './HorizontalBar';
 const html2canvas: any = _html2canvas;
 
 // A yDomain of AutoValue means it will zoom on time, and auto Adjust the Value to fit the data.
@@ -92,6 +93,9 @@ export interface IProps {
   showBorder?: boolean,
   Tlabel?: string,
   Ylabel?: string | string[],
+  // Fixed ticks with their own labels, e.g., one category per horizontal bar.
+  // A single list applies to the left Y axis; a list per axis ([left, right]) applies to each axis, undefined keeps the automatic ticks
+  Yticks?: IAxisTick[] | (IAxisTick[] | undefined)[],
   holdMenuOpen?: boolean,
   menuLocation?: 'left' | 'right' | 'hide',
   legend?: 'hidden' | 'bottom' | 'right',
@@ -177,6 +181,7 @@ const Plot = (props: React.PropsWithChildren<IProps>) => {
   // States for Props to avoid change notification on ref change
   const [defaultTdomain, setDefaultTdomain] = React.useState<[number, number]>(props.defaultTdomain);
   const [defaultYdomain, setDefaultYdomain] = React.useState<[number, number][]>(typeCorrectDomain(props.defaultYdomain));
+  const [yTicks, setYTicks] = React.useState<IProps['Yticks']>(props.Yticks);
   const [updateFlag, setUpdateFlag] = React.useState<number>(0);
 
   const [legendHeight, setLegendHeight] = React.useState<number>(props.legendHeight ?? defaultLegendHeight);
@@ -292,6 +297,12 @@ const Plot = (props: React.PropsWithChildren<IProps>) => {
     if (!isEqual(defaultTdomain, props.defaultTdomain))
       setDefaultTdomain(props.defaultTdomain);
   }, [props.defaultTdomain])
+
+  //Effect to set Yticks changes
+  React.useEffect(() => {
+    if (!isEqual(yTicks, props.Yticks))
+      setYTicks(props.Yticks);
+  }, [props.Yticks])
 
   //Effect to set defaultYDomain changes
   React.useEffect(() => {
@@ -940,6 +951,7 @@ const Plot = (props: React.PropsWithChildren<IProps>) => {
                     hAxis={heightLeftYLabel}
                     hFactor={heightYFactor}
                     useFactor={props.useMetricFactors === undefined ? true : props.useMetricFactors}
+                    customTicks={typeCorrectTicks(yTicks, 0)}
                   />
                 ) : null}
 
@@ -959,6 +971,7 @@ const Plot = (props: React.PropsWithChildren<IProps>) => {
                     hAxis={heightRightYLabel}
                     hFactor={heightYFactor}
                     useFactor={props.useMetricFactors === undefined ? true : props.useMetricFactors}
+                    customTicks={typeCorrectTicks(yTicks, 1)}
                   />
                 ) : null}
               </>
@@ -979,7 +992,8 @@ const Plot = (props: React.PropsWithChildren<IProps>) => {
                   (element as React.ReactElement<any>).type === Pill || (element as React.ReactElement<any>).type === HighlightBox || (element as React.ReactElement<any>).type === StreamingLine ||
                   (element as React.ReactElement<any>).type === LegendEntry || (element as React.ReactElement<any>).type === Bar || (element as React.ReactElement<any>).type === BarGroup ||
                   (element as React.ReactElement<any>).type === BarAggregate ||
-                  (element as React.ReactElement<any>).type === CircleGroup)
+                  (element as React.ReactElement<any>).type === CircleGroup ||
+                  (element as React.ReactElement<any>).type === HorizontalBar)
                   return element;
                 return null;
               })}
@@ -1075,6 +1089,13 @@ const typeCorrectDomain = (arg: [number, number] | [number, number][] | undefine
   if (arg === undefined || arg.length === 0) return [[0, 1], [0, 1]];
   if (typeof (arg[0]) === 'number') return [arg, [0, 1]] as [number, number][];
   return (arg as [number, number][]);
+};
+
+const typeCorrectTicks = (arg: IProps['Yticks'], arrayIndex: number): IAxisTick[] | undefined => {
+  if (arg === undefined) return undefined;
+  // A list per axis has an array (or undefined) in place of each tick
+  if (arg.some(entry => entry === undefined || Array.isArray(entry))) return (arg as (IAxisTick[] | undefined)[])[arrayIndex];
+  return (arrayIndex === 0 ? arg as IAxisTick[] : undefined);
 };
 
 export default Plot;
